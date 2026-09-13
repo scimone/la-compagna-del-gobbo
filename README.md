@@ -60,9 +60,12 @@ builder      character creation/leveling engine (mostly logic, few/no models)
 
 ## Model status
 
-`rules` is the only app with a static data source ([db/](db/), XPHB-only). `characters` and
-`builder` model persisted/computed state that doesn't exist anywhere on disk to import, so all of
-their models stay placeholders regardless — they're not listed again here.
+`rules` is the only app with a static data source ([db/](db/), XPHB-only) — this table is about
+whether each model can honestly be populated from that source. `characters` has no data source
+of its own to import (it's persisted app state, not static content) but its models now have real
+fields too — see the [`apps/characters/`](#appscharacters--persisted-character-state) section
+below, and the design decisions called out there. `builder` still has no models — see its
+section for why.
 
 | Model | Status | Source | Notes |
 |---|---|---|---|
@@ -82,8 +85,6 @@ their models stay placeholders regardless — they're not listed again here.
 | `Spell` | Defined | `db/spells.json` | `classes`/`subclasses` kept as plain JSON lists, not FKs — see the model docstring |
 | `Language` | Defined | `db/languages.json` | |
 | `OptionalFeature` | Defined | `db/optional_features.json` | Not in the original architecture doc — covers Eldritch Invocations, Battle Master Maneuvers and Metamagic, which don't fit any existing catalog |
-| `Tool` | Missing | — | Not a separate catalog: tools/instruments/gaming sets are just `Equipment` rows (`category` in `{Tool, Artisan's Tools, Instrument, Gaming Set}`) |
-| `SpellList` | Missing | — | Not a separate catalog: `Spell.classes`/`Spell.subclasses` already cover it |
 | `Proficiency` | Defined | `db/classes.json`, `db/backgrounds.json` | 85 rows: the flat comma-separated items in `Class.armor_proficiencies`/`weapon_proficiencies`/`tool_proficiencies` and `Background.skills`/`tools`, tagged with a `category` taken from which field they came from. The 2 items phrased as a choice instead of a flat grant (Bard's/Monk's `tool_proficiencies`) are excluded, not misfiled — see the model docstring |
 | `Feature` | Defined | `db/classes.json`, `db/species.json`, `db/feats.json` | 611 rows: every explicitly named `{name, entries}` dict at the top level of `Class.features`, `SubclassLevel.features`, `Species.entries` and `Feat.entries` (bare prose strings mixed into those same lists are skipped, not renamed into features). Duplicates data still held verbatim on those parents — see the model docstring for why it isn't removed from them |
 | `Effect` | Partly defined | derived from `Feature.entries` | 2142 rows: a mechanical index of literal 5etools inline tags (`{@damage ...}`, `{@condition ...}`, `{@dc ...}`, etc.) found anywhere in a `Feature`'s `entries` text, storing the tag name and raw tag text verbatim — not a semantic effects model, no tag is reinterpreted |
@@ -97,6 +98,12 @@ script; there's no fixture/import command yet (see the `services`/`api` placehol
 row count (85 and 611 respectively); `Effect` and `ChoiceDefinition` are "Partly defined" because
 they only cover the subset of their source that's reliably, mechanically extractable — see their
 model docstrings for exactly what was included and excluded, and why.
+
+`Tool` and `SpellList`, both originally listed in architecture.md, were removed entirely (not
+just left "Missing") once it was clear they'd always be pure duplicates: a Tool is just an
+`Equipment` row with `category` in `{Tool, Artisan's Tools, Instrument, Gaming Set}`, and a
+class's spell list is just `Spell.classes`/`Spell.subclasses` filtered — a dedicated table would
+carry the same rows twice with no independent reason to exist.
 
 ### `apps/rules/` — static game content
 
@@ -124,13 +131,11 @@ assets) and `otherVersions` (cross-references to non-XPHB printings — we only 
 | `Equipment` | An item of equipment (weapon, armor, gear, tool, instrument, ...) |
 | `EquipmentProperty` | A property attached to `Equipment` (e.g. Finesse) |
 | `Mastery` | A weapon mastery property |
-| `Tool` | A tool (e.g. Thieves' Tools, Herbalism Kit) |
 | `Skill` | A skill (e.g. Athletics, Perception) |
 | `Sense` | A special sense (e.g. Darkvision) |
 | `Proficiency` | A proficiency category (weapon/armor/tool/skill) granted by a `Class` or `Background` |
 | `Language` | A language (e.g. Common, Elvish) |
 | `Spell` | A spell definition |
-| `SpellList` | The list of spells available to a given `Class` |
 | `OptionalFeature` | An optional class feature a player can pick (Eldritch Invocation, Maneuver, Metamagic) |
 
 **API** (`apps/rules/api/rules/`, tag `Rules`, mounted at `/api/rules`) — one file per endpoint,
@@ -157,21 +162,30 @@ placeholders): `class_.py`, `subclass.py`, `species.py`, `background.py`, `feat.
 The actual player characters. No auth, no ownership — any character can be read/managed by
 anyone, matching the "no users app" decision in the architecture doc.
 
-**Models** (`apps/characters/models/`, one file per model, currently empty placeholders):
+**Models** (`apps/characters/models/`, one file per model) now have real fields — there's no
+external data source to import here (this is app-generated state, not static content), so
+"defined" instead means: real fields, real FKs into `rules`, verified by actually building one
+complete level-5 multiclass-ready character through every model and reverse relation at once (a
+Human Fighter/Battle Master, exercising every FK — species, background, class, subclass, a
+feature, a feat, an optional feature, a language, skill + armor proficiencies, a sense, an
+inventory item, currency, a resource — with no constraint violations).
 
-| Model | Will represent |
+| Model | Represents |
 |---|---|
-| `Character` | A player character |
-| `CharacterClass` | A class/subclass a `Character` has levels in |
-| `CharacterAbilityScore` | One ability score for a `Character` |
-| `CharacterChoice` | A resolved `ChoiceDefinition` selection |
-| `CharacterFeature` | A `Feature` granted to a `Character` |
-| `CharacterProficiency` | A proficiency granted to a `Character` |
-| `CharacterSense` | A sense granted to a `Character` |
-| `CharacterInventoryItem` | An `Equipment` item owned by a `Character` |
-| `CharacterCurrency` | The coin purse of a `Character` |
-| `CharacterSpell` | A spell known/prepared by a `Character` |
-| `CharacterResource` | A limited-use resource (e.g. Rage charges) |
+| `Character` | A player character. Ability scores are plain fields (current totals), not a separate one-row-per-ability table — see `CharacterAbilityScoreIncrease` below for why. AC/HP-max-aside/initiative/passive Perception etc. are deliberately *not* fields: they're derived from everything else and belong in `builder.services.derived_stats`, not persisted (a stored value can silently go stale when a feature/item changes; a computed one can't) |
+| `CharacterClass` | A class/subclass + level a `Character` has (one row per class — multiple rows is how multiclassing is represented) |
+| `CharacterAbilityScoreIncrease` | Renamed from the doc's `CharacterAbilityScore` — it's one line of ability-score *history* ("+2 Wisdom from Background", "+1 Constitution from an ASI at level 4"), not "the current score" (that's the plain field on `Character`) |
+| `CharacterChoice` | A resolved builder choice, keyed by an arbitrary string (e.g. `"fighter.level_8.feat"`) — not FK'd to `rules.ChoiceDefinition`, which only covers ~27 choices reliably parseable from prose; most real choices (subclass, known spells, expertise, invocations, "A or B" starting equipment) have no such catalog row and never will |
+| `CharacterFeature` | An automatic `rules.Feature` grant active on a `Character` (Rage, Second Wind, a species trait, ...) |
+| `CharacterFeat` | **New** — a `rules.Feat` the player *chose* (background feat, general feat at an ASI level, epic boon). Missing from the original list, and was being wrongly conflated with `CharacterFeature` (automatic grants only) |
+| `CharacterOptionalFeature` | **New** — a `rules.OptionalFeature` the player picked (Eldritch Invocation, Maneuver, Metamagic). Missing from the original list because `rules.OptionalFeature` didn't exist yet when it was drafted |
+| `CharacterLanguage` | **New** — a `rules.Language` the character knows. Same story as `CharacterOptionalFeature` — `rules.Language` didn't exist yet either |
+| `CharacterProficiency` | Armor/weapon/tool/skill/saving-throw proficiency. Not exclusively FK'd to `rules.Proficiency` (that catalog misses species/feat-granted proficiencies entirely) — `category`/`name` are stored directly, with an optional provenance link back to the catalog row when there is one |
+| `CharacterSense` | A `rules.Sense` grant with its range in feet (the range varies by source, e.g. a species trait vs. a feat, so it lives on the grant, not on `rules.Sense` itself) |
+| `CharacterInventoryItem` | An `Equipment` stack a `Character` owns, with `equipped`/`attuned`/`quantity` |
+| `CharacterCurrency` | The coin purse — a true 1:1 with `Character` (`character` is both the FK and the primary key) |
+| `CharacterSpell` | A spell a `Character` knows/has access to, with `prepared`/`always_prepared` flags |
+| `CharacterResource` | A limited-use resource (Rage, Sorcery Points, Superiority Dice, ...) with `max_uses`/`current_uses`/`reset_on` |
 
 **API** (`apps/characters/api/`, mounted at `/api/characters`), split into four tag folders,
 one file per endpoint:
@@ -195,6 +209,14 @@ one file per endpoint:
 **Services** (`apps/characters/services/`, one file per domain, currently docstring-only
 placeholders): `character.py`, `inventory.py`, `currency.py`, `spells.py`, `features.py`,
 `proficiencies.py`, `senses.py`, `resources.py`.
+
+**Open question, not yet decided:** *spending* a `CharacterResource` (using a Rage/Sorcery
+Point/spell slot) and rest recovery (short/long rest restoring resources) don't clearly belong
+to any of the three apps as currently scoped — `rules` is read-only, `builder` is creation/
+leveling (not turn-by-turn play), and `characters` is passive state. A rest isn't combat (which
+is explicitly out of scope), so this probably belongs in `characters` as a service function
+mutating `CharacterResource.current_uses`, but that's a call worth making deliberately rather
+than backing into.
 
 ### `apps/builder/` — character creation/leveling engine
 
