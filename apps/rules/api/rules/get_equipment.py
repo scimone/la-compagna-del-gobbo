@@ -4,5 +4,5 @@ from apps.rules.api.rules import router
 
 
 @router.get("/equipment/{equipment_id}")
-def get_equipment(request, equipment_id: int):
+def get_equipment(request, equipment_id: str):
     """Retrieve an equipment item. TODO: implement via services."""
