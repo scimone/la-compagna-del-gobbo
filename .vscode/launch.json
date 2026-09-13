@@ -1,0 +1,24 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "Run Django Server",
+            "consoleName": "Django",
+            "type": "debugpy",
+            "request": "launch",
+            "python": "${workspaceFolder}/.venv/bin/python",
+            "module": "uvicorn",
+            "args": [
+                "config.asgi:application",
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "3000"
+            ],
+            "cwd": "${workspaceFolder}",
+            "django": true,
+            "justMyCode": true
+        },
+    ],
+}
