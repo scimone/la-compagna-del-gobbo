@@ -1,8 +1,10 @@
-"""Placeholder for PATCH /{character_id}."""
-
 from apps.characters.api.characters import router
+from apps.characters.schemas import CharacterOutSchema, CharacterUpdateSchema
+from apps.characters.services import character
 
 
-@router.patch("/{character_id}")
-def update_character(request, character_id: int):
-    """Update a character. TODO: implement via services."""
+@router.patch("/{character_id}", response=CharacterOutSchema)
+def update_character(request, character_id: int, payload: CharacterUpdateSchema):
+    return character.update_character(
+        character_id, **payload.dict(exclude_unset=True, by_alias=True)
+    )

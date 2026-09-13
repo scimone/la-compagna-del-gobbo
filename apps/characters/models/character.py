@@ -27,10 +27,10 @@ class Character(models.Model):
     background = models.ForeignKey(
         "rules.Background", null=True, blank=True, on_delete=models.PROTECT, related_name="+"
     )
-    alignment = models.CharField(max_length=30, blank=True)
-    size = models.CharField(max_length=20, blank=True)
-    appearance = models.TextField(blank=True)
-    notes = models.TextField(blank=True)
+    alignment = models.CharField(max_length=30, blank=True, default="")
+    size = models.CharField(max_length=20, blank=True, default="")
+    appearance = models.TextField(blank=True, default="")
+    notes = models.TextField(blank=True, default="")
 
     strength = models.PositiveSmallIntegerField(default=10)
     dexterity = models.PositiveSmallIntegerField(default=10)

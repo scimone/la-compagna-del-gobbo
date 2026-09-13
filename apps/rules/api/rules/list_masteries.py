@@ -1,8 +1,8 @@
-"""Placeholder for GET /masteries."""
-
 from apps.rules.api.rules import router
+from apps.rules.schemas import MasterySchema
+from apps.rules.services import equipment
 
 
-@router.get("/masteries")
+@router.get("/masteries", response=list[MasterySchema])
 def list_masteries(request):
-    """List all weapon masteries. TODO: implement via services."""
+    return equipment.list_masteries()

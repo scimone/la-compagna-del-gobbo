@@ -17,7 +17,7 @@ class CharacterInventoryItem(models.Model):
     quantity = models.PositiveSmallIntegerField(default=1)
     equipped = models.BooleanField(default=False)
     attuned = models.BooleanField(default=False)
-    notes = models.CharField(max_length=200, blank=True)
+    notes = models.CharField(max_length=200, blank=True, default="")
 
     class Meta:
         ordering = ["character", "equipment"]

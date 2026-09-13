@@ -1,8 +1,8 @@
-"""Placeholder for GET /{character_id}/inventory."""
-
 from apps.characters.api.inventory import router
+from apps.characters.schemas import CharacterInventoryItemSchema
+from apps.characters.services import inventory
 
 
-@router.get("/{character_id}/inventory")
+@router.get("/{character_id}/inventory", response=list[CharacterInventoryItemSchema])
 def list_inventory(request, character_id: int):
-    """List a character's inventory. TODO: implement via services."""
+    return inventory.list_inventory(character_id)

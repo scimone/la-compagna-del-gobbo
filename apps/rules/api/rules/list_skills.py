@@ -1,8 +1,8 @@
-"""Placeholder for GET /skills."""
-
 from apps.rules.api.rules import router
+from apps.rules.schemas import SkillSchema
+from apps.rules.services import skill
 
 
-@router.get("/skills")
+@router.get("/skills", response=list[SkillSchema])
 def list_skills(request):
-    """List all skills. TODO: implement via services."""
+    return skill.list_skills()

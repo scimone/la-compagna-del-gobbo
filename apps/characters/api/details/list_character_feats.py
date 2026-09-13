@@ -1,8 +1,8 @@
-"""Placeholder for GET /{character_id}/feats."""
-
 from apps.characters.api.details import router
+from apps.characters.schemas import CharacterFeatSchema
+from apps.characters.services import feats
 
 
-@router.get("/{character_id}/feats")
+@router.get("/{character_id}/feats", response=list[CharacterFeatSchema])
 def list_character_feats(request, character_id: int):
-    """List a character's chosen feats. TODO: implement via services."""
+    return feats.list_character_feats(character_id)

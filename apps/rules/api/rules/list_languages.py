@@ -1,8 +1,8 @@
-"""Placeholder for GET /languages."""
-
 from apps.rules.api.rules import router
+from apps.rules.schemas import LanguageSchema
+from apps.rules.services import language
 
 
-@router.get("/languages")
+@router.get("/languages", response=list[LanguageSchema])
 def list_languages(request):
-    """List all languages. TODO: implement via services."""
+    return language.list_languages()

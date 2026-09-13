@@ -1,8 +1,8 @@
-"""Placeholder for GET /subclasses/{subclass_id}."""
-
 from apps.rules.api.rules import router
+from apps.rules.schemas import SubclassSchema
+from apps.rules.services import subclass
 
 
-@router.get("/subclasses/{subclass_id}")
+@router.get("/subclasses/{subclass_id}", response=SubclassSchema)
 def get_subclass(request, subclass_id: int):
-    """Retrieve a subclass. TODO: implement via services."""
+    return subclass.get_subclass(subclass_id)

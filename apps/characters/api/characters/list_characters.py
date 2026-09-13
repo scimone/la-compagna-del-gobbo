@@ -1,8 +1,8 @@
-"""Placeholder for GET ."""
-
 from apps.characters.api.characters import router
+from apps.characters.schemas import CharacterOutSchema
+from apps.characters.services import character
 
 
-@router.get("")
+@router.get("/", response=list[CharacterOutSchema])
 def list_characters(request):
-    """List all characters. TODO: implement via services."""
+    return character.list_characters()

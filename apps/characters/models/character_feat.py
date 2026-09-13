@@ -19,7 +19,7 @@ class CharacterFeat(models.Model):
     )
     feat = models.ForeignKey("rules.Feat", on_delete=models.PROTECT, related_name="+")
     granted_at_level = models.PositiveSmallIntegerField(null=True, blank=True)
-    source = models.CharField(max_length=50, blank=True)
+    source = models.CharField(max_length=50, blank=True, default="")
 
     class Meta:
         ordering = ["character", "granted_at_level"]

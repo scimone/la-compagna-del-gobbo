@@ -1,8 +1,8 @@
-"""Placeholder for GET /rules."""
-
 from apps.rules.api.rules import router
+from apps.rules.schemas import RuleSchema
+from apps.rules.services import rule
 
 
-@router.get("/rules")
+@router.get("/rules", response=list[RuleSchema])
 def list_rules(request):
-    """List all named rules. TODO: implement via services."""
+    return rule.list_rules()

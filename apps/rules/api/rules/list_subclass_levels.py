@@ -1,8 +1,8 @@
-"""Placeholder for GET /subclasses/{subclass_id}/levels."""
-
 from apps.rules.api.rules import router
+from apps.rules.schemas import SubclassLevelSchema
+from apps.rules.services import subclass
 
 
-@router.get("/subclasses/{subclass_id}/levels")
+@router.get("/subclasses/{subclass_id}/levels", response=list[SubclassLevelSchema])
 def list_subclass_levels(request, subclass_id: int):
-    """List the level progression rows for a subclass. TODO: implement via services."""
+    return subclass.list_subclass_levels(subclass_id)

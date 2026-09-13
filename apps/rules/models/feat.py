@@ -9,7 +9,7 @@ class Feat(models.Model):
     page = models.PositiveSmallIntegerField()
     srd = models.BooleanField(default=False)
     category = models.CharField(max_length=30)
-    prerequisite = models.CharField(max_length=200, blank=True)
+    prerequisite = models.CharField(max_length=200, blank=True, default="")
     entries = models.JSONField(default=list, blank=True)
 
     class Meta:

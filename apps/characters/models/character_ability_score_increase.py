@@ -27,7 +27,7 @@ class CharacterAbilityScoreIncrease(models.Model):
     )
     ability = models.CharField(max_length=12, choices=ABILITY_CHOICES)
     amount = models.SmallIntegerField()
-    source = models.CharField(max_length=100, blank=True)
+    source = models.CharField(max_length=100, blank=True, default="")
     granted_at_level = models.PositiveSmallIntegerField(null=True, blank=True)
 
     class Meta:

@@ -1,8 +1,8 @@
-"""Placeholder for GET /{character_id}/optional-features."""
-
 from apps.characters.api.details import router
+from apps.characters.schemas import CharacterOptionalFeatureSchema
+from apps.characters.services import optional_features
 
 
-@router.get("/{character_id}/optional-features")
+@router.get("/{character_id}/optional-features", response=list[CharacterOptionalFeatureSchema])
 def list_character_optional_features(request, character_id: int):
-    """List a character's chosen invocations/maneuvers/metamagic. TODO: implement."""
+    return optional_features.list_character_optional_features(character_id)

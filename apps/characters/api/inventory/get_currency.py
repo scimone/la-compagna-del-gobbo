@@ -1,8 +1,8 @@
-"""Placeholder for GET /{character_id}/currency."""
-
 from apps.characters.api.inventory import router
+from apps.characters.schemas import CharacterCurrencySchema
+from apps.characters.services import currency
 
 
-@router.get("/{character_id}/currency")
+@router.get("/{character_id}/currency", response=CharacterCurrencySchema)
 def get_currency(request, character_id: int):
-    """Retrieve a character's currency. TODO: implement via services."""
+    return currency.get_currency(character_id)

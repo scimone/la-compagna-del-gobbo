@@ -16,7 +16,7 @@ class Species(models.Model):
     swim_speed = models.PositiveSmallIntegerField(default=0)
     climb_speed = models.PositiveSmallIntegerField(default=0)
     creature_type = models.CharField(max_length=50)
-    parent_race = models.CharField(max_length=100, blank=True)
+    parent_race = models.CharField(max_length=100, blank=True, default="")
     lore = models.JSONField(default=list, blank=True)
     entries = models.JSONField(default=list, blank=True)
 

@@ -1,8 +1,8 @@
-"""Placeholder for GET /feats/{feat_id}."""
-
 from apps.rules.api.rules import router
+from apps.rules.schemas import FeatSchema
+from apps.rules.services import feat
 
 
-@router.get("/feats/{feat_id}")
+@router.get("/feats/{feat_id}", response=FeatSchema)
 def get_feat(request, feat_id: str):
-    """Retrieve a feat. TODO: implement via services."""
+    return feat.get_feat(feat_id)

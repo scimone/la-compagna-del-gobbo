@@ -1,8 +1,8 @@
-"""Placeholder for GET /senses."""
-
 from apps.rules.api.rules import router
+from apps.rules.schemas import SenseSchema
+from apps.rules.services import sense
 
 
-@router.get("/senses")
+@router.get("/senses", response=list[SenseSchema])
 def list_senses(request):
-    """List all senses. TODO: implement via services."""
+    return sense.list_senses()

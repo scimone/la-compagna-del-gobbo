@@ -17,7 +17,7 @@ class CharacterSense(models.Model):
     )
     sense = models.ForeignKey("rules.Sense", on_delete=models.PROTECT, related_name="+")
     range_feet = models.PositiveSmallIntegerField(null=True, blank=True)
-    source = models.CharField(max_length=100, blank=True)
+    source = models.CharField(max_length=100, blank=True, default="")
 
     class Meta:
         ordering = ["character", "sense"]

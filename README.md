@@ -38,8 +38,11 @@ uv run uvicorn config.asgi:application --reload
 
 API docs: `http://192.168.1.72:3000/api/docs`
 
+Tests need the same host override as above (`pytest-django` creates/drops a throwaway test
+database using the same connection settings):
+
 ```bash
-uv run pytest
+POSTGRES_HOST=localhost POSTGRES_PORT=5462 uv run pytest
 uv run ruff check .
 ```
 
@@ -52,9 +55,8 @@ uv run ruff check .
   `__init__.py` that creates the shared `router = Router(tags=[...])` and imports every sibling
   endpoint module so its `@router.<method>(...)` decorator registers on import. Each endpoint file
   contains exactly one route function.
-- **No business logic in routers.** Endpoint functions call into `services/`. Right now the
-  endpoints and services are empty placeholders (see below) — the wiring between them will be
-  added alongside the model fields.
+- **No business logic in routers.** Endpoint functions call into `services/` (`rules` and
+  `characters` are implemented this way; `builder` isn't yet — see its section below).
 - **`rules` is read-only from the API's point of view.** It's populated via
   `manage.py import_rules_data` (see [apps/rules/management/](apps/rules/management/)), not
   through write endpoints.
@@ -154,23 +156,29 @@ assets) and `otherVersions` (cross-references to non-XPHB printings — we only 
 | `OptionalFeature` | An optional class feature a player can pick (Eldritch Invocation, Maneuver, Metamagic) |
 
 **API** (`apps/rules/api/rules/`, tag `Rules`, mounted at `/api/rules`) — one file per endpoint,
-all currently stub handlers with no body logic:
+implemented (real queries via `services/`, `ModelSchema` responses in `apps/rules/schemas.py`):
 
 `GET /classes`, `GET /classes/{id}`, `GET /classes/{id}/levels`, `GET /classes/{id}/subclasses`,
-`GET /subclasses`, `GET /subclasses/{id}`, `GET /species`, `GET /species/{id}`,
-`GET /backgrounds`, `GET /backgrounds/{id}`, `GET /feats`, `GET /feats/{id}`,
-`GET /features`, `GET /features/{id}`, `GET /equipment`, `GET /equipment/{id}`,
-`GET /equipment-properties`, `GET /masteries`, `GET /skills`, `GET /senses`,
-`GET /languages`, `GET /tools`, `GET /proficiencies`, `GET /spells`, `GET /spells/{id}`,
-`GET /rules`, `GET /rules/{key}`
+`GET /classes/{id}/choices`, `GET /subclasses`, `GET /subclasses/{id}`,
+`GET /subclasses/{id}/levels`, `GET /species`, `GET /species/{id}`, `GET /backgrounds`,
+`GET /backgrounds/{id}`, `GET /backgrounds/{id}/choices`, `GET /feats`, `GET /feats/{id}`,
+`GET /features`, `GET /features/{id}`, `GET /features/{id}/effects`, `GET /equipment`
+(`?category=`), `GET /equipment/{id}`, `GET /equipment-properties`, `GET /masteries`,
+`GET /skills`, `GET /senses`, `GET /languages`, `GET /proficiencies`, `GET /spells`
+(`?class=`, `?level=`), `GET /spells/{id}`, `GET /rules`, `GET /rules/{key}`,
+`GET /optional-features`, `GET /optional-features/{id}`
 
-Future filters mentioned in the design doc (`?class=wizard&level=3`, `?category=weapon`, etc.)
-will be added once the models have fields.
+`Effect` and `ChoiceDefinition` are deliberately nested under their parent (`/features/{id}/
+effects`, `/classes/{id}/choices`, `/backgrounds/{id}/choices`) rather than given flat top-level
+endpoints — see the [Model status](#model-status) table for why they're only useful in that
+context. There's no standalone `/tools` endpoint either (see the removed-models note above); a
+`?category=tool` filter on `/equipment` covers it.
 
-**Services** (`apps/rules/services/`, one file per resource domain, currently docstring-only
-placeholders): `class_.py`, `subclass.py`, `species.py`, `background.py`, `feat.py`, `feature.py`,
-`equipment.py`, `skill.py`, `sense.py`, `language.py`, `tool.py`, `proficiency.py`, `spell.py`,
-`rule.py` — will hold the list/get lookups the API endpoints delegate to.
+**Services** (`apps/rules/services/`, one file per resource domain): `class_.py`, `subclass.py`,
+`species.py`, `background.py`, `feat.py`, `feature.py`, `equipment.py`, `skill.py`, `sense.py`,
+`language.py`, `optional_feature.py`, `proficiency.py`, `spell.py`, `rule.py` — plain functions
+returning querysets/instances, no HTTP concerns. Path-validity checks (e.g. `list_class_levels`
+404ing if the class doesn't exist) live here, not in the endpoint files.
 
 ### `apps/characters/` — persisted character state
 
@@ -206,8 +214,7 @@ inventory item, currency, a resource — with no constraint violations).
 one file per endpoint:
 
 - `api/characters/` (tag `Characters`): `GET /`, `POST /`, `GET /{id}`, `PATCH /{id}`,
-  `DELETE /{id}`, `GET /{id}/sheet` — the `sheet` endpoint will return the fully resolved
-  character (abilities, AC, HP, features, inventory, spells, ...) in one call.
+  `DELETE /{id}`, `GET /{id}/sheet` (see below for what `sheet` does and doesn't include).
 - `api/inventory/` (tag `Character Inventory`): `GET /{id}/inventory`, `POST /{id}/inventory`,
   `PATCH /{id}/inventory/{item_id}`, `DELETE /{id}/inventory/{item_id}`,
   `POST /{id}/inventory/{item_id}/equip`, `POST /{id}/inventory/{item_id}/unequip`,
@@ -215,15 +222,25 @@ one file per endpoint:
 - `api/spells/` (tag `Character Spells`): `GET /{id}/spells`, `POST /{id}/spells`,
   `DELETE /{id}/spells/{spell_id}`, `POST /{id}/spells/{spell_id}/prepare`,
   `POST /{id}/spells/{spell_id}/unprepare`.
-- `api/details/` (tag `Character Details`, read-only): `GET /{id}/features`,
-  `GET /{id}/proficiencies`, `GET /{id}/senses`, `GET /{id}/resources`.
+- `api/details/` (tag `Character Details`, read-only): `GET /{id}/classes`, `GET /{id}/feats`,
+  `GET /{id}/features`, `GET /{id}/languages`, `GET /{id}/optional-features`,
+  `GET /{id}/proficiencies`, `GET /{id}/senses`, `GET /{id}/resources`, `GET /{id}/choices`
+  (the last reads already-*resolved* choices - not the same as the builder's own
+  `GET /{id}/builder/choices`, which lists outstanding ones still to be made).
+
+All of the above are implemented (real persistence via `services/`, `ModelSchema` responses in
+`apps/characters/schemas.py`). `sheet` aggregates every collection a character owns into one
+response (`CharacterSheetSchema`) - it deliberately does **not** compute AC/HP-max-derivation/
+initiative/passive Perception/etc., since those need rules resolution that doesn't exist yet
+(see `apps/builder/`); it's everything already *persisted*, not a finished character sheet.
 
 `apps/characters/api/router.py` combines the four tag routers into the one router mounted in
 `config/urls.py`.
 
-**Services** (`apps/characters/services/`, one file per domain, currently docstring-only
-placeholders): `character.py`, `inventory.py`, `currency.py`, `spells.py`, `features.py`,
-`proficiencies.py`, `senses.py`, `resources.py`.
+**Services** (`apps/characters/services/`, one file per domain): `character.py` (CRUD + the
+sheet aggregator), `classes.py`, `feats.py`, `features.py`, `languages.py`,
+`optional_features.py`, `proficiencies.py`, `senses.py`, `resources.py`, `choices.py`,
+`inventory.py`, `currency.py`, `spells.py`.
 
 **Open question, not yet decided:** *spending* a `CharacterResource` (using a Rage/Sorcery
 Point/spell slot) and rest recovery (short/long rest restoring resources) don't clearly belong
@@ -240,6 +257,12 @@ leveling up works. Mounted under `/api/characters` too, since its routes nest un
 `/characters/{id}/builder/...` — it's logic bolted onto a `characters` resource, not a separate
 top-level resource. Owns little to no persistent state of its own; it reads/writes `characters`
 models by applying `rules` data.
+
+Unlike `rules`/`characters`, this app's endpoints are still unimplemented stubs. It's not an
+oversight - `rules`/`characters` are "implement the obvious CRUD/lookup for a fully-defined
+model" work, while builder is an actual rules engine (multiclass spell-slot math, per-class
+choice validation, prerequisite checking, ...) that needs its own deliberate design pass before
+writing endpoint bodies would mean anything.
 
 **API** (`apps/builder/api/`), three tag folders, one file per endpoint:
 

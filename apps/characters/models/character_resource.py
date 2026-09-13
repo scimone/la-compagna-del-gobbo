@@ -29,7 +29,7 @@ class CharacterResource(models.Model):
     name = models.CharField(max_length=100)
     max_uses = models.PositiveSmallIntegerField()
     current_uses = models.PositiveSmallIntegerField()
-    reset_on = models.CharField(max_length=20, choices=RESET_CHOICES, blank=True)
+    reset_on = models.CharField(max_length=20, choices=RESET_CHOICES, blank=True, default="")
 
     class Meta:
         ordering = ["character", "name"]

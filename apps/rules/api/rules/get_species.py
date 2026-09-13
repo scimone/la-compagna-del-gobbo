@@ -1,8 +1,8 @@
-"""Placeholder for GET /species/{species_id}."""
-
 from apps.rules.api.rules import router
+from apps.rules.schemas import SpeciesSchema
+from apps.rules.services import species
 
 
-@router.get("/species/{species_id}")
+@router.get("/species/{species_id}", response=SpeciesSchema)
 def get_species(request, species_id: str):
-    """Retrieve a species. TODO: implement via services."""
+    return species.get_species(species_id)

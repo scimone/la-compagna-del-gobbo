@@ -10,8 +10,8 @@ class Background(models.Model):
     srd = models.BooleanField(default=False)
     ability_scores = models.CharField(max_length=200)
     skills = models.CharField(max_length=200)
-    tools = models.CharField(max_length=200, blank=True)
-    feat = models.CharField(max_length=100, blank=True)
+    tools = models.CharField(max_length=200, blank=True, default="")
+    feat = models.CharField(max_length=100, blank=True, default="")
     lore = models.JSONField(default=list, blank=True)
     entries = models.JSONField(default=list, blank=True)
 

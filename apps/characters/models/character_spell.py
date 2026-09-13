@@ -20,7 +20,7 @@ class CharacterSpell(models.Model):
     spell = models.ForeignKey("rules.Spell", on_delete=models.PROTECT, related_name="+")
     prepared = models.BooleanField(default=False)
     always_prepared = models.BooleanField(default=False)
-    source = models.CharField(max_length=100, blank=True)
+    source = models.CharField(max_length=100, blank=True, default="")
 
     class Meta:
         ordering = ["character", "spell"]

@@ -1,8 +1,8 @@
-"""Placeholder for GET /backgrounds."""
-
 from apps.rules.api.rules import router
+from apps.rules.schemas import BackgroundSchema
+from apps.rules.services import background
 
 
-@router.get("/backgrounds")
+@router.get("/backgrounds", response=list[BackgroundSchema])
 def list_backgrounds(request):
-    """List all backgrounds. TODO: implement via services."""
+    return background.list_backgrounds()

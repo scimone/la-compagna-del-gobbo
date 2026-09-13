@@ -1,8 +1,8 @@
-"""Placeholder for GET /species."""
-
 from apps.rules.api.rules import router
+from apps.rules.schemas import SpeciesSchema
+from apps.rules.services import species
 
 
-@router.get("/species")
+@router.get("/species", response=list[SpeciesSchema])
 def list_species(request):
-    """List all species. TODO: implement via services."""
+    return species.list_species()

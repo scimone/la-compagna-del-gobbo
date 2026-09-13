@@ -1,8 +1,8 @@
-"""Placeholder for GET /classes/{class_id}/levels."""
-
 from apps.rules.api.rules import router
+from apps.rules.schemas import ClassLevelSchema
+from apps.rules.services import class_
 
 
-@router.get("/classes/{class_id}/levels")
+@router.get("/classes/{class_id}/levels", response=list[ClassLevelSchema])
 def list_class_levels(request, class_id: str):
-    """List the level progression rows for a class. TODO: implement via services."""
+    return class_.list_class_levels(class_id)
