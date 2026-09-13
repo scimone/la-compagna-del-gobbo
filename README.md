@@ -11,6 +11,7 @@ exists today and what each placeholder is reserved for.
 - **Django** — models and persistence
 - **PostgreSQL** — the database (via `docker-compose.yml`)
 - **Django Ninja** — the HTTP API (OpenAPI schema at `/api/docs`)
+- **django-pwa** — PWA manifest/service-worker plumbing for the frontend shell
 - **uvicorn** — ASGI server
 - **uv** — dependency management
 - **pytest** / **pytest-django** — tests
@@ -36,7 +37,7 @@ uv run python manage.py import_rules_data  # loads db/*.json into the rules tabl
 uv run uvicorn config.asgi:application --reload
 ```
 
-API docs: `http://192.168.1.72:3000/api/docs`
+API docs: `http://192.168.1.72:3000/api/docs` — frontend: `http://192.168.1.72:3000/`
 
 Tests need the same host override as above (`pytest-django` creates/drops a throwaway test
 database using the same connection settings):
@@ -63,7 +64,8 @@ uv run ruff check .
 
 ## App boundaries
 
-Three Django apps, each owning a distinct layer:
+Three Django apps form the actual game-logic layering (there's a fourth, `frontend`, covered in
+its own section below — it's the web UI shell, not part of this layering):
 
 ```
 rules        static 5.5e game content (classes, species, spells, equipment, ...)
@@ -297,6 +299,31 @@ one `rules` concept translates into grants on a character: `class_.py`, `species
 
 **Schemas** (`apps/builder/schemas.py`) — currently a single placeholder file; will hold the
 Ninja schemas for builder state/choices/validation/progression responses once the services exist.
+
+### `apps/frontend/` — PWA shell
+
+Not part of the `rules`/`characters`/`builder` layering above (it's the web UI, not game logic).
+A minimal Django app serving one server-rendered page (`views.index` → `templates/frontend/
+index.html`) at `/`, wired up as an installable PWA via `django-pwa`:
+
+- `/manifest.json` and `/serviceworker.js` are served by `django-pwa` (`pwa` in
+  `INSTALLED_APPS`, `path("", include("pwa.urls"))` in `config/urls.py`). Config lives in
+  `config/settings.py` (`PWA_APP_*` / `PWA_SERVICE_WORKER_PATH`).
+- The service worker itself is a real file at `static/js/serviceworker.js` (caches the shell
+  page for offline load; explicitly never caches `/api/*`, since a stale API response would be
+  actively misleading, unlike a stale static page).
+- Icons are placeholder solid-color PNGs at `static/images/icons/` (192/512/180px) - swap these
+  for real artwork whenever there is any; nothing else needs to change.
+- `STATICFILES_DIRS = [BASE_DIR / "static"]` plus `staticfiles_urlpatterns()` appended to
+  `urlpatterns` when `DEBUG` (in `config/urls.py`) - needed because this project serves via
+  uvicorn/ASGI, not `manage.py runserver`, which is the only one of the two that auto-serves
+  static files in dev on its own.
+
+The page itself (`index.html`) is intentionally a throwaway: one "List languages" button that
+`fetch()`s `GET /api/rules/languages` and renders the result, just to prove the page, the API,
+and the PWA plumbing all work together end-to-end. The button and its script are meant to be
+deleted once real frontend work starts; the surrounding shell (viewport meta, responsive
+mobile-first CSS with a dark-mode variant, the PWA registration) is meant to stay.
 
 ## Not in scope (per the architecture doc)
 

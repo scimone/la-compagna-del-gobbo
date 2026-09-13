@@ -20,9 +20,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "pwa",
     "apps.rules",
     "apps.characters",
     "apps.builder",
+    "apps.frontend",
 ]
 
 MIDDLEWARE = [
@@ -80,5 +82,28 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# django-pwa: manifest.json / serviceworker.js generation
+PWA_SERVICE_WORKER_PATH = str(BASE_DIR / "static" / "js" / "serviceworker.js")
+PWA_APP_NAME = "La Compagna del Gobbo"
+PWA_APP_DESCRIPTION = "D&D 5.5e (2024) player backend"
+PWA_APP_THEME_COLOR = "#7a1f1f"
+PWA_APP_BACKGROUND_COLOR = "#f7f5f2"
+PWA_APP_DISPLAY = "standalone"
+PWA_APP_SCOPE = "/"
+PWA_APP_ORIENTATION = "any"
+PWA_APP_START_URL = "/"
+PWA_APP_STATUS_BAR_COLOR = "default"
+PWA_APP_ICONS = [
+    {"src": "/static/images/icons/icon-192x192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "/static/images/icons/icon-512x512.png", "sizes": "512x512", "type": "image/png"},
+]
+PWA_APP_ICONS_APPLE = [
+    {"src": "/static/images/icons/icon-180x180.png", "sizes": "180x180", "type": "image/png"},
+]
+PWA_APP_SPLASH_SCREEN = []
+PWA_APP_DIR = "ltr"
+PWA_APP_LANG = "en-US"

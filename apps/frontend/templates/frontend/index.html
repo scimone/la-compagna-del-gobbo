@@ -1,0 +1,171 @@
+{% load pwa %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>La Compagna del Gobbo</title>
+  {% progressive_web_app_meta %}
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f7f5f2;
+      --surface: #ffffff;
+      --text: #201a17;
+      --muted: #6b6058;
+      --accent: #7a1f1f;
+      --accent-text: #ffffff;
+      --border: #e4ddd6;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1513;
+        --surface: #241d1a;
+        --text: #f2ece7;
+        --muted: #ab9d92;
+        --accent: #c65b5b;
+        --accent-text: #1a1513;
+        --border: #3a2f2a;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: max(1.25rem, env(safe-area-inset-top)) 1rem
+                max(1.25rem, env(safe-area-inset-bottom));
+    }
+
+    main {
+      width: 100%;
+      max-width: 32rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    h1 {
+      font-size: clamp(1.5rem, 5vw, 2rem);
+      margin: 0.5rem 0 0;
+      text-align: center;
+    }
+
+    p.subtitle {
+      margin: 0;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    button {
+      appearance: none;
+      border: none;
+      border-radius: 0.75rem;
+      background: var(--accent);
+      color: var(--accent-text);
+      font-size: 1.05rem;
+      font-weight: 600;
+      padding: 0.9rem 1.25rem;
+      min-height: 3rem;
+      width: 100%;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    button:active {
+      opacity: 0.85;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    #result {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 0.25rem 1rem;
+      min-height: 2rem;
+    }
+
+    #result p {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    #result ul {
+      margin: 0.75rem 0;
+      padding-left: 1.1rem;
+    }
+
+    #result li {
+      padding: 0.35rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    #result li:last-child {
+      border-bottom: none;
+    }
+
+    #result .lang-type {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>La Compagna del Gobbo</h1>
+    <p class="subtitle">Frontend mock &mdash; this button is temporary, just to verify the setup.</p>
+
+    <button id="list-languages-btn" type="button">List languages</button>
+
+    <div id="result" aria-live="polite">
+      <p>Press the button to load languages from the API.</p>
+    </div>
+  </main>
+
+  <script>
+    const button = document.getElementById("list-languages-btn");
+    const result = document.getElementById("result");
+
+    button.addEventListener("click", async () => {
+      button.disabled = true;
+      result.innerHTML = "<p>Loading&hellip;</p>";
+
+      try {
+        const response = await fetch("/api/rules/languages");
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+        const languages = await response.json();
+
+        if (languages.length === 0) {
+          result.innerHTML = "<p>No languages found.</p>";
+        } else {
+          const items = languages
+            .map(
+              (lang) =>
+                `<li>${lang.name} <span class="lang-type">(${lang.language_type})</span></li>`
+            )
+            .join("");
+          result.innerHTML = `<ul>${items}</ul>`;
+        }
+      } catch (error) {
+        result.innerHTML = `<p>Couldn't load languages: ${error.message}</p>`;
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
