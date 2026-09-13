@@ -9,6 +9,7 @@ exists today and what each placeholder is reserved for.
 ## Tech stack
 
 - **Django** — models and persistence
+- **PostgreSQL** — the database (via `docker-compose.yml`)
 - **Django Ninja** — the HTTP API (OpenAPI schema at `/api/docs`)
 - **uvicorn** — ASGI server
 - **uv** — dependency management
@@ -17,8 +18,21 @@ exists today and what each placeholder is reserved for.
 
 ## Running it
 
+Copy `.env.dist` to `.env` and fill in a password/secret key, then start Postgres:
+
 ```bash
+docker compose up -d
+```
+
+`manage.py` runs on the host, not (yet) in a container — `docker-compose.yml`'s `dnd-web`
+service is commented out until one exists. `.env`'s `POSTGRES_HOST`/`POSTGRES_PORT` are the
+in-network values for that future container (`dnd-db`/`5432`); from the host, override them to
+the mapped port instead:
+
+```bash
+export POSTGRES_HOST=localhost POSTGRES_PORT=5462  # matches the "5462:5432" port mapping
 uv run python manage.py migrate
+uv run python manage.py import_rules_data  # loads db/*.json into the rules tables
 uv run uvicorn config.asgi:application --reload
 ```
 
@@ -41,8 +55,9 @@ uv run ruff check .
 - **No business logic in routers.** Endpoint functions call into `services/`. Right now the
   endpoints and services are empty placeholders (see below) — the wiring between them will be
   added alongside the model fields.
-- **`rules` is read-only from the API's point of view.** It's populated via fixtures/importers/
-  admin, not through write endpoints.
+- **`rules` is read-only from the API's point of view.** It's populated via
+  `manage.py import_rules_data` (see [apps/rules/management/](apps/rules/management/)), not
+  through write endpoints.
 
 ## App boundaries
 
@@ -90,13 +105,13 @@ section for why.
 | `Effect` | Partly defined | derived from `Feature.entries` | 2142 rows: a mechanical index of literal 5etools inline tags (`{@damage ...}`, `{@condition ...}`, `{@dc ...}`, etc.) found anywhere in a `Feature`'s `entries` text, storing the tag name and raw tag text verbatim — not a semantic effects model, no tag is reinterpreted |
 | `ChoiceDefinition` | Partly defined | `db/backgrounds.json`, `db/classes.json` | 27 rows, only where the source is reliably pattern-shaped: all 16 `Background.ability_scores` ("Choose from A, B, C") and 11 of 12 classes' `Class.proficiencies` "Skills: choose N from ..." clause (Bard's is genuinely empty in the source). Everything else that reads like a choice in the source (feat benefit prose, tool-proficiency choices) is inconsistent free text and was deliberately left unparsed |
 
-Every "Defined" model was verified by loading its entire source file into the database once (all
-217 equipment rows, all 391 spells, all 12 classes × 20 levels, all 19 languages, all 58 optional
-features, etc. — no rows dropped or truncated). That was a one-off smoke test, not a saved
-script; there's no fixture/import command yet (see the `services`/`api` placeholders above).
-`Proficiency` and `Feature` were verified the same way against an independently-computed expected
-row count (85 and 611 respectively); `Effect` and `ChoiceDefinition` are "Partly defined" because
-they only cover the subset of their source that's reliably, mechanically extractable — see their
+Every "Defined" model is loaded end-to-end (all 217 equipment rows, all 391 spells, all 12
+classes × 20 levels, all 19 languages, all 58 optional features, etc. — no rows dropped or
+truncated) by `manage.py import_rules_data` (`apps/rules/management/commands/`), which wipes
+and reloads every `rules` table from `db/` in one transaction. `Proficiency` and `Feature`'s
+row counts (85 and 611) were independently cross-checked against a from-scratch recomputation
+before this command existed; `Effect` and `ChoiceDefinition` are "Partly defined" because they
+only cover the subset of their source that's reliably, mechanically extractable — see their
 model docstrings for exactly what was included and excluded, and why.
 
 `Tool` and `SpellList`, both originally listed in architecture.md, were removed entirely (not

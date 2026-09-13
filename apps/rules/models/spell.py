@@ -9,7 +9,8 @@ class Spell(models.Model):
     XPHB `Class` rows, and "subclasses" entries are "Class: Subclass" strings) - a hard
     foreign key would either drop that data or invent a matching Class/Subclass row that isn't
     in the source, so these stay plain JSON lists rather than relations. There is no separate
-    "spell list" catalog in the source data (see the `rules.SpellList` placeholder).
+    "spell list" catalog in the source data - `SpellList` was in the original architecture doc
+    but was dropped for exactly this reason, see README.
     """
 
     id = models.SlugField(primary_key=True, max_length=100)
@@ -18,7 +19,7 @@ class Spell(models.Model):
     srd = models.BooleanField(default=False)
     level = models.PositiveSmallIntegerField()
     school = models.CharField(max_length=50)
-    casting_time = models.CharField(max_length=100)
+    casting_time = models.CharField(max_length=200)
     range = models.CharField(max_length=100)
     components = models.CharField(max_length=200)
     duration = models.CharField(max_length=100)
