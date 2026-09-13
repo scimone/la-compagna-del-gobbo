@@ -1,0 +1,105 @@
+{
+  "abbreviation": {
+    "type": [
+      "str"
+    ],
+    "required": true
+  },
+  "entries": {
+    "type": [
+      "list"
+    ],
+    "items": {
+      "type": [
+        "dict"
+      ],
+      "properties": {
+        "entries": {
+          "type": [
+            "list"
+          ],
+          "items": {
+            "type": [
+              "str"
+            ]
+          },
+          "required": true
+        },
+        "name": {
+          "type": [
+            "str"
+          ],
+          "required": true
+        },
+        "type": {
+          "type": [
+            "str"
+          ],
+          "required": true
+        }
+      }
+    },
+    "required": true
+  },
+  "hidden": {
+    "type": [
+      "bool"
+    ],
+    "required": false
+  },
+  "id": {
+    "type": [
+      "str"
+    ],
+    "required": true
+  },
+  "name": {
+    "type": [
+      "str"
+    ],
+    "required": true
+  },
+  "otherVersions": {
+    "type": [
+      "list"
+    ],
+    "items": {
+      "type": [
+        "dict"
+      ],
+      "properties": {
+        "id": {
+          "type": [
+            "str"
+          ],
+          "required": true
+        },
+        "source": {
+          "type": [
+            "str"
+          ],
+          "required": true
+        }
+      }
+    },
+    "required": true
+  },
+  "page": {
+    "type": [
+      "int"
+    ],
+    "required": true
+  },
+  "source": {
+    "type": [
+      "str"
+    ],
+    "required": true
+  },
+  "srd": {
+    "type": [
+      "bool"
+    ],
+    "required": true
+  }
+}

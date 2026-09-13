@@ -1,0 +1,1054 @@
+{
+  "armorProficiencies": {
+    "type": [
+      "str"
+    ],
+    "required": true
+  },
+  "features": {
+    "type": [
+      "list"
+    ],
+    "items": {
+      "type": [
+        "dict"
+      ],
+      "properties": {
+        "entries": {
+          "type": [
+            "list"
+          ],
+          "items": {
+            "type": [
+              "dict",
+              "str"
+            ],
+            "properties": {
+              "count": {
+                "type": [
+                  "int"
+                ],
+                "required": false
+              },
+              "entries": {
+                "type": [
+                  "list"
+                ],
+                "items": {
+                  "type": [
+                    "dict",
+                    "str"
+                  ],
+                  "properties": {
+                    "caption": {
+                      "type": [
+                        "str"
+                      ],
+                      "required": false
+                    },
+                    "colLabels": {
+                      "type": [
+                        "list"
+                      ],
+                      "items": {
+                        "type": [
+                          "str"
+                        ]
+                      },
+                      "required": false
+                    },
+                    "colStyles": {
+                      "type": [
+                        "list"
+                      ],
+                      "items": {
+                        "type": [
+                          "str"
+                        ]
+                      },
+                      "required": false
+                    },
+                    "count": {
+                      "type": [
+                        "int"
+                      ],
+                      "required": false
+                    },
+                    "entries": {
+                      "type": [
+                        "list"
+                      ],
+                      "items": {
+                        "type": [
+                          "dict",
+                          "str"
+                        ],
+                        "properties": {
+                          "caption": {
+                            "type": [
+                              "str"
+                            ],
+                            "required": false
+                          },
+                          "colLabels": {
+                            "type": [
+                              "list"
+                            ],
+                            "items": {
+                              "type": [
+                                "str"
+                              ]
+                            },
+                            "required": false
+                          },
+                          "colStyles": {
+                            "type": [
+                              "list"
+                            ],
+                            "items": {
+                              "type": [
+                                "str"
+                              ]
+                            },
+                            "required": false
+                          },
+                          "entries": {
+                            "type": [
+                              "list"
+                            ],
+                            "items": {
+                              "type": [
+                                "str"
+                              ]
+                            },
+                            "required": false
+                          },
+                          "items": {
+                            "type": [
+                              "list"
+                            ],
+                            "items": {
+                              "type": [
+                                "dict",
+                                "str"
+                              ],
+                              "properties": {
+                                "entries": {
+                                  "type": [
+                                    "list"
+                                  ],
+                                  "items": {
+                                    "type": [
+                                      "str"
+                                    ]
+                                  },
+                                  "required": true
+                                },
+                                "name": {
+                                  "type": [
+                                    "str"
+                                  ],
+                                  "required": true
+                                },
+                                "type": {
+                                  "type": [
+                                    "str"
+                                  ],
+                                  "required": true
+                                }
+                              }
+                            },
+                            "required": false
+                          },
+                          "name": {
+                            "type": [
+                              "str"
+                            ],
+                            "required": false
+                          },
+                          "rows": {
+                            "type": [
+                              "list"
+                            ],
+                            "items": {
+                              "type": [
+                                "list"
+                              ],
+                              "items": {
+                                "type": [
+                                  "str"
+                                ]
+                              }
+                            },
+                            "required": false
+                          },
+                          "style": {
+                            "type": [
+                              "str"
+                            ],
+                            "required": false
+                          },
+                          "type": {
+                            "type": [
+                              "str"
+                            ],
+                            "required": true
+                          }
+                        }
+                      },
+                      "required": false
+                    },
+                    "feat": {
+                      "type": [
+                        "str"
+                      ],
+                      "required": false
+                    },
+                    "name": {
+                      "type": [
+                        "str"
+                      ],
+                      "required": false
+                    },
+                    "optionalfeature": {
+                      "type": [
+                        "str"
+                      ],
+                      "required": false
+                    },
+                    "preserve": {
+                      "type": [
+                        "dict"
+                      ],
+                      "properties": {
+                        "consumes": {
+                          "type": [
+                            "bool"
+                          ],
+                          "required": false
+                        },
+                        "prerequisite": {
+                          "type": [
+                            "bool"
+                          ],
+                          "required": false
+                        }
+                      },
+                      "required": false
+                    },
+                    "rows": {
+                      "type": [
+                        "list"
+                      ],
+                      "items": {
+                        "type": [
+                          "list"
+                        ],
+                        "items": {
+                          "type": [
+                            "str"
+                          ]
+                        }
+                      },
+                      "required": false
+                    },
+                    "type": {
+                      "type": [
+                        "str"
+                      ],
+                      "required": true
+                    }
+                  }
+                },
+                "required": false
+              },
+              "items": {
+                "type": [
+                  "list"
+                ],
+                "items": {
+                  "type": [
+                    "str"
+                  ]
+                },
+                "required": false
+              },
+              "name": {
+                "type": [
+                  "str"
+                ],
+                "required": false
+              },
+              "type": {
+                "type": [
+                  "str"
+                ],
+                "required": true
+              }
+            }
+          },
+          "required": true
+        },
+        "level": {
+          "type": [
+            "int"
+          ],
+          "required": true
+        },
+        "name": {
+          "type": [
+            "str"
+          ],
+          "required": true
+        }
+      }
+    },
+    "required": true
+  },
+  "gallery": {
+    "type": [
+      "list"
+    ],
+    "items": {
+      "type": [
+        "dict"
+      ],
+      "properties": {
+        "credit": {
+          "type": [
+            "str"
+          ],
+          "required": true
+        },
+        "path": {
+          "type": [
+            "str"
+          ],
+          "required": true
+        },
+        "title": {
+          "type": [
+            "str"
+          ],
+          "required": false
+        }
+      }
+    },
+    "required": true
+  },
+  "hitDie": {
+    "type": [
+      "str"
+    ],
+    "required": true
+  },
+  "id": {
+    "type": [
+      "str"
+    ],
+    "required": true
+  },
+  "image": {
+    "type": [
+      "str"
+    ],
+    "required": true
+  },
+  "lore": {
+    "type": [
+      "list"
+    ],
+    "items": {
+      "type": [
+        "dict"
+      ],
+      "properties": {
+        "entries": {
+          "type": [
+            "list"
+          ],
+          "items": {
+            "type": [
+              "str"
+            ]
+          },
+          "required": true
+        },
+        "name": {
+          "type": [
+            "str"
+          ],
+          "required": true
+        },
+        "page": {
+          "type": [
+            "int"
+          ],
+          "required": true
+        },
+        "source": {
+          "type": [
+            "str"
+          ],
+          "required": true
+        },
+        "type": {
+          "type": [
+            "str"
+          ],
+          "required": true
+        }
+      }
+    },
+    "required": true
+  },
+  "name": {
+    "type": [
+      "str"
+    ],
+    "required": true
+  },
+  "otherVersions": {
+    "type": [
+      "list"
+    ],
+    "items": {
+      "type": [
+        "dict"
+      ],
+      "properties": {
+        "id": {
+          "type": [
+            "str"
+          ],
+          "required": true
+        },
+        "source": {
+          "type": [
+            "str"
+          ],
+          "required": true
+        }
+      }
+    },
+    "required": true
+  },
+  "page": {
+    "type": [
+      "int"
+    ],
+    "required": true
+  },
+  "primaryAbility": {
+    "type": [
+      "str"
+    ],
+    "required": true
+  },
+  "proficiencies": {
+    "type": [
+      "str"
+    ],
+    "required": true
+  },
+  "savingThrows": {
+    "type": [
+      "str"
+    ],
+    "required": true
+  },
+  "source": {
+    "type": [
+      "str"
+    ],
+    "required": true
+  },
+  "srd": {
+    "type": [
+      "bool"
+    ],
+    "required": true
+  },
+  "subclassTitle": {
+    "type": [
+      "str"
+    ],
+    "required": true
+  },
+  "subclasses": {
+    "type": [
+      "list"
+    ],
+    "items": {
+      "type": [
+        "dict"
+      ],
+      "properties": {
+        "features": {
+          "type": [
+            "list"
+          ],
+          "items": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "entries": {
+                "type": [
+                  "list"
+                ],
+                "items": {
+                  "type": [
+                    "dict",
+                    "str"
+                  ],
+                  "properties": {
+                    "caption": {
+                      "type": [
+                        "str"
+                      ],
+                      "required": false
+                    },
+                    "colLabels": {
+                      "type": [
+                        "list"
+                      ],
+                      "items": {
+                        "type": [
+                          "str"
+                        ]
+                      },
+                      "required": false
+                    },
+                    "colStyles": {
+                      "type": [
+                        "list"
+                      ],
+                      "items": {
+                        "type": [
+                          "str"
+                        ]
+                      },
+                      "required": false
+                    },
+                    "count": {
+                      "type": [
+                        "int"
+                      ],
+                      "required": false
+                    },
+                    "entries": {
+                      "type": [
+                        "list"
+                      ],
+                      "items": {
+                        "type": [
+                          "dict",
+                          "str"
+                        ],
+                        "properties": {
+                          "attributes": {
+                            "type": [
+                              "list"
+                            ],
+                            "items": {
+                              "type": [
+                                "str"
+                              ]
+                            },
+                            "required": false
+                          },
+                          "caption": {
+                            "type": [
+                              "str"
+                            ],
+                            "required": false
+                          },
+                          "colLabels": {
+                            "type": [
+                              "list"
+                            ],
+                            "items": {
+                              "type": [
+                                "str"
+                              ]
+                            },
+                            "required": false
+                          },
+                          "colStyles": {
+                            "type": [
+                              "list"
+                            ],
+                            "items": {
+                              "type": [
+                                "str"
+                              ]
+                            },
+                            "required": false
+                          },
+                          "count": {
+                            "type": [
+                              "int"
+                            ],
+                            "required": false
+                          },
+                          "data": {
+                            "type": [
+                              "dict"
+                            ],
+                            "properties": {
+                              "genTables": {
+                                "type": [
+                                  "dict"
+                                ],
+                                "properties": {
+                                  "reprintedAs": {
+                                    "type": [
+                                      "list"
+                                    ],
+                                    "items": {
+                                      "type": [
+                                        "str"
+                                      ]
+                                    },
+                                    "required": false
+                                  },
+                                  "tableInclude": {
+                                    "type": [
+                                      "bool"
+                                    ],
+                                    "required": true
+                                  }
+                                },
+                                "required": true
+                              }
+                            },
+                            "required": false
+                          },
+                          "entries": {
+                            "type": [
+                              "list"
+                            ],
+                            "items": {
+                              "type": [
+                                "dict",
+                                "str"
+                              ],
+                              "properties": {
+                                "caption": {
+                                  "type": [
+                                    "str"
+                                  ],
+                                  "required": false
+                                },
+                                "colLabels": {
+                                  "type": [
+                                    "list"
+                                  ],
+                                  "items": {
+                                    "type": [
+                                      "str"
+                                    ]
+                                  },
+                                  "required": false
+                                },
+                                "colStyles": {
+                                  "type": [
+                                    "list"
+                                  ],
+                                  "items": {
+                                    "type": [
+                                      "str"
+                                    ]
+                                  },
+                                  "required": false
+                                },
+                                "data": {
+                                  "type": [
+                                    "dict"
+                                  ],
+                                  "properties": {
+                                    "isRequiredOption": {
+                                      "type": [
+                                        "bool"
+                                      ],
+                                      "required": true
+                                    }
+                                  },
+                                  "required": false
+                                },
+                                "entries": {
+                                  "type": [
+                                    "list"
+                                  ],
+                                  "items": {
+                                    "type": [
+                                      "dict",
+                                      "str"
+                                    ],
+                                    "properties": {
+                                      "attributes": {
+                                        "type": [
+                                          "list"
+                                        ],
+                                        "items": {
+                                          "type": [
+                                            "str"
+                                          ]
+                                        },
+                                        "required": false
+                                      },
+                                      "name": {
+                                        "type": [
+                                          "str"
+                                        ],
+                                        "required": false
+                                      },
+                                      "optionalfeature": {
+                                        "type": [
+                                          "str"
+                                        ],
+                                        "required": false
+                                      },
+                                      "type": {
+                                        "type": [
+                                          "str"
+                                        ],
+                                        "required": true
+                                      }
+                                    }
+                                  },
+                                  "required": false
+                                },
+                                "name": {
+                                  "type": [
+                                    "str"
+                                  ],
+                                  "required": false
+                                },
+                                "optionalfeature": {
+                                  "type": [
+                                    "str"
+                                  ],
+                                  "required": false
+                                },
+                                "rows": {
+                                  "type": [
+                                    "list"
+                                  ],
+                                  "items": {
+                                    "type": [
+                                      "list"
+                                    ],
+                                    "items": {
+                                      "type": [
+                                        "int",
+                                        "str"
+                                      ]
+                                    }
+                                  },
+                                  "required": false
+                                },
+                                "type": {
+                                  "type": [
+                                    "str"
+                                  ],
+                                  "required": true
+                                }
+                              }
+                            },
+                            "required": false
+                          },
+                          "items": {
+                            "type": [
+                              "list"
+                            ],
+                            "items": {
+                              "type": [
+                                "dict",
+                                "str"
+                              ],
+                              "properties": {
+                                "entry": {
+                                  "type": [
+                                    "str"
+                                  ],
+                                  "required": true
+                                },
+                                "name": {
+                                  "type": [
+                                    "str"
+                                  ],
+                                  "required": true
+                                },
+                                "type": {
+                                  "type": [
+                                    "str"
+                                  ],
+                                  "required": true
+                                }
+                              }
+                            },
+                            "required": false
+                          },
+                          "name": {
+                            "type": [
+                              "str"
+                            ],
+                            "required": false
+                          },
+                          "page": {
+                            "type": [
+                              "int"
+                            ],
+                            "required": false
+                          },
+                          "rows": {
+                            "type": [
+                              "list"
+                            ],
+                            "items": {
+                              "type": [
+                                "list"
+                              ],
+                              "items": {
+                                "type": [
+                                  "str"
+                                ]
+                              }
+                            },
+                            "required": false
+                          },
+                          "source": {
+                            "type": [
+                              "str"
+                            ],
+                            "required": false
+                          },
+                          "style": {
+                            "type": [
+                              "str"
+                            ],
+                            "required": false
+                          },
+                          "tag": {
+                            "type": [
+                              "str"
+                            ],
+                            "required": false
+                          },
+                          "type": {
+                            "type": [
+                              "str"
+                            ],
+                            "required": true
+                          }
+                        }
+                      },
+                      "required": false
+                    },
+                    "items": {
+                      "type": [
+                        "list"
+                      ],
+                      "items": {
+                        "type": [
+                          "dict",
+                          "str"
+                        ],
+                        "properties": {
+                          "entries": {
+                            "type": [
+                              "list"
+                            ],
+                            "items": {
+                              "type": [
+                                "str"
+                              ]
+                            },
+                            "required": false
+                          },
+                          "entry": {
+                            "type": [
+                              "str"
+                            ],
+                            "required": false
+                          },
+                          "name": {
+                            "type": [
+                              "str"
+                            ],
+                            "required": true
+                          },
+                          "type": {
+                            "type": [
+                              "str"
+                            ],
+                            "required": true
+                          }
+                        }
+                      },
+                      "required": false
+                    },
+                    "name": {
+                      "type": [
+                        "str"
+                      ],
+                      "required": false
+                    },
+                    "page": {
+                      "type": [
+                        "int"
+                      ],
+                      "required": false
+                    },
+                    "rows": {
+                      "type": [
+                        "list"
+                      ],
+                      "items": {
+                        "type": [
+                          "list"
+                        ],
+                        "items": {
+                          "type": [
+                            "int",
+                            "str"
+                          ]
+                        }
+                      },
+                      "required": false
+                    },
+                    "style": {
+                      "type": [
+                        "str"
+                      ],
+                      "required": false
+                    },
+                    "type": {
+                      "type": [
+                        "str"
+                      ],
+                      "required": true
+                    }
+                  }
+                },
+                "required": true
+              },
+              "level": {
+                "type": [
+                  "int"
+                ],
+                "required": true
+              },
+              "name": {
+                "type": [
+                  "str"
+                ],
+                "required": true
+              }
+            }
+          },
+          "required": true
+        },
+        "gallery": {
+          "type": [
+            "list"
+          ],
+          "items": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "credit": {
+                "type": [
+                  "str"
+                ],
+                "required": false
+              },
+              "path": {
+                "type": [
+                  "str"
+                ],
+                "required": true
+              },
+              "title": {
+                "type": [
+                  "str"
+                ],
+                "required": false
+              }
+            }
+          },
+          "required": false
+        },
+        "image": {
+          "type": [
+            "str"
+          ],
+          "required": false
+        },
+        "name": {
+          "type": [
+            "str"
+          ],
+          "required": true
+        },
+        "source": {
+          "type": [
+            "str"
+          ],
+          "required": true
+        }
+      }
+    },
+    "required": true
+  },
+  "table": {
+    "type": [
+      "dict"
+    ],
+    "properties": {
+      "headers": {
+        "type": [
+          "list"
+        ],
+        "items": {
+          "type": [
+            "str"
+          ]
+        },
+        "required": true
+      },
+      "rows": {
+        "type": [
+          "list"
+        ],
+        "items": {
+          "type": [
+            "list"
+          ],
+          "items": {
+            "type": [
+              "str"
+            ]
+          }
+        },
+        "required": true
+      }
+    },
+    "required": true
+  },
+  "toolProficiencies": {
+    "type": [
+      "str"
+    ],
+    "required": true
+  },
+  "weaponProficiencies": {
+    "type": [
+      "str"
+    ],
+    "required": true
+  }
+}

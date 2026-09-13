@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__notion__notion-fetch",
+      "mcp__notion__notion-query-data-sources",
+      "mcp__notion__notion-update-page"
+    ]
+  }
+}
