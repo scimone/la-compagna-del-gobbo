@@ -16,6 +16,7 @@ api.add_router("/characters", builder_router)
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", api.urls),
+    path("i18n/", include("django.conf.urls.i18n")),
     path("", include("pwa.urls")),
     path("", include("apps.frontend.urls")),
 ]

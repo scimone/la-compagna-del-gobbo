@@ -303,9 +303,13 @@ Ninja schemas for builder state/choices/validation/progression responses once th
 ### `apps/frontend/` — PWA shell
 
 Not part of the `rules`/`characters`/`builder` layering above (it's the web UI, not game logic).
-A minimal Django app serving one server-rendered page (`views.index` → `templates/frontend/
-index.html`) at `/`, wired up as an installable PWA via `django-pwa`:
+A minimal Django app serving server-rendered pages, wired up as an installable PWA via
+`django-pwa`:
 
+- `GET /` (`index`) — three full-height nav buttons: **Characters** → `/characters/`,
+  **Handbook** → `/handbook/` (the user-facing name for the `rules` domain content),
+  **World** → `/world/`. All three targets are placeholder "coming soon" pages for now
+  (`overview.html`, reused for all three - they're identical except the title).
 - `/manifest.json` and `/serviceworker.js` are served by `django-pwa` (`pwa` in
   `INSTALLED_APPS`, `path("", include("pwa.urls"))` in `config/urls.py`). Config lives in
   `config/settings.py` (`PWA_APP_*` / `PWA_SERVICE_WORKER_PATH`).
@@ -318,12 +322,55 @@ index.html`) at `/`, wired up as an installable PWA via `django-pwa`:
   `urlpatterns` when `DEBUG` (in `config/urls.py`) - needed because this project serves via
   uvicorn/ASGI, not `manage.py runserver`, which is the only one of the two that auto-serves
   static files in dev on its own.
+- `templates/frontend/base.html` holds the shared shell (PWA meta, responsive mobile-first CSS
+  with a dark-mode variant, the language switcher) - `index.html` and `overview.html` both
+  `{% extends %}` it. The earlier "List languages" test button is gone; the shell it proved out
+  is what's left.
 
-The page itself (`index.html`) is intentionally a throwaway: one "List languages" button that
-`fetch()`s `GET /api/rules/languages` and renders the result, just to prove the page, the API,
-and the PWA plumbing all work together end-to-end. The button and its script are meant to be
-deleted once real frontend work starts; the surrounding shell (viewport meta, responsive
-mobile-first CSS with a dark-mode variant, the PWA registration) is meant to stay.
+#### Internationalization (i18n)
+
+The UI needs to support multiple languages with a switcher, so this uses **Django's built-in
+`gettext` i18n framework**, not a database table of translated strings. Why:
+
+- It's the Django-native, zero-extra-infrastructure way to translate strings that live in code
+  (templates, view text) - `{% translate "..." %}` in templates, `gettext()` in views, compiled
+  `.mo` files loaded once at process start (no per-request DB query, no cache invalidation to
+  get wrong).
+- A DB table is the right call for content editors changing copy *without a deploy* - not the
+  case here, this UI text ships with the code same as everything else.
+- Standard tooling (`manage.py makemessages`/`compilemessages`) extracts and compiles strings,
+  and every translator-facing tool speaks `.po`, so no bespoke admin UI is needed for someone
+  to contribute a translation.
+
+**This is a different problem from translating game content** (spell names, feat text, etc. in
+`rules`) if that's ever wanted - that data is bulk-imported per-row from `db/`, not
+developer-authored strings, so `gettext` is the wrong tool for it; a per-model-field approach
+(e.g. `django-modeltranslation`, or extra `_it` columns) would fit better. Not needed today
+since `rules` content is English-only for now - noting it so the two problems aren't conflated
+later.
+
+**How it's wired**: `LANGUAGES = [("en", ...), ("it", ...)]` + `LocaleMiddleware` (in
+`config/settings.py`) + `path("i18n/", include("django.conf.urls.i18n"))` (in `config/urls.py`)
+gives a `POST /i18n/setlang/` endpoint for free - that's the "change language with a button"
+mechanism, and it's what `base.html`'s language switcher form posts to. It sets a cookie
+(session too, if one exists) so the choice persists across requests without a URL prefix
+(`/en/...`, `/it/...`) - simpler than `i18n_patterns` for a cookie/button-driven switch, though
+that's the option to reach for later if language ever needs to be shareable via URL.
+
+Translations live in `locale/it/LC_MESSAGES/django.po` (English is the source language - the
+`msgid`s themselves, no `.po` needed for it). One gotcha already hit and fixed: the switcher
+shows "English"/"Italiano" as hardcoded literals in `base.html`, not via Django's
+`get_available_languages` tag - that tag returns each language's name translated into the
+*current* language (so it'd render "Italian" while browsing in English), not each language's
+own autonym, which is the correct convention for a language switcher.
+
+**Sandbox note**: `locale/it/LC_MESSAGES/django.mo` here was hand-compiled with a small
+pure-Python script (not committed - it's a one-off, not project code) because the `gettext`
+system package (providing `msgfmt`) isn't installable in this sandbox (no passwordless `sudo`).
+The `.po`/`.mo` files themselves are completely standard. On a machine with `sudo apt install
+gettext` available, use the normal Django workflow from here on: edit templates, run
+`manage.py makemessages -l it` to pick up new/changed strings, fill in the new `msgstr` lines,
+`manage.py compilemessages`.
 
 ## Not in scope (per the architecture doc)
 

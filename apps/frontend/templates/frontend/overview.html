@@ -1,0 +1,23 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+
+{% block extra_style %}
+  .placeholder {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    text-align: center;
+  }
+{% endblock %}
+
+{% block content %}
+  <h1>{{ page_title }}</h1>
+
+  <div class="placeholder">
+    <p class="subtitle">{% translate "Coming soon." %}</p>
+    <a class="back-link" href="{% url 'index' %}">&larr; {% translate "Back to home" %}</a>
+  </div>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% load i18n pwa %}
+<!doctype html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>La Compagna del Gobbo</title>
+  {% progressive_web_app_meta %}
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f7f5f2;
+      --surface: #ffffff;
+      --text: #201a17;
+      --muted: #6b6058;
+      --accent: #7a1f1f;
+      --accent-strong: #5e1818;
+      --accent-text: #ffffff;
+      --border: #e4ddd6;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1513;
+        --surface: #241d1a;
+        --text: #f2ece7;
+        --muted: #ab9d92;
+        --accent: #c65b5b;
+        --accent-strong: #d97a7a;
+        --accent-text: #1a1513;
+        --border: #3a2f2a;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 0.5rem;
+      padding: max(0.75rem, env(safe-area-inset-top)) 1rem 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .lang-switcher {
+      display: flex;
+      gap: 0.4rem;
+      margin: 0;
+    }
+
+    .lang-switcher button {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      border-radius: 0.5rem;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .lang-switcher button[aria-current="true"] {
+      background: var(--accent);
+      color: var(--accent-text);
+      border-color: var(--accent);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding: 0 1rem max(1rem, env(safe-area-inset-bottom));
+      gap: 1rem;
+    }
+
+    h1 {
+      font-size: clamp(1.5rem, 5vw, 2rem);
+      margin: 0.25rem 0 0;
+      text-align: center;
+    }
+
+    p.subtitle {
+      margin: 0;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    a.back-link {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    {% block extra_style %}{% endblock %}
+  </style>
+</head>
+<body>
+  <header>
+    {% get_current_language as CURRENT_LANGUAGE %}
+    <form action="{% url 'set_language' %}" method="post" class="lang-switcher">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.path }}">
+      {# Each language is always shown in its own name (autonym), never translated - #}
+      {# showing "Italian" while the UI is in English (or vice versa) is the wrong convention. #}
+      <button type="submit" name="language" value="en"
+              aria-current="{% if CURRENT_LANGUAGE == 'en' %}true{% else %}false{% endif %}">
+        English
+      </button>
+      <button type="submit" name="language" value="it"
+              aria-current="{% if CURRENT_LANGUAGE == 'it' %}true{% else %}false{% endif %}">
+        Italiano
+      </button>
+    </form>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
