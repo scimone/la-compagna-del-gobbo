@@ -9,6 +9,7 @@ from .feat import Feat
 from .feature import Feature
 from .language import Language
 from .mastery import Mastery
+from .optional_feature import OptionalFeature
 from .proficiency import Proficiency
 from .rule import Rule
 from .sense import Sense
@@ -32,6 +33,7 @@ __all__ = [
     "Feature",
     "Language",
     "Mastery",
+    "OptionalFeature",
     "Proficiency",
     "Rule",
     "Sense",
