@@ -1,0 +1,70 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+
+{% block extra_style %}
+  .item-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .item-list li {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.6rem;
+  }
+
+  .item-list a {
+    display: block;
+    padding: 0.6rem 0.9rem;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .item-list a:active {
+    background: var(--bg);
+  }
+
+  .item-list .item-name {
+    font-weight: 600;
+  }
+
+  .item-list .item-detail {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .empty-state {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+{% endblock %}
+
+{% block content %}
+  <h1>{{ page_title }}</h1>
+
+  {% if items %}
+    <ul class="item-list">
+      {% for item in items %}
+        <li>
+          <a href="{{ item.url }}">
+            <span class="item-name">{{ item.name }}</span>
+            {% if item.detail %}<div class="item-detail">{{ item.detail }}</div>{% endif %}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="empty-state">
+      <p class="subtitle">{% translate "No entries in the current dataset." %}</p>
+    </div>
+  {% endif %}
+{% endblock %}

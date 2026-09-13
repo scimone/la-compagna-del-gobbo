@@ -67,17 +67,52 @@
 
     header {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
-      gap: 0.5rem;
-      padding: max(0.75rem, env(safe-area-inset-top)) 1rem 0.5rem;
+      gap: 0.75rem;
+      padding: max(1.1rem, env(safe-area-inset-top)) 1.25rem 1rem;
       flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      min-width: 0;
+    }
+
+    a.back-btn {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 0.5rem;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    a.back-btn:active {
+      background: var(--surface);
+    }
+
+    header a.brand {
+      color: var(--text);
+      font-weight: 700;
+      font-size: 1.05rem;
+      text-decoration: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .lang-switcher {
-      display: flex;
-      gap: 0.4rem;
       margin: 0;
+      flex-shrink: 0;
     }
 
     .lang-switcher button {
@@ -86,16 +121,10 @@
       background: var(--surface);
       color: var(--muted);
       border-radius: 0.5rem;
-      padding: 0.3rem 0.6rem;
+      padding: 0.35rem 0.7rem;
       font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
-    }
-
-    .lang-switcher button[aria-current="true"] {
-      background: var(--accent);
-      color: var(--accent-text);
-      border-color: var(--accent);
     }
 
     main {
@@ -103,7 +132,7 @@
       display: flex;
       flex-direction: column;
       min-height: 0;
-      padding: 0 1rem max(1rem, env(safe-area-inset-bottom));
+      padding: 1.25rem 1rem max(1rem, env(safe-area-inset-bottom));
       gap: 1rem;
     }
 
@@ -120,31 +149,29 @@
       font-size: 0.95rem;
     }
 
-    a.back-link {
-      color: var(--accent);
-      font-weight: 600;
-      text-decoration: none;
-    }
-
     {% block extra_style %}{% endblock %}
   </style>
 </head>
 <body>
   <header>
+    <div class="header-left">
+      {% if back_url %}
+        <a class="back-btn" href="{{ back_url }}" aria-label="{% translate 'Back' %}">&larr;</a>
+      {% endif %}
+      <a class="brand" href="{% url 'index' %}">La Compagna del Gobbo</a>
+    </div>
+
     {% get_current_language as CURRENT_LANGUAGE %}
     <form action="{% url 'set_language' %}" method="post" class="lang-switcher">
       {% csrf_token %}
       <input type="hidden" name="next" value="{{ request.path }}">
-      {# Each language is always shown in its own name (autonym), never translated - #}
-      {# showing "Italian" while the UI is in English (or vice versa) is the wrong convention. #}
-      <button type="submit" name="language" value="en"
-              aria-current="{% if CURRENT_LANGUAGE == 'en' %}true{% else %}false{% endif %}">
-        English
-      </button>
-      <button type="submit" name="language" value="it"
-              aria-current="{% if CURRENT_LANGUAGE == 'it' %}true{% else %}false{% endif %}">
-        Italiano
-      </button>
+      {# One button that switches TO the other language - always labelled with that other #}
+      {# language's own name (autonym), e.g. showing "Italiano" while browsing in English. #}
+      {% if CURRENT_LANGUAGE == "it" %}
+        <button type="submit" name="language" value="en">English</button>
+      {% else %}
+        <button type="submit" name="language" value="it">Italiano</button>
+      {% endif %}
     </form>
   </header>
 

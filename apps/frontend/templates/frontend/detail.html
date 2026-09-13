@@ -1,0 +1,120 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+
+{% block extra_style %}
+  .detail-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .facts {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.6rem;
+    padding: 0.4rem 0.9rem;
+  }
+
+  .facts dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.35rem 0.75rem;
+    margin: 0.5rem 0;
+  }
+
+  .facts dt {
+    color: var(--muted);
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  .facts dd {
+    margin: 0;
+  }
+
+  .detail-section h2 {
+    font-size: 1.1rem;
+    margin: 0 0 0.5rem;
+    color: var(--accent);
+  }
+
+  .detail-section h3 {
+    font-size: 1rem;
+    margin: 0.75rem 0 0.25rem;
+  }
+
+  .detail-section p {
+    margin: 0.4rem 0;
+    line-height: 1.45;
+  }
+
+  .detail-section ul {
+    margin: 0.4rem 0;
+    padding-left: 1.25rem;
+  }
+
+  .detail-section li {
+    margin: 0.3rem 0;
+  }
+
+  .detail-section .inset {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.9rem;
+    margin: 0.5rem 0;
+  }
+
+  .detail-section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+  }
+
+  .detail-section caption {
+    text-align: left;
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .detail-section th, .detail-section td {
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.5rem;
+    text-align: left;
+  }
+
+  .detail-section th {
+    background: var(--surface);
+  }
+{% endblock %}
+
+{% block content %}
+  <h1>{{ page_title }}</h1>
+
+  <div class="detail-body">
+    {% if facts %}
+      <div class="facts">
+        <dl>
+          {% for label, value in facts %}
+            <dt>{{ label }}</dt>
+            <dd>{{ value }}</dd>
+          {% endfor %}
+        </dl>
+      </div>
+    {% endif %}
+
+    {% for heading, html in sections %}
+      <div class="detail-section">
+        <h2>{{ heading }}</h2>
+        {{ html }}
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

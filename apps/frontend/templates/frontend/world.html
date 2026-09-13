@@ -1,0 +1,45 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+
+{% block extra_style %}
+  .nav-buttons {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    min-height: 0;
+  }
+
+  .nav-buttons a {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    text-decoration: none;
+    color: var(--accent-text);
+    background: var(--accent);
+    border-radius: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    font-size: clamp(1rem, 4.5vw, 1.5rem);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    touch-action: manipulation;
+  }
+
+  .nav-buttons a:active {
+    background: var(--accent-strong);
+  }
+{% endblock %}
+
+{% block content %}
+  <nav class="nav-buttons">
+    <a href="{% url 'world-backgrounds' %}">{% translate "Backgrounds" %}</a>
+    <a href="{% url 'world-classes' %}">{% translate "Classes" %}</a>
+    <a href="{% url 'world-class-features' %}">{% translate "Class Features" %}</a>
+    <a href="{% url 'world-feats' %}">{% translate "Feats" %}</a>
+    <a href="{% url 'world-races' %}">{% translate "Races" %}</a>
+    <a href="{% url 'world-subraces' %}">{% translate "Subraces" %}</a>
+    <a href="{% url 'world-spells' %}">{% translate "Spells" %}</a>
+  </nav>
+{% endblock %}

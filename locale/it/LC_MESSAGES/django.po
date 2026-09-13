@@ -14,7 +14,7 @@ msgstr "Personaggi"
 msgid "Handbook"
 msgstr "Manuale"
 
-#: apps/frontend/templates/frontend/index.html apps/frontend/views.py
+#: apps/frontend/templates/frontend/index.html
 msgid "World"
 msgstr "Mondo"
 
@@ -22,6 +22,190 @@ msgstr "Mondo"
 msgid "Coming soon."
 msgstr "Prossimamente."
 
-#: apps/frontend/templates/frontend/overview.html
-msgid "Back to home"
-msgstr "Torna alla home"
+#: apps/frontend/templates/frontend/base.html
+msgid "Back"
+msgstr "Indietro"
+
+#: apps/frontend/templates/frontend/world.html apps/frontend/views.py
+msgid "Backgrounds"
+msgstr "Background"
+
+#: apps/frontend/templates/frontend/world.html apps/frontend/views.py
+msgid "Classes"
+msgstr "Classi"
+
+#: apps/frontend/templates/frontend/world.html apps/frontend/views.py
+msgid "Class Features"
+msgstr "Caratteristiche di Classe"
+
+#: apps/frontend/templates/frontend/world.html apps/frontend/views.py
+msgid "Feats"
+msgstr "Talenti"
+
+#: apps/frontend/templates/frontend/world.html apps/frontend/views.py
+msgid "Races"
+msgstr "Razze"
+
+#: apps/frontend/templates/frontend/world.html apps/frontend/views.py
+msgid "Subraces"
+msgstr "Sottorazze"
+
+#: apps/frontend/templates/frontend/world.html apps/frontend/views.py
+msgid "Spells"
+msgstr "Incantesimi"
+
+#: apps/frontend/views.py
+msgid "Level"
+msgstr "Livello"
+
+#: apps/frontend/views.py
+msgid "Cantrip"
+msgstr "Trucchetto"
+
+#: apps/frontend/templates/frontend/list.html
+msgid "No entries in the current dataset."
+msgstr "Nessuna voce nel set di dati attuale."
+
+#: apps/frontend/views.py
+msgid "Ability Scores"
+msgstr "Caratteristiche"
+
+#: apps/frontend/views.py
+msgid "Skills"
+msgstr "Abilità"
+
+#: apps/frontend/views.py
+msgid "Tools"
+msgstr "Strumenti"
+
+#: apps/frontend/views.py
+msgid "Feat"
+msgstr "Talento"
+
+#: apps/frontend/views.py
+msgid "Page"
+msgstr "Pagina"
+
+#: apps/frontend/views.py
+msgid "Equipment"
+msgstr "Equipaggiamento"
+
+#: apps/frontend/views.py
+msgid "Lore"
+msgstr "Ambientazione"
+
+#: apps/frontend/views.py
+msgid "Hit Die"
+msgstr "Dado Vita"
+
+#: apps/frontend/views.py
+msgid "Primary Ability"
+msgstr "Caratteristica Primaria"
+
+#: apps/frontend/views.py
+msgid "Saving Throws"
+msgstr "Tiri Salvezza"
+
+#: apps/frontend/views.py
+msgid "Armor Proficiencies"
+msgstr "Competenza nelle Armature"
+
+#: apps/frontend/views.py
+msgid "Weapon Proficiencies"
+msgstr "Competenza nelle Armi"
+
+#: apps/frontend/views.py
+msgid "Tool Proficiencies"
+msgstr "Competenza negli Strumenti"
+
+#: apps/frontend/views.py
+msgid "Subclasses"
+msgstr "Sottoclassi"
+
+#: apps/frontend/views.py
+msgid "Features by Level"
+msgstr "Caratteristiche per Livello"
+
+#: apps/frontend/views.py
+msgid "Level Progression"
+msgstr "Progressione di Livello"
+
+#: apps/frontend/views.py
+msgid "Class"
+msgstr "Classe"
+
+#: apps/frontend/views.py
+msgid "Subclass"
+msgstr "Sottoclasse"
+
+#: apps/frontend/views.py
+msgid "Description"
+msgstr "Descrizione"
+
+#: apps/frontend/views.py
+msgid "Category"
+msgstr "Categoria"
+
+#: apps/frontend/views.py
+msgid "Prerequisite"
+msgstr "Prerequisito"
+
+#: apps/frontend/views.py
+msgid "Size"
+msgstr "Taglia"
+
+#: apps/frontend/views.py
+msgid "Speed"
+msgstr "Velocità"
+
+#: apps/frontend/views.py
+msgid "Creature Type"
+msgstr "Tipo di Creatura"
+
+#: apps/frontend/views.py
+msgid "Fly Speed"
+msgstr "Velocità di Volo"
+
+#: apps/frontend/views.py
+msgid "Swim Speed"
+msgstr "Velocità di Nuoto"
+
+#: apps/frontend/views.py
+msgid "Climb Speed"
+msgstr "Velocità di Scalata"
+
+#: apps/frontend/views.py
+msgid "Traits"
+msgstr "Tratti"
+
+#: apps/frontend/views.py
+msgid "Casting Time"
+msgstr "Tempo di Lancio"
+
+#: apps/frontend/views.py
+msgid "Range"
+msgstr "Gittata"
+
+#: apps/frontend/views.py
+msgid "Components"
+msgstr "Componenti"
+
+#: apps/frontend/views.py
+msgid "Duration"
+msgstr "Durata"
+
+#: apps/frontend/views.py
+msgid "Concentration"
+msgstr "Concentrazione"
+
+#: apps/frontend/views.py
+msgid "Ritual"
+msgstr "Rituale"
+
+#: apps/frontend/views.py
+msgid "Yes"
+msgstr "Sì"
+
+#: apps/frontend/views.py
+msgid "At Higher Levels"
+msgstr "Ai Livelli Superiori"
