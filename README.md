@@ -84,15 +84,19 @@ their models stay placeholders regardless — they're not listed again here.
 | `OptionalFeature` | Defined | `db/optional_features.json` | Not in the original architecture doc — covers Eldritch Invocations, Battle Master Maneuvers and Metamagic, which don't fit any existing catalog |
 | `Tool` | Missing | — | Not a separate catalog: tools/instruments/gaming sets are just `Equipment` rows (`category` in `{Tool, Artisan's Tools, Instrument, Gaming Set}`) |
 | `SpellList` | Missing | — | Not a separate catalog: `Spell.classes`/`Spell.subclasses` already cover it |
-| `Proficiency` | Missing | — | No standalone catalog; proficiencies only exist as free text on `Class`/`Background` |
-| `Feature` | Missing | — | Embedded as free text inside `Class`/`Subclass`/`Species`/`Feat`, not a normalized catalog |
-| `Effect` | Missing | — | Same reason as `Feature` — mechanical effects are prose, not data |
-| `ChoiceDefinition` | Missing | — | Choices are prose too (e.g. `Background.ability_scores` = "Choose from Intelligence, Wisdom, Charisma") |
+| `Proficiency` | Defined | `db/classes.json`, `db/backgrounds.json` | 85 rows: the flat comma-separated items in `Class.armor_proficiencies`/`weapon_proficiencies`/`tool_proficiencies` and `Background.skills`/`tools`, tagged with a `category` taken from which field they came from. The 2 items phrased as a choice instead of a flat grant (Bard's/Monk's `tool_proficiencies`) are excluded, not misfiled — see the model docstring |
+| `Feature` | Defined | `db/classes.json`, `db/species.json`, `db/feats.json` | 611 rows: every explicitly named `{name, entries}` dict at the top level of `Class.features`, `SubclassLevel.features`, `Species.entries` and `Feat.entries` (bare prose strings mixed into those same lists are skipped, not renamed into features). Duplicates data still held verbatim on those parents — see the model docstring for why it isn't removed from them |
+| `Effect` | Partly defined | derived from `Feature.entries` | 2142 rows: a mechanical index of literal 5etools inline tags (`{@damage ...}`, `{@condition ...}`, `{@dc ...}`, etc.) found anywhere in a `Feature`'s `entries` text, storing the tag name and raw tag text verbatim — not a semantic effects model, no tag is reinterpreted |
+| `ChoiceDefinition` | Partly defined | `db/backgrounds.json`, `db/classes.json` | 27 rows, only where the source is reliably pattern-shaped: all 16 `Background.ability_scores` ("Choose from A, B, C") and 11 of 12 classes' `Class.proficiencies` "Skills: choose N from ..." clause (Bard's is genuinely empty in the source). Everything else that reads like a choice in the source (feat benefit prose, tool-proficiency choices) is inconsistent free text and was deliberately left unparsed |
 
 Every "Defined" model was verified by loading its entire source file into the database once (all
 217 equipment rows, all 391 spells, all 12 classes × 20 levels, all 19 languages, all 58 optional
 features, etc. — no rows dropped or truncated). That was a one-off smoke test, not a saved
 script; there's no fixture/import command yet (see the `services`/`api` placeholders above).
+`Proficiency` and `Feature` were verified the same way against an independently-computed expected
+row count (85 and 611 respectively); `Effect` and `ChoiceDefinition` are "Partly defined" because
+they only cover the subset of their source that's reliably, mechanically extractable — see their
+model docstrings for exactly what was included and excluded, and why.
 
 ### `apps/rules/` — static game content
 
@@ -123,7 +127,7 @@ assets) and `otherVersions` (cross-references to non-XPHB printings — we only 
 | `Tool` | A tool (e.g. Thieves' Tools, Herbalism Kit) |
 | `Skill` | A skill (e.g. Athletics, Perception) |
 | `Sense` | A special sense (e.g. Darkvision) |
-| `Proficiency` | A proficiency category (weapon/armor/save/etc.) |
+| `Proficiency` | A proficiency category (weapon/armor/tool/skill) granted by a `Class` or `Background` |
 | `Language` | A language (e.g. Common, Elvish) |
 | `Spell` | A spell definition |
 | `SpellList` | The list of spells available to a given `Class` |
