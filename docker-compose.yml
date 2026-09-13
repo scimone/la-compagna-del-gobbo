@@ -1,0 +1,23 @@
+services:
+  # dnd-web:
+  #   build: .
+  #   container_name: dnd-web
+  #   restart: always
+  #   command: uv run uvicorn config.asgi:application --host "0.0.0.0" --port 3000
+  #   ports:
+  #     - "8010:3000"
+  #   depends_on:
+  #     - dnd-db
+  #   env_file:
+  #     - .env
+
+  dnd-db:
+    image: postgres:16
+    container_name: dnd-postgres
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5462:5432"
