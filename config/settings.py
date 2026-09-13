@@ -13,6 +13,22 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "true").lower() == "true"
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",")
 
+# Comma-separated list of scheme+host origins allowed to POST here (e.g. the language
+# switcher). Django's CSRF check compares the request's Origin header against this list -
+# ALLOWED_HOSTS alone doesn't cover it. Needed for any origin that isn't plain http(s)://
+# <a host already covered by autodetection>, which in practice means anything served through
+# a reverse proxy under its own domain (e.g. https://dnd.scimone.uk via nginx-proxy-manager).
+CSRF_TRUSTED_ORIGINS = [
+    origin for origin in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",") if origin
+]
+
+# This app sits behind a reverse proxy (nginx-proxy-manager / Cloudflare tunnel) that terminates
+# TLS and forwards plain HTTP to uvicorn - without this, Django thinks every request is
+# insecure (wrong scheme in generated URLs, secure-cookie logic never triggers, and the CSRF
+# check has less context to work with). The header name must match what the proxy actually
+# sets; X-Forwarded-Proto is the standard one and is what nginx-proxy-manager sends.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
