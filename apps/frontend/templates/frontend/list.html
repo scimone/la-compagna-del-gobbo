@@ -10,13 +10,17 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    padding-bottom: 0.25rem;
+    margin: 0;
+    padding: 0 0 0.25rem;
+    list-style: none;
   }
 
   .item-list li {
+    flex-shrink: 0;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 0.6rem;
+    overflow: hidden;
   }
 
   .item-list a {
@@ -39,6 +43,57 @@
     font-size: 0.85rem;
   }
 
+  .item-list li.has-image {
+    border-color: transparent;
+  }
+
+  .item-list a.menu-image {
+    position: relative;
+    aspect-ratio: 983 / 227;
+    padding: 0.5rem 0.9rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    background-size: cover;
+    background-position: right center;
+    touch-action: manipulation;
+  }
+
+  .item-list a.menu-image::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.55) 0%,
+      rgba(0, 0, 0, 0.35) 45%,
+      rgba(0, 0, 0, 0.05) 75%
+    );
+  }
+
+  .item-list a.menu-image:active::before {
+    background: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.7) 0%,
+      rgba(0, 0, 0, 0.5) 45%,
+      rgba(0, 0, 0, 0.15) 75%
+    );
+  }
+
+  .item-list a.menu-image .item-name {
+    position: relative;
+    color: #fff;
+    font-size: 1.05rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  }
+
+  .item-list a.menu-image .item-detail {
+    position: relative;
+    color: rgba(255, 255, 255, 0.85);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  }
+
   .empty-state {
     flex: 1;
     display: flex;
@@ -52,8 +107,11 @@
   {% if items %}
     <ul class="item-list">
       {% for item in items %}
-        <li>
-          <a href="{{ item.url }}">
+        <li{% if item.image %} class="has-image"{% endif %}>
+          <a
+            href="{{ item.url }}"
+            {% if item.image %}class="menu-image" style="background-image: url('{{ item.image }}')"{% endif %}
+          >
             <span class="item-name">{{ item.name }}</span>
             {% if item.detail %}<div class="item-detail">{{ item.detail }}</div>{% endif %}
           </a>
