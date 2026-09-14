@@ -66,6 +66,39 @@ def _flat_proficiency_items(text: str) -> list[str]:
     return [x for x in items if not x.lower().startswith("choose")]
 
 
+# Short one-line blurbs for the World menu buttons (`Class.short_description`/
+# `Species.short_description`) - there's no such field in the source JSON, so these are
+# hand-written here rather than loaded from db/*.json like everything else in this file.
+CLASS_SHORT_DESCRIPTIONS = {
+    "barbarian": "A fierce warrior fueled by primal rage.",
+    "bard": "A performer whose art channels magic.",
+    "cleric": "A priestly champion wielding divine magic.",
+    "druid": "A shapeshifter who commands the wild.",
+    "fighter": "A master of weapons and combat tactics.",
+    "monk": "A disciplined master of martial arts.",
+    "paladin": "A holy warrior bound by a sacred oath.",
+    "ranger": "A tracker skilled in nature and combat.",
+    "rogue": "A master of stealth and cunning strikes.",
+    "sorcerer": "A spellcaster with innate, inherited magic.",
+    "warlock": "Bound by pact to an otherworldly patron.",
+    "wizard": "A scholar who masters magic through study.",
+}
+
+SPECIES_SHORT_DESCRIPTIONS = {
+    "aasimar": "Mortals touched by celestial power.",
+    "dragonborn": "Proud, draconic folk with elemental breath.",
+    "dwarf": "Sturdy folk of mountain and stone.",
+    "elf-xphb": "Graceful, long-lived, attuned to magic.",
+    "gnome": "Small, inventive folk full of curiosity.",
+    "goliath": "Towering folk from harsh mountain peaks.",
+    "grung": "Small, poisonous frog-folk of the jungle.",
+    "halfling": "Small, nimble folk known for luck and cheer.",
+    "human": "Adaptable, ambitious, and endlessly diverse.",
+    "orc": "Strong, resilient folk of fierce endurance.",
+    "tiefling": "Mortals marked by an infernal bloodline.",
+}
+
+
 class Command(BaseCommand):
     help = "Wipe and reload every rules model from the XPHB data dumped in db/."
 
@@ -212,6 +245,7 @@ class Command(BaseCommand):
             Species(
                 id=it["id"],
                 name=it["name"],
+                short_description=SPECIES_SHORT_DESCRIPTIONS.get(it["id"], ""),
                 page=it["page"],
                 srd=it["srd"],
                 hidden=it.get("hidden", False),
@@ -324,6 +358,7 @@ class Command(BaseCommand):
             klass = Class.objects.create(
                 id=it["id"],
                 name=it["name"],
+                short_description=CLASS_SHORT_DESCRIPTIONS.get(it["id"], ""),
                 page=it["page"],
                 srd=it["srd"],
                 hit_die=it["hitDie"],

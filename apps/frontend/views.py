@@ -1,15 +1,35 @@
+from django.conf import settings
 from django.shortcuts import render
+from django.templatetags.static import static
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from apps.frontend.entries_render import render_entries, render_key_value_table
+from apps.frontend.entries_render import (
+    render_class_features,
+    render_entries,
+    render_key_value_table,
+    render_trait_cards,
+)
 from apps.rules.services import background as background_service
 from apps.rules.services import class_ as class_service
 from apps.rules.services import feat as feat_service
-from apps.rules.services import feature as feature_service
 from apps.rules.services import rule as rule_service
 from apps.rules.services import species as species_service
 from apps.rules.services import spell as spell_service
+
+# Species menu art is keyed by "reprinted" 2024 slugs where they diverge from the plain
+# species name used in the art filenames (e.g. `elf-xphb` -> `elf-grey.png`).
+_SPECIES_IMAGE_SLUGS = {"elf-xphb": "elf"}
+
+
+def _menu_image_url(folder: str, slug: str) -> str | None:
+    """Static URL for a `static/images/<folder>/<slug>-grey.png` menu button image, or None if
+    no such artwork exists yet (not every Class/Species row has one, e.g. Aasimar).
+    """
+    filename = f"{slug}-grey.png"
+    if not (settings.BASE_DIR / "static" / "images" / folder / filename).exists():
+        return None
+    return static(f"images/{folder}/{filename}")
 
 
 def index(request):
@@ -115,8 +135,9 @@ def world_classes(request):
     items = [
         {
             "name": c.name,
-            "detail": f"{c.hit_die.upper()} · {c.primary_ability}",
+            "detail": c.short_description,
             "url": reverse("world-class-detail", args=[c.pk]),
+            "image": _menu_image_url("classes", c.id),
         }
         for c in class_service.list_classes()
     ]
@@ -146,15 +167,7 @@ def world_class_detail(request, pk):
     if klass.lore:
         sections.append((_("Lore"), render_entries(klass.lore)))
 
-    feature_nodes = [
-        {
-            "type": "entries",
-            "name": f"{f['name']} — {_('Level')} {f['level']}",
-            "entries": f["entries"],
-        }
-        for f in klass.features
-    ]
-    sections.append((_("Features by Level"), render_entries(feature_nodes)))
+    sections.append((_("Features by Level"), render_class_features(klass.features)))
 
     levels = list(klass.levels.order_by("level"))
     if levels:
@@ -163,44 +176,6 @@ def world_class_detail(request, pk):
         sections.append((_("Level Progression"), render_key_value_table(rows, headers)))
 
     return _detail_page(request, klass.name, "world-classes", facts, sections)
-
-
-# --- Class Features --------------------------------------------------------------------------
-
-
-def world_class_features(request):
-    items = []
-    for f in feature_service.list_class_features():
-        klass_name = f.klass.name if f.klass_id else f.subclass_level.subclass.klass.name
-        detail = f"{klass_name} · {_('Level')} {f.level}" if f.level else klass_name
-        items.append(
-            {
-                "name": f.name,
-                "detail": detail,
-                "url": reverse("world-class-feature-detail", args=[f.pk]),
-            }
-        )
-    return _list_page(request, "Class Features", items)
-
-
-def world_class_feature_detail(request, pk):
-    feature = feature_service.get_feature(pk)
-    if feature.klass_id:
-        klass_name = feature.klass.name
-        subclass_name = None
-    else:
-        klass_name = feature.subclass_level.subclass.klass.name
-        subclass_name = feature.subclass_level.subclass.name
-
-    facts = [(_("Class"), klass_name)]
-    if subclass_name:
-        facts.append((_("Subclass"), subclass_name))
-    if feature.level:
-        facts.append((_("Level"), feature.level))
-
-    sections = [(_("Description"), render_entries(feature.entries))]
-
-    return _detail_page(request, feature.name, "world-class-features", facts, sections)
 
 
 # --- Feats -----------------------------------------------------------------------------------
@@ -231,18 +206,23 @@ def world_feat_detail(request, pk):
     return _detail_page(request, feat.name, "world-feats", facts, sections)
 
 
-# --- Races (Species) --------------------------------------------------------------------------
+# --- Species ---------------------------------------------------------------------------------
 
 
-def world_races(request):
+def world_species(request):
     items = [
-        {"name": s.name, "detail": s.size, "url": reverse("world-race-detail", args=[s.pk])}
+        {
+            "name": s.name,
+            "detail": s.short_description,
+            "url": reverse("world-species-detail", args=[s.pk]),
+            "image": _menu_image_url("species", _SPECIES_IMAGE_SLUGS.get(s.id, s.id)),
+        }
         for s in species_service.list_species()
     ]
-    return _list_page(request, "Races", items)
+    return _list_page(request, "Species", items)
 
 
-def world_race_detail(request, pk):
+def world_species_detail(request, pk):
     species = species_service.get_species(pk)
 
     facts = [
@@ -263,15 +243,9 @@ def world_race_detail(request, pk):
     if species.lore:
         sections.append((_("Lore"), render_entries(species.lore)))
     if species.entries:
-        sections.append((_("Traits"), render_entries(species.entries)))
+        sections.append((_("Traits"), render_trait_cards(species.entries)))
 
-    return _detail_page(request, species.name, "world-races", facts, sections)
-
-
-def world_subraces(request):
-    # The 2024 rules dropped subraces as a mechanic - db/species.json has no XPHB entry with a
-    # parent species set, so this is honestly empty rather than a placeholder.
-    return _list_page(request, "Subraces", [])
+    return _detail_page(request, species.name, "world-species", facts, sections)
 
 
 # --- Spells ----------------------------------------------------------------------------------

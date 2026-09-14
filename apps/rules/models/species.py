@@ -6,6 +6,7 @@ class Species(models.Model):
 
     id = models.SlugField(primary_key=True, max_length=100)
     name = models.CharField(max_length=200)
+    short_description = models.CharField(max_length=150, blank=True, default="")
     page = models.PositiveSmallIntegerField()
     srd = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)

@@ -35,20 +35,12 @@ msgid "Classes"
 msgstr "Classi"
 
 #: apps/frontend/templates/frontend/world.html apps/frontend/views.py
-msgid "Class Features"
-msgstr "Caratteristiche di Classe"
+msgid "Species"
+msgstr "Specie"
 
 #: apps/frontend/templates/frontend/world.html apps/frontend/views.py
 msgid "Feats"
 msgstr "Talenti"
-
-#: apps/frontend/templates/frontend/world.html apps/frontend/views.py
-msgid "Races"
-msgstr "Razze"
-
-#: apps/frontend/templates/frontend/world.html apps/frontend/views.py
-msgid "Subraces"
-msgstr "Sottorazze"
 
 #: apps/frontend/templates/frontend/world.html apps/frontend/views.py
 msgid "Spells"
@@ -129,14 +121,6 @@ msgstr "Caratteristiche per Livello"
 #: apps/frontend/views.py
 msgid "Level Progression"
 msgstr "Progressione di Livello"
-
-#: apps/frontend/views.py
-msgid "Class"
-msgstr "Classe"
-
-#: apps/frontend/views.py
-msgid "Subclass"
-msgstr "Sottoclasse"
 
 #: apps/frontend/views.py
 msgid "Description"
