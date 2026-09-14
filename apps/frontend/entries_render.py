@@ -12,6 +12,10 @@ become real links, since those three catalogs (`rules.Rule`/`Spell`/`Feat`) each
 detail page and a name to match against - see `_ReferenceLinker` below. Verified against every
 occurrence of all three tags in db/ before relying on the name match: 50/51 variantrule
 references, 102/102 spell references, and 19/19 feat references resolve.
+
+`render_trait_cards()` and `render_class_features()` are separate entry points (not part of the
+generic `render_entries()` recursion) for the two spots that need a distinct visual per named
+block instead of plain stacked headings: a Species' traits, and a Class's per-level features.
 """
 
 import re
@@ -19,6 +23,7 @@ import re
 from django.urls import reverse
 from django.utils.html import escape
 from django.utils.safestring import SafeString, mark_safe
+from django.utils.translation import gettext
 
 TAG_PATTERN = re.compile(r"\{@(\w+)\s+([^}]*)\}")
 
@@ -107,6 +112,54 @@ def render_entries(entries) -> SafeString:
     """Render an `entries`-shaped value (or a bare string/list) as safe HTML."""
     linker = _ReferenceLinker()
     return mark_safe(_render_node(entries, linker))
+
+
+def _render_entry_cards(blocks: list, linker: _ReferenceLinker) -> str:
+    """Render a flat list of {name, entries} blocks as one visually separated card per block -
+    shared by `render_trait_cards()` and `render_class_features()` below.
+    """
+    cards = []
+    for block in blocks:
+        name = block.get("name", "") if isinstance(block, dict) else ""
+        body_source = block.get("entries", []) if isinstance(block, dict) else block
+        heading_html = f"<h3>{_render_text(name, linker)}</h3>" if name else ""
+        body_html = _render_node(body_source, linker)
+        cards.append(f'<div class="entry-card">{heading_html}{body_html}</div>')
+    return f'<div class="entry-cards">{"".join(cards)}</div>'
+
+
+def render_trait_cards(entries: list) -> SafeString:
+    """Render a flat list of {name, entries} blocks - the shape every XPHB Species' top-level
+    `entries` list uses, one block per trait (verified against every species in db/species.json)
+    - as one visually separated card per trait, instead of the plain stacked headings
+    `render_entries()` would produce for the same shape.
+    """
+    linker = _ReferenceLinker()
+    return mark_safe(_render_entry_cards(entries or [], linker))
+
+
+def render_class_features(features: list) -> SafeString:
+    """Render `rules.Class.features` (a flat {level, name, entries} list - multiple features
+    commonly share a level, e.g. every class's level 1 has several) as one collapsible group per
+    level, each holding one card per feature gained at that level. The lowest level starts
+    expanded since it's what a new reader of the class most likely wants first.
+    """
+    linker = _ReferenceLinker()
+    by_level: dict[int, list[dict]] = {}
+    for feature in features or []:
+        by_level.setdefault(feature["level"], []).append(feature)
+
+    groups = []
+    for i, level in enumerate(sorted(by_level)):
+        open_attr = " open" if i == 0 else ""
+        cards_html = _render_entry_cards(by_level[level], linker)
+        groups.append(
+            f'<details class="level-group"{open_attr}>'
+            f"<summary>{escape(gettext('Level'))} {level}</summary>"
+            f"{cards_html}"
+            f"</details>"
+        )
+    return mark_safe("".join(groups))
 
 
 def _render_node(node, linker: _ReferenceLinker) -> str:
