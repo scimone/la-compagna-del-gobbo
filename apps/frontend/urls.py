@@ -28,4 +28,5 @@ urlpatterns = [
     path("world/subraces/", views.world_subraces, name="world-subraces"),
     path("world/spells/", views.world_spells, name="world-spells"),
     path("world/spells/<slug:pk>/", views.world_spell_detail, name="world-spell-detail"),
+    path("world/rules/<slug:pk>/", views.world_rule_detail, name="world-rule-detail"),
 ]

@@ -7,6 +7,7 @@ from apps.rules.services import background as background_service
 from apps.rules.services import class_ as class_service
 from apps.rules.services import feat as feat_service
 from apps.rules.services import feature as feature_service
+from apps.rules.services import rule as rule_service
 from apps.rules.services import species as species_service
 from apps.rules.services import spell as spell_service
 
@@ -16,7 +17,11 @@ def index(request):
 
 
 def world(request):
-    return render(request, "frontend/world.html", {"back_url": reverse("index")})
+    return render(
+        request,
+        "frontend/world.html",
+        {"page_title": _("World"), "back_url": reverse("index")},
+    )
 
 
 def _placeholder(request, title, back_url_name="index"):
@@ -311,3 +316,17 @@ def world_spell_detail(request, pk):
         sections.append((_("At Higher Levels"), render_entries(spell.entries_higher_level)))
 
     return _detail_page(request, spell.name, "world-spells", facts, sections)
+
+
+# --- Rules -----------------------------------------------------------------------------------
+# No dedicated browsing list for `rules.Rule` (that's not one of the seven categories asked
+# for) - this page only exists as the landing spot for `{@variantrule ...}` links found inside
+# other pages' text (see `apps.frontend.entries_render`), so "back" returns to the World hub
+# rather than to any one specific list.
+
+
+def world_rule_detail(request, pk):
+    rule = rule_service.get_rule(pk)
+    facts = [(_("Page"), rule.page)]
+    sections = [(_("Description"), render_entries(rule.entries))]
+    return _detail_page(request, rule.name, "world-overview", facts, sections)
