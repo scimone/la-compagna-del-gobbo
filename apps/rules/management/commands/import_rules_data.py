@@ -66,6 +66,43 @@ def _flat_proficiency_items(text: str) -> list[str]:
     return [x for x in items if not x.lower().startswith("choose")]
 
 
+def _split_subclass_features(
+    subclass_name: str, raw_features: list
+) -> tuple[list, dict[int, list[dict]]]:
+    """Undo a data-modeling error in the source: at a subclass's granting level, `db/classes.json`
+    bundles the subclass's own flavor text together with that level's real named features under
+    one block titled after the subclass itself, rather than listing the features directly like
+    every other level does - so e.g. Monk's Warrior of Mercy previously imported as a single
+    "Warrior of Mercy" feature containing "Hand of Harm"/"Hand of Healing"/"Implements of Mercy"
+    inline, when those are three separate features that merely happen to all be gained at the
+    same level. Verified across all 48 XPHB subclasses before relying on the pattern: every one
+    has exactly one such block, always at its granting level, always with at least one nested
+    named feature - see the README's "Model status" section for the write-up of this bug and
+    the cleanup.
+
+    Returns (description, by_level): `description` is the flavor text (the block's own
+    plain-string entries) for `Subclass.description`; `by_level` is every real feature - the
+    nested ones promoted to top-level {name, entries} blocks, plus every other level's
+    already-correctly-shaped features - grouped exactly like `SubclassLevel.features` expects.
+    """
+    description: list = []
+    by_level: dict[int, list[dict]] = {}
+    for feat in raw_features:
+        if feat["name"] == subclass_name:
+            for entry in feat["entries"]:
+                if isinstance(entry, dict) and entry.get("name"):
+                    by_level.setdefault(feat["level"], []).append(
+                        {"name": entry["name"], "entries": entry.get("entries", [])}
+                    )
+                else:
+                    description.append(entry)
+        else:
+            by_level.setdefault(feat["level"], []).append(
+                {"name": feat["name"], "entries": feat["entries"]}
+            )
+    return description, by_level
+
+
 # Short one-line blurbs for the World menu buttons (`Class.short_description`/
 # `Species.short_description`) - there's no such field in the source JSON, so these are
 # hand-written here rather than loaded from db/*.json like everything else in this file.
@@ -261,7 +298,6 @@ class Command(BaseCommand):
                 entries=it.get("entries", []),
             )
             for it in _load("species.json")
-            if it["source"] == "XPHB"
         )
         self.stdout.write(f"  Species: {Species.objects.count()}")
 
@@ -384,12 +420,10 @@ class Command(BaseCommand):
             for sc in it.get("subclasses", []):
                 if sc.get("source") != "XPHB":
                     continue
-                subclass = Subclass.objects.create(klass=klass, name=sc["name"])
-                by_level: dict[int, list[dict]] = {}
-                for feat in sc.get("features", []):
-                    by_level.setdefault(feat["level"], []).append(
-                        {"name": feat["name"], "entries": feat["entries"]}
-                    )
+                description, by_level = _split_subclass_features(sc["name"], sc.get("features", []))
+                subclass = Subclass.objects.create(
+                    klass=klass, name=sc["name"], description=description
+                )
                 SubclassLevel.objects.bulk_create(
                     SubclassLevel(subclass=subclass, level=level, features=feats)
                     for level, feats in by_level.items()

@@ -139,35 +139,89 @@ section for why.
 | `Mastery` | Defined | `db/masteries.json` | |
 | `EquipmentProperty` | Defined | `db/equipment_properties.json` | |
 | `Equipment` | Defined | `db/equipments.json` | Covers weapons/armor/gear/tools/instruments alike via `category` |
-| `Species` | Defined | `db/species.json` | One non-XPHB entry (`grung`, source VGM) exists in the file and is simply not imported |
+| `Species` | Defined | `db/species.json` | All 11 entries are imported, including the one non-XPHB one (`grung`, source VGM) - unlike `Subclass`/`Feature`/etc., nothing here is filtered by source |
 | `Background` | Defined | `db/backgrounds.json` | |
 | `Feat` | Defined | `db/feats.json` | |
 | `Class` | Defined | `db/classes.json` | Core metadata + raw `features` text; the level-progression table is split into `ClassLevel` |
 | `ClassLevel` | Defined | `db/classes.json` (`table` rows) | Columns differ per class (spell slots vs Rages vs ...), so kept as a verbatim `columns` JSON map rather than fixed fields |
-| `Subclass` | Defined | `db/classes.json` (`subclasses`) | Only the 48 XPHB-sourced subclasses out of 182 total across all classes; the source gives subclasses no id/page/srd |
-| `SubclassLevel` | Defined | `db/classes.json` (subclass `features`) | Grouped by level (a few subclasses grant 2 features at the same level) |
+| `Subclass` | Defined | `db/classes.json` (`subclasses`) | Only the 48 XPHB-sourced subclasses out of 182 total across all classes; the source gives subclasses no id/page/srd. `description` (flavor text) is split out of the granting level's features at import time — see [Known data-import issues](#known-data-import-issues) |
+| `SubclassLevel` | Defined | `db/classes.json` (subclass `features`) | Grouped by level (a few subclasses grant 2 features at the same level). The granting level's features are un-bundled from the source's one-block-per-subclass shape at import time — see [Known data-import issues](#known-data-import-issues) |
 | `Spell` | Defined | `db/spells.json` | `classes`/`subclasses` kept as plain JSON lists, not FKs — see the model docstring |
 | `Language` | Defined | `db/languages.json` | |
 | `OptionalFeature` | Defined | `db/optional_features.json` | Not in the original architecture doc — covers Eldritch Invocations, Battle Master Maneuvers and Metamagic, which don't fit any existing catalog |
 | `Proficiency` | Defined | `db/classes.json`, `db/backgrounds.json` | 85 rows: the flat comma-separated items in `Class.armor_proficiencies`/`weapon_proficiencies`/`tool_proficiencies` and `Background.skills`/`tools`, tagged with a `category` taken from which field they came from. The 2 items phrased as a choice instead of a flat grant (Bard's/Monk's `tool_proficiencies`) are excluded, not misfiled — see the model docstring |
-| `Feature` | Defined | `db/classes.json`, `db/species.json`, `db/feats.json` | 611 rows: every explicitly named `{name, entries}` dict at the top level of `Class.features`, `SubclassLevel.features`, `Species.entries` and `Feat.entries` (bare prose strings mixed into those same lists are skipped, not renamed into features). Duplicates data still held verbatim on those parents — see the model docstring for why it isn't removed from them |
-| `Effect` | Partly defined | derived from `Feature.entries` | 2142 rows: a mechanical index of literal 5etools inline tags (`{@damage ...}`, `{@condition ...}`, `{@dc ...}`, etc.) found anywhere in a `Feature`'s `entries` text, storing the tag name and raw tag text verbatim — not a semantic effects model, no tag is reinterpreted |
+| `Feature` | Defined | `db/classes.json`, `db/species.json`, `db/feats.json` | 662 rows: every explicitly named `{name, entries}` dict at the top level of `Class.features`, `SubclassLevel.features`, `Species.entries` and `Feat.entries` (bare prose strings mixed into those same lists are skipped, not renamed into features). Duplicates data still held verbatim on those parents — see the model docstring for why it isn't removed from them. 51 of these rows only exist because of the `SubclassLevel.features` cleanup above — see [Known data-import issues](#known-data-import-issues) |
+| `Effect` | Partly defined | derived from `Feature.entries` | 2094 rows: a mechanical index of literal 5etools inline tags (`{@damage ...}`, `{@condition ...}`, `{@dc ...}`, etc.) found anywhere in a `Feature`'s `entries` text, storing the tag name and raw tag text verbatim — not a semantic effects model, no tag is reinterpreted |
 | `ChoiceDefinition` | Partly defined | `db/backgrounds.json`, `db/classes.json` | 27 rows, only where the source is reliably pattern-shaped: all 16 `Background.ability_scores` ("Choose from A, B, C") and 11 of 12 classes' `Class.proficiencies` "Skills: choose N from ..." clause (Bard's is genuinely empty in the source). Everything else that reads like a choice in the source (feat benefit prose, tool-proficiency choices) is inconsistent free text and was deliberately left unparsed |
 
 Every "Defined" model is loaded end-to-end (all 217 equipment rows, all 391 spells, all 12
 classes × 20 levels, all 19 languages, all 58 optional features, etc. — no rows dropped or
 truncated) by `manage.py import_rules_data` (`apps/rules/management/commands/`), which wipes
-and reloads every `rules` table from `db/` in one transaction. `Proficiency` and `Feature`'s
-row counts (85 and 611) were independently cross-checked against a from-scratch recomputation
-before this command existed; `Effect` and `ChoiceDefinition` are "Partly defined" because they
-only cover the subset of their source that's reliably, mechanically extractable — see their
-model docstrings for exactly what was included and excluded, and why.
+and reloads every `rules` table from `db/` in one transaction. `Proficiency`'s row count (85)
+was independently cross-checked against a from-scratch recomputation; `Effect` and
+`ChoiceDefinition` are "Partly defined" because they only cover the subset of their source
+that's reliably, mechanically extractable — see their model docstrings for exactly what was
+included and excluded, and why.
 
 `Tool` and `SpellList`, both originally listed in architecture.md, were removed entirely (not
 just left "Missing") once it was clear they'd always be pure duplicates: a Tool is just an
 `Equipment` row with `category` in `{Tool, Artisan's Tools, Instrument, Gaming Set}`, and a
 class's spell list is just `Spell.classes`/`Spell.subclasses` filtered — a dedicated table would
 carry the same rows twice with no independent reason to exist.
+
+### Known data-import issues
+
+Not every model above is guaranteed bug-free just because it's "Defined" - that only means the
+source was mapped field-for-field. A model can still be **wrong** if the source's own structure
+plays a trick that a literal field-for-field mapping doesn't catch. One confirmed instance so
+far, found by eye (looking at the rendered World pages, not by auditing JSON), fixed, and
+written up here so the same *kind* of bug is easier to recognize in whatever table turns up
+next - not because this table is expected to be the last one.
+
+**The bug**: `db/classes.json`'s subclass `features` list is *supposed* to be one block per
+feature (`{level, name, entries}`, exactly like `Class.features`), and for most levels it is.
+But at the level a subclass is actually gained (its lowest level, e.g. level 3 for a Fighter
+subclass), the source instead gives it a *single* block titled after the subclass itself, which
+bundles that level's real named features as nested sub-entries, plus a couple of plain-text
+flavor-text paragraphs, all inside that one block. Naively importing this made every subclass's
+first level look like one giant feature named after the subclass (e.g. Monk's "Warrior of
+Mercy" swallowing "Hand of Harm"/"Hand of Healing"/"Implements of Mercy" into itself) instead of
+several separate features that merely share a level - both in `SubclassLevel.features` and in
+the `Feature` rows derived from it.
+
+**How it was caught**: this *looks* fine in a raw JSON diff or a row count - the data is exactly
+as "complete" either way, just organized differently - so it only became obvious once the World
+UI rendered each subclass's features as individual cards (see `render_class_features()` in
+`apps/frontend/entries_render.py`) and one level's card visibly held three unrelated feature
+names crammed under one heading.
+
+**The fix** (`_split_subclass_features()` in
+`apps/rules/management/commands/import_rules_data.py`, run by `_import_classes`): before
+verifying it was a genuine pattern (not one subclass's one-off oddity), every one of the 48
+XPHB subclasses' granting-level blocks was checked programmatically against
+`db/classes.json` - confirming *all 48* have exactly one such block, always at the granting
+level, always with at least one nested named feature, and no other level has this shape. Only
+then was the transform written: the block's plain-text entries become `Subclass.description`
+(a new field - see the [Model status](#model-status) table), and its nested named entries are
+promoted to ordinary top-level `{name, entries}` blocks in `SubclassLevel.features`, exactly
+like every other level already had. `Feature` needed no code change at all: it's built by
+walking `SubclassLevel.features` for named top-level blocks, so fixing the shape at the source
+fixed `Feature` for free. (This also dropped `Effect` from 2142 to 2094 rows - the 48 removed
+rows are all `{@i ...}` italic-formatting tags that lived in the flavor text, not `Feature`
+text, so they were never a real mechanical effect to begin with; not a regression.)
+
+**The general lesson, for next time**: a model being "Defined" (mapped field-for-field) doesn't
+mean the source's own grouping is semantically correct - 5etools' JSON is authored for its own
+renderer, not for this schema, and a block that looks like "one feature with sub-details" can
+actually be "several features that got flavor text stapled to the first one." When something
+looks structurally off on a rendered page (not just "missing data" but "correct data, wrong
+shape"), that's a cue to go re-read the raw JSON for that one example, then - critically -
+*verify the fix's assumption against every occurrence in `db/`* (a small Python script over
+`db/*.json`, not just the one example that prompted it) before changing the import command, the
+same way this one was checked against all 48 subclasses rather than just Monk's. `Species`,
+`Feat`, and `OptionalFeature` all have similarly-shaped `{name, entries}` source lists and
+haven't been audited for this specific pattern - they're plausible places to look if something
+on those pages ever looks like it's grouping multiple distinct things under one heading.
 
 ### `apps/rules/` — static game content
 

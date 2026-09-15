@@ -171,50 +171,34 @@ def render_class_features(features: list) -> SafeString:
     return mark_safe(_render_level_groups(by_level, linker))
 
 
-def _flatten_subclass_level_features(subclass_name: str, features: list) -> list:
-    """Unwrap the one quirk in `SubclassLevel.features`'s shape: at the level a subclass is
-    *gained* (always its lowest level), the source gives it a single top-level block named after
-    the subclass itself, bundling the level's real named features as nested sub-entries instead
-    of listing them directly (verified across every subclass: Monk's Warrior of Mercy, Fighter's
-    Battle Master, Bard's College of Dance, ...) - every other level's features are already
-    flat, directly-named blocks needing no unwrapping. Without this, that one level renders as a
-    single card titled after the subclass instead of one card per actual feature.
-
-    Any plain-text entries alongside the nested features (the subclass's own flavor blurb) are
-    kept too, as their own card under the subclass's name, rather than silently dropped.
-    """
-    flattened = []
-    for block in features:
-        nested = [e for e in block.get("entries", []) if isinstance(e, dict) and e.get("name")]
-        if block.get("name") == subclass_name and nested:
-            intro = [e for e in block.get("entries", []) if e not in nested]
-            if intro:
-                flattened.append({"name": subclass_name, "entries": intro})
-            flattened.extend(nested)
-        else:
-            flattened.append(block)
-    return flattened
-
-
 def render_subclasses(subclasses) -> SafeString:
-    """Render a Class's `rules.Subclass` rows - each with its own `levels` (`SubclassLevel` rows
-    holding {level, features}, features being a {name, entries} list since a couple of subclasses
-    grant more than one feature at the same level) - as one named block per subclass, reusing the
-    same per-level collapsible card grouping as `render_class_features()`. Iterate `subclasses`
-    with `.levels` already prefetched (e.g. `klass.subclasses.prefetch_related("levels")`) to
-    avoid one query per subclass.
+    """Render a Class's `rules.Subclass` rows - each with its own `description` (flavor text)
+    and `levels` (`SubclassLevel` rows holding {level, features}, features being a
+    {name, entries} list since a couple of subclasses grant more than one feature at the same
+    level) - as one named block per subclass, reusing the same per-level collapsible card
+    grouping as `render_class_features()`. Iterate `subclasses` with `.levels` already
+    prefetched (e.g. `klass.subclasses.prefetch_related("levels")`) to avoid one query per
+    subclass.
+
+    `SubclassLevel.features` and `Subclass.description` are both already cleanly split at
+    import time (see `_split_subclass_features` in
+    `apps/rules/management/commands/import_rules_data.py`) - this used to also have to unwrap a
+    data error here at render time (a subclass's flavor text and its real first-batch features
+    arrived bundled into one block titled after the subclass itself), but that's now fixed at
+    the source instead.
     """
     linker = _ReferenceLinker()
     blocks = []
     for subclass in subclasses:
-        by_level = {
-            sl.level: _flatten_subclass_level_features(subclass.name, sl.features)
-            for sl in subclass.levels.all()
-        }
+        description_html = (
+            _render_node(subclass.description, linker) if subclass.description else ""
+        )
+        by_level = {sl.level: sl.features for sl in subclass.levels.all()}
         groups_html = _render_level_groups(by_level, linker)
         blocks.append(
             f'<div class="subclass-block">'
             f"<h3>{_render_text(subclass.name, linker)}</h3>"
+            f"{description_html}"
             f"{groups_html}"
             f"</div>"
         )

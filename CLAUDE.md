@@ -42,6 +42,16 @@ see the README's "Running it" section for exactly which vars to override for whi
 not part of the normal dev loop, and will raise `ProtectedError` once real `Character` rows
 reference `rules` data.
 
+**Redeploy after every task.** Once a task is finished (code changed and verified — tests pass,
+`manage.py check` is clean), run `bash update-app.sh` from the repo root. It pulls the latest
+`git` commit, rebuilds the `dnd-web` image, and restarts only that container (`dnd-db` and its
+data are left running). Do this automatically, without being asked, at the end of each task —
+not just when explicitly told to deploy. In a sandbox without GitHub credentials (see
+"Environment gotchas"), its `git pull` step fails immediately (`set -e` stops the script before
+it builds/restarts anything) - in that case run the rest of it directly instead:
+`docker compose build && docker compose up -d dnd-web` (this still picks up every local change,
+committed or not - the build just copies whatever's on disk).
+
 ## Architecture
 
 Three Django apps form a strict dependency chain — `rules` (static game content, read-only,
@@ -86,6 +96,12 @@ it probably belongs in `characters` as a service function mutating
 into while implementing something else.
 
 ## Environment gotchas
+
+Some sandboxes have no GitHub credentials wired up for network `git` operations - `git
+pull`/`fetch` against the `origin` HTTPS remote fails with `fatal: could not read Username for
+'https://github.com'`, even though local commits/log/diff work fine. This breaks
+`update-app.sh`'s first step (see "Redeploy after every task" above) - use its fallback command
+in that case.
 
 If `gettext`'s `msgfmt` isn't installable (no passwordless `sudo`, as in some sandboxes),
 `locale/it/LC_MESSAGES/django.mo` can't be produced via `manage.py compilemessages`. Hand-compile
