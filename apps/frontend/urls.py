@@ -6,6 +6,11 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("characters/", views.characters_overview, name="characters-overview"),
     path("handbook/", views.handbook_overview, name="handbook-overview"),
+    path(
+        "handbook/<slug:pk>/",
+        views.handbook_section_detail,
+        name="handbook-section-detail",
+    ),
     path("world/", views.world, name="world-overview"),
     path("world/backgrounds/", views.world_backgrounds, name="world-backgrounds"),
     path(

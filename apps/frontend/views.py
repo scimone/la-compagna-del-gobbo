@@ -8,6 +8,7 @@ from django.utils.translation import gettext as _
 from apps.frontend.entries_render import (
     render_class_features,
     render_entries,
+    render_handbook_section,
     render_key_value_table,
     render_subclasses,
     render_trait_cards,
@@ -16,6 +17,7 @@ from apps.rules.models import Feature
 from apps.rules.services import background as background_service
 from apps.rules.services import class_ as class_service
 from apps.rules.services import feat as feat_service
+from apps.rules.services import handbook as handbook_service
 from apps.rules.services import rule as rule_service
 from apps.rules.services import species as species_service
 from apps.rules.services import spell as spell_service
@@ -59,15 +61,11 @@ def characters_overview(request):
     return _placeholder(request, "Characters")
 
 
-def handbook_overview(request):
-    return _placeholder(request, "Handbook")
-
-
-def _list_page(request, title, items):
+def _list_page(request, title, items, back_url_name="world-overview"):
     return render(
         request,
         "frontend/list.html",
-        {"page_title": _(title), "back_url": reverse("world-overview"), "items": items},
+        {"page_title": _(title), "back_url": reverse(back_url_name), "items": items},
     )
 
 
@@ -80,7 +78,7 @@ def _section(heading, html, *, open=True):
     return (heading, html, open)
 
 
-def _detail_page(request, title, back_url_name, facts, sections):
+def _detail_page(request, title, back_url_name, facts, sections=(), body=None):
     return render(
         request,
         "frontend/detail.html",
@@ -89,8 +87,31 @@ def _detail_page(request, title, back_url_name, facts, sections):
             "back_url": reverse(back_url_name),
             "facts": facts,
             "sections": sections,
+            "body": body,
         },
     )
+
+
+# --- Handbook ----------------------------------------------------------------------------
+
+
+def handbook_overview(request):
+    items = [
+        {
+            "name": section.name,
+            "detail": f"{_('Page')} {section.page}",
+            "url": reverse("handbook-section-detail", args=[section.pk]),
+        }
+        for section in handbook_service.list_sections()
+    ]
+    return _list_page(request, "Handbook", items, back_url_name="index")
+
+
+def handbook_section_detail(request, pk):
+    section = handbook_service.get_section(pk)
+    facts = [(_("Page"), section.page)]
+    body = render_handbook_section(section.entries)
+    return _detail_page(request, section.name, "handbook-overview", facts, body=body)
 
 
 # --- Backgrounds --------------------------------------------------------------------------

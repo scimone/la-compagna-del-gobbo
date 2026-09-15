@@ -1,17 +1,23 @@
 """Render the 5etools-style `entries` JSON blobs (used across most `rules` models - Background,
-Species, Class, Feat, Spell, ...) as safe, readable HTML.
+Species, Class, Feat, Spell, HandbookSection, ...) as safe, readable HTML.
 
 The shapes handled here were enumerated directly from db/*.json (every distinct `type` value
 that actually occurs across `features`/`lore`/`entries`/`entriesHigherLevel` fields), not
-guessed: entries/section/inset (a heading + nested entries), list/item, table, options (a
-"choose N" group), and refFeat/refOptionalfeature (a bare cross-reference to another catalog
-entry, rendered as a plain mention - not a hyperlink, since resolving *those* links would need
-a `CharacterFeat`/`CharacterOptionalFeature`-style *choice* context this renderer doesn't have,
-not just a name lookup). `{@variantrule ...}`, `{@spell ...}` and `{@feat ...}` references *do*
-become real links, since those three catalogs (`rules.Rule`/`Spell`/`Feat`) each already have a
-detail page and a name to match against - see `_ReferenceLinker` below. Verified against every
+guessed: entries/section/inset (a heading + nested entries), list/item (list also handles
+`style: "list-decimal"`/`"list-no-bullets"` and a `columns` hint - only db/handbook.json and a
+few db/rules.json entries use these), table (colLabels, or db/handbook.json's one table using
+`colLabelRows` instead), options (a "choose N" group), and refFeat/refOptionalfeature (a bare
+cross-reference to another catalog entry, rendered as a plain mention - not a hyperlink, since
+resolving *those* links would need a `CharacterFeat`/`CharacterOptionalFeature`-style *choice*
+context this renderer doesn't have, not just a name lookup). `image` and `statblock` (both only
+in db/handbook.json) render as nothing - see the comment where they fall through, in
+`_render_dict`. `{@variantrule ...}`, `{@spell ...}` and `{@feat ...}` references *do* become
+real links, since those three catalogs (`rules.Rule`/`Spell`/`Feat`) each already have a detail
+page and a name to match against - see `_ReferenceLinker` below. Verified against every
 occurrence of all three tags in db/ before relying on the name match: 50/51 variantrule
-references, 102/102 spell references, and 19/19 feat references resolve.
+references, 102/102 spell references, and 19/19 feat references resolve. Every other `{@tag ...}`
+(`{@skill}`, `{@condition}`, `{@dice}`, `{@action}`, ...) falls back to its plain display text
+via `_tag_display_text()` - there's no catalog page for those to link to.
 
 `render_trait_cards()`, `render_class_features()` and `render_subclasses()` are separate entry
 points (not part of the generic `render_entries()` recursion) for the spots that need a distinct
@@ -34,13 +40,17 @@ def _tag_display_text(tag: str, body: str) -> str:
     """Pick the human-readable portion out of a `{@tag ...}` body.
 
     5etools tags are `{@tag display|arg1|arg2|...}`. Observed convention in this data: `@filter`
-    tags always want the first segment (the rest are query/filter parameters, not text); tags
-    with 3+ segments generally want the *last* one (an explicit display-text override, e.g.
-    `{@variantrule Cover|XPHB|Total Cover}` should read "Total Cover"); anything else wants the
-    first segment.
+    tags always want the first segment (the rest are query/filter parameters, not text); `@area`
+    tags (`{@area ability checks|020|x}` - db/handbook.json only) always want the first segment
+    too - the second is an internal same-document target id, and the third is always the literal
+    string "x", a page-number placeholder 5etools' own renderer would normally resolve, which
+    this renderer has no use for (verified: all 63 occurrences end in that literal "x"); tags
+    with 3+ segments are otherwise assumed to want the *last* one (an explicit display-text
+    override, e.g. `{@variantrule Cover|XPHB|Total Cover}` should read "Total Cover"); anything
+    else wants the first segment.
     """
     segments = body.split("|")
-    if tag == "filter":
+    if tag in ("filter", "area"):
         return segments[0]
     if len(segments) >= 3:
         return segments[-1]
@@ -58,14 +68,17 @@ _LINKABLE_TAGS = {
 
 
 class _ReferenceLinker:
-    """Resolves `{@variantrule/spell/feat ...}` references to their catalog row's detail page.
+    """Resolves `{@variantrule/spell/feat ...}` references to their catalog row's detail page,
+    and (via `toggle_entries`) carries the one per-render-pass rendering option that isn't about
+    linking - it's already the single context object threaded through every recursive render
+    function, so it's the natural place for that too rather than a second parameter everywhere.
 
     Built once per top-level `render_entries()` call and threaded through the recursive render
     functions, rather than querying per tag occurrence - each of these catalogs is small and
     mostly static (114/391/77 rows), so one query per catalog per page render is plenty.
     """
 
-    def __init__(self):
+    def __init__(self, *, toggle_entries: bool = False):
         from django.apps import apps as django_apps
 
         self._lookups = {}
@@ -73,6 +86,10 @@ class _ReferenceLinker:
             model = django_apps.get_model(model_label)
             pk_by_name = {obj.name.lower(): obj.pk for obj in model.objects.only("pk", "name")}
             self._lookups[tag] = (pk_by_name, url_name)
+        # Only `render_handbook_section()` sets this - a plain `<h3>` heading is still right for
+        # every other model's nested `entries` blocks (e.g. a Wizard's Spellcasting feature card
+        # has "Cantrips"/"Spellbook" sub-headings that shouldn't suddenly become togglable).
+        self.toggle_entries = toggle_entries
 
     def url_for(self, tag: str, ref_name: str) -> str | None:
         lookup = self._lookups.get(tag)
@@ -113,6 +130,19 @@ def _render_tag(tag: str, body: str, linker: _ReferenceLinker) -> str:
 def render_entries(entries) -> SafeString:
     """Render an `entries`-shaped value (or a bare string/list) as safe HTML."""
     linker = _ReferenceLinker()
+    return mark_safe(_render_node(entries, linker))
+
+
+def render_handbook_section(entries) -> SafeString:
+    """Render a `rules.HandbookSection`'s `entries` the same way `render_entries()` does, except
+    every named `type: "entries"` block - at any nesting depth - becomes a collapsible toggle
+    heading (reusing the `.level-group` look) instead of a plain `<h3>`. A handbook section's
+    own text is long and deeply subdivided (see the README's "Model status" table) in a way no
+    other model's `entries` field is, so it benefits from the same progressive-disclosure
+    treatment `render_class_features()` already gives a Class's per-level features - requested
+    specifically for these pages, not applied to `render_entries()`'s shared default behavior.
+    """
+    linker = _ReferenceLinker(toggle_entries=True)
     return mark_safe(_render_node(entries, linker))
 
 
@@ -223,14 +253,22 @@ def _render_dict(node: dict, linker: _ReferenceLinker) -> str:
 
     if node_type in ("entries", "section", "inset"):
         heading = node.get("name")
+        body = _render_node(node.get("entries", []), linker)
+
+        if node_type == "entries" and heading and linker.toggle_entries:
+            return (
+                f'<details class="level-group">'
+                f"<summary>{_render_text(heading, linker)}</summary>"
+                f'<div class="toggle-body">{body}</div>'
+                f"</details>"
+            )
+
         heading_html = f"<h3>{_render_text(heading, linker)}</h3>" if heading else ""
         css_class = ' class="inset"' if node_type == "inset" else ""
-        body = _render_node(node.get("entries", []), linker)
         return f"<div{css_class}>{heading_html}{body}</div>"
 
     if node_type == "list":
-        items_html = "".join(_render_list_item(item, linker) for item in node.get("items", []))
-        return f"<ul>{items_html}</ul>"
+        return _render_list(node, linker)
 
     if node_type == "item":
         return _render_list_item(node, linker)
@@ -252,7 +290,11 @@ def _render_dict(node: dict, linker: _ReferenceLinker) -> str:
         return f"<p>&rarr; {escape(name)}</p>"
 
     # Unknown shape - if it has nested entries, render those rather than dropping the content
-    # silently; otherwise there's nothing safe to do with it.
+    # silently; otherwise there's nothing safe to do with it. This is also what happens to
+    # `image` (book art we don't have the files for - no `static/` copy of `book/XPHB/*.webp`)
+    # and `statblock` (a bare name/tag/source reference to a monster/hazard stat block - there's
+    # no Bestiary model to link it to, per the "no combat system" scope decision) - both drop
+    # silently rather than showing a caption pointing at nothing or an unresolvable reference.
     if "entries" in node:
         return _render_node(node["entries"], linker)
     return ""
@@ -262,11 +304,39 @@ def _choose_note(count: int) -> str:
     return f"Choose {count}:" if count != 1 else "Choose one:"
 
 
+def _render_list(node: dict, linker: _ReferenceLinker) -> str:
+    """Render a `list` node. `style: "list-decimal"` becomes an ordered `<ol>` (numbered steps,
+    e.g. the handbook's "Combat Step by Step"); `style: "list-no-bullets"` drops the bullet
+    marker (a plain side-by-side grouping, e.g. a list of senses); `columns` (an int) lays the
+    list out in that many CSS columns, for short items meant to sit side by side rather than in
+    one long column. A list can carry its own `name` alongside its items' individual names -
+    rare (a handful of numbered "(1)"-style callouts in the handbook, cross-referencing an inset
+    elsewhere) but rendered as a small heading above the list when present, the same as every
+    other named block in this renderer.
+    """
+    heading_html = f"<h4>{_render_text(node['name'], linker)}</h4>" if node.get("name") else ""
+    items_html = "".join(_render_list_item(item, linker) for item in node.get("items", []))
+    tag = "ol" if node.get("style") == "list-decimal" else "ul"
+    class_attr = ' class="no-bullets"' if node.get("style") == "list-no-bullets" else ""
+    style_attr = f' style="column-count: {int(node["columns"])}"' if node.get("columns") else ""
+    return f"{heading_html}<{tag}{class_attr}{style_attr}>{items_html}</{tag}>"
+
+
 def _render_list_item(item, linker: _ReferenceLinker) -> str:
     if isinstance(item, str):
         return f"<li>{_render_text(item, linker)}</li>"
     if not isinstance(item, dict):
         return ""
+
+    # A list's `items` can itself hold a differently-typed node - not wrapped in an `item` - e.g.
+    # a nested `list` (the handbook's "Add Modifiers" step has a sub-list of modifier types as
+    # its third `list-decimal` entry, not a fourth named item). Delegate to the general dict
+    # renderer for anything typed but not "item", rather than assuming the {name, entry} shape,
+    # which would otherwise silently produce an empty <li> (verified: this is the only such
+    # occurrence across every db/*.json file, but the fallback is general, not a special case).
+    item_type = item.get("type")
+    if item_type and item_type != "item":
+        return f"<li>{_render_dict(item, linker)}</li>"
 
     name = item.get("name")
     name_html = f"<strong>{_render_text(name, linker)}</strong> " if name else ""
@@ -304,7 +374,18 @@ def _render_table(node: dict, linker: _ReferenceLinker) -> str:
     caption = node.get("caption")
     caption_html = f"<caption>{_render_text(caption, linker)}</caption>" if caption else ""
 
-    headers = node.get("colLabels", [])
+    # Every table has a flat `colLabels` except one (so far): the handbook's "Travel Pace" table
+    # instead uses `colLabelRows` (multiple header rows, for a spanning super-header above
+    # sub-columns - e.g. "Distance Traveled Per..." over "Minute"/"Hour"/"Day") - falling back to
+    # just its last row gets the real per-column labels without needing full rowspan/colspan
+    # support for what's currently a single occurrence. A `cellHeader` cell (also currently only
+    # in that one table) is a dict wrapping its label text in `entry` rather than being the bare
+    # string every other header cell is.
+    headers = node.get("colLabels")
+    if not headers:
+        label_rows = node.get("colLabelRows") or []
+        last_row = label_rows[-1] if label_rows else []
+        headers = [cell.get("entry", "") if isinstance(cell, dict) else cell for cell in last_row]
     header_html = "".join(f"<th>{_render_text(str(h), linker)}</th>" for h in headers)
     thead_html = f"<thead><tr>{header_html}</tr></thead>" if headers else ""
 

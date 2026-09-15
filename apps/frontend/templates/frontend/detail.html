@@ -44,6 +44,15 @@
     padding: 0.7rem 0.9rem;
   }
 
+  /* Content passed as `body` (not a collapsible `sections` entry) renders directly on the page
+     - still `.detail-section` for its typography (h3/p/ul/table/...), just without the card
+     look, since there's no heading of its own to justify boxing it off from the page. */
+  .detail-section.plain {
+    background: none;
+    border: none;
+    padding: 0;
+  }
+
   .detail-section > summary {
     cursor: pointer;
     list-style: none;
@@ -97,6 +106,22 @@
 
   .detail-section li {
     margin: 0.3rem 0;
+  }
+
+  .detail-section ol {
+    margin: 0.4rem 0;
+    padding-left: 1.25rem;
+  }
+
+  .detail-section ul.no-bullets {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .detail-section h4 {
+    font-size: 0.95rem;
+    margin: 0.6rem 0 0.2rem;
+    color: var(--muted);
   }
 
   .detail-section .inset {
@@ -177,6 +202,10 @@
     padding: 0 0.7rem 0.7rem;
   }
 
+  .level-group .toggle-body {
+    padding: 0 0.7rem 0.7rem;
+  }
+
   .subclass-block > h3 {
     margin: 0 0 0.5rem;
     color: var(--accent);
@@ -225,6 +254,10 @@
           {% endfor %}
         </dl>
       </div>
+    {% endif %}
+
+    {% if body %}
+      <div class="detail-section plain">{{ body }}</div>
     {% endif %}
 
     {% for heading, html, open in sections %}

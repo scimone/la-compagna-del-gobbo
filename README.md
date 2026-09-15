@@ -153,6 +153,7 @@ section for why.
 | `Feature` | Defined | `db/classes.json`, `db/species.json`, `db/feats.json` | 665 rows: every explicitly named `{name, entries}` dict at the top level of `Class.features`, a subclass's per-level features, `Species.entries` and `Feat.entries` (bare prose strings mixed into those same lists are skipped, not renamed into features). Duplicates data still held verbatim on `Class`/`Species`/`Feat` — see the model docstring for why it isn't removed from them there; subclass features are the one exception, where `Feature` is the *only* copy — see [Known data-import issues](#known-data-import-issues) |
 | `Effect` | Partly defined | derived from `Feature.entries` | 2094 rows: a mechanical index of literal 5etools inline tags (`{@damage ...}`, `{@condition ...}`, `{@dc ...}`, etc.) found anywhere in a `Feature`'s `entries` text, storing the tag name and raw tag text verbatim — not a semantic effects model, no tag is reinterpreted |
 | `ChoiceDefinition` | Partly defined | `db/backgrounds.json`, `db/classes.json` | 27 rows, only where the source is reliably pattern-shaped: all 16 `Background.ability_scores` ("Choose from A, B, C") and 11 of 12 classes' `Class.proficiencies` "Skills: choose N from ..." clause (Bard's is genuinely empty in the source). Everything else that reads like a choice in the source (feat benefit prose, tool-proficiency choices) is inconsistent free text and was deliberately left unparsed |
+| `HandbookSection` | Defined | `db/handbook.json` (`data`) | 15 rows: the source has exactly one chapter, so rather than model chapters as their own grouping, its root block and each of its direct named children ("Rules Glossary", "Player or DM?", "Dice", ...) are flattened into one row each - see the model docstring. `entries` holds each one's own content (arbitrarily nested headings/lists/tables/insets), rendered the same way as every other `entries`-shaped field. Surfaced two edge cases in `entries_render.py` itself - see [Known data-import issues](#known-data-import-issues), Issue 3 |
 
 Every "Defined" model is loaded end-to-end (all 217 equipment rows, all 391 spells, all 12
 classes × 20 levels, all 19 languages, all 58 optional features, etc. — no rows dropped or
@@ -172,12 +173,12 @@ carry the same rows twice with no independent reason to exist.
 ### Known data-import issues
 
 Not every model above is guaranteed bug-free or non-redundant just because it's "Defined" -
-that only means the source was mapped field-for-field. Two problems found so far, neither
-visible from a row count or a JSON diff, both fixed, both written up here so the same *kind* of
-problem is easier to recognize in whatever table turns up next - not because these two are
-expected to be the last ones. One was a genuine data bug (wrong grouping); the other was
-harmless but wasteful duplication. They're different problems with different fixes - worth
-telling apart when you go looking for the next one.
+that only means the source was mapped field-for-field. This also covers `apps/frontend/
+entries_render.py`, not just the import command - the same "assumed a shape from a handful of
+examples, an edge case elsewhere in `db/` breaks it" failure mode shows up at render time too,
+not only at import time. Problems found so far, none visible from a row count or a JSON diff,
+all fixed, all written up here so the same *kind* of problem is easier to recognize in whatever
+table (or tag, or shape) turns up next - not because this list is expected to be complete.
 
 #### Issue 1: a subclass's granting-level features were bundled into one fake feature
 
@@ -235,6 +236,41 @@ name (correct for its own `/api/rules/features` listing), that query is given an
 Life Domain, whose real order - "Life Domain Spells", "Disciple of Life", "Preserve Life" - is
 *not* alphabetical, so this was checked, not assumed).
 
+#### Issue 3: two rendering assumptions broke on `db/handbook.json`'s edge cases
+
+`apps/frontend/entries_render.py`'s generic renderer was built against `db/{classes,species,
+backgrounds,feats,spells,rules}.json`, and every assumption in it had been checked against
+*those* files - but `db/handbook.json` (the player's-handbook chapter text, added later, far
+larger and more varied than any single catalog entry) exercised two shapes nothing before it
+had:
+
+- **`{@area ...}` tags got the wrong display text.** `_tag_display_text()`'s "3+ segments ->
+  use the last one" rule was written for tags like `{@variantrule Cover|XPHB|Total Cover}`,
+  where the last segment is a genuine display override. `{@area ability checks|020|x}` is a
+  different tag with the same segment count but a different convention (first segment is the
+  text; the rest are an internal target id and a literal page-number placeholder, `"x"`, that
+  5etools' own renderer would normally resolve) - so text like "three kinds: ability checks,
+  saving throws, and attack rolls" rendered as "three kinds: x, x, and x" instead. Fixed by
+  giving `area` the same first-segment rule as `filter` (verified: all 63 `{@area ...}`
+  occurrences in `db/handbook.json` end in that literal `"x"`, and the tag doesn't appear in any
+  other `db/*.json` file).
+- **A list whose `items` held something other than a plain item silently rendered empty.**
+  `_render_list_item()` assumed every list item was either a bare string or a `{name, entry}`
+  dict - true everywhere else in `db/`, but one handbook list (D20 Tests' "Add Modifiers" step)
+  nests a whole second `list` directly inside another list's `items` array, not wrapped in an
+  `item`. That dict has neither `name` nor `entry` nor `entries`, so it rendered as an empty
+  `<li></li>` - list item 3 of 4 just vanished. Fixed by delegating to the general dict renderer
+  whenever a list item is itself a typed node other than `"item"` (verified: this is the only
+  such occurrence across every `db/*.json` file, but the fix isn't a special case for that one
+  list - the same delegation would handle a table, an inset, or anything else nested the same
+  way).
+
+Neither of these was visible in a row count either - the data imported "successfully" both
+times; the bug was purely in how it was displayed, for one specific passage out of a very large
+document. That's the tell for this category: not "is the row count right" but "read enough of
+the actual rendered content, not just the first paragraph of it, to notice something reads
+wrong."
+
 #### The general lesson, for next time
 
 A model being "Defined" (mapped field-for-field) doesn't mean the source's own grouping is
@@ -248,13 +284,20 @@ semantically correct, or that nothing downstream of it is redundant:
   (not a source-native field kept verbatim on purpose) is worth asking "does something else
   already hold this same data via a queryable relation?" - if so, the JSON copy is dead weight,
   not a deliberate tradeoff.
+- **Untested rendering assumptions** (Issue 3): the generic renderer's rules (which tag
+  convention applies, what shape a list item has) were each derived from - and only checked
+  against - the handful of `db/*.json` files that existed when they were written. A new file
+  large and varied enough (a whole handbook chapter, not one catalog entry) can exercise a shape
+  none of those checks ever saw, and the failure is silent (no error, no missing row) - only
+  visible by actually reading the rendered output.
 
 Either way, the same discipline applies: don't fix the one example that prompted the question -
 *verify the fix's assumption against every occurrence in `db/`* (a small Python script over
-`db/*.json`, not just one subclass) before changing the import command, the way both issues
-above were checked against all 48 subclasses rather than just Monk's or Cleric's. `Species`,
-`Feat`, and `OptionalFeature` all have similarly-shaped `{name, entries}` source lists and
-haven't been audited for either pattern - they're plausible places to look next.
+`db/*.json`, not just one subclass or one passage) before changing the import command or the
+renderer, the way all three issues above were checked against every subclass/tag/list-item in
+`db/`, not just the one Monk/Cleric/D20-Tests example that surfaced each. `Species`, `Feat`, and
+`OptionalFeature` all have similarly-shaped `{name, entries}` source lists and haven't been
+audited for the Issue 1/2 patterns - they're plausible places to look next.
 
 ### `apps/rules/` — static game content
 
@@ -288,6 +331,7 @@ assets) and `otherVersions` (cross-references to non-XPHB printings — we only 
 | `Language` | A language (e.g. Common, Elvish) |
 | `Spell` | A spell definition |
 | `OptionalFeature` | An optional class feature a player can pick (Eldritch Invocation, Maneuver, Metamagic) |
+| `HandbookSection` | A named topic of the player's handbook (rules text, not catalog data) |
 
 **API** (`apps/rules/api/rules/`, tag `Rules`, mounted at `/api/rules`) — one file per endpoint,
 implemented (real queries via `services/`, `ModelSchema` responses in `apps/rules/schemas.py`):
@@ -438,8 +482,16 @@ mobile-first CSS with a dark-mode variant; a JS-measured `--app-height` custom p
 around mobile browsers resizing the visible viewport as the address bar shows/hides.
 
 - `GET /` (`index`) — three full-height nav buttons: **Characters** → `/characters/`,
-  **Handbook** → `/handbook/`, **World** → `/world/`. Characters and Handbook are still
-  placeholder "coming soon" pages (`overview.html`); **World is fully built out** (see below).
+  **Handbook** → `/handbook/`, **World** → `/world/`. Characters is still a placeholder
+  "coming soon" page (`overview.html`); **Handbook and World are both built out** (see below).
+- `GET /handbook/` (`handbook_overview`) lists every `rules.HandbookSection` (a `list_page` like
+  World's catalogs, but its back button returns to `index`, not `world-overview` - it's a
+  sibling of World, not nested under it) - 15 rows, since the single source chapter is flattened
+  one level into one row per named topic rather than modeled as its own grouping (see
+  `HandbookSection`'s docstring for why). Each links to `GET /handbook/<id>/`
+  (`handbook_section_detail`), which renders exactly like a `Rule`/`Feat`/`Spell` detail page -
+  one open "Description" section, no per-page collapsing needed now that each page covers one
+  topic instead of the whole chapter.
 - `GET /world/` (`world`) — five full-height nav buttons, one per browsable `rules` catalog:
   **Backgrounds**, **Classes**, **Species**, **Feats**, **Spells**. (Class Features and
   Subraces were dropped again after being tried - the former duplicated what's already on each

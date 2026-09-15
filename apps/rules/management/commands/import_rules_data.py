@@ -16,6 +16,7 @@ from apps.rules.models import (
     EquipmentProperty,
     Feat,
     Feature,
+    HandbookSection,
     Language,
     Mastery,
     OptionalFeature,
@@ -36,6 +37,13 @@ DB_DIR = Path(settings.BASE_DIR) / "db"
 def _load(filename: str) -> list[dict]:
     with open(DB_DIR / filename, encoding="utf-8") as f:
         return json.load(f)["items"]
+
+
+def _load_handbook() -> list[dict]:
+    # db/handbook.json uses a top-level "data" key (one item per chapter), unlike every other
+    # db/*.json file's "items" - a different dump format from a different source pass.
+    with open(DB_DIR / "handbook.json", encoding="utf-8") as f:
+        return json.load(f)["data"]
 
 
 def _named_dicts(entries: list) -> list[dict]:
@@ -161,6 +169,7 @@ class Command(BaseCommand):
         features_by_source = self._import_features()
         self._import_effects(features_by_source)
         self._import_choice_definitions()
+        self._import_handbook()
 
         self.stdout.write(self.style.SUCCESS("Rules data imported."))
 
@@ -181,6 +190,7 @@ class Command(BaseCommand):
             Language,
             OptionalFeature,
             Spell,
+            HandbookSection,
         ]:
             model.objects.all().delete()
 
@@ -532,3 +542,32 @@ class Command(BaseCommand):
                 )
         ChoiceDefinition.objects.bulk_create(rows)
         self.stdout.write(f"  ChoiceDefinition: {ChoiceDefinition.objects.count()}")
+
+    def _import_handbook(self):
+        # There's only one chapter in the source - flatten it one level rather than modeling
+        # chapters as their own grouping (see HandbookSection's docstring): the chapter's own
+        # root block becomes one row (its `entries` trimmed to just its own leading content, not
+        # the nested sections' content too, which becomes their own rows below), and each of its
+        # direct named children ("Rules Glossary", "Player or DM?", "Dice", ...) becomes one more.
+        chapter = _load_handbook()[0]
+        leading_entries = [
+            e for e in chapter["entries"] if not (isinstance(e, dict) and e.get("name"))
+        ]
+        named_children = [e for e in chapter["entries"] if isinstance(e, dict) and e.get("name")]
+
+        rows = [
+            HandbookSection(
+                id=chapter["id"],
+                name=chapter["name"],
+                page=chapter["page"],
+                entries=leading_entries,
+            )
+        ]
+        rows.extend(
+            HandbookSection(
+                id=child["id"], name=child["name"], page=child["page"], entries=child["entries"]
+            )
+            for child in named_children
+        )
+        HandbookSection.objects.bulk_create(rows)
+        self.stdout.write(f"  HandbookSection: {HandbookSection.objects.count()}")
