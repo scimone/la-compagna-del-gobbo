@@ -13,9 +13,11 @@ detail page and a name to match against - see `_ReferenceLinker` below. Verified
 occurrence of all three tags in db/ before relying on the name match: 50/51 variantrule
 references, 102/102 spell references, and 19/19 feat references resolve.
 
-`render_trait_cards()` and `render_class_features()` are separate entry points (not part of the
-generic `render_entries()` recursion) for the two spots that need a distinct visual per named
-block instead of plain stacked headings: a Species' traits, and a Class's per-level features.
+`render_trait_cards()`, `render_class_features()` and `render_subclasses()` are separate entry
+points (not part of the generic `render_entries()` recursion) for the spots that need a distinct
+visual per named block instead of plain stacked headings: a Species' traits, a Class's per-level
+features, and a Class's subclasses (each subclass reusing the same per-level card grouping as
+`render_class_features()`).
 """
 
 import re
@@ -138,17 +140,12 @@ def render_trait_cards(entries: list) -> SafeString:
     return mark_safe(_render_entry_cards(entries or [], linker))
 
 
-def render_class_features(features: list) -> SafeString:
-    """Render `rules.Class.features` (a flat {level, name, entries} list - multiple features
-    commonly share a level, e.g. every class's level 1 has several) as one collapsible group per
-    level, each holding one card per feature gained at that level. The lowest level starts
-    expanded since it's what a new reader of the class most likely wants first.
+def _render_level_groups(by_level: dict[int, list[dict]], linker: _ReferenceLinker) -> str:
+    """Render a {level: [{name, entries}, ...]} mapping as one collapsible group per level, each
+    holding one card per block gained at that level - shared by `render_class_features()` and
+    `render_subclasses()` below. The lowest level starts expanded since it's what a new reader
+    most likely wants first.
     """
-    linker = _ReferenceLinker()
-    by_level: dict[int, list[dict]] = {}
-    for feature in features or []:
-        by_level.setdefault(feature["level"], []).append(feature)
-
     groups = []
     for i, level in enumerate(sorted(by_level)):
         open_attr = " open" if i == 0 else ""
@@ -159,7 +156,69 @@ def render_class_features(features: list) -> SafeString:
             f"{cards_html}"
             f"</details>"
         )
-    return mark_safe("".join(groups))
+    return "".join(groups)
+
+
+def render_class_features(features: list) -> SafeString:
+    """Render `rules.Class.features` (a flat {level, name, entries} list - multiple features
+    commonly share a level, e.g. every class's level 1 has several) as one collapsible group per
+    level, each holding one card per feature gained at that level.
+    """
+    linker = _ReferenceLinker()
+    by_level: dict[int, list[dict]] = {}
+    for feature in features or []:
+        by_level.setdefault(feature["level"], []).append(feature)
+    return mark_safe(_render_level_groups(by_level, linker))
+
+
+def _flatten_subclass_level_features(subclass_name: str, features: list) -> list:
+    """Unwrap the one quirk in `SubclassLevel.features`'s shape: at the level a subclass is
+    *gained* (always its lowest level), the source gives it a single top-level block named after
+    the subclass itself, bundling the level's real named features as nested sub-entries instead
+    of listing them directly (verified across every subclass: Monk's Warrior of Mercy, Fighter's
+    Battle Master, Bard's College of Dance, ...) - every other level's features are already
+    flat, directly-named blocks needing no unwrapping. Without this, that one level renders as a
+    single card titled after the subclass instead of one card per actual feature.
+
+    Any plain-text entries alongside the nested features (the subclass's own flavor blurb) are
+    kept too, as their own card under the subclass's name, rather than silently dropped.
+    """
+    flattened = []
+    for block in features:
+        nested = [e for e in block.get("entries", []) if isinstance(e, dict) and e.get("name")]
+        if block.get("name") == subclass_name and nested:
+            intro = [e for e in block.get("entries", []) if e not in nested]
+            if intro:
+                flattened.append({"name": subclass_name, "entries": intro})
+            flattened.extend(nested)
+        else:
+            flattened.append(block)
+    return flattened
+
+
+def render_subclasses(subclasses) -> SafeString:
+    """Render a Class's `rules.Subclass` rows - each with its own `levels` (`SubclassLevel` rows
+    holding {level, features}, features being a {name, entries} list since a couple of subclasses
+    grant more than one feature at the same level) - as one named block per subclass, reusing the
+    same per-level collapsible card grouping as `render_class_features()`. Iterate `subclasses`
+    with `.levels` already prefetched (e.g. `klass.subclasses.prefetch_related("levels")`) to
+    avoid one query per subclass.
+    """
+    linker = _ReferenceLinker()
+    blocks = []
+    for subclass in subclasses:
+        by_level = {
+            sl.level: _flatten_subclass_level_features(subclass.name, sl.features)
+            for sl in subclass.levels.all()
+        }
+        groups_html = _render_level_groups(by_level, linker)
+        blocks.append(
+            f'<div class="subclass-block">'
+            f"<h3>{_render_text(subclass.name, linker)}</h3>"
+            f"{groups_html}"
+            f"</div>"
+        )
+    return mark_safe("".join(blocks))
 
 
 def _render_node(node, linker: _ReferenceLinker) -> str:

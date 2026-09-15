@@ -8,6 +8,7 @@ from apps.frontend.entries_render import (
     render_class_features,
     render_entries,
     render_key_value_table,
+    render_subclasses,
     render_trait_cards,
 )
 from apps.rules.services import background as background_service
@@ -68,6 +69,15 @@ def _list_page(request, title, items):
     )
 
 
+def _section(heading, html, *, open=True):
+    """One (heading, html, open) entry for `_detail_page`'s `sections` - a collapsible
+    `<details>` block in detail.html. `open=False` for sections long enough that showing them
+    expanded by default buries the rest of the page (e.g. a Class's per-level features or
+    subclasses) - everything else defaults open since it's usually short enough to just read.
+    """
+    return (heading, html, open)
+
+
 def _detail_page(request, title, back_url_name, facts, sections):
     return render(
         request,
@@ -121,9 +131,9 @@ def world_background_detail(request, pk):
 
     sections = []
     if equipment:
-        sections.append((_("Equipment"), render_entries(equipment)))
+        sections.append(_section(_("Equipment"), render_entries(equipment)))
     if bg.lore:
-        sections.append((_("Lore"), render_entries(bg.lore)))
+        sections.append(_section(_("Lore"), render_entries(bg.lore)))
 
     return _detail_page(request, bg.name, "world-backgrounds", facts, sections)
 
@@ -146,7 +156,7 @@ def world_classes(request):
 
 def world_class_detail(request, pk):
     klass = class_service.get_class(pk)
-    subclasses = list(klass.subclasses.order_by("name").values_list("name", flat=True))
+    subclasses = list(klass.subclasses.order_by("name").prefetch_related("levels"))
 
     facts = [
         (_("Hit Die"), klass.hit_die.upper()),
@@ -159,21 +169,24 @@ def world_class_detail(request, pk):
         facts.append((_("Weapon Proficiencies"), klass.weapon_proficiencies))
     if klass.tool_proficiencies:
         facts.append((_("Tool Proficiencies"), klass.tool_proficiencies))
-    if subclasses:
-        facts.append((_("Subclasses"), ", ".join(subclasses)))
     facts.append((_("Page"), klass.page))
 
     sections = []
     if klass.lore:
-        sections.append((_("Lore"), render_entries(klass.lore)))
+        sections.append(_section(_("Lore"), render_entries(klass.lore)))
 
-    sections.append((_("Features by Level"), render_class_features(klass.features)))
+    sections.append(
+        _section(_("Features by Level"), render_class_features(klass.features), open=False)
+    )
+
+    if subclasses:
+        sections.append(_section(_("Subclasses"), render_subclasses(subclasses), open=False))
 
     levels = list(klass.levels.order_by("level"))
     if levels:
         headers = list(levels[0].columns.keys())
         rows = [lvl.columns for lvl in levels]
-        sections.append((_("Level Progression"), render_key_value_table(rows, headers)))
+        sections.append(_section(_("Level Progression"), render_key_value_table(rows, headers)))
 
     return _detail_page(request, klass.name, "world-classes", facts, sections)
 
@@ -201,7 +214,7 @@ def world_feat_detail(request, pk):
         facts.append((_("Prerequisite"), feat.prerequisite))
     facts.append((_("Page"), feat.page))
 
-    sections = [(_("Description"), render_entries(feat.entries))]
+    sections = [_section(_("Description"), render_entries(feat.entries))]
 
     return _detail_page(request, feat.name, "world-feats", facts, sections)
 
@@ -241,9 +254,9 @@ def world_species_detail(request, pk):
 
     sections = []
     if species.lore:
-        sections.append((_("Lore"), render_entries(species.lore)))
+        sections.append(_section(_("Lore"), render_entries(species.lore)))
     if species.entries:
-        sections.append((_("Traits"), render_trait_cards(species.entries)))
+        sections.append(_section(_("Traits"), render_trait_cards(species.entries)))
 
     return _detail_page(request, species.name, "world-species", facts, sections)
 
@@ -285,9 +298,9 @@ def world_spell_detail(request, pk):
         facts.append((_("Classes"), ", ".join(spell.classes)))
     facts.append((_("Page"), spell.page))
 
-    sections = [(_("Description"), render_entries(spell.entries))]
+    sections = [_section(_("Description"), render_entries(spell.entries))]
     if spell.entries_higher_level:
-        sections.append((_("At Higher Levels"), render_entries(spell.entries_higher_level)))
+        sections.append(_section(_("At Higher Levels"), render_entries(spell.entries_higher_level)))
 
     return _detail_page(request, spell.name, "world-spells", facts, sections)
 
@@ -302,5 +315,5 @@ def world_spell_detail(request, pk):
 def world_rule_detail(request, pk):
     rule = rule_service.get_rule(pk)
     facts = [(_("Page"), rule.page)]
-    sections = [(_("Description"), render_entries(rule.entries))]
+    sections = [_section(_("Description"), render_entries(rule.entries))]
     return _detail_page(request, rule.name, "world-overview", facts, sections)

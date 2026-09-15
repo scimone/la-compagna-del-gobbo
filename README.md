@@ -12,23 +12,64 @@ exists today and what each placeholder is reserved for.
 - **PostgreSQL** — the database (via `docker-compose.yml`)
 - **Django Ninja** — the HTTP API (OpenAPI schema at `/api/docs`)
 - **django-pwa** — PWA manifest/service-worker plumbing for the frontend shell
+- **WhiteNoise** — serves collected static files (PWA icons, menu artwork, `serviceworker.js`)
+  directly from the ASGI app when running in the `dnd-web` container - there's no separate web
+  server sharing a volume, and uvicorn doesn't serve static files on its own the way
+  `manage.py runserver` does
 - **uvicorn** — ASGI server
 - **uv** — dependency management
+- **Docker** / **docker-compose** — containerized deployment (`Dockerfile`, `docker-compose.yml`)
 - **pytest** / **pytest-django** — tests
 - **ruff** — linting and formatting
 
 ## Running it
 
-Copy `.env.dist` to `.env` and fill in a password/secret key, then start Postgres:
+Copy `.env.dist` to `.env` and fill in a password/secret key. `.env` is read by both `manage.py`
+(via `python-dotenv`, host-side) and by Docker Compose (`env_file:`) — which `POSTGRES_HOST`/
+`POSTGRES_PORT` belong there depends on which of the two ways below you're running.
+
+### Option A — everything in Docker (closest to how it's actually deployed)
 
 ```bash
-docker compose up -d
+docker compose up -d --build
 ```
 
-`manage.py` runs on the host, not (yet) in a container — `docker-compose.yml`'s `dnd-web`
-service is commented out until one exists. `.env`'s `POSTGRES_HOST`/`POSTGRES_PORT` are the
-in-network values for that future container (`dnd-db`/`5432`); from the host, override them to
-the mapped port instead:
+This builds `dnd-web` (the Dockerfile installs deps with `uv sync`, then runs
+`collectstatic --noinput` at build time - see `STORAGES`/WhiteNoise below) and starts it
+alongside `dnd-db` (Postgres 16, `postgres_data/` bind-mounted for persistence). `dnd-web` waits
+for `dnd-db` to report healthy (`pg_isready`) before starting, and its startup command runs
+`manage.py migrate --noinput` automatically before uvicorn. `import_rules_data` does **not**
+run automatically (see the warning below) - do it once, manually:
+
+```bash
+docker compose exec dnd-web uv run manage.py import_rules_data
+```
+
+For this mode, `.env`'s `POSTGRES_HOST`/`POSTGRES_PORT` should point at the `dnd-db` service on
+the compose network (`dnd-db` / `5432`, per `.env.dist`) - or at an external Postgres instance
+reachable from the container, if you'd rather not use the bundled `dnd-db` at all (in which case
+that service just goes unused; nothing requires the app to talk to it). App: `http://localhost:3000/`
+— API docs: `http://localhost:3000/api/docs`.
+
+**Redeploying** after a code change: `bash update-app.sh` — pulls `git`, rebuilds the image, and
+restarts only `dnd-web` (`dnd-db` and its data are left running untouched).
+
+⚠️ **`import_rules_data` wipes and reloads every `rules` table.** Every FK from `characters` into
+`rules` is `on_delete=PROTECT`, so running it again once real `Character` rows exist will raise
+`ProtectedError` and refuse - it's meant as a one-off/rare data-refresh step, never part of the
+normal startup or redeploy path.
+
+### Option B — Postgres in Docker, `manage.py`/uvicorn on the host (day-to-day dev)
+
+This is the faster loop for iterating on code, and what this whole project has been developed
+against. Start just the database:
+
+```bash
+docker compose up -d dnd-db
+```
+
+`.env`'s `POSTGRES_HOST`/`POSTGRES_PORT` are the in-network values for the `dnd-db` container;
+from the host, override them to the mapped port instead:
 
 ```bash
 export POSTGRES_HOST=localhost POSTGRES_PORT=5462  # matches the "5462:5432" port mapping
@@ -37,7 +78,11 @@ uv run python manage.py import_rules_data  # loads db/*.json into the rules tabl
 uv run uvicorn config.asgi:application --reload
 ```
 
-API docs: `http://192.168.1.72:3000/api/docs` — frontend: `http://192.168.1.72:3000/`
+Static files (PWA icons, menu artwork, `serviceworker.js`) are served differently here than in
+the container: `manage.py runserver` auto-serves them under `DEBUG=True`; running `uvicorn`
+directly instead (as above) needs `staticfiles_urlpatterns()`, which `config/urls.py` appends to
+`urlpatterns` whenever `DEBUG` is on - no `collectstatic`/`STATIC_ROOT` involved for this path,
+unlike the container's WhiteNoise setup.
 
 Tests need the same host override as above (`pytest-django` creates/drops a throwaway test
 database using the same connection settings):
@@ -244,14 +289,6 @@ sheet aggregator), `classes.py`, `feats.py`, `features.py`, `languages.py`,
 `optional_features.py`, `proficiencies.py`, `senses.py`, `resources.py`, `choices.py`,
 `inventory.py`, `currency.py`, `spells.py`.
 
-**Open question, not yet decided:** *spending* a `CharacterResource` (using a Rage/Sorcery
-Point/spell slot) and rest recovery (short/long rest restoring resources) don't clearly belong
-to any of the three apps as currently scoped — `rules` is read-only, `builder` is creation/
-leveling (not turn-by-turn play), and `characters` is passive state. A rest isn't combat (which
-is explicitly out of scope), so this probably belongs in `characters` as a service function
-mutating `CharacterResource.current_uses`, but that's a call worth making deliberately rather
-than backing into.
-
 ### `apps/builder/` — character creation/leveling engine
 
 The D&D character engine: what can be chosen, whether a choice is valid, what it grants, and how
@@ -304,28 +341,61 @@ Ninja schemas for builder state/choices/validation/progression responses once th
 
 Not part of the `rules`/`characters`/`builder` layering above (it's the web UI, not game logic).
 A minimal Django app serving server-rendered pages, wired up as an installable PWA via
-`django-pwa`:
+`django-pwa`.
+
+**Navigation shell** — every page (`templates/frontend/base.html`, extended by the rest) has a
+header with a back button (omitted on `index`), the current page's title (just the app name on
+`index` itself), and one language-toggle button that switches to the *other* language, labeled
+with that language's own autonym (e.g. shows "Italiano" while browsing in English). Responsive,
+mobile-first CSS with a dark-mode variant; a JS-measured `--app-height` custom property works
+around mobile browsers resizing the visible viewport as the address bar shows/hides.
 
 - `GET /` (`index`) — three full-height nav buttons: **Characters** → `/characters/`,
-  **Handbook** → `/handbook/` (the user-facing name for the `rules` domain content),
-  **World** → `/world/`. All three targets are placeholder "coming soon" pages for now
-  (`overview.html`, reused for all three - they're identical except the title).
+  **Handbook** → `/handbook/`, **World** → `/world/`. Characters and Handbook are still
+  placeholder "coming soon" pages (`overview.html`); **World is fully built out** (see below).
+- `GET /world/` (`world`) — five full-height nav buttons, one per browsable `rules` catalog:
+  **Backgrounds**, **Classes**, **Species**, **Feats**, **Spells**. (Class Features and
+  Subraces were dropped again after being tried - the former duplicated what's already on each
+  Class's own detail page, and the 2024 rules have no subraces at all, so `db/species.json` has
+  nothing to list there.)
+- Each catalog has a **list page** (`list.html`) showing every row of that `rules` model, and a
+  **detail page** (`detail.html`) per row, both built generically by `views.py` (`_list_page`/
+  `_detail_page` helpers) rather than one bespoke template per model:
+  - Detail pages render as a `facts` key-value block (short fields - size, page number, casting
+    time, ...) plus a list of `sections` (Lore/Description/Traits/... - longer prose).
+  - `Class`/`Species` list rows render as full-width banner buttons using real artwork
+    (`static/images/classes/`, `static/images/species/` - one PNG per class, most species) with
+    the row's name and `Class.short_description`/`Species.short_description` (a short,
+    hand-written blurb - there's no such field in `db/*.json`, so these were authored directly in
+    `apps/rules/management/commands/import_rules_data.py` rather than sourced) overlaid on the
+    art. Rows without artwork (e.g. Aasimar) fall back to a plain text row like every other list.
+  - `apps/frontend/entries_render.py` turns the raw 5etools `entries` JSON blobs (used by
+    `Background`/`Species`/`Class`/`Feat`/`Spell`/`Rule`) into safe HTML: nested
+    headings/lists/tables/insets/"choose N" groups, and - via `_ReferenceLinker` - turns any
+    literal `{@variantrule ...}`, `{@spell ...}`, or `{@feat ...}` tag into a real link to that
+    row's own detail page (matched by name against `rules.Rule`/`Spell`/`Feat`).
+  - `Species.entries` (traits) and `Class.features` (per-level features) get extra treatment
+    instead of the generic renderer: `render_trait_cards()` puts each trait in its own visually
+    distinct card, and `render_class_features()` does the same per feature while further
+    grouping cards into collapsible `<details>` toggles by level (the lowest level starts
+    expanded). Only a card's own title is styled as the card heading - a named sub-block nested
+    inside a feature's own text (e.g. Wizard's Spellcasting feature has "Cantrips"/"Spellbook"
+    sub-sections) falls back to a plainer heading style, so the two are never confused.
+  - There's no standalone browsing list for `rules.Rule` - `world/rules/<slug>/` exists purely
+    as the landing page for `{@variantrule ...}` links found in other pages' text, so its back
+    button returns to the World hub rather than to any specific list.
 - `/manifest.json` and `/serviceworker.js` are served by `django-pwa` (`pwa` in
   `INSTALLED_APPS`, `path("", include("pwa.urls"))` in `config/urls.py`). Config lives in
   `config/settings.py` (`PWA_APP_*` / `PWA_SERVICE_WORKER_PATH`).
-- The service worker itself is a real file at `static/js/serviceworker.js` (caches the shell
-  page for offline load; explicitly never caches `/api/*`, since a stale API response would be
-  actively misleading, unlike a stale static page).
-- Icons are placeholder solid-color PNGs at `static/images/icons/` (192/512/180px) - swap these
-  for real artwork whenever there is any; nothing else needs to change.
-- `STATICFILES_DIRS = [BASE_DIR / "static"]` plus `staticfiles_urlpatterns()` appended to
-  `urlpatterns` when `DEBUG` (in `config/urls.py`) - needed because this project serves via
-  uvicorn/ASGI, not `manage.py runserver`, which is the only one of the two that auto-serves
-  static files in dev on its own.
-- `templates/frontend/base.html` holds the shared shell (PWA meta, responsive mobile-first CSS
-  with a dark-mode variant, the language switcher) - `index.html` and `overview.html` both
-  `{% extends %}` it. The earlier "List languages" test button is gone; the shell it proved out
-  is what's left.
+- The service worker itself is a real file at `static/js/serviceworker.js` (network-first for
+  same-origin requests, falling back to cache only when offline - a stale cached page would
+  otherwise silently ignore a language switch; explicitly never caches `/api/*`, since a stale
+  API response would be actively misleading, unlike a stale static page).
+- PWA icons are placeholder solid-color PNGs at `static/images/icons/` (192/512/180px) - still
+  unreplaced, unlike the class/species artwork above.
+- See [Running it](#running-it) above for how static files (this artwork included) actually get
+  served in each of the two run modes - it differs between the container (WhiteNoise) and host
+  dev (`staticfiles_urlpatterns()`).
 
 #### Internationalization (i18n)
 
@@ -363,14 +433,6 @@ shows "English"/"Italiano" as hardcoded literals in `base.html`, not via Django'
 `get_available_languages` tag - that tag returns each language's name translated into the
 *current* language (so it'd render "Italian" while browsing in English), not each language's
 own autonym, which is the correct convention for a language switcher.
-
-**Sandbox note**: `locale/it/LC_MESSAGES/django.mo` here was hand-compiled with a small
-pure-Python script (not committed - it's a one-off, not project code) because the `gettext`
-system package (providing `msgfmt`) isn't installable in this sandbox (no passwordless `sudo`).
-The `.po`/`.mo` files themselves are completely standard. On a machine with `sudo apt install
-gettext` available, use the normal Django workflow from here on: edit templates, run
-`manage.py makemessages -l it` to pick up new/changed strings, fill in the new `msgstr` lines,
-`manage.py compilemessages`.
 
 ## Not in scope (per the architecture doc)
 

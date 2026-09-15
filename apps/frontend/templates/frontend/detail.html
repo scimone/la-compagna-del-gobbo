@@ -37,9 +37,46 @@
     margin: 0;
   }
 
+  .detail-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.6rem;
+    padding: 0.7rem 0.9rem;
+  }
+
+  .detail-section > summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    touch-action: manipulation;
+  }
+
+  .detail-section > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .detail-section > summary::before {
+    content: "▸";
+    display: inline-block;
+    width: 1em;
+    flex-shrink: 0;
+    color: var(--accent);
+    transition: transform 0.15s ease;
+  }
+
+  .detail-section[open] > summary::before {
+    transform: rotate(90deg);
+  }
+
+  .detail-section-body {
+    margin-top: 0.6rem;
+  }
+
   .detail-section h2 {
     font-size: 1.1rem;
-    margin: 0 0 0.5rem;
+    margin: 0;
     color: var(--accent);
   }
 
@@ -140,6 +177,18 @@
     padding: 0 0.7rem 0.7rem;
   }
 
+  .subclass-block > h3 {
+    margin: 0 0 0.5rem;
+    color: var(--accent);
+    font-size: 1.05rem;
+  }
+
+  .subclass-block + .subclass-block {
+    margin-top: 0.9rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--border);
+  }
+
   .detail-section table {
     width: 100%;
     border-collapse: collapse;
@@ -178,11 +227,11 @@
       </div>
     {% endif %}
 
-    {% for heading, html in sections %}
-      <div class="detail-section">
-        <h2>{{ heading }}</h2>
-        {{ html }}
-      </div>
+    {% for heading, html, open in sections %}
+      <details class="detail-section"{% if open %} open{% endif %}>
+        <summary><h2>{{ heading }}</h2></summary>
+        <div class="detail-section-body">{{ html }}</div>
+      </details>
     {% endfor %}
   </div>
 {% endblock %}
