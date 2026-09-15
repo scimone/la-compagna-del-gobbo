@@ -45,6 +45,11 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # Serves STATIC_ROOT directly from the ASGI app - there's no separate web server (nginx,
+    # etc.) sharing a volume with this container, and uvicorn doesn't serve static files on its
+    # own the way `runserver` does under DEBUG=True. Placed right after SecurityMiddleware per
+    # WhiteNoise's own setup docs.
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -106,6 +111,15 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    # Plain compression, not the hashed/manifest variant - PWA_APP_ICONS below and django-pwa's
+    # own manifest.json template reference `/static/...` paths directly rather than going
+    # through the `{% static %}` tag, so nothing would know to look up a hashed filename.
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
+}
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

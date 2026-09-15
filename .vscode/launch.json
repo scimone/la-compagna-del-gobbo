@@ -14,7 +14,7 @@
                 "--host",
                 "0.0.0.0",
                 "--port",
-                "3000"
+                "3001"
             ],
             "cwd": "${workspaceFolder}",
             "django": true,
