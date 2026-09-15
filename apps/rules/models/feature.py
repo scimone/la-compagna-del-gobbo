@@ -9,8 +9,14 @@ class Feature(models.Model):
 
     - `Class.features` (db/classes.json, top-level list items - every one carries `level`,
       `name` and `entries`, no bare strings mixed in).
-    - `SubclassLevel.features` (same source, subclass `features` grouped by level - only the 48
-      XPHB-sourced subclasses, matching `Subclass`/`SubclassLevel`).
+    - A `Subclass`'s per-level features (same source, `db/classes.json` subclass `features`
+      grouped by level - only the 48 XPHB-sourced subclasses, matching `Subclass`/
+      `SubclassLevel`) - these rows are created directly by `_import_classes` (see
+      `_split_subclass_features` in `apps/rules/management/commands/import_rules_data.py`),
+      not walked from a stored JSON field the way the other three sources are: `SubclassLevel`
+      keeps no `features` field of its own, so for this one source `Feature` (via its
+      `subclass_level` FK) *is* the only place this data lives - see the "Known data-import
+      issues" section of the README for why.
     - `Species.entries` (db/species.json, the 10 XPHB species only, matching `Species`).
     - `Feat.entries` (db/feats.json) - here the source lists mix bare prose strings with named
       dicts (e.g. Alert's entries are one prose paragraph plus two named benefits, "Initiative
@@ -32,12 +38,13 @@ class Feature(models.Model):
     wrappers around nested named sub-blocks, e.g. "Repeatable"), so - by the same
     top-level-only rule - it contributes zero `Feature` rows.
 
-    This *duplicates* data still held verbatim in the parent's own JSON field (`Class.features`,
-    `SubclassLevel.features`, `Species.entries`, `Feat.entries`). Those parent models are
-    out of scope for this pass (already "Defined" and verified), so their raw fields can't be
-    replaced the way `Subclass.features` was replaced by `SubclassLevel` - `Feature` is
-    therefore an additive, queryable index over the same data, not the sole source of truth
-    for it.
+    For three of the four sources, this *duplicates* data still held verbatim in the parent's
+    own JSON field (`Class.features`, `Species.entries`, `Feat.entries`). Those parent models
+    are out of scope for this pass (already "Defined" and verified), so their raw fields
+    weren't replaced - `Feature` is an additive, queryable index over the same data for those
+    three, not the sole source of truth for it. The fourth source (subclasses) is the
+    exception: there's no `SubclassLevel.features` to duplicate, so `Feature` *is* the sole
+    source of truth for a subclass's per-level features.
 
     One nullable FK per possible parent (rather than a `GenericForeignKey`) to match the
     concrete-FK style already used elsewhere in this app (`Subclass.klass`,

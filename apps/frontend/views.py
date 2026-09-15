@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.db.models import Prefetch
 from django.shortcuts import render
 from django.templatetags.static import static
 from django.urls import reverse
@@ -11,6 +12,7 @@ from apps.frontend.entries_render import (
     render_subclasses,
     render_trait_cards,
 )
+from apps.rules.models import Feature
 from apps.rules.services import background as background_service
 from apps.rules.services import class_ as class_service
 from apps.rules.services import feat as feat_service
@@ -156,7 +158,11 @@ def world_classes(request):
 
 def world_class_detail(request, pk):
     klass = class_service.get_class(pk)
-    subclasses = list(klass.subclasses.order_by("name").prefetch_related("levels"))
+    subclasses = list(
+        klass.subclasses.order_by("name").prefetch_related(
+            Prefetch("levels__feature_rows", queryset=Feature.objects.order_by("pk"))
+        )
+    )
 
     facts = [
         (_("Hit Die"), klass.hit_die.upper()),

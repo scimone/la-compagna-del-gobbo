@@ -103,7 +103,7 @@ def test_list_background_choices(background):
 @pytest.mark.django_db
 def test_list_subclass_levels(klass):
     evoker = Subclass.objects.create(klass=klass, name="Evoker")
-    SubclassLevel.objects.create(subclass=evoker, level=2, features=[{"name": "Evocation Savant"}])
+    SubclassLevel.objects.create(subclass=evoker, level=2)
 
     levels = subclass_service.list_subclass_levels(evoker.pk)
 

@@ -83,7 +83,8 @@ def _split_subclass_features(
     Returns (description, by_level): `description` is the flavor text (the block's own
     plain-string entries) for `Subclass.description`; `by_level` is every real feature - the
     nested ones promoted to top-level {name, entries} blocks, plus every other level's
-    already-correctly-shaped features - grouped exactly like `SubclassLevel.features` expects.
+    already-correctly-shaped features - grouped by level, ready to become `Feature` rows
+    directly (see the caller, `_import_classes`).
     """
     description: list = []
     by_level: dict[int, list[dict]] = {}
@@ -390,6 +391,7 @@ class Command(BaseCommand):
         self.stdout.write(f"  Spell: {Spell.objects.count()}")
 
     def _import_classes(self):
+        subclass_features = []
         for it in _load("classes.json"):
             klass = Class.objects.create(
                 id=it["id"],
@@ -424,10 +426,27 @@ class Command(BaseCommand):
                 subclass = Subclass.objects.create(
                     klass=klass, name=sc["name"], description=description
                 )
-                SubclassLevel.objects.bulk_create(
-                    SubclassLevel(subclass=subclass, level=level, features=feats)
-                    for level, feats in by_level.items()
+                levels = SubclassLevel.objects.bulk_create(
+                    SubclassLevel(subclass=subclass, level=level) for level in by_level
                 )
+                level_by_number = {sl.level: sl for sl in levels}
+                for level, feats in by_level.items():
+                    subclass_level = level_by_number[level]
+                    subclass_features.extend(
+                        Feature(
+                            subclass_level=subclass_level,
+                            level=level,
+                            name=f["name"],
+                            entries=f["entries"],
+                        )
+                        for f in feats
+                    )
+
+        # Unlike the other three `Feature` sources (Class/Species/Feat, imported later in
+        # `_import_features` from a JSON field still held on the parent), a subclass's features
+        # have nowhere else to live - `SubclassLevel` keeps no `features` field of its own (see
+        # its docstring) - so these rows are created here, directly, instead.
+        Feature.objects.bulk_create(subclass_features)
 
         self.stdout.write(
             f"  Class: {Class.objects.count()}, ClassLevel: {ClassLevel.objects.count()}, "
@@ -454,23 +473,16 @@ class Command(BaseCommand):
 
     def _import_features(self):
         """Returns {feature.pk: entries} so `_import_effects` can re-walk each Feature's text
-        without a second pass over `db/`.
+        without a second pass over `db/`. Subclass features are created earlier, directly in
+        `_import_classes` (there's no `SubclassLevel.features` JSON field to walk here - see
+        that model's docstring) - this only handles the three sources that still keep their
+        features/entries JSON verbatim on the parent model.
         """
         rows = []
         for klass in Class.objects.all():
             for d in _named_dicts(klass.features):
                 rows.append(
                     Feature(klass=klass, level=d.get("level"), name=d["name"], entries=d["entries"])
-                )
-        for subclass_level in SubclassLevel.objects.all():
-            for d in _named_dicts(subclass_level.features):
-                rows.append(
-                    Feature(
-                        subclass_level=subclass_level,
-                        level=subclass_level.level,
-                        name=d["name"],
-                        entries=d["entries"],
-                    )
                 )
         for species in Species.objects.all():
             for d in _named_dicts(species.entries):

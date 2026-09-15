@@ -173,19 +173,17 @@ def render_class_features(features: list) -> SafeString:
 
 def render_subclasses(subclasses) -> SafeString:
     """Render a Class's `rules.Subclass` rows - each with its own `description` (flavor text)
-    and `levels` (`SubclassLevel` rows holding {level, features}, features being a
-    {name, entries} list since a couple of subclasses grant more than one feature at the same
-    level) - as one named block per subclass, reusing the same per-level collapsible card
-    grouping as `render_class_features()`. Iterate `subclasses` with `.levels` already
-    prefetched (e.g. `klass.subclasses.prefetch_related("levels")`) to avoid one query per
-    subclass.
+    and `levels` (`SubclassLevel` rows, each with its features as `Feature` rows reachable via
+    `.feature_rows` - `SubclassLevel` keeps no `features` JSON of its own, see its docstring for
+    why) - as one named block per subclass, reusing the same per-level collapsible card grouping
+    as `render_class_features()`. Iterate `subclasses` with `.levels` and `.levels__feature_rows`
+    already prefetched (e.g.
+    `klass.subclasses.prefetch_related("levels__feature_rows")`) to avoid a query per level.
 
-    `SubclassLevel.features` and `Subclass.description` are both already cleanly split at
+    `Subclass.description` is already cleanly split out of the source's granting-level block at
     import time (see `_split_subclass_features` in
-    `apps/rules/management/commands/import_rules_data.py`) - this used to also have to unwrap a
-    data error here at render time (a subclass's flavor text and its real first-batch features
-    arrived bundled into one block titled after the subclass itself), but that's now fixed at
-    the source instead.
+    `apps/rules/management/commands/import_rules_data.py`) - this used to also have to unwrap
+    that same data error here at render time, but that's fixed at the source instead now.
     """
     linker = _ReferenceLinker()
     blocks = []
@@ -193,7 +191,10 @@ def render_subclasses(subclasses) -> SafeString:
         description_html = (
             _render_node(subclass.description, linker) if subclass.description else ""
         )
-        by_level = {sl.level: sl.features for sl in subclass.levels.all()}
+        by_level = {
+            sl.level: [{"name": f.name, "entries": f.entries} for f in sl.feature_rows.all()]
+            for sl in subclass.levels.all()
+        }
         groups_html = _render_level_groups(by_level, linker)
         blocks.append(
             f'<div class="subclass-block">'
