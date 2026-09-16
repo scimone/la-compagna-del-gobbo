@@ -76,7 +76,7 @@ def extract_from_json_by_data_name(relative_path: str, data_name: str) -> None:
             "data": [
                 {
                     "type": "section",
-                    "name": "Chapter 1: Playing the Game",
+                    "name": "Playing the Game",
                     ...
                 }
             ]

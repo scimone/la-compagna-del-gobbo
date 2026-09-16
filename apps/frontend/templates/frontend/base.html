@@ -181,6 +181,44 @@
       background: var(--bg);
     }
 
+    /* Secondary nav row for browsing the World catalog's categories - shown only on pages that
+       opt in via `world_tabs` (the World hub itself, and each category's list page), not on
+       every page the way `.bottom-nav` is. Horizontally scrollable rather than shrinking tabs
+       to fit, so adding a 6th category later doesn't need a redesign. */
+    .world-tabs {
+      display: flex;
+      flex-shrink: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .world-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .world-tabs a {
+      flex-shrink: 0;
+      padding: 0.8rem 1.1rem 0.7rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      touch-action: manipulation;
+    }
+
+    .world-tabs a.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .world-tabs a:active {
+      background: var(--bg);
+    }
+
     {% block extra_style %}{% endblock %}
   </style>
 </head>
@@ -210,6 +248,31 @@
       {% endif %}
     </form>
   </header>
+
+  {% if world_tabs %}
+    <nav class="world-tabs">
+      <a
+        href="{% url 'world-backgrounds' %}"
+        class="{% if '/world/backgrounds/' in request.path %}active{% endif %}"
+      >{% translate "Backgrounds" %}</a>
+      <a
+        href="{% url 'world-classes' %}"
+        class="{% if '/world/classes/' in request.path %}active{% endif %}"
+      >{% translate "Classes" %}</a>
+      <a
+        href="{% url 'world-species' %}"
+        class="{% if '/world/species/' in request.path %}active{% endif %}"
+      >{% translate "Species" %}</a>
+      <a
+        href="{% url 'world-feats' %}"
+        class="{% if '/world/feats/' in request.path %}active{% endif %}"
+      >{% translate "Feats" %}</a>
+      <a
+        href="{% url 'world-spells' %}"
+        class="{% if '/world/spells/' in request.path %}active{% endif %}"
+      >{% translate "Spells" %}</a>
+    </nav>
+  {% endif %}
 
   <main>
     {% block content %}{% endblock %}

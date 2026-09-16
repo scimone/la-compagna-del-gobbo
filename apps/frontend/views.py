@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db.models import Prefetch
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.templatetags.static import static
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -38,35 +38,36 @@ def _menu_image_url(folder: str, slug: str) -> str | None:
 
 
 def index(request):
-    return render(request, "frontend/index.html")
+    # No standalone welcome screen - land directly on the leftmost bottom-nav destination.
+    return redirect("characters-overview")
 
 
 def world(request):
-    return render(
-        request,
-        "frontend/world.html",
-        {"page_title": _("World"), "back_url": reverse("index")},
-    )
+    # No standalone hub screen - land directly on the leftmost World tab.
+    return redirect("world-backgrounds")
 
 
-def _placeholder(request, title, back_url_name="index"):
-    return render(
-        request,
-        "frontend/overview.html",
-        {"page_title": _(title), "back_url": reverse(back_url_name)},
-    )
+def _placeholder(request, title, back_url_name: str | None = None):
+    # No back button by default: `characters_overview` (the only caller) is the leftmost
+    # bottom-nav destination and `/` redirects straight to it, so there's no longer a
+    # meaningful "back" target - pointing one at `index` would just bounce straight back here.
+    context = {"page_title": _(title)}
+    if back_url_name:
+        context["back_url"] = reverse(back_url_name)
+    return render(request, "frontend/overview.html", context)
 
 
 def characters_overview(request):
     return _placeholder(request, "Characters")
 
 
-def _list_page(request, title, items, back_url_name="world-overview"):
-    return render(
-        request,
-        "frontend/list.html",
-        {"page_title": _(title), "back_url": reverse(back_url_name), "items": items},
-    )
+def _list_page(
+    request, title, items, back_url_name: str | None = "world-overview", world_tabs=False
+):
+    context = {"page_title": _(title), "items": items, "world_tabs": world_tabs}
+    if back_url_name:
+        context["back_url"] = reverse(back_url_name)
+    return render(request, "frontend/list.html", context)
 
 
 def _section(heading, html, *, open=True):
@@ -122,7 +123,9 @@ def world_backgrounds(request):
         {"name": b.name, "url": reverse("world-background-detail", args=[b.pk])}
         for b in background_service.list_backgrounds()
     ]
-    return _list_page(request, "Backgrounds", items)
+    # No back button: `world-overview` (the default) now redirects straight back here (the
+    # leftmost World tab), which would otherwise just bounce back to this same page.
+    return _list_page(request, "Backgrounds", items, back_url_name=None, world_tabs=True)
 
 
 def _extract_named_entry(entries, name):
@@ -174,7 +177,7 @@ def world_classes(request):
         }
         for c in class_service.list_classes()
     ]
-    return _list_page(request, "Classes", items)
+    return _list_page(request, "Classes", items, world_tabs=True)
 
 
 def world_class_detail(request, pk):
@@ -231,7 +234,7 @@ def world_feats(request):
         }
         for f in feat_service.list_feats()
     ]
-    return _list_page(request, "Feats", items)
+    return _list_page(request, "Feats", items, world_tabs=True)
 
 
 def world_feat_detail(request, pk):
@@ -260,7 +263,7 @@ def world_species(request):
         }
         for s in species_service.list_species()
     ]
-    return _list_page(request, "Species", items)
+    return _list_page(request, "Species", items, world_tabs=True)
 
 
 def world_species_detail(request, pk):
@@ -303,7 +306,7 @@ def world_spells(request):
                 "url": reverse("world-spell-detail", args=[s.pk]),
             }
         )
-    return _list_page(request, "Spells", items)
+    return _list_page(request, "Spells", items, world_tabs=True)
 
 
 def world_spell_detail(request, pk):

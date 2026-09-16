@@ -4,7 +4,7 @@ from django.db import models
 class HandbookSection(models.Model):
     """A named top-level topic of the handbook, sourced from db/handbook.json.
 
-    There's only ever one chapter in db/handbook.json ("Chapter 1: Playing the Game"), so this
+    There's only ever one chapter in db/handbook.json ("Playing the Game"), so this
     doesn't model chapters as their own grouping - it flattens one level instead: the chapter's
     own root block becomes one row (its `entries` being just its own leading content - the
     intro narrative - not the nested sections' content too), and each of its direct named
