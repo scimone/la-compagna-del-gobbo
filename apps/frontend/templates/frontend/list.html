@@ -61,6 +61,12 @@
     background: var(--bg);
   }
 
+  /* Soft inward-fading edge, opt-in per list (see `image_vignette` in views.py) - the source
+     art for some categories (Backgrounds) already looks better with one than others. */
+  .item-list .item-thumb.vignette {
+    box-shadow: inset 0 0 0.9rem 0.15rem rgba(0, 0, 0, 0.75);
+  }
+
   .empty-state {
     flex: 1;
     display: flex;
@@ -76,7 +82,13 @@
       {% for item in items %}
         <li>
           <a href="{{ item.url }}"{% if item.image %} class="menu-thumb"{% endif %}>
-            {% if item.image %}<img class="item-thumb" src="{{ item.image }}" alt="">{% endif %}
+            {% if item.image %}
+              <img
+                class="item-thumb{% if image_vignette %} vignette{% endif %}"
+                src="{{ item.image }}"
+                alt=""
+              >
+            {% endif %}
             <div class="item-text">
               <span class="item-name">{{ item.name }}</span>
               {% if item.detail %}<div class="item-detail">{{ item.detail }}</div>{% endif %}

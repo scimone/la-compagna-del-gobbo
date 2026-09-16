@@ -26,12 +26,15 @@ from apps.rules.services import spell as spell_service
 # species name used in the art filenames (e.g. `elf-xphb` -> `elf-grey.png`).
 _SPECIES_IMAGE_SLUGS = {"elf-xphb": "elf"}
 
+# Background menu art is keyed by filename where it diverges from the Background's own id
+# (e.g. "scribe" -> "scriber.jpeg").
+_BACKGROUND_IMAGE_SLUGS = {"scribe": "scriber"}
 
-def _menu_image_url(folder: str, slug: str) -> str | None:
-    """Static URL for a `static/images/<folder>/<slug>-grey.png` menu button image, or None if
-    no such artwork exists yet (not every Class/Species row has one, e.g. Aasimar).
+
+def _menu_image_url(folder: str, filename: str) -> str | None:
+    """Static URL for a `static/images/<folder>/<filename>` menu button image, or None if no
+    such artwork exists yet (not every row has one, e.g. the Aasimar species).
     """
-    filename = f"{slug}-grey.png"
     if not (settings.BASE_DIR / "static" / "images" / folder / filename).exists():
         return None
     return static(f"images/{folder}/{filename}")
@@ -62,9 +65,19 @@ def characters_overview(request):
 
 
 def _list_page(
-    request, title, items, back_url_name: str | None = "world-overview", world_tabs=False
+    request,
+    title,
+    items,
+    back_url_name: str | None = "world-overview",
+    world_tabs=False,
+    image_vignette=False,
 ):
-    context = {"page_title": _(title), "items": items, "world_tabs": world_tabs}
+    context = {
+        "page_title": _(title),
+        "items": items,
+        "world_tabs": world_tabs,
+        "image_vignette": image_vignette,
+    }
     if back_url_name:
         context["back_url"] = reverse(back_url_name)
     return render(request, "frontend/list.html", context)
@@ -120,12 +133,20 @@ def handbook_section_detail(request, pk):
 
 def world_backgrounds(request):
     items = [
-        {"name": b.name, "url": reverse("world-background-detail", args=[b.pk])}
+        {
+            "name": b.name,
+            "url": reverse("world-background-detail", args=[b.pk]),
+            "image": _menu_image_url(
+                "backgrounds", f"{_BACKGROUND_IMAGE_SLUGS.get(b.id, b.id)}.jpeg"
+            ),
+        }
         for b in background_service.list_backgrounds()
     ]
     # No back button: `world-overview` (the default) now redirects straight back here (the
     # leftmost World tab), which would otherwise just bounce back to this same page.
-    return _list_page(request, "Backgrounds", items, back_url_name=None, world_tabs=True)
+    return _list_page(
+        request, "Backgrounds", items, back_url_name=None, world_tabs=True, image_vignette=True
+    )
 
 
 def _extract_named_entry(entries, name):
@@ -173,7 +194,7 @@ def world_classes(request):
             "name": c.name,
             "detail": c.short_description,
             "url": reverse("world-class-detail", args=[c.pk]),
-            "image": _menu_image_url("classes", c.id),
+            "image": _menu_image_url("classes", f"{c.id}-grey.png"),
         }
         for c in class_service.list_classes()
     ]
@@ -259,7 +280,7 @@ def world_species(request):
             "name": s.name,
             "detail": s.short_description,
             "url": reverse("world-species-detail", args=[s.pk]),
-            "image": _menu_image_url("species", _SPECIES_IMAGE_SLUGS.get(s.id, s.id)),
+            "image": _menu_image_url("species", f"{_SPECIES_IMAGE_SLUGS.get(s.id, s.id)}-grey.png"),
         }
         for s in species_service.list_species()
     ]
