@@ -11,8 +11,6 @@ def klass(db):
         page=1,
         srd=True,
         hit_die="d6",
-        primary_ability="Intelligence",
-        saving_throws="Intelligence, Wisdom",
     )
 
 

@@ -134,7 +134,8 @@ section for why.
 | Model | Status | Source | Notes |
 |---|---|---|---|
 | `Rule` | Defined | `db/rules.json` | |
-| `Skill` | Defined | `db/skills.json` | |
+| `Skill` | Defined | `db/skills.json` | `ability` is a FK to `Ability`, not a free-text copy of its name — see [Known data-import issues](#known-data-import-issues) |
+| `Ability` | Defined | `db/handbook.json` ("Ability Descriptions" table) | 6 rows (Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma) - pulled from the handbook's own table rather than hand-written, since that table already gives exactly this data. Referenced by `Skill.ability` and `Class.primary_abilities`/`saving_throw_abilities` — see [Known data-import issues](#known-data-import-issues) |
 | `Sense` | Defined | `db/senses.json` | |
 | `Mastery` | Defined | `db/masteries.json` | |
 | `EquipmentProperty` | Defined | `db/equipment_properties.json` | |
@@ -142,7 +143,7 @@ section for why.
 | `Species` | Defined | `db/species.json` | All 11 entries are imported, including the one non-XPHB one (`grung`, source VGM) - unlike `Subclass`/`Feature`/etc., nothing here is filtered by source |
 | `Background` | Defined | `db/backgrounds.json` | |
 | `Feat` | Defined | `db/feats.json` | |
-| `Class` | Defined | `db/classes.json` | Core metadata; the level-progression table is split into `ClassLevel`. No `features` field - like `SubclassLevel`, per-level feature text lives only as linked `Feature` rows, not duplicated as JSON here too — see [Known data-import issues](#known-data-import-issues) |
+| `Class` | Defined | `db/classes.json` | Core metadata; the level-progression table is split into `ClassLevel`. No `features` field - like `SubclassLevel`, per-level feature text lives only as linked `Feature` rows, not duplicated as JSON here too. `saving_throws`/`primaryAbility` are similarly no longer free text - `saving_throw_abilities`/`primary_abilities` link to `Ability` instead, with `primary_ability_conjunction` preserving the source's "or" (a real choice, e.g. Fighter) vs "and" (both matter, e.g. Monk) distinction — see [Known data-import issues](#known-data-import-issues) |
 | `ClassLevel` | Defined | `db/classes.json` (`table` rows) | Columns differ per class (spell slots vs Rages vs ...), so kept as a verbatim `columns` JSON map rather than fixed fields. A pure level marker otherwise - no `features` field of its own; its features are the `Feature` rows FK'd back to it |
 | `Subclass` | Defined | `db/classes.json` (`subclasses`) | Only the 48 XPHB-sourced subclasses out of 182 total across all classes; the source gives subclasses no id/page/srd. `description` (flavor text) is split out of the granting level's features at import time — see [Known data-import issues](#known-data-import-issues) |
 | `SubclassLevel` | Defined | `db/classes.json` (subclass `features`) | A pure level marker - no `features` field of its own; its features are the `Feature` rows FK'd back to it, not a duplicated JSON copy — see [Known data-import issues](#known-data-import-issues) |
@@ -302,6 +303,45 @@ and explicitly rather than relying on cascade, so a *future* FK restructuring ca
 worth remembering for `Effect`/`Proficiency`/`ChoiceDefinition` too, if any of their parent FKs
 are ever similarly restructured.
 
+#### Issue 5: `Skill.ability`/`Class.primaryAbility`/`Class.savingThrows` were free text instead of links
+
+**The problem**: three more free-text fields that were really references to a fixed, tiny set of
+six values (the ability scores) that had never been modeled at all. `Skill.ability` held a bare
+string ("Strength"); `Class.savingThrows` held a comma-separated pair of the same; `Class.
+primaryAbility` was the trickiest of the three - sometimes one ability ("Wisdom"), sometimes two
+joined by "or" (Fighter: Strength *or* Dexterity - a real build choice) or "and" (Monk: Dexterity
+*and* Wisdom - both matter, for different things). None of these are the same kind of bug as
+Issues 1/2/4 - nothing was duplicated or mis-grouped, these fields simply predated `Ability`
+existing as a model at all.
+
+**The fix**: added `Ability` (id/name/description), sourced from `db/handbook.json`'s own
+"Ability Descriptions" table (Chapter 1 → The Six Abilities) rather than hand-written, since that
+table already gives exactly this data - the same "check whether the source already has it before
+typing it in by hand" instinct as the `CLASS_SHORT_DESCRIPTIONS` hand-written blurbs earlier,
+just landing on the opposite answer this time. `Skill.ability` became a plain FK.
+`Class.saving_throw_abilities` became a M2M (the source pair always means "both apply", no
+ambiguity to preserve). `Class.primary_abilities` also became a M2M, but paired with a
+`primary_ability_conjunction` field ("", "and", or "or") so the choice-vs-both-matter distinction
+survives instead of collapsing into an indistinguishable set - verified all 12 classes'
+`primaryAbility` strings match one of exactly three shapes (bare name, " or "-joined pair,
+" and "-joined pair) before relying on that parse. Word order within a pair isn't preserved
+(`Ability.objects.all()` orders alphabetically), but nothing is lost by that - "Strength or
+Dexterity" and "Dexterity or Strength" mean the same thing.
+
+**A new kind of gotcha, worth remembering for the next FK-ification**: converting an existing
+free-text column to a FK in one migration fails outright on Postgres if any current row's value
+doesn't match a target-table id - which it never will here, since the target table (`Ability`)
+is *created by that same migration* and starts empty. Since this data is fully disposable
+(`import_rules_data` rebuilds it right after migrating, same as every model in this project), the
+fix is to clear the column's table before the `AlterField`, via `migrations.RunSQL("DELETE FROM
+rules_skill;", ...)` - but that alone still isn't enough: Postgres also refused to add the new FK
+constraint's index in the *same transaction* as that `DELETE`
+("cannot CREATE INDEX ... because it has pending trigger events" - a deferred FK-check trigger
+from the delete still outstanding). Setting `atomic = False` on that migration (so each operation
+commits on its own instead of one migration-wide transaction) resolved it. Neither step showed up
+in `makemigrations`' auto-generated output - both were only found by actually *running* `migrate`
+against real data and reading the error, not by inspecting the generated migration file.
+
 #### The general lesson, for next time
 
 A model being "Defined" (mapped field-for-field) doesn't mean the source's own grouping is
@@ -327,16 +367,31 @@ semantically correct, or that nothing downstream of it is redundant:
   parentless. `_delete_existing()`'s cascade-from-parent-catalogs approach silently doesn't reach
   those. Worth remembering for `Effect`/`Proficiency`/`ChoiceDefinition` too, if their parent FKs
   are ever restructured the same way.
+- **Never-modeled references, not duplication or bad grouping** (Issue 5): a fixed, tiny,
+  named set of values (the six abilities) hiding as free text in *three different fields* across
+  *two different models* - a different smell than Issues 1/2/4 (nothing was duplicated; `Ability`
+  simply never existed as a model), and one worth the same "does this string actually name a
+  thing that should be its own row?" question, not just "is this JSON shaped weirdly" or "is
+  this data duplicated elsewhere."
+- **Converting free text to a FK, on data that already exists** (Issue 5's second half): unlike
+  every earlier fix, this one hit real migration mechanics, not import-script logic - Postgres
+  rejects the new FK constraint outright if existing rows don't satisfy it (guaranteed here,
+  since the target table is created by that same migration and starts empty), and rejects
+  certain DDL sharing a transaction with a same-table `DELETE` right before it. Both were only
+  visible by actually running `migrate` against real data, not from `makemigrations`' output or
+  from reading the generated migration file.
 
 Either way, the same discipline applies: don't fix the one example that prompted the question -
 *verify the fix's assumption against every occurrence in `db/`* (a small Python script over
 `db/*.json`, not just one subclass or one passage) before changing the import command or the
 renderer, and *re-check the actual row counts after*, independently recomputed, not just "did it
 run without an error" - the way every issue above was checked against all 48 subclasses, or all
-63 tags, or a fresh count from raw JSON, rather than just the one Monk/Cleric/D20-Tests/
-`Class.features` example that surfaced each. `Species`, `Feat`, and `OptionalFeature` all have
-similarly-shaped `{name, entries}` source lists and haven't been audited for the Issue 1/2/4
-patterns - they're plausible places to look next.
+63 tags, or all 12 classes' `primaryAbility` shapes, or a fresh count from raw JSON, rather than
+just the one Monk/Cleric/D20-Tests/`Class.features` example that surfaced each. `Species`,
+`Feat`, and `OptionalFeature` all have similarly-shaped `{name, entries}` source lists and
+haven't been audited for the Issue 1/2/4 patterns, and free-text fields elsewhere (`Feat.
+prerequisite`, `Background.ability_scores`, ...) haven't been checked for the Issue 5 pattern -
+they're plausible places to look next.
 
 ### `apps/rules/` — static game content
 
@@ -365,6 +420,7 @@ assets) and `otherVersions` (cross-references to non-XPHB printings — we only 
 | `EquipmentProperty` | A property attached to `Equipment` (e.g. Finesse) |
 | `Mastery` | A weapon mastery property |
 | `Skill` | A skill (e.g. Athletics, Perception) |
+| `Ability` | One of the six core ability scores (Strength, Dexterity, ...) |
 | `Sense` | A special sense (e.g. Darkvision) |
 | `Proficiency` | A proficiency category (weapon/armor/tool/skill) granted by a `Class` or `Background` |
 | `Language` | A language (e.g. Common, Elvish) |

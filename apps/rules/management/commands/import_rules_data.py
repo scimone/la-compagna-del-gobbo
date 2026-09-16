@@ -7,6 +7,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from apps.rules.models import (
+    Ability,
     Background,
     ChoiceDefinition,
     Class,
@@ -72,6 +73,40 @@ def _flat_proficiency_items(text: str) -> list[str]:
     """
     items = [x.strip() for x in text.split(",") if x.strip()]
     return [x for x in items if not x.lower().startswith("choose")]
+
+
+def _find_named_table(node, caption: str) -> dict | None:
+    """Depth-first search for a `type: "table"` node with this exact `caption`, anywhere in a
+    JSON tree - used to pull `Ability` out of db/handbook.json's "Ability Descriptions" table
+    (Chapter 1 -> The Six Abilities) directly, without needing the whole chapter imported first.
+    """
+    if isinstance(node, dict):
+        if node.get("type") == "table" and node.get("caption") == caption:
+            return node
+        for value in node.values():
+            found = _find_named_table(value, caption)
+            if found:
+                return found
+    elif isinstance(node, list):
+        for item in node:
+            found = _find_named_table(item, caption)
+            if found:
+                return found
+    return None
+
+
+def _parse_ability_list(text: str) -> tuple[list[str], str]:
+    """Parse a `Class.primaryAbility`-style string - "Strength", "Strength or Dexterity",
+    "Dexterity and Wisdom" - into (ability names, conjunction). Conjunction is "" when there's
+    only one name; verified every class's `primaryAbility` matches one of these three shapes
+    before relying on it (a bare name, or exactly two joined by " or " or " and ", never three+
+    or some other separator).
+    """
+    if " or " in text:
+        return [x.strip() for x in text.split(" or ")], "or"
+    if " and " in text:
+        return [x.strip() for x in text.split(" and ")], "and"
+    return [text.strip()], ""
 
 
 def _split_subclass_features(
@@ -153,6 +188,7 @@ class Command(BaseCommand):
         self._delete_existing()
 
         self._import_rules()
+        self._import_ability()
         self._import_skills()
         self._import_senses()
         self._import_masteries()
@@ -183,8 +219,11 @@ class Command(BaseCommand):
         Feature.objects.all().delete()
 
         # Deleting these top-level catalogs cascades onto everything else derived from them
-        # (ClassLevel/Subclass/SubclassLevel/Effect/Proficiency/ChoiceDefinition).
+        # (ClassLevel/Subclass/SubclassLevel/Effect/Proficiency/ChoiceDefinition). `Ability`
+        # cascades onto `Skill` (FK) and clears the `Class` M2M rows too - safe to delete before
+        # or after `Class`/`Skill` either way, but named first since they depend on it.
         for model in [
+            Ability,
             Class,
             Species,
             Background,
@@ -216,6 +255,15 @@ class Command(BaseCommand):
         )
         self.stdout.write(f"  Rule: {Rule.objects.count()}")
 
+    def _import_ability(self):
+        chapter = _load_handbook()[0]
+        table = _find_named_table(chapter, "Ability Descriptions")
+        Ability.objects.bulk_create(
+            Ability(id=name.lower(), name=name, description=description)
+            for name, description in table["rows"]
+        )
+        self.stdout.write(f"  Ability: {Ability.objects.count()}")
+
     def _import_skills(self):
         Skill.objects.bulk_create(
             Skill(
@@ -223,7 +271,7 @@ class Command(BaseCommand):
                 name=it["name"],
                 page=it["page"],
                 srd=it["srd"],
-                ability=it["ability"],
+                ability_id=it["ability"].lower(),
                 entries=it.get("entries", []),
             )
             for it in _load("skills.json")
@@ -409,9 +457,13 @@ class Command(BaseCommand):
         self.stdout.write(f"  Spell: {Spell.objects.count()}")
 
     def _import_classes(self):
+        ability_by_name = {a.name.lower(): a for a in Ability.objects.all()}
         class_features = []
         subclass_features = []
         for it in _load("classes.json"):
+            primary_names, conjunction = _parse_ability_list(it["primaryAbility"])
+            saving_names = [x.strip() for x in it["savingThrows"].split(",")]
+
             klass = Class.objects.create(
                 id=it["id"],
                 name=it["name"],
@@ -419,8 +471,7 @@ class Command(BaseCommand):
                 page=it["page"],
                 srd=it["srd"],
                 hit_die=it["hitDie"],
-                primary_ability=it["primaryAbility"],
-                saving_throws=it["savingThrows"],
+                primary_ability_conjunction=conjunction,
                 proficiencies=it.get("proficiencies", ""),
                 armor_proficiencies=it.get("armorProficiencies", ""),
                 weapon_proficiencies=it.get("weaponProficiencies", ""),
@@ -428,6 +479,8 @@ class Command(BaseCommand):
                 subclass_title=it.get("subclassTitle", ""),
                 lore=it.get("lore", []),
             )
+            klass.primary_abilities.set(ability_by_name[n.lower()] for n in primary_names)
+            klass.saving_throw_abilities.set(ability_by_name[n.lower()] for n in saving_names)
 
             headers = it["table"]["headers"]
             class_levels = ClassLevel.objects.bulk_create(

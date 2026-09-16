@@ -65,8 +65,6 @@ def test_list_class_subclasses(klass):
         page=1,
         srd=True,
         hit_die="d10",
-        primary_ability="Strength",
-        saving_throws="Strength, Constitution",
     )
     Subclass.objects.create(klass=fighter, name="Champion")
 

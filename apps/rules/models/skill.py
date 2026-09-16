@@ -8,7 +8,7 @@ class Skill(models.Model):
     name = models.CharField(max_length=200)
     page = models.PositiveSmallIntegerField()
     srd = models.BooleanField(default=False)
-    ability = models.CharField(max_length=20)
+    ability = models.ForeignKey("rules.Ability", related_name="skills", on_delete=models.CASCADE)
     entries = models.JSONField(default=list, blank=True)
 
     class Meta:

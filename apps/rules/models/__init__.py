@@ -1,3 +1,4 @@
+from .ability import Ability
 from .background import Background
 from .choice_definition import ChoiceDefinition
 from .class_ import Class
@@ -21,6 +22,7 @@ from .subclass import Subclass
 from .subclass_level import SubclassLevel
 
 __all__ = [
+    "Ability",
     "Background",
     "ChoiceDefinition",
     "Class",

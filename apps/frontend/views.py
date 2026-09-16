@@ -188,8 +188,8 @@ def world_class_detail(request, pk):
 
     facts = [
         (_("Hit Die"), klass.hit_die.upper()),
-        (_("Primary Ability"), klass.primary_ability),
-        (_("Saving Throws"), klass.saving_throws),
+        (_("Primary Ability"), klass.primary_ability_display),
+        (_("Saving Throws"), klass.saving_throws_display),
     ]
     if klass.armor_proficiencies:
         facts.append((_("Armor Proficiencies"), klass.armor_proficiencies))
