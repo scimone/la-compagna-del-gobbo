@@ -132,7 +132,7 @@
       display: flex;
       flex-direction: column;
       min-height: 0;
-      padding: 1.25rem 1rem max(1rem, env(safe-area-inset-bottom));
+      padding: 1.25rem 1rem 1rem;
       gap: 1rem;
     }
 
@@ -141,6 +141,44 @@
       color: var(--muted);
       text-align: center;
       font-size: 0.95rem;
+    }
+
+    /* Persistent bottom tab bar - present on every page (not just `index`), so the three
+       top-level sections are reachable from any depth without backtracking through "back". */
+    .bottom-nav {
+      display: flex;
+      flex-shrink: 0;
+      border-top: 1px solid var(--border);
+      padding-bottom: env(safe-area-inset-bottom);
+      background: var(--surface);
+    }
+
+    .bottom-nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.2rem;
+      padding: 0.5rem 0.25rem 0.4rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.7rem;
+      font-weight: 600;
+      touch-action: manipulation;
+    }
+
+    .bottom-nav-item svg {
+      width: 1.4rem;
+      height: 1.4rem;
+    }
+
+    .bottom-nav-item.active {
+      color: var(--accent);
+    }
+
+    .bottom-nav-item:active {
+      background: var(--bg);
     }
 
     {% block extra_style %}{% endblock %}
@@ -176,5 +214,40 @@
   <main>
     {% block content %}{% endblock %}
   </main>
+
+  <nav class="bottom-nav">
+    <a
+      href="{% url 'characters-overview' %}"
+      class="bottom-nav-item{% if '/characters/' in request.path %} active{% endif %}"
+    >
+      {# Placeholder icons - hand-drawn generic shapes, swap for real artwork whenever there is any. #}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
+      </svg>
+      <span>{% translate "Characters" %}</span>
+    </a>
+    <a
+      href="{% url 'handbook-overview' %}"
+      class="bottom-nav-item{% if '/handbook/' in request.path %} active{% endif %}"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5V4.5Z"></path>
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+      </svg>
+      <span>{% translate "Handbook" %}</span>
+    </a>
+    <a
+      href="{% url 'world-overview' %}"
+      class="bottom-nav-item{% if '/world/' in request.path %} active{% endif %}"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M2 12h20"></path>
+        <path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20Z"></path>
+      </svg>
+      <span>{% translate "World" %}</span>
+    </a>
+  </nav>
 </body>
 </html>

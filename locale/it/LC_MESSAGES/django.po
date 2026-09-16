@@ -6,21 +6,29 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: it\n"
 
-#: apps/frontend/templates/frontend/index.html apps/frontend/views.py
+#: apps/frontend/templates/frontend/base.html apps/frontend/views.py
 msgid "Characters"
 msgstr "Personaggi"
 
-#: apps/frontend/templates/frontend/index.html apps/frontend/views.py
+#: apps/frontend/templates/frontend/base.html apps/frontend/views.py
 msgid "Handbook"
 msgstr "Manuale"
 
-#: apps/frontend/templates/frontend/index.html
+#: apps/frontend/templates/frontend/base.html apps/frontend/views.py
 msgid "World"
 msgstr "Mondo"
 
 #: apps/frontend/templates/frontend/overview.html
 msgid "Coming soon."
 msgstr "Prossimamente."
+
+#: apps/frontend/templates/frontend/index.html
+msgid "Welcome"
+msgstr "Benvenuto"
+
+#: apps/frontend/templates/frontend/index.html
+msgid "Pick a section below to get started."
+msgstr "Scegli una sezione qui sotto per iniziare."
 
 #: apps/frontend/templates/frontend/base.html
 msgid "Back"
