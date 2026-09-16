@@ -280,7 +280,7 @@
 
   <nav class="bottom-nav">
     <a
-      href="{% url 'characters-overview' %}"
+      href="{{ last_characters_url }}"
       class="bottom-nav-item{% if '/characters/' in request.path %} active{% endif %}"
     >
       {# Placeholder icons - hand-drawn generic shapes, swap for real artwork whenever there is any. #}
@@ -291,7 +291,7 @@
       <span>{% translate "Characters" %}</span>
     </a>
     <a
-      href="{% url 'handbook-overview' %}"
+      href="{{ last_handbook_url }}"
       class="bottom-nav-item{% if '/handbook/' in request.path %} active{% endif %}"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -301,7 +301,7 @@
       <span>{% translate "Handbook" %}</span>
     </a>
     <a
-      href="{% url 'world-overview' %}"
+      href="{{ last_world_url }}"
       class="bottom-nav-item{% if '/world/' in request.path %} active{% endif %}"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
