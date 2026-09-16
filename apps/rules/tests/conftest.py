@@ -1,6 +1,6 @@
 import pytest
 
-from apps.rules.models import Background, Class, Feat, Feature, Species, Spell
+from apps.rules.models import Background, Class, ClassLevel, Feat, Feature, Species, Spell
 
 
 @pytest.fixture
@@ -65,4 +65,5 @@ def spell(db):
 
 @pytest.fixture
 def feature(klass):
-    return Feature.objects.create(klass=klass, level=1, name="Spellcasting", entries=["text"])
+    class_level = ClassLevel.objects.create(klass=klass, level=1)
+    return Feature.objects.create(class_level=class_level, name="Spellcasting", entries=["text"])

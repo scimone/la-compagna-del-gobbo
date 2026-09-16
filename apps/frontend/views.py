@@ -179,6 +179,7 @@ def world_classes(request):
 
 def world_class_detail(request, pk):
     klass = class_service.get_class(pk)
+    class_features = Feature.objects.filter(class_level__klass=klass).order_by("pk")
     subclasses = list(
         klass.subclasses.order_by("name").prefetch_related(
             Prefetch("levels__feature_rows", queryset=Feature.objects.order_by("pk"))
@@ -203,7 +204,7 @@ def world_class_detail(request, pk):
         sections.append(_section(_("Lore"), render_entries(klass.lore)))
 
     sections.append(
-        _section(_("Features by Level"), render_class_features(klass.features), open=False)
+        _section(_("Features by Level"), render_class_features(class_features), open=False)
     )
 
     if subclasses:

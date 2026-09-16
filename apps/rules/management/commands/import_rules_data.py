@@ -174,8 +174,16 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("Rules data imported."))
 
     def _delete_existing(self):
-        # Deleting these top-level catalogs cascades onto everything derived from them
-        # (ClassLevel/Subclass/SubclassLevel/Feature/Effect/Proficiency/ChoiceDefinition).
+        # Feature is deleted explicitly, not left to cascade from the catalogs below: it has no
+        # single parent (klass/subclass_level/species/feat are all optional), so if a future
+        # migration ever drops one of those FKs, rows that only had *that* one set would survive
+        # as orphans with every FK null - the way 260 stale class-feature rows briefly did the
+        # one time `Feature.klass` was actually dropped for `class_level`, since nothing else
+        # cascades to them without a parent to cascade from.
+        Feature.objects.all().delete()
+
+        # Deleting these top-level catalogs cascades onto everything else derived from them
+        # (ClassLevel/Subclass/SubclassLevel/Effect/Proficiency/ChoiceDefinition).
         for model in [
             Class,
             Species,
@@ -401,6 +409,7 @@ class Command(BaseCommand):
         self.stdout.write(f"  Spell: {Spell.objects.count()}")
 
     def _import_classes(self):
+        class_features = []
         subclass_features = []
         for it in _load("classes.json"):
             klass = Class.objects.create(
@@ -418,15 +427,28 @@ class Command(BaseCommand):
                 tool_proficiencies=it.get("toolProficiencies", ""),
                 subclass_title=it.get("subclassTitle", ""),
                 lore=it.get("lore", []),
-                features=it.get("features", []),
             )
 
             headers = it["table"]["headers"]
-            ClassLevel.objects.bulk_create(
+            class_levels = ClassLevel.objects.bulk_create(
                 ClassLevel(
                     klass=klass, level=int(row[0]), columns=dict(zip(headers, row, strict=True))
                 )
                 for row in it["table"]["rows"]
+            )
+            class_level_by_number = {cl.level: cl for cl in class_levels}
+
+            # Unlike Species/Feat below (imported later, in `_import_features`, from a JSON field
+            # still held on the parent), a class's features have nowhere else to live - `Class`
+            # keeps no `features` field of its own (see its docstring) - so these rows are built
+            # here, directly, FK'd to the matching `ClassLevel` instead of duplicated as JSON.
+            class_features.extend(
+                Feature(
+                    class_level=class_level_by_number[d["level"]],
+                    name=d["name"],
+                    entries=d["entries"],
+                )
+                for d in _named_dicts(it.get("features", []))
             )
 
             for sc in it.get("subclasses", []):
@@ -443,20 +465,11 @@ class Command(BaseCommand):
                 for level, feats in by_level.items():
                     subclass_level = level_by_number[level]
                     subclass_features.extend(
-                        Feature(
-                            subclass_level=subclass_level,
-                            level=level,
-                            name=f["name"],
-                            entries=f["entries"],
-                        )
+                        Feature(subclass_level=subclass_level, name=f["name"], entries=f["entries"])
                         for f in feats
                     )
 
-        # Unlike the other three `Feature` sources (Class/Species/Feat, imported later in
-        # `_import_features` from a JSON field still held on the parent), a subclass's features
-        # have nowhere else to live - `SubclassLevel` keeps no `features` field of its own (see
-        # its docstring) - so these rows are created here, directly, instead.
-        Feature.objects.bulk_create(subclass_features)
+        Feature.objects.bulk_create(class_features + subclass_features)
 
         self.stdout.write(
             f"  Class: {Class.objects.count()}, ClassLevel: {ClassLevel.objects.count()}, "
@@ -483,17 +496,12 @@ class Command(BaseCommand):
 
     def _import_features(self):
         """Returns {feature.pk: entries} so `_import_effects` can re-walk each Feature's text
-        without a second pass over `db/`. Subclass features are created earlier, directly in
-        `_import_classes` (there's no `SubclassLevel.features` JSON field to walk here - see
-        that model's docstring) - this only handles the three sources that still keep their
-        features/entries JSON verbatim on the parent model.
+        without a second pass over `db/`. Class and subclass features are created earlier,
+        directly in `_import_classes` (there's no `ClassLevel.features`/`SubclassLevel.features`
+        JSON field to walk here - see those models' docstrings) - this only handles the two
+        sources that still keep their features/entries JSON verbatim on the parent model.
         """
         rows = []
-        for klass in Class.objects.all():
-            for d in _named_dicts(klass.features):
-                rows.append(
-                    Feature(klass=klass, level=d.get("level"), name=d["name"], entries=d["entries"])
-                )
         for species in Species.objects.all():
             for d in _named_dicts(species.entries):
                 rows.append(Feature(species=species, name=d["name"], entries=d["entries"]))

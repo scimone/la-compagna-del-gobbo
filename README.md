@@ -142,15 +142,15 @@ section for why.
 | `Species` | Defined | `db/species.json` | All 11 entries are imported, including the one non-XPHB one (`grung`, source VGM) - unlike `Subclass`/`Feature`/etc., nothing here is filtered by source |
 | `Background` | Defined | `db/backgrounds.json` | |
 | `Feat` | Defined | `db/feats.json` | |
-| `Class` | Defined | `db/classes.json` | Core metadata + raw `features` text; the level-progression table is split into `ClassLevel` |
-| `ClassLevel` | Defined | `db/classes.json` (`table` rows) | Columns differ per class (spell slots vs Rages vs ...), so kept as a verbatim `columns` JSON map rather than fixed fields |
+| `Class` | Defined | `db/classes.json` | Core metadata; the level-progression table is split into `ClassLevel`. No `features` field - like `SubclassLevel`, per-level feature text lives only as linked `Feature` rows, not duplicated as JSON here too — see [Known data-import issues](#known-data-import-issues) |
+| `ClassLevel` | Defined | `db/classes.json` (`table` rows) | Columns differ per class (spell slots vs Rages vs ...), so kept as a verbatim `columns` JSON map rather than fixed fields. A pure level marker otherwise - no `features` field of its own; its features are the `Feature` rows FK'd back to it |
 | `Subclass` | Defined | `db/classes.json` (`subclasses`) | Only the 48 XPHB-sourced subclasses out of 182 total across all classes; the source gives subclasses no id/page/srd. `description` (flavor text) is split out of the granting level's features at import time — see [Known data-import issues](#known-data-import-issues) |
 | `SubclassLevel` | Defined | `db/classes.json` (subclass `features`) | A pure level marker - no `features` field of its own; its features are the `Feature` rows FK'd back to it, not a duplicated JSON copy — see [Known data-import issues](#known-data-import-issues) |
 | `Spell` | Defined | `db/spells.json` | `classes`/`subclasses` kept as plain JSON lists, not FKs — see the model docstring |
 | `Language` | Defined | `db/languages.json` | |
 | `OptionalFeature` | Defined | `db/optional_features.json` | Not in the original architecture doc — covers Eldritch Invocations, Battle Master Maneuvers and Metamagic, which don't fit any existing catalog |
 | `Proficiency` | Defined | `db/classes.json`, `db/backgrounds.json` | 85 rows: the flat comma-separated items in `Class.armor_proficiencies`/`weapon_proficiencies`/`tool_proficiencies` and `Background.skills`/`tools`, tagged with a `category` taken from which field they came from. The 2 items phrased as a choice instead of a flat grant (Bard's/Monk's `tool_proficiencies`) are excluded, not misfiled — see the model docstring |
-| `Feature` | Defined | `db/classes.json`, `db/species.json`, `db/feats.json` | 665 rows: every explicitly named `{name, entries}` dict at the top level of `Class.features`, a subclass's per-level features, `Species.entries` and `Feat.entries` (bare prose strings mixed into those same lists are skipped, not renamed into features). Duplicates data still held verbatim on `Class`/`Species`/`Feat` — see the model docstring for why it isn't removed from them there; subclass features are the one exception, where `Feature` is the *only* copy — see [Known data-import issues](#known-data-import-issues) |
+| `Feature` | Defined | `db/classes.json`, `db/species.json`, `db/feats.json` | 665 rows (260 class, 242 subclass, 41 species, 122 feat): every explicitly named `{name, entries}` dict at the top level of a class's per-level features, a subclass's per-level features, `Species.entries` and `Feat.entries` (bare prose strings mixed into those same lists are skipped, not renamed into features). Duplicates data still held verbatim on `Species`/`Feat` — see the model docstring for why it isn't removed from them there; class and subclass features are the exception, where `Feature` is the *only* copy — see [Known data-import issues](#known-data-import-issues) |
 | `Effect` | Partly defined | derived from `Feature.entries` | 2094 rows: a mechanical index of literal 5etools inline tags (`{@damage ...}`, `{@condition ...}`, `{@dc ...}`, etc.) found anywhere in a `Feature`'s `entries` text, storing the tag name and raw tag text verbatim — not a semantic effects model, no tag is reinterpreted |
 | `ChoiceDefinition` | Partly defined | `db/backgrounds.json`, `db/classes.json` | 27 rows, only where the source is reliably pattern-shaped: all 16 `Background.ability_scores` ("Choose from A, B, C") and 11 of 12 classes' `Class.proficiencies` "Skills: choose N from ..." clause (Bard's is genuinely empty in the source). Everything else that reads like a choice in the source (feat benefit prose, tool-proficiency choices) is inconsistent free text and was deliberately left unparsed |
 | `HandbookSection` | Defined | `db/handbook.json` (`data`) | 15 rows: the source has exactly one chapter, so rather than model chapters as their own grouping, its root block and each of its direct named children ("Rules Glossary", "Player or DM?", "Dice", ...) are flattened into one row each - see the model docstring. `entries` holds each one's own content (arbitrarily nested headings/lists/tables/insets), rendered the same way as every other `entries`-shaped field. Surfaced two edge cases in `entries_render.py` itself - see [Known data-import issues](#known-data-import-issues), Issue 3 |
@@ -271,6 +271,37 @@ document. That's the tell for this category: not "is the row count right" but "r
 the actual rendered content, not just the first paragraph of it, to notice something reads
 wrong."
 
+#### Issue 4: `Class.features` duplicated data already in `Feature` (same as Issue 2, one model over)
+
+**The problem**: identical to Issue 2, just on `Class`/`ClassLevel` instead of `Subclass`/
+`SubclassLevel` - `Class.features` (the source's own raw `{level, name, entries}` list) and the
+`Feature` rows built from it held the same per-level feature text twice, and `ClassLevel` (like
+`SubclassLevel`, built by this project purely to group levels, not a source-native field) had no
+reason to exist as a bare level marker when it could instead be what `Feature` rows link to.
+
+**The fix**: removed `Class.features`; `Feature` gained a `class_level` FK (replacing a `klass`
+FK + a separate `level` field, which became just as redundant as `Class.features` once a
+`class_level` FK existed - `class_level.level` already gives the level, so keeping a second copy
+of it on every `Feature` row would have been the same mistake at smaller scale). `_import_classes`
+now builds `ClassLevel` rows first, then creates each level's `Feature` rows FK'd to the matching
+one - the exact same shape `_split_subclass_features()` already established for subclasses,
+applied consistently one model over.
+
+**A sharper lesson from this one - orphaned rows on schema change, not just on import**: dropping
+`Feature.klass` (a migration - `manage.py migrate`, not `import_rules_data`) doesn't delete the
+`Feature` rows that only had `klass` set; it just drops the column and leaves the rows behind,
+now with every FK null. `_delete_existing()` (the first step of every `import_rules_data` run)
+deletes `Feature` rows only by *cascading* from `Class`/`Species`/`Feat` - which does nothing for
+rows a schema change already orphaned, since they don't reference any surviving parent to cascade
+from. Re-running the import after this migration produced 925 `Feature` rows instead of the
+correct 665 - 260 stale pre-migration rows (all-null FKs) sitting alongside 260 freshly correct
+ones - caught by cross-checking the post-import count against an independent recount from the raw
+JSON (the same discipline as every issue above), not by anything erroring. Fixed two ways: a
+one-off cleanup of the existing orphans, and `_delete_existing()` now deletes `Feature` directly
+and explicitly rather than relying on cascade, so a *future* FK restructuring can't repeat this -
+worth remembering for `Effect`/`Proficiency`/`ChoiceDefinition` too, if any of their parent FKs
+are ever similarly restructured.
+
 #### The general lesson, for next time
 
 A model being "Defined" (mapped field-for-field) doesn't mean the source's own grouping is
@@ -280,24 +311,32 @@ semantically correct, or that nothing downstream of it is redundant:
   schema, and a block that looks like "one feature with sub-details" can actually be "several
   features that got flavor text stapled to the first one." This tends to surface as something
   structurally *off* on a rendered page (not "missing data" but "correct data, wrong shape").
-- **Redundant storage** (Issue 2): a field that exists only because *this project* built it
-  (not a source-native field kept verbatim on purpose) is worth asking "does something else
+- **Redundant storage** (Issues 2 and 4): a field that exists only because *this project* built
+  it (not a source-native field kept verbatim on purpose) is worth asking "does something else
   already hold this same data via a queryable relation?" - if so, the JSON copy is dead weight,
-  not a deliberate tradeoff.
+  not a deliberate tradeoff. Once found in `SubclassLevel`, it was worth deliberately checking
+  `ClassLevel` for the same thing rather than assuming it was one-off - it was.
 - **Untested rendering assumptions** (Issue 3): the generic renderer's rules (which tag
   convention applies, what shape a list item has) were each derived from - and only checked
   against - the handful of `db/*.json` files that existed when they were written. A new file
   large and varied enough (a whole handbook chapter, not one catalog entry) can exercise a shape
   none of those checks ever saw, and the failure is silent (no error, no missing row) - only
   visible by actually reading the rendered output.
+- **Orphaned rows on schema change** (Issue 4's second half): removing a FK column doesn't
+  delete the rows that only had *that* FK set - it just drops the column and leaves them behind,
+  parentless. `_delete_existing()`'s cascade-from-parent-catalogs approach silently doesn't reach
+  those. Worth remembering for `Effect`/`Proficiency`/`ChoiceDefinition` too, if their parent FKs
+  are ever restructured the same way.
 
 Either way, the same discipline applies: don't fix the one example that prompted the question -
 *verify the fix's assumption against every occurrence in `db/`* (a small Python script over
 `db/*.json`, not just one subclass or one passage) before changing the import command or the
-renderer, the way all three issues above were checked against every subclass/tag/list-item in
-`db/`, not just the one Monk/Cleric/D20-Tests example that surfaced each. `Species`, `Feat`, and
-`OptionalFeature` all have similarly-shaped `{name, entries}` source lists and haven't been
-audited for the Issue 1/2 patterns - they're plausible places to look next.
+renderer, and *re-check the actual row counts after*, independently recomputed, not just "did it
+run without an error" - the way every issue above was checked against all 48 subclasses, or all
+63 tags, or a fresh count from raw JSON, rather than just the one Monk/Cleric/D20-Tests/
+`Class.features` example that surfaced each. `Species`, `Feat`, and `OptionalFeature` all have
+similarly-shaped `{name, entries}` source lists and haven't been audited for the Issue 1/2/4
+patterns - they're plausible places to look next.
 
 ### `apps/rules/` — static game content
 
@@ -513,7 +552,7 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     headings/lists/tables/insets/"choose N" groups, and - via `_ReferenceLinker` - turns any
     literal `{@variantrule ...}`, `{@spell ...}`, or `{@feat ...}` tag into a real link to that
     row's own detail page (matched by name against `rules.Rule`/`Spell`/`Feat`).
-  - `Species.entries` (traits) and `Class.features` (per-level features) get extra treatment
+  - `Species.entries` (traits) and a Class's per-level `Feature` rows get extra treatment
     instead of the generic renderer: `render_trait_cards()` puts each trait in its own visually
     distinct card, and `render_class_features()` does the same per feature while further
     grouping cards into collapsible `<details>` toggles by level (the lowest level starts

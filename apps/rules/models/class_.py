@@ -4,9 +4,13 @@ from django.db import models
 class Class(models.Model):
     """A character class (e.g. Fighter, Wizard), sourced from db/classes.json.
 
-    `features` holds the raw {level, name, entries} list from the source (feature text by
-    level); the numeric level-progression table (which varies per class, e.g. spell slots vs
-    Rages) is instead split out into `ClassLevel` rows, one per level.
+    The numeric level-progression table (which varies per class, e.g. spell slots vs Rages) is
+    split out into `ClassLevel` rows, one per level. Per-level feature text (name/entries) isn't
+    duplicated here as a `features` JSON field the way it used to be - it lives only as `Feature`
+    rows FK'd to the matching `ClassLevel` (`feature.class_level.level` gives the level), the
+    same relationship `SubclassLevel` already used - see the "Known data-import issues" section
+    of the README (Issue 2, and its follow-up here) for why keeping both was pure duplication
+    with no independent reason to exist, once linked rows already have the data.
     """
 
     id = models.SlugField(primary_key=True, max_length=100)
@@ -23,7 +27,6 @@ class Class(models.Model):
     tool_proficiencies = models.CharField(max_length=200, blank=True, default="")
     subclass_title = models.CharField(max_length=100, blank=True, default="")
     lore = models.JSONField(default=list, blank=True)
-    features = models.JSONField(default=list, blank=True)
 
     class Meta:
         ordering = ["name"]

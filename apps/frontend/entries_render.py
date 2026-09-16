@@ -189,15 +189,20 @@ def _render_level_groups(by_level: dict[int, list[dict]], linker: _ReferenceLink
     return "".join(groups)
 
 
-def render_class_features(features: list) -> SafeString:
-    """Render `rules.Class.features` (a flat {level, name, entries} list - multiple features
-    commonly share a level, e.g. every class's level 1 has several) as one collapsible group per
-    level, each holding one card per feature gained at that level.
+def render_class_features(features) -> SafeString:
+    """Render a Class's `Feature` rows (each with `class_level` set - fetch with e.g.
+    `Feature.objects.filter(class_level__klass=klass).order_by("pk")`, the `.order_by("pk")`
+    needed for the same reason as `render_subclasses()`: `Feature`'s default ordering is
+    alphabetical by name, which isn't the source's presentation order) as one collapsible group
+    per level, each holding one card per feature gained at that level - multiple features
+    commonly share a level, e.g. every class's level 1 has several.
     """
     linker = _ReferenceLinker()
     by_level: dict[int, list[dict]] = {}
-    for feature in features or []:
-        by_level.setdefault(feature["level"], []).append(feature)
+    for feature in features:
+        by_level.setdefault(feature.class_level.level, []).append(
+            {"name": feature.name, "entries": feature.entries}
+        )
     return mark_safe(_render_level_groups(by_level, linker))
 
 
