@@ -278,12 +278,19 @@ def _pack_content_entries(pack_contents: list | None):
             yield entry["item"], entry.get("quantity", 1)
 
 
-def _starting_equipment_rows(raw_list: list | None, equipment_by_name: dict):
+def _starting_equipment_rows(raw_list: list | None, equipment_by_name: dict, group_by_name: dict):
     """A `startingEquipment` value: a list holding one `{"A": [...], "B": [...], ...}` dict (both
     `Background.startingEquipment` and `Class.startingEquipment.defaultData` share this shape).
-    Yields (option, item_or_None, quantity, gold_value_or_None). Category-placeholder picks
-    (`{"equipmentType": "setGaming"}` - "any gaming set", no specific row to resolve to) are
-    skipped, same scope limit as the ad hoc tool-proficiency shapes elsewhere.
+    Yields (option, item_or_None, group_or_None, quantity, gold_value_or_None).
+
+    An `"item"` ref usually names a concrete `Equipment` row, but two references in the whole
+    source (Acolyte's/Druid's "Holy Symbol"/"Druidic Focus") actually name an `EquipmentGroup`
+    instead - "pick any Holy Symbol", not a specific item - verified this is the *only* shape
+    that fails to resolve against `Equipment`, across every Background/Class starting-equipment
+    reference in `db/`, so falling back to `EquipmentGroup` covers it completely rather than
+    leaving a silently broken all-`None` row. Category-placeholder picks (`{"equipmentType":
+    "setGaming"}` - "any gaming set", no specific row *or* group to resolve to) are skipped, same
+    scope limit as the ad hoc tool-proficiency shapes elsewhere.
     """
     for entry in raw_list or []:
         if not isinstance(entry, dict):
@@ -296,9 +303,11 @@ def _starting_equipment_rows(raw_list: list | None, equipment_by_name: dict):
                     continue
                 if "item" in pick:
                     name, _source = _parse_ref(pick["item"])
-                    yield option, equipment_by_name.get(name), pick.get("quantity", 1), None
+                    item = equipment_by_name.get(name)
+                    group = None if item else group_by_name.get(name)
+                    yield option, item, group, pick.get("quantity", 1), None
                 elif "value" in pick:
-                    yield option, None, 1, pick["value"]
+                    yield option, None, None, 1, pick["value"]
 
 
 def _walk_feature_pointers(node, pointer_type: str, key_field: str):
@@ -1034,17 +1043,19 @@ class Command(BaseCommand):
 
     def _import_background_starting_equipment(self):
         equipment_by_name = {e.name.lower(): e for e in Equipment.objects.all()}
+        group_by_name = {g.name.lower(): g for g in EquipmentGroup.objects.all()}
         rows = []
         for it in _load("backgrounds.json")["background"]:
             background = Background.objects.get(id=_slug(it["name"]))
-            for option, item, qty, gold in _starting_equipment_rows(
-                it.get("startingEquipment"), equipment_by_name
+            for option, item, group, qty, gold in _starting_equipment_rows(
+                it.get("startingEquipment"), equipment_by_name, group_by_name
             ):
                 rows.append(
                     BackgroundStartingEquipmentOption(
                         background=background,
                         option=option,
                         item=item,
+                        group=group,
                         quantity=qty,
                         gold_value=gold,
                     )
@@ -1055,14 +1066,22 @@ class Command(BaseCommand):
 
     def _import_class_starting_equipment(self):
         equipment_by_name = {e.name.lower(): e for e in Equipment.objects.all()}
+        group_by_name = {g.name.lower(): g for g in EquipmentGroup.objects.all()}
         rows = []
         for it in _load("classes.json")["class"]:
             klass = Class.objects.get(id=_slug(it["name"]))
             raw_list = (it.get("startingEquipment") or {}).get("defaultData", [])
-            for option, item, qty, gold in _starting_equipment_rows(raw_list, equipment_by_name):
+            for option, item, group, qty, gold in _starting_equipment_rows(
+                raw_list, equipment_by_name, group_by_name
+            ):
                 rows.append(
                     ClassStartingEquipmentOption(
-                        klass=klass, option=option, item=item, quantity=qty, gold_value=gold
+                        klass=klass,
+                        option=option,
+                        item=item,
+                        group=group,
+                        quantity=qty,
+                        gold_value=gold,
                     )
                 )
         ClassStartingEquipmentOption.objects.bulk_create(rows)

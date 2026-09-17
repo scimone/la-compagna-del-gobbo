@@ -414,3 +414,42 @@ This is the reference for the implementation pass that follows — model/migrati
 that reads a changed field shape (`apps/rules/services/*.py`, `apps/rules/schemas.py`,
 `apps/frontend/entries_render.py` and its templates) — done as the next step, not in this
 document.
+
+
+## 5. Post-migration fixes (found after initial deployment)
+
+Two bugs surfaced once real usage exercised paths the initial migration's own verification
+missed - written up here for the same reason as every fix above: not because this list is
+expected to be complete, but so the same *kind* of gap is easier to recognize next time.
+
+**Starting equipment was imported but never displayed.** `ClassStartingEquipmentOption`/
+`BackgroundStartingEquipmentOption` were built and populated correctly (93/108 rows) in the
+initial pass, but no frontend view ever read them - `apps/frontend/views.py` had no code path
+touching `starting_equipment_options` at all. Caught when asked directly "why isn't this
+displayed," not by any test (there wasn't one covering "does the detail page show every field the
+model has"). Fixed by adding a "Starting Equipment" section to both `world_class_detail` and
+`world_background_detail`, backed by a new `render_starting_equipment()` in `entries_render.py`,
+and removing `world_background_detail`'s old `_extract_named_entry(bg.entries, "Equipment:")`
+prose extraction - a straight duplicate of the same information once the structured version
+existed, same "redundant storage" pattern flagged repeatedly in the original migration write-up.
+
+**Two starting-equipment picks resolve to a group, not an item.** While wiring up the display
+above, Acolyte's page 500'd: `BackgroundStartingEquipmentOption.item` and `.gold_value` were both
+`None` for its "Holy Symbol" pick, which `render_starting_equipment()` didn't handle. Root cause:
+`"holy symbol|xphb"` isn't a concrete `Equipment` row at all - it's a reference to the
+`EquipmentGroup` named "Holy Symbol" (Amulet/Emblem/Reliquary are the actual choices), the same
+`itemGroup` catalog `Equipment.group` already resolves against (see §3.3). Verified this is the
+*only* unresolved shape - a script diffed every `startingEquipment` item reference across both
+`db/backgrounds.json` and `db/classes.json` against the full `Equipment` name set, and exactly two
+names failed to match, both confirmed `EquipmentGroup` names ("Holy Symbol", "Druidic Focus").
+Fixed by adding a `group` FK (mirroring `Equipment.group`) to both `*StartingEquipmentOption`
+models, resolving against `EquipmentGroup` as a fallback when the `Equipment` lookup misses, and
+hardening `render_starting_equipment()` to render a group pick as "any Holy Symbol" instead of
+crashing on the case it didn't anticipate.
+
+**Separately, not a bug but a rendering gap**: `ClassLevel.columns` cells that use the source's
+typed `{"type": "dice"/"bonus"/"bonusSpeed", ...}` shape (kept verbatim in the DB on purpose, see
+§3.6) were never decoded for display, so the Level Progression table showed the raw Python dict
+repr (e.g. `{'type': 'dice', 'toRoll': [{'faces': 6, 'number': 1}], 'rollable': True}`) instead of
+"1d6". Fixed with a `_format_table_cell()` step in `render_key_value_table()` - decoding stays a
+frontend concern, the DB keeps the raw structured value.

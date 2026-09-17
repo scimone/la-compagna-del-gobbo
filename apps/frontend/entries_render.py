@@ -359,20 +359,76 @@ def _render_list_item(item, linker: _ReferenceLinker) -> str:
     return f"<li>{name_html}{body}</li>"
 
 
+def _format_table_cell(value) -> str:
+    """A `rules.ClassLevel.columns` cell value - either a plain int/str (e.g. "2", "3") or one of
+    three typed dicts the source uses for dice/bonus progressions (verified: no other `type`
+    occurs anywhere in `db/classes.json`), stored on the model verbatim rather than pre-flattened
+    so no information is lost - see `ClassLevel`'s docstring. Rendering them is this function's
+    job, not the importer's:
+
+    - `{"type": "dice", "toRoll": [{"number": 1, "faces": 6}]}` -> `"1d6"` (Monk's Martial Arts
+      die) - multiple `toRoll` entries (not seen in practice, but the source allows it) join with
+      `"+"`.
+    - `{"type": "bonus", "value": 2}` -> `"+2"` (Barbarian's Rage Damage).
+    - `{"type": "bonusSpeed", "value": 0}` -> `"+0 ft."` (Monk's Unarmored Movement).
+    """
+    if not isinstance(value, dict):
+        return str(value)
+    cell_type = value.get("type")
+    if cell_type == "dice":
+        return "+".join(f"{d.get('number', 1)}d{d['faces']}" for d in value.get("toRoll", []))
+    if cell_type == "bonus":
+        return f"+{value.get('value', 0)}"
+    if cell_type == "bonusSpeed":
+        return f"+{value.get('value', 0)} ft."
+    return str(value)
+
+
 def render_key_value_table(rows, headers) -> SafeString:
     """Render a list of {header: value} dicts as an HTML table with the given header order -
     used for `rules.ClassLevel.columns`, which is already stored as one such dict per level.
     These are short catalog-table cells (e.g. "Rages", "+2"), not narrative text, and don't
-    contain `{@tag ...}` markup in the source data, so no link resolution happens here.
+    contain `{@tag ...}` markup in the source data, so no link resolution happens here - only
+    `_format_table_cell`'s dice/bonus decoding.
     """
     header_html = "".join(f"<th>{escape(h)}</th>" for h in headers)
     body_html = "".join(
-        "<tr>" + "".join(f"<td>{escape(str(row.get(h, '')))}</td>" for h in headers) + "</tr>"
+        "<tr>"
+        + "".join(f"<td>{escape(_format_table_cell(row.get(h, '')))}</td>" for h in headers)
+        + "</tr>"
         for row in rows
     )
     return mark_safe(
         f"<table><thead><tr>{header_html}</tr></thead><tbody>{body_html}</tbody></table>"
     )
+
+
+def render_starting_equipment(options) -> SafeString:
+    """Render a Class/Background's starting-equipment choice - `ClassStartingEquipmentOption`/
+    `BackgroundStartingEquipmentOption` rows, grouped by their shared `option` letter ("choose A,
+    B, or C") into one comma-separated line each. `gold_value` is stored in copper (matching
+    `rules.Equipment.value`'s own unit - confirmed against a known real value: Fighter's option C
+    is `15500` copper, i.e. exactly the 155 GP the 2024 Player's Handbook gives) so it's divided
+    by 100 for display. `group` (e.g. "any Holy Symbol") covers the two picks that name an
+    `EquipmentGroup` rather than one concrete `Equipment` row - see that model's docstring.
+    """
+    grouped: dict[str, list[str]] = {}
+    for opt in options:
+        if opt.item_id:
+            piece = opt.item.name if opt.quantity == 1 else f"{opt.quantity}x {opt.item.name}"
+        elif opt.group_id:
+            piece = f"{gettext('any')} {opt.group.name}"
+        elif opt.gold_value is not None:
+            gp = opt.gold_value / 100
+            piece = f"{gp:g} GP"
+        else:
+            continue
+        grouped.setdefault(opt.option, []).append(piece)
+    items_html = "".join(
+        f"<li><strong>{escape(option)}:</strong> {escape(', '.join(pieces))}</li>"
+        for option, pieces in sorted(grouped.items())
+    )
+    return mark_safe(f"<ul>{items_html}</ul>")
 
 
 def _render_table(node: dict, linker: _ReferenceLinker) -> str:

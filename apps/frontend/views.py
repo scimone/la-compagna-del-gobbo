@@ -10,6 +10,7 @@ from apps.frontend.entries_render import (
     render_entries,
     render_handbook_section,
     render_key_value_table,
+    render_starting_equipment,
     render_subclasses,
     render_trait_cards,
 )
@@ -291,25 +292,11 @@ def world_backgrounds(request):
     )
 
 
-def _extract_named_entry(entries, name):
-    """Background.entries is always a single list-hang-notitle block whose items are named
-    Ability Scores:/Feat:/Skill Proficiencies:/Tool Proficiency:/Equipment: (verified against
-    every one of the 16 XPHB backgrounds) - everything but Equipment duplicates a plain field
-    we already store, so this pulls out just the one piece that isn't captured elsewhere.
-    """
-    if not entries:
-        return None
-    top = entries[0]
-    if isinstance(top, dict) and top.get("type") == "list":
-        for item in top.get("items", []):
-            if isinstance(item, dict) and item.get("name") == name:
-                return item
-    return None
-
-
 def world_background_detail(request, pk):
     bg = background_service.get_background(pk)
-    equipment = _extract_named_entry(bg.entries, "Equipment:")
+    starting_equipment = bg.starting_equipment_options.select_related("item").order_by(
+        "option", "pk"
+    )
 
     facts = [(_("Ability Scores"), _format_ability_choice(bg.ability_scores))]
     skill_names = ", ".join(s.name for s in bg.skills.all())
@@ -322,8 +309,10 @@ def world_background_detail(request, pk):
     facts.append((_("Page"), bg.page))
 
     sections = []
-    if equipment:
-        sections.append(_section(_("Equipment"), render_entries(equipment)))
+    if starting_equipment:
+        sections.append(
+            _section(_("Starting Equipment"), render_starting_equipment(starting_equipment))
+        )
     if bg.lore:
         sections.append(_section(_("Lore"), render_entries(bg.lore)))
 
@@ -371,6 +360,14 @@ def world_class_detail(request, pk):
     sections = []
     if klass.lore:
         sections.append(_section(_("Lore"), render_entries(klass.lore)))
+
+    starting_equipment = klass.starting_equipment_options.select_related("item").order_by(
+        "option", "pk"
+    )
+    if starting_equipment:
+        sections.append(
+            _section(_("Starting Equipment"), render_starting_equipment(starting_equipment))
+        )
 
     sections.append(
         _section(_("Features by Level"), render_class_features(class_features), open=False)
