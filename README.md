@@ -131,43 +131,71 @@ fields too — see the [`apps/characters/`](#appscharacters--persisted-character
 below, and the design decisions called out there. `builder` still has no models — see its
 section for why.
 
+**`db/` was replaced wholesale in 2025** with a rawer, more cross-referenced source dump (the
+previous format is preserved at `db_old/` — one field, `Spell.classes`/`subclasses`, is still
+deliberately sourced from there, see below). The table below describes the *current* `db/`
+format; the "Known data-import issues" section further down is historical - it documents bugs
+found while building the import against the *old* `db_old/` format and is left as-is for that
+reason, not updated for the new one. See
+[docs/data_migration_2025.md](docs/data_migration_2025.md) for the 2025 migration's own write-up
+(the new format's shape, the field-by-field mapping decisions, and the three data-loss tradeoffs
+resolved with the project owner: `Spell.classes`/`subclasses` merged from `db_old/`, lore fields
+(now populated - see below) initially left empty pending a fluff-data drop, `HandbookSection`
+kept on `db/handbook.json` copied verbatim from `db_old/`).
+
 | Model | Status | Source | Notes |
 |---|---|---|---|
-| `Rule` | Defined | `db/rules.json` | |
-| `Skill` | Defined | `db/skills.json` | `ability` is a FK to `Ability`, not a free-text copy of its name — see [Known data-import issues](#known-data-import-issues) |
-| `Ability` | Defined | `db/handbook.json` ("Ability Descriptions" table) | 6 rows (Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma) - pulled from the handbook's own table rather than hand-written, since that table already gives exactly this data. Referenced by `Skill.ability` and `Class.primary_abilities`/`saving_throw_abilities` — see [Known data-import issues](#known-data-import-issues) |
+| `Rule` | Defined | `db/rules.json` (`variantrule`) | 114 rows |
+| `Skill` | Defined | `db/skills.json` | `ability` is a FK to `Ability`, keyed by the source's own 3-letter short code (`str`/`dex`/.../`cha`) — see `docs/data_migration_2025.md` §3.1 |
+| `Ability` | Defined | `db/abilities.json` | 6 rows (Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma) - a first-party source now (was scraped from `db_old/handbook.json`'s "Ability Descriptions" table). `id` is the source's own short code (`str`, `dex`, ...), not a slugified name - every other domain references abilities by this same code. Referenced by `Skill.ability`, `Class.primary_abilities`/`saving_throw_abilities`/`spellcasting_ability`, `Spell.saving_throw_abilities` |
 | `Sense` | Defined | `db/senses.json` | |
 | `Mastery` | Defined | `db/masteries.json` | |
-| `EquipmentProperty` | Defined | `db/equipment_properties.json` | |
-| `Equipment` | Defined | `db/equipments.json` | Covers weapons/armor/gear/tools/instruments alike via `category` |
-| `Species` | Defined | `db/species.json` | All 11 entries are imported, including the one non-XPHB one (`grung`, source VGM) - unlike `Subclass`/`Feature`/etc., nothing here is filtered by source |
-| `Background` | Defined | `db/backgrounds.json` | |
-| `Feat` | Defined | `db/feats.json` | |
-| `Class` | Defined | `db/classes.json` | Core metadata; the level-progression table is split into `ClassLevel`. No `features` field - like `SubclassLevel`, per-level feature text lives only as linked `Feature` rows, not duplicated as JSON here too. `saving_throws`/`primaryAbility` are similarly no longer free text - `saving_throw_abilities`/`primary_abilities` link to `Ability` instead, with `primary_ability_conjunction` preserving the source's "or" (a real choice, e.g. Fighter) vs "and" (both matter, e.g. Monk) distinction — see [Known data-import issues](#known-data-import-issues) |
-| `ClassLevel` | Defined | `db/classes.json` (`table` rows) | Columns differ per class (spell slots vs Rages vs ...), so kept as a verbatim `columns` JSON map rather than fixed fields. A pure level marker otherwise - no `features` field of its own; its features are the `Feature` rows FK'd back to it |
-| `Subclass` | Defined | `db/classes.json` (`subclasses`) | Only the 48 XPHB-sourced subclasses out of 182 total across all classes; the source gives subclasses no id/page/srd. `description` (flavor text) is split out of the granting level's features at import time — see [Known data-import issues](#known-data-import-issues) |
-| `SubclassLevel` | Defined | `db/classes.json` (subclass `features`) | A pure level marker - no `features` field of its own; its features are the `Feature` rows FK'd back to it, not a duplicated JSON copy — see [Known data-import issues](#known-data-import-issues) |
-| `Spell` | Defined | `db/spells.json` | `classes`/`subclasses` kept as plain JSON lists, not FKs — see the model docstring |
+| `EquipmentType` | Defined | `db/equipment-base.json` (`itemType`) | 23 rows. New - the old format had no such catalog, only a free-text `Equipment.category` string. `Equipment.type` FKs here now |
+| `EquipmentGroup` | Defined | `db/equipment.json` (`itemGroup`) | 6 rows. New - a named category of interchangeable items (e.g. "Arcane Focus"); `focus_classes` M2Ms to `Class` |
+| `EquipmentProperty` | Defined | `db/equipment-base.json` (`itemProperty`) | 9 rows. No top-level `name` in the source (display name lives at `entries[0].name`) - `id` is `slugify(abbreviation)` |
+| `Equipment` | Defined | `db/equipment-base.json` (`baseitem`, 94 rows) + `db/equipment.json` (`item`, 123 rows) | 217 rows total - an exact split of the old single flat catalog, not new content. `type`/`properties`/`masteries`/`group` are real FKs/M2Ms now (were a free-text `category` plus JSON ref lists); `pack_contents` is a new self-M2M (`EquipmentPackContent`) for pack contents (e.g. Burglar's Pack -> Backpack, Candles, ...) |
+| `EquipmentPackContent` | Defined | `db/equipment.json` (`item.packContents`) | 65 rows. New - resolves a pack's contents to real `Equipment` FKs with a quantity, where the old format left this as unparsed prose |
+| `Species` | Defined | `db/species.json` (`race`) | 10 rows - `Grung` (source VGM) is absent from the new source entirely (not filtered by this project; confirmed no non-XPHB rows ship at all now). `fly_speed`/`swim_speed`/`climb_speed` were dropped (no source left for them, and verified zero real data loss - every surviving species already had all three at 0); `speed` is now a plain int. `darkvision` is new |
+| `Background` | Defined | `db/backgrounds.json` | `skills` is a real M2M to `Skill` now (was a comma string); `feat` is a real FK to `Feat` now (was a bare name string); `ability_scores`/`tools` keep the source's own structured choice/grant JSON rather than a free-text summary |
+| `BackgroundStartingEquipmentOption` | Defined | `db/backgrounds.json` (`startingEquipment`) | 108 rows. New - a background's "choose A or B" starting gear, resolved to real `Equipment` FKs (or a gold value) where the old format left this as unparsed prose |
+| `Feat` | Defined | `db/feats.json` | `prerequisite` is a structured JSON list now (ability/level/feature/proficiency requirements), not one free-text string |
+| `Class` | Defined | `db/classes.json` (`class`) | Core metadata; per-level progression is `ClassLevel`. `armor_proficiencies`/`weapon_proficiencies`/`tool_proficiencies` are the source's own structured JSON now (were comma-separated text); the old free-text `proficiencies` summary field and skill-choice regex are gone (see `ChoiceDefinition`). `spellcasting_ability`/`caster_progression` are new. `primary_ability_conjunction` ("or" vs "and") is now derived structurally from the source's own shape instead of a string-pattern parse — see `docs/data_migration_2025.md` §3.6 |
+| `ClassLevel` | Defined | `db/classes.json` (`class.classTableGroups`/spell progressions) | `spell_slots`/`cantrips_known`/`spells_known_or_prepared` are dedicated fields now (the source gives these as structured per-level progressions); `columns` keeps whatever's left (e.g. Barbarian's Rages/Rage Damage, Warlock's pact-magic Slot Level) |
+| `ClassStartingEquipmentOption` | Defined | `db/classes.json` (`class.startingEquipment.defaultData`) | 93 rows. New - same shape as `BackgroundStartingEquipmentOption`, for a class's own starting-gear choice |
+| `Subclass` | Defined | `db/classes.json` (`subclass`, 48 rows) | Already pre-filtered to XPHB in the source (no more `if source != "XPHB"` filtering needed). `additional_spells` (bonus spells) is new. `description` is still the granting level's flavor text, but the new source already keeps it as its own addressable record pointing at its sibling features via `refSubclassFeature` markers rather than bundling them inline - see [Known data-import issues](#known-data-import-issues) Issue 1 and `docs/data_migration_2025.md` §3.6 for how this changed |
+| `SubclassLevel` | Defined | `db/classes.json` (`subclassFeature`) | A pure level marker - no `features` field of its own; its features are the `Feature` rows FK'd back to it |
+| `Spell` | Defined | `db/spells.json` | `casting_time`/`range`/`duration`/`components` are structured `JSONField`s now (the source gives nested objects, not display strings). `saving_throw_abilities` is new (a M2M - up to 3 spells name more than one ability, verified against all 391). `classes`/`subclasses` are a deliberate exception: the new source dropped this data with no replacement anywhere, so these two fields are still populated from `db_old/spells.json` by exact name match — see `docs/data_migration_2025.md` §2/§3.4 |
 | `Language` | Defined | `db/languages.json` | |
-| `OptionalFeature` | Defined | `db/optional_features.json` | Not in the original architecture doc — covers Eldritch Invocations, Battle Master Maneuvers and Metamagic, which don't fit any existing catalog |
-| `Proficiency` | Defined | `db/classes.json`, `db/backgrounds.json` | 85 rows: the flat comma-separated items in `Class.armor_proficiencies`/`weapon_proficiencies`/`tool_proficiencies` and `Background.skills`/`tools`, tagged with a `category` taken from which field they came from. The 2 items phrased as a choice instead of a flat grant (Bard's/Monk's `tool_proficiencies`) are excluded, not misfiled — see the model docstring |
-| `Feature` | Defined | `db/classes.json`, `db/species.json`, `db/feats.json` | 665 rows (260 class, 242 subclass, 41 species, 122 feat): every explicitly named `{name, entries}` dict at the top level of a class's per-level features, a subclass's per-level features, `Species.entries` and `Feat.entries` (bare prose strings mixed into those same lists are skipped, not renamed into features). Duplicates data still held verbatim on `Species`/`Feat` — see the model docstring for why it isn't removed from them there; class and subclass features are the exception, where `Feature` is the *only* copy — see [Known data-import issues](#known-data-import-issues) |
-| `Effect` | Partly defined | derived from `Feature.entries` | 2094 rows: a mechanical index of literal 5etools inline tags (`{@damage ...}`, `{@condition ...}`, `{@dc ...}`, etc.) found anywhere in a `Feature`'s `entries` text, storing the tag name and raw tag text verbatim — not a semantic effects model, no tag is reinterpreted |
-| `ChoiceDefinition` | Partly defined | `db/backgrounds.json`, `db/classes.json` | 27 rows, only where the source is reliably pattern-shaped: all 16 `Background.ability_scores` ("Choose from A, B, C") and 11 of 12 classes' `Class.proficiencies` "Skills: choose N from ..." clause (Bard's is genuinely empty in the source). Everything else that reads like a choice in the source (feat benefit prose, tool-proficiency choices) is inconsistent free text and was deliberately left unparsed |
-| `HandbookSection` | Defined | `db/handbook.json` (`data`) | 15 rows: the source has exactly one chapter, so rather than model chapters as their own grouping, its root block and each of its direct named children ("Rules Glossary", "Player or DM?", "Dice", ...) are flattened into one row each - see the model docstring. `entries` holds each one's own content (arbitrarily nested headings/lists/tables/insets), rendered the same way as every other `entries`-shaped field. Surfaced two edge cases in `entries_render.py` itself - see [Known data-import issues](#known-data-import-issues), Issue 3 |
+| `OptionalFeature` | Defined | `db/optionalfeatures.json` | `prerequisite` is structured JSON now, same treatment as `Feat.prerequisite`. `consumes_resource_name` is new (names the resource a pick spends, e.g. "Superiority Die" - relevant to the "Open design question" below) |
+| `Proficiency` | Defined | `db/classes.json`, `db/backgrounds.json` | 47 rows - `Background.skills` moved off this model entirely (a real M2M now, see `Background`). `choice_data` is new: the two previously-excluded tool-proficiency choices (Bard's/Monk's) are now included, since the source gives them as real JSON instead of unparseable "Choose N ..." prose |
+| `Feature` | Defined | `db/classes.json`, `db/species.json`, `db/feats.json` | 704 rows (283 class, 261 subclass, 38 species, 122 feat). Class/subclass feature resolution now walks `refClassFeature`/`refSubclassFeature` pointers recursively (a class/subclass's own feature-list field doesn't always enumerate every feature - some are only reachable via a pointer inside a sibling feature's `entries`, e.g. Cleric's Divine Order choice or a subclass's granting-level wrapper) rather than reading one flat list - see `docs/data_migration_2025.md` §3.6. `consumes_resource_name` is new, same as `OptionalFeature`'s |
+| `Effect` | Partly defined | derived from `Feature.entries` | 2094 rows (independently cross-checked against the pre-migration verified-correct count) |
+| `ChoiceDefinition` | Partly defined | `db/species.json`, `db/backgrounds.json`, `db/classes.json`, `db/feats.json` | 85 rows (up from 27) - the source's own `{"choose": {"from": [...], "count"|"amount"|"weighted": ...}}` idiom replaced the old regex-over-free-text approach and extends to far more of the data (species racial choices, feat ability/skill/save choices, not just the two cases the old format could reliably pattern-match) |
+| `HandbookSection` | Defined | `db/handbook.json` (`data`) | 15 rows: the new `db/` drop ships no replacement for this file at all, so it's copied verbatim from `db_old/handbook.json` rather than re-sourced - a deliberate exception, same as `Spell.classes`/`subclasses`. Otherwise unchanged: the source has exactly one chapter, so rather than model chapters as their own grouping, its root block and each of its direct named children ("Rules Glossary", "Player or DM?", "Dice", ...) are flattened into one row each - see the model docstring. `entries` holds each one's own content (arbitrarily nested headings/lists/tables/insets), rendered the same way as every other `entries`-shaped field. Surfaced two edge cases in `entries_render.py` itself - see [Known data-import issues](#known-data-import-issues), Issue 3 |
+
+`Species.lore`/`Background.lore`/`Class.lore` are populated from `db/fluff-species.json`/
+`fluff-backgrounds.json`/`fluff-classes.json` (added after the initial 2025 migration - all 10/16/
+12 rows have real lore text). `db/fluff-feats.json`/`fluff-equipment.json`/`fluff-spells.json`
+carry only art credits (`images`), no text, for every row - checked, not assumed - so `Feat`/
+`Equipment`/`Spell` gain nothing from them (none has a `lore` field). `db/foundry-*.json` (Foundry
+VTT automation exports, added at the same time) were checked too, specifically for a `Spell`↔
+`Class` list association - none exists there either, and every foundry file only partially covers
+its domain (e.g. 295/391 spells, 10/12 classes) - not imported; see
+`docs/data_migration_2025.md` §3.7/§3.8.
 
 Every "Defined" model is loaded end-to-end (all 217 equipment rows, all 391 spells, all 12
 classes × 20 levels, all 19 languages, all 58 optional features, etc. — no rows dropped or
 truncated) by `manage.py import_rules_data` (`apps/rules/management/commands/`), which wipes
-and reloads every `rules` table from `db/` in one transaction. `Proficiency`'s row count (85)
-was independently cross-checked against a from-scratch recomputation; `Effect` and
+and reloads every `rules` table from `db/` in one transaction. `Proficiency`'s row count (47)
+and `Effect`'s (2094, matching the pre-migration verified-correct count exactly) were both
+independently cross-checked against a from-scratch recomputation; `Effect` and
 `ChoiceDefinition` are "Partly defined" because they only cover the subset of their source
 that's reliably, mechanically extractable — see their model docstrings for exactly what was
 included and excluded, and why.
 
 `Tool` and `SpellList`, both originally listed in architecture.md, were removed entirely (not
 just left "Missing") once it was clear they'd always be pure duplicates: a Tool is just an
-`Equipment` row with `category` in `{Tool, Artisan's Tools, Instrument, Gaming Set}`, and a
+`Equipment` row whose `type` is one of `{Tool, Artisan's Tools, Instrument, Gaming Set}`, and a
 class's spell list is just `Spell.classes`/`Spell.subclasses` filtered — a dedicated table would
 carry the same rows twice with no independent reason to exist.
 
@@ -411,12 +439,17 @@ assets) and `otherVersions` (cross-references to non-XPHB printings — we only 
 | `ChoiceDefinition` | A choice a player must make (e.g. "pick 2 skills") |
 | `Species` | A player species (e.g. Elf, Dwarf) |
 | `Background` | A character background (e.g. Soldier, Sage) |
+| `BackgroundStartingEquipmentOption` | One item (or gold grant) in a `Background`'s starting-equipment choice |
 | `Feat` | A feat (e.g. Alert, Tough) |
 | `Class` | A character class (e.g. Fighter, Wizard) |
 | `ClassLevel` | The per-level progression row for a `Class` |
+| `ClassStartingEquipmentOption` | One item (or gold grant) in a `Class`'s starting-equipment choice |
 | `Subclass` | A subclass/archetype of a `Class` |
 | `SubclassLevel` | The per-level progression row for a `Subclass` |
 | `Equipment` | An item of equipment (weapon, armor, gear, tool, instrument, ...) |
+| `EquipmentType` | A category of `Equipment` (e.g. Melee Weapon, Heavy Armor) |
+| `EquipmentGroup` | A named category of interchangeable `Equipment` (e.g. Arcane Focus) |
+| `EquipmentPackContent` | One item stack inside an equipment pack (e.g. Burglar's Pack) |
 | `EquipmentProperty` | A property attached to `Equipment` (e.g. Finesse) |
 | `Mastery` | A weapon mastery property |
 | `Skill` | A skill (e.g. Athletics, Perception) |
@@ -675,7 +708,10 @@ No `users` app, no auth, no combat system.
 ## Other files in this repo
 
 `db/*.json` (plus their `*_schema.json` siblings) is the XPHB content dump the `rules` models
-above are sourced from — see [Model status](#model-status). `glossary.md` and
+above are sourced from — see [Model status](#model-status). `db_old/` is the previous (pre-2025)
+dump, kept as a permanent snapshot rather than deleted - one field (`Spell.classes`/`subclasses`)
+is still deliberately read from it at import time, since the current `db/` dropped that data with
+no replacement; see [docs/data_migration_2025.md](docs/data_migration_2025.md). `glossary.md` and
 `extract_from_json.py` are pre-existing reference material (Italian/English D&D terminology, and
 whatever produced the `db/` dump) unrelated to this Django scaffold; they're left untouched for
 now.

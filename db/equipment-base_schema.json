@@ -1,0 +1,616 @@
+{
+  "baseitem": {
+    "ac": {
+      "type": [
+        "int"
+      ],
+      "required": false
+    },
+    "ammoType": {
+      "type": [
+        "str"
+      ],
+      "required": false
+    },
+    "armor": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "arrow": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "axe": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "basicRules2024": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "bolt": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "bow": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "bulletFirearm": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "bulletSling": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "club": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "crossbow": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "dagger": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "dmg1": {
+      "type": [
+        "str"
+      ],
+      "required": false
+    },
+    "dmg2": {
+      "type": [
+        "str"
+      ],
+      "required": false
+    },
+    "dmgType": {
+      "type": [
+        "str"
+      ],
+      "required": false
+    },
+    "edition": {
+      "type": [
+        "str"
+      ],
+      "required": false
+    },
+    "entries": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict",
+          "str"
+        ],
+        "properties": {
+          "items": {
+            "type": [
+              "list"
+            ],
+            "items": {
+              "type": [
+                "dict"
+              ],
+              "properties": {
+                "entries": {
+                  "type": [
+                    "list"
+                  ],
+                  "items": {
+                    "type": [
+                      "str"
+                    ]
+                  },
+                  "required": true
+                },
+                "name": {
+                  "type": [
+                    "str"
+                  ],
+                  "required": true
+                },
+                "type": {
+                  "type": [
+                    "str"
+                  ],
+                  "required": true
+                }
+              }
+            },
+            "required": true
+          },
+          "style": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          },
+          "type": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          }
+        }
+      },
+      "required": false
+    },
+    "firearm": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "group": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "str"
+        ]
+      },
+      "required": false
+    },
+    "hammer": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "hasFluffImages": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "lance": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "mace": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "mastery": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "str"
+        ]
+      },
+      "required": false
+    },
+    "miscTags": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "str"
+        ]
+      },
+      "required": false
+    },
+    "name": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "needleBlowgun": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "packContents": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "item": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          },
+          "quantity": {
+            "type": [
+              "int"
+            ],
+            "required": true
+          }
+        }
+      },
+      "required": false
+    },
+    "page": {
+      "type": [
+        "int"
+      ],
+      "required": true
+    },
+    "polearm": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "property": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict",
+          "str"
+        ],
+        "properties": {
+          "note": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          },
+          "uid": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          }
+        }
+      },
+      "required": false
+    },
+    "range": {
+      "type": [
+        "str"
+      ],
+      "required": false
+    },
+    "rapier": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "rarity": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "referenceSources": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "str"
+        ]
+      },
+      "required": false
+    },
+    "scfType": {
+      "type": [
+        "str"
+      ],
+      "required": false
+    },
+    "source": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "spear": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "srd52": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "staff": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "stealth": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "strength": {
+      "type": [
+        "str"
+      ],
+      "required": false
+    },
+    "sword": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "type": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "value": {
+      "type": [
+        "float",
+        "int"
+      ],
+      "required": true
+    },
+    "weapon": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "weaponCategory": {
+      "type": [
+        "str"
+      ],
+      "required": false
+    },
+    "weight": {
+      "type": [
+        "float",
+        "int"
+      ],
+      "required": false
+    }
+  },
+  "itemProperty": {
+    "abbreviation": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "basicRules2024": {
+      "type": [
+        "bool"
+      ],
+      "required": true
+    },
+    "entries": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "entries": {
+            "type": [
+              "list"
+            ],
+            "items": {
+              "type": [
+                "str"
+              ]
+            },
+            "required": true
+          },
+          "name": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          },
+          "type": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          }
+        }
+      },
+      "required": true
+    },
+    "page": {
+      "type": [
+        "int"
+      ],
+      "required": true
+    },
+    "source": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "template": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    }
+  },
+  "itemType": {
+    "_copy": {
+      "type": [
+        "dict"
+      ],
+      "properties": {
+        "abbreviation": {
+          "type": [
+            "str"
+          ],
+          "required": true
+        },
+        "source": {
+          "type": [
+            "str"
+          ],
+          "required": true
+        }
+      },
+      "required": false
+    },
+    "abbreviation": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "basicRules2024": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "entries": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "entries": {
+            "type": [
+              "list"
+            ],
+            "items": {
+              "type": [
+                "str"
+              ]
+            },
+            "required": true
+          },
+          "name": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          },
+          "type": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          }
+        }
+      },
+      "required": false
+    },
+    "name": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "page": {
+      "type": [
+        "int"
+      ],
+      "required": true
+    },
+    "source": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    }
+  },
+  "itemTypeAdditionalEntries": {},
+  "itemEntry": {},
+  "itemMastery": {
+    "basicRules2024": {
+      "type": [
+        "bool"
+      ],
+      "required": true
+    },
+    "entries": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "str"
+        ]
+      },
+      "required": true
+    },
+    "name": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "page": {
+      "type": [
+        "int"
+      ],
+      "required": true
+    },
+    "source": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "srd52": {
+      "type": [
+        "bool"
+      ],
+      "required": true
+    }
+  }
+}

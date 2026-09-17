@@ -1,487 +1,190 @@
 {
-    "meta": {
-        "category": "languages",
-        "count": 19,
-        "sourceRepo": "https://github.com/5etools-mirror-3/5etools-src",
-        "sourceCommit": "ebd1827660ee61d1a59227d5979a137494dce1c8",
-        "generatedAt": "2026-08-28T18:47:44.841Z"
-    },
-    "items": [
+    "language": [
         {
-            "id": "abyssal",
             "name": "Abyssal",
             "source": "XPHB",
             "page": 37,
-            "srd": true,
-            "languageType": "Rare",
-            "script": "",
-            "typicalSpeakers": "",
-            "entries": [],
-            "otherVersions": [
-                {
-                    "id": "abyssal-ggr",
-                    "source": "GGR"
-                },
-                {
-                    "id": "abyssal-phb",
-                    "source": "PHB"
-                }
-            ]
+            "srd52": true,
+            "basicRules2024": true,
+            "type": "rare",
+            "origin": "Demons of the Abyss"
         },
         {
-            "id": "celestial",
             "name": "Celestial",
             "source": "XPHB",
             "page": 37,
-            "srd": true,
-            "languageType": "Rare",
-            "script": "",
-            "typicalSpeakers": "",
-            "entries": [],
-            "otherVersions": [
-                {
-                    "id": "celestial-mot",
-                    "source": "MOT"
-                },
-                {
-                    "id": "celestial-erlw",
-                    "source": "ERLW"
-                },
-                {
-                    "id": "celestial-ggr",
-                    "source": "GGR"
-                },
-                {
-                    "id": "celestial-phb",
-                    "source": "PHB"
-                }
-            ]
+            "srd52": true,
+            "basicRules2024": true,
+            "type": "rare",
+            "origin": "Celestials"
         },
         {
-            "id": "common",
             "name": "Common",
             "source": "XPHB",
             "page": 37,
-            "srd": true,
-            "languageType": "Standard",
-            "script": "",
-            "typicalSpeakers": "",
-            "entries": [],
-            "otherVersions": [
-                {
-                    "id": "common-dsotdq",
-                    "source": "DSotDQ"
-                },
-                {
-                    "id": "common-mot",
-                    "source": "MOT"
-                },
-                {
-                    "id": "common-erlw",
-                    "source": "ERLW"
-                },
-                {
-                    "id": "common-ggr",
-                    "source": "GGR"
-                },
-                {
-                    "id": "common-psi",
-                    "source": "PSI"
-                },
-                {
-                    "id": "common-phb",
-                    "source": "PHB"
-                }
-            ]
+            "srd52": true,
+            "basicRules2024": true,
+            "type": "standard",
+            "origin": "Sigil"
         },
         {
-            "id": "common-sign-language",
             "name": "Common Sign Language",
             "source": "XPHB",
             "page": 37,
-            "srd": true,
-            "languageType": "Standard",
-            "script": "",
-            "typicalSpeakers": "",
-            "entries": []
+            "srd52": true,
+            "basicRules2024": true,
+            "type": "standard",
+            "origin": "Sigil"
         },
         {
-            "id": "deep-speech",
             "name": "Deep Speech",
             "source": "XPHB",
             "page": 37,
-            "srd": true,
-            "languageType": "Rare",
-            "script": "",
-            "typicalSpeakers": "",
-            "entries": [],
-            "otherVersions": [
-                {
-                    "id": "deep-speech-phb",
-                    "source": "PHB"
-                }
-            ]
+            "srd52": true,
+            "basicRules2024": true,
+            "type": "rare",
+            "origin": "Aberrations"
         },
         {
-            "id": "draconic",
             "name": "Draconic",
             "source": "XPHB",
             "page": 37,
-            "srd": true,
-            "languageType": "Standard",
-            "script": "Draconic",
-            "typicalSpeakers": "",
-            "entries": [],
-            "otherVersions": [
-                {
-                    "id": "draconic-dsotdq",
-                    "source": "DSotDQ"
-                },
-                {
-                    "id": "draconic-mot",
-                    "source": "MOT"
-                },
-                {
-                    "id": "draconic-erlw",
-                    "source": "ERLW"
-                },
-                {
-                    "id": "draconic-ggr",
-                    "source": "GGR"
-                },
-                {
-                    "id": "draconic-psi",
-                    "source": "PSI"
-                },
-                {
-                    "id": "draconic-phb",
-                    "source": "PHB"
-                }
-            ]
+            "srd52": true,
+            "basicRules2024": true,
+            "type": "standard",
+            "origin": "Dragons",
+            "script": "Draconic"
         },
         {
-            "id": "druidic",
             "name": "Druidic",
             "source": "XPHB",
             "page": 37,
-            "srd": true,
-            "languageType": "Rare",
-            "script": "",
-            "typicalSpeakers": "",
-            "entries": [],
-            "otherVersions": [
-                {
-                    "id": "druidic-ggr",
-                    "source": "GGR"
-                },
-                {
-                    "id": "druidic-phb",
-                    "source": "PHB"
-                }
-            ]
+            "srd52": true,
+            "basicRules2024": true,
+            "type": "rare",
+            "origin": "Druidic circles"
         },
         {
-            "id": "dwarvish",
             "name": "Dwarvish",
             "source": "XPHB",
             "page": 37,
-            "srd": true,
-            "languageType": "Standard",
-            "script": "",
-            "typicalSpeakers": "",
-            "entries": [],
-            "otherVersions": [
-                {
-                    "id": "dwarvish-dsotdq",
-                    "source": "DSotDQ"
-                },
-                {
-                    "id": "dwarvish-erlw",
-                    "source": "ERLW"
-                },
-                {
-                    "id": "dwarvish-phb",
-                    "source": "PHB"
-                }
-            ]
+            "srd52": true,
+            "basicRules2024": true,
+            "type": "standard",
+            "origin": "Dwarves"
         },
         {
-            "id": "elvish",
             "name": "Elvish",
             "source": "XPHB",
             "page": 37,
-            "srd": true,
-            "languageType": "Standard",
-            "script": "",
-            "typicalSpeakers": "",
-            "entries": [],
-            "otherVersions": [
-                {
-                    "id": "elvish-dsotdq",
-                    "source": "DSotDQ"
-                },
-                {
-                    "id": "elvish-erlw",
-                    "source": "ERLW"
-                },
-                {
-                    "id": "elvish-ggr",
-                    "source": "GGR"
-                },
-                {
-                    "id": "elvish-phb",
-                    "source": "PHB"
-                }
-            ]
+            "srd52": true,
+            "basicRules2024": true,
+            "type": "standard",
+            "origin": "Elves"
         },
         {
-            "id": "giant",
             "name": "Giant",
             "source": "XPHB",
             "page": 37,
-            "srd": true,
-            "languageType": "Standard",
-            "script": "",
-            "typicalSpeakers": "",
-            "entries": [],
-            "otherVersions": [
-                {
-                    "id": "giant-mot",
-                    "source": "MOT"
-                },
-                {
-                    "id": "giant-erlw",
-                    "source": "ERLW"
-                },
-                {
-                    "id": "giant-ggr",
-                    "source": "GGR"
-                },
-                {
-                    "id": "giant-phb",
-                    "source": "PHB"
-                }
-            ]
+            "srd52": true,
+            "basicRules2024": true,
+            "type": "standard",
+            "origin": "Giants"
         },
         {
-            "id": "gnomish",
             "name": "Gnomish",
             "source": "XPHB",
             "page": 37,
-            "srd": true,
-            "languageType": "Standard",
-            "script": "",
-            "typicalSpeakers": "",
-            "entries": [],
-            "otherVersions": [
-                {
-                    "id": "gnomish-dsotdq",
-                    "source": "DSotDQ"
-                },
-                {
-                    "id": "gnomish-erlw",
-                    "source": "ERLW"
-                },
-                {
-                    "id": "gnomish-phb",
-                    "source": "PHB"
-                }
-            ]
+            "srd52": true,
+            "basicRules2024": true,
+            "type": "standard",
+            "origin": "Gnomes"
         },
         {
-            "id": "goblin",
             "name": "Goblin",
             "source": "XPHB",
             "page": 37,
-            "srd": true,
-            "languageType": "Standard",
-            "script": "",
-            "typicalSpeakers": "",
-            "entries": [],
-            "otherVersions": [
-                {
-                    "id": "goblin-dsotdq",
-                    "source": "DSotDQ"
-                },
-                {
-                    "id": "goblin-erlw",
-                    "source": "ERLW"
-                },
-                {
-                    "id": "goblin-ggr",
-                    "source": "GGR"
-                },
-                {
-                    "id": "goblin-phb",
-                    "source": "PHB"
-                }
-            ]
+            "srd52": true,
+            "basicRules2024": true,
+            "type": "standard",
+            "origin": "Goblinoids"
         },
         {
-            "id": "halfling",
             "name": "Halfling",
             "source": "XPHB",
             "page": 37,
-            "srd": true,
-            "languageType": "Standard",
-            "script": "",
-            "typicalSpeakers": "",
-            "entries": [],
-            "otherVersions": [
-                {
-                    "id": "halfling-erlw",
-                    "source": "ERLW"
-                },
-                {
-                    "id": "halfling-phb",
-                    "source": "PHB"
-                }
-            ]
+            "srd52": true,
+            "basicRules2024": true,
+            "type": "standard",
+            "origin": "Halflings"
         },
         {
-            "id": "infernal",
             "name": "Infernal",
             "source": "XPHB",
             "page": 37,
-            "srd": true,
-            "languageType": "Rare",
-            "script": "",
-            "typicalSpeakers": "",
-            "entries": [],
-            "otherVersions": [
-                {
-                    "id": "infernal-erlw",
-                    "source": "ERLW"
-                },
-                {
-                    "id": "infernal-phb",
-                    "source": "PHB"
-                }
-            ]
+            "srd52": true,
+            "basicRules2024": true,
+            "type": "rare",
+            "origin": "Devils of the Nine Hells"
         },
         {
-            "id": "orc",
             "name": "Orc",
             "source": "XPHB",
             "page": 37,
-            "srd": true,
-            "languageType": "Standard",
-            "script": "",
-            "typicalSpeakers": "",
-            "entries": [],
-            "otherVersions": [
-                {
-                    "id": "orc-erlw",
-                    "source": "ERLW"
-                },
-                {
-                    "id": "orc-phb",
-                    "source": "PHB"
-                }
-            ]
+            "srd52": true,
+            "basicRules2024": true,
+            "type": "standard",
+            "origin": "Orcs"
         },
         {
-            "id": "primordial",
             "name": "Primordial",
+            "dialects": [
+                "Auran",
+                "Aquan",
+                "Ignan",
+                "Terran"
+            ],
             "source": "XPHB",
             "page": 37,
-            "srd": true,
-            "languageType": "Rare",
-            "script": "",
-            "typicalSpeakers": "",
-            "entries": [],
-            "otherVersions": [
-                {
-                    "id": "primordial-dsotdq",
-                    "source": "DSotDQ"
-                },
-                {
-                    "id": "primordial-mot",
-                    "source": "MOT"
-                },
-                {
-                    "id": "primordial-erlw",
-                    "source": "ERLW"
-                },
-                {
-                    "id": "primordial-psi",
-                    "source": "PSI"
-                },
-                {
-                    "id": "primordial-phb",
-                    "source": "PHB"
-                }
-            ]
+            "srd52": true,
+            "basicRules2024": true,
+            "type": "rare",
+            "origin": "Elementals"
         },
         {
-            "id": "sylvan",
             "name": "Sylvan",
             "source": "XPHB",
             "page": 37,
-            "srd": true,
-            "languageType": "Rare",
-            "script": "",
-            "typicalSpeakers": "",
-            "entries": [],
-            "otherVersions": [
-                {
-                    "id": "sylvan-dsotdq",
-                    "source": "DSotDQ"
-                },
-                {
-                    "id": "sylvan-mot",
-                    "source": "MOT"
-                },
-                {
-                    "id": "sylvan-erlw",
-                    "source": "ERLW"
-                },
-                {
-                    "id": "sylvan-ggr",
-                    "source": "GGR"
-                },
-                {
-                    "id": "sylvan-phb",
-                    "source": "PHB"
-                }
-            ]
+            "srd52": true,
+            "basicRules2024": true,
+            "type": "rare",
+            "origin": "The Feywild"
         },
         {
-            "id": "thieves-cant",
             "name": "Thieves' Cant",
             "source": "XPHB",
             "page": 37,
-            "srd": true,
-            "languageType": "Rare",
-            "script": "",
-            "typicalSpeakers": "",
-            "entries": [],
-            "otherVersions": [
-                {
-                    "id": "thieves-cant-ggr",
-                    "source": "GGR"
-                },
-                {
-                    "id": "thieves-cant-phb",
-                    "source": "PHB"
-                }
-            ]
+            "srd52": true,
+            "basicRules2024": true,
+            "type": "rare",
+            "origin": "Various criminal guilds"
         },
         {
-            "id": "undercommon",
             "name": "Undercommon",
             "source": "XPHB",
             "page": 37,
-            "srd": true,
-            "languageType": "Rare",
-            "script": "",
-            "typicalSpeakers": "",
-            "entries": [],
-            "otherVersions": [
-                {
-                    "id": "undercommon-phb",
-                    "source": "PHB"
-                }
+            "srd52": true,
+            "basicRules2024": true,
+            "type": "rare",
+            "origin": "The Underdark"
+        }
+    ],
+    "languageScript": [
+        {
+            "name": "Draconic",
+            "source": "XPHB",
+            "fonts": [
+                "fonts/languages/XPHB/Draconic/Iokharik-v2.woff2"
             ]
         }
     ]

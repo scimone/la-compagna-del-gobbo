@@ -1,43 +1,45 @@
 {
-  "entries": {
-    "type": [
-      "list"
-    ],
-    "items": {
+  "itemMastery": {
+    "basicRules2024": {
+      "type": [
+        "bool"
+      ],
+      "required": true
+    },
+    "entries": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "str"
+        ]
+      },
+      "required": true
+    },
+    "name": {
       "type": [
         "str"
-      ]
+      ],
+      "required": true
     },
-    "required": true
-  },
-  "id": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "name": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "page": {
-    "type": [
-      "int"
-    ],
-    "required": true
-  },
-  "source": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "srd": {
-    "type": [
-      "bool"
-    ],
-    "required": true
+    "page": {
+      "type": [
+        "int"
+      ],
+      "required": true
+    },
+    "source": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "srd52": {
+      "type": [
+        "bool"
+      ],
+      "required": true
+    }
   }
 }

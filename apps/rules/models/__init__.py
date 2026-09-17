@@ -1,11 +1,16 @@
 from .ability import Ability
 from .background import Background
+from .background_starting_equipment_option import BackgroundStartingEquipmentOption
 from .choice_definition import ChoiceDefinition
 from .class_ import Class
 from .class_level import ClassLevel
+from .class_starting_equipment_option import ClassStartingEquipmentOption
 from .effect import Effect
 from .equipment import Equipment
+from .equipment_group import EquipmentGroup
+from .equipment_pack_content import EquipmentPackContent
 from .equipment_property import EquipmentProperty
+from .equipment_type import EquipmentType
 from .feat import Feat
 from .feature import Feature
 from .handbook_section import HandbookSection
@@ -24,12 +29,17 @@ from .subclass_level import SubclassLevel
 __all__ = [
     "Ability",
     "Background",
+    "BackgroundStartingEquipmentOption",
     "ChoiceDefinition",
     "Class",
     "ClassLevel",
+    "ClassStartingEquipmentOption",
     "Effect",
     "Equipment",
+    "EquipmentGroup",
+    "EquipmentPackContent",
     "EquipmentProperty",
+    "EquipmentType",
     "Feat",
     "Feature",
     "HandbookSection",

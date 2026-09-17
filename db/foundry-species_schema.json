@@ -1,0 +1,667 @@
+{
+  "race": {
+    "advancement": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "configuration": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "identifier": {
+                "type": [
+                  "str"
+                ],
+                "required": true
+              },
+              "scale": {
+                "type": [
+                  "dict"
+                ],
+                "properties": {
+                  "0": {
+                    "type": [
+                      "dict"
+                    ],
+                    "properties": {
+                      "faces": {
+                        "type": [
+                          "int"
+                        ],
+                        "required": true
+                      },
+                      "number": {
+                        "type": [
+                          "int"
+                        ],
+                        "required": true
+                      }
+                    },
+                    "required": true
+                  },
+                  "11": {
+                    "type": [
+                      "dict"
+                    ],
+                    "properties": {
+                      "faces": {
+                        "type": [
+                          "int"
+                        ],
+                        "required": true
+                      },
+                      "number": {
+                        "type": [
+                          "int"
+                        ],
+                        "required": true
+                      }
+                    },
+                    "required": true
+                  },
+                  "17": {
+                    "type": [
+                      "dict"
+                    ],
+                    "properties": {
+                      "faces": {
+                        "type": [
+                          "int"
+                        ],
+                        "required": true
+                      },
+                      "number": {
+                        "type": [
+                          "int"
+                        ],
+                        "required": true
+                      }
+                    },
+                    "required": true
+                  },
+                  "5": {
+                    "type": [
+                      "dict"
+                    ],
+                    "properties": {
+                      "faces": {
+                        "type": [
+                          "int"
+                        ],
+                        "required": true
+                      },
+                      "number": {
+                        "type": [
+                          "int"
+                        ],
+                        "required": true
+                      }
+                    },
+                    "required": true
+                  }
+                },
+                "required": true
+              },
+              "type": {
+                "type": [
+                  "str"
+                ],
+                "required": true
+              }
+            },
+            "required": true
+          },
+          "title": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          },
+          "type": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          }
+        }
+      },
+      "required": true
+    },
+    "migrationVersion": {
+      "type": [
+        "int"
+      ],
+      "required": true
+    },
+    "name": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "source": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    }
+  },
+  "raceFeature": {
+    "activities": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "activation": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "condition": {
+                "type": [
+                  "str"
+                ],
+                "required": false
+              },
+              "type": {
+                "type": [
+                  "str"
+                ],
+                "required": true
+              }
+            },
+            "required": true
+          },
+          "consumption": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "targets": {
+                "type": [
+                  "list"
+                ],
+                "items": {
+                  "type": [
+                    "dict"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": [
+                        "str"
+                      ],
+                      "required": true
+                    },
+                    "value": {
+                      "type": [
+                        "str"
+                      ],
+                      "required": true
+                    }
+                  }
+                },
+                "required": true
+              }
+            },
+            "required": true
+          },
+          "damage": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "onSave": {
+                "type": [
+                  "str"
+                ],
+                "required": false
+              },
+              "parts": {
+                "type": [
+                  "list"
+                ],
+                "items": {
+                  "type": [
+                    "dict"
+                  ],
+                  "properties": {
+                    "custom": {
+                      "type": [
+                        "dict"
+                      ],
+                      "properties": {
+                        "enabled": {
+                          "type": [
+                            "bool"
+                          ],
+                          "required": true
+                        },
+                        "formula": {
+                          "type": [
+                            "str"
+                          ],
+                          "required": true
+                        }
+                      },
+                      "required": true
+                    },
+                    "types": {
+                      "type": [
+                        "list"
+                      ],
+                      "items": {
+                        "type": [
+                          "str"
+                        ]
+                      },
+                      "required": true
+                    }
+                  }
+                },
+                "required": false
+              }
+            },
+            "required": false
+          },
+          "duration": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "units": {
+                "type": [
+                  "str"
+                ],
+                "required": true
+              },
+              "value": {
+                "type": [
+                  "str"
+                ],
+                "required": true
+              }
+            },
+            "required": false
+          },
+          "effects": {
+            "type": [
+              "list"
+            ],
+            "items": {
+              "type": [
+                "dict"
+              ],
+              "properties": {
+                "foundryId": {
+                  "type": [
+                    "str"
+                  ],
+                  "required": true
+                }
+              }
+            },
+            "required": false
+          },
+          "healing": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "bonus": {
+                "type": [
+                  "str"
+                ],
+                "required": false
+              },
+              "custom": {
+                "type": [
+                  "dict"
+                ],
+                "properties": {
+                  "enabled": {
+                    "type": [
+                      "bool"
+                    ],
+                    "required": true
+                  },
+                  "formula": {
+                    "type": [
+                      "str"
+                    ],
+                    "required": true
+                  }
+                },
+                "required": false
+              },
+              "scaling": {
+                "type": [
+                  "dict"
+                ],
+                "properties": {
+                  "number": {
+                    "type": [
+                      "int"
+                    ],
+                    "required": true
+                  }
+                },
+                "required": true
+              },
+              "types": {
+                "type": [
+                  "list"
+                ],
+                "items": {
+                  "type": [
+                    "str"
+                  ]
+                },
+                "required": true
+              }
+            },
+            "required": false
+          },
+          "img": {
+            "type": [
+              "str"
+            ],
+            "required": false
+          },
+          "name": {
+            "type": [
+              "str"
+            ],
+            "required": false
+          },
+          "range": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "units": {
+                "type": [
+                  "str"
+                ],
+                "required": true
+              }
+            },
+            "required": false
+          },
+          "save": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "ability": {
+                "type": [
+                  "list"
+                ],
+                "items": {
+                  "type": [
+                    "str"
+                  ]
+                },
+                "required": true
+              },
+              "dc": {
+                "type": [
+                  "dict"
+                ],
+                "properties": {
+                  "calculation": {
+                    "type": [
+                      "str"
+                    ],
+                    "required": true
+                  }
+                },
+                "required": true
+              }
+            },
+            "required": false
+          },
+          "target": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "affects": {
+                "type": [
+                  "dict"
+                ],
+                "properties": {
+                  "count": {
+                    "type": [
+                      "str"
+                    ],
+                    "required": false
+                  },
+                  "type": {
+                    "type": [
+                      "str"
+                    ],
+                    "required": true
+                  }
+                },
+                "required": true
+              },
+              "template": {
+                "type": [
+                  "dict"
+                ],
+                "properties": {
+                  "size": {
+                    "type": [
+                      "str"
+                    ],
+                    "required": true
+                  },
+                  "type": {
+                    "type": [
+                      "str"
+                    ],
+                    "required": true
+                  },
+                  "units": {
+                    "type": [
+                      "str"
+                    ],
+                    "required": true
+                  },
+                  "width": {
+                    "type": [
+                      "str"
+                    ],
+                    "required": false
+                  }
+                },
+                "required": false
+              }
+            },
+            "required": true
+          },
+          "type": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          }
+        }
+      },
+      "required": false
+    },
+    "effects": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "changes": {
+            "type": [
+              "list"
+            ],
+            "items": {
+              "type": [
+                "dict"
+              ],
+              "properties": {
+                "key": {
+                  "type": [
+                    "str"
+                  ],
+                  "required": true
+                },
+                "mode": {
+                  "type": [
+                    "str"
+                  ],
+                  "required": true
+                },
+                "value": {
+                  "type": [
+                    "bool",
+                    "int"
+                  ],
+                  "required": true
+                }
+              }
+            },
+            "required": false
+          },
+          "description": {
+            "type": [
+              "str"
+            ],
+            "required": false
+          },
+          "duration": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "seconds": {
+                "type": [
+                  "int"
+                ],
+                "required": true
+              }
+            },
+            "required": false
+          },
+          "foundryId": {
+            "type": [
+              "str"
+            ],
+            "required": false
+          },
+          "name": {
+            "type": [
+              "str"
+            ],
+            "required": false
+          },
+          "statuses": {
+            "type": [
+              "list"
+            ],
+            "items": {
+              "type": [
+                "str"
+              ]
+            },
+            "required": false
+          },
+          "transfer": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          }
+        }
+      },
+      "required": false
+    },
+    "migrationVersion": {
+      "type": [
+        "int"
+      ],
+      "required": true
+    },
+    "name": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "raceName": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "raceSource": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "source": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "system": {
+      "type": [
+        "dict"
+      ],
+      "properties": {
+        "uses.max": {
+          "type": [
+            "str"
+          ],
+          "required": true
+        },
+        "uses.recovery": {
+          "type": [
+            "list"
+          ],
+          "items": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "period": {
+                "type": [
+                  "str"
+                ],
+                "required": true
+              },
+              "type": {
+                "type": [
+                  "str"
+                ],
+                "required": true
+              }
+            }
+          },
+          "required": false
+        }
+      },
+      "required": false
+    }
+  }
+}

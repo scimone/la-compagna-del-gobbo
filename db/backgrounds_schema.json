@@ -1,179 +1,519 @@
 {
-  "abilityScores": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "entries": {
-    "type": [
-      "list"
-    ],
-    "items": {
+  "background": {
+    "ability": {
       "type": [
-        "dict"
+        "list"
       ],
-      "properties": {
-        "items": {
-          "type": [
-            "list"
-          ],
-          "items": {
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "choose": {
             "type": [
               "dict"
             ],
             "properties": {
-              "entry": {
+              "weighted": {
                 "type": [
-                  "str"
+                  "dict"
                 ],
-                "required": true
-              },
-              "name": {
-                "type": [
-                  "str"
-                ],
-                "required": true
-              },
-              "type": {
-                "type": [
-                  "str"
-                ],
+                "properties": {
+                  "from": {
+                    "type": [
+                      "list"
+                    ],
+                    "items": {
+                      "type": [
+                        "str"
+                      ]
+                    },
+                    "required": true
+                  },
+                  "weights": {
+                    "type": [
+                      "list"
+                    ],
+                    "items": {
+                      "type": [
+                        "int"
+                      ]
+                    },
+                    "required": true
+                  }
+                },
                 "required": true
               }
-            }
-          },
-          "required": true
-        },
-        "style": {
-          "type": [
-            "str"
-          ],
-          "required": true
-        },
-        "type": {
-          "type": [
-            "str"
-          ],
-          "required": true
+            },
+            "required": true
+          }
         }
-      }
+      },
+      "required": true
     },
-    "required": true
-  },
-  "feat": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "gallery": {
-    "type": [
-      "list"
-    ],
-    "items": {
+    "basicRules2024": {
       "type": [
-        "dict"
+        "bool"
       ],
-      "properties": {
-        "credit": {
-          "type": [
-            "str"
-          ],
-          "required": true
-        },
-        "path": {
-          "type": [
-            "str"
-          ],
-          "required": true
-        }
-      }
+      "required": false
     },
-    "required": true
-  },
-  "id": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "image": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "lore": {
-    "type": [
-      "list"
-    ],
-    "items": {
+    "edition": {
       "type": [
         "str"
-      ]
-    },
-    "required": true
-  },
-  "name": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "otherVersions": {
-    "type": [
-      "list"
-    ],
-    "items": {
-      "type": [
-        "dict"
       ],
-      "properties": {
-        "id": {
-          "type": [
-            "str"
-          ],
-          "required": true
-        },
-        "source": {
-          "type": [
-            "str"
-          ],
-          "required": true
-        }
-      }
+      "required": true
     },
-    "required": false
-  },
-  "page": {
-    "type": [
-      "int"
-    ],
-    "required": true
-  },
-  "skills": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "source": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "srd": {
-    "type": [
-      "bool"
-    ],
-    "required": true
-  },
-  "tools": {
-    "type": [
-      "str"
-    ],
-    "required": true
+    "entries": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "items": {
+            "type": [
+              "list"
+            ],
+            "items": {
+              "type": [
+                "dict"
+              ],
+              "properties": {
+                "entry": {
+                  "type": [
+                    "str"
+                  ],
+                  "required": true
+                },
+                "name": {
+                  "type": [
+                    "str"
+                  ],
+                  "required": true
+                },
+                "type": {
+                  "type": [
+                    "str"
+                  ],
+                  "required": true
+                }
+              }
+            },
+            "required": true
+          },
+          "style": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          },
+          "type": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          }
+        }
+      },
+      "required": true
+    },
+    "feats": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "Skilled|xphb": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "alert|xphb": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "crafter|xphb": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "healer|xphb": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "lucky|xphb": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "magic initiate; cleric|xphb": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "magic initiate; druid|xphb": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "magic initiate; wizard|xphb": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "musician|xphb": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "savage attacker|xphb": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "skilled|xphb": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "tavern brawler|xphb": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "tough|xphb": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          }
+        }
+      },
+      "required": true
+    },
+    "hasFluff": {
+      "type": [
+        "bool"
+      ],
+      "required": true
+    },
+    "hasFluffImages": {
+      "type": [
+        "bool"
+      ],
+      "required": true
+    },
+    "name": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "page": {
+      "type": [
+        "int"
+      ],
+      "required": true
+    },
+    "skillProficiencies": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "acrobatics": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "animal handling": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "arcana": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "athletics": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "deception": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "history": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "insight": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "intimidation": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "investigation": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "medicine": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "nature": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "perception": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "performance": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "persuasion": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "religion": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "sleight of hand": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "stealth": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "survival": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          }
+        }
+      },
+      "required": true
+    },
+    "source": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "srd52": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "startingEquipment": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "A": {
+            "type": [
+              "list"
+            ],
+            "items": {
+              "type": [
+                "dict"
+              ],
+              "properties": {
+                "displayName": {
+                  "type": [
+                    "str"
+                  ],
+                  "required": false
+                },
+                "equipmentType": {
+                  "type": [
+                    "str"
+                  ],
+                  "required": false
+                },
+                "item": {
+                  "type": [
+                    "str"
+                  ],
+                  "required": false
+                },
+                "quantity": {
+                  "type": [
+                    "int"
+                  ],
+                  "required": false
+                },
+                "value": {
+                  "type": [
+                    "int"
+                  ],
+                  "required": false
+                }
+              }
+            },
+            "required": true
+          },
+          "B": {
+            "type": [
+              "list"
+            ],
+            "items": {
+              "type": [
+                "dict"
+              ],
+              "properties": {
+                "value": {
+                  "type": [
+                    "int"
+                  ],
+                  "required": true
+                }
+              }
+            },
+            "required": true
+          }
+        }
+      },
+      "required": true
+    },
+    "toolProficiencies": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "anyArtisansTool": {
+            "type": [
+              "int"
+            ],
+            "required": false
+          },
+          "anyGamingSet": {
+            "type": [
+              "int"
+            ],
+            "required": false
+          },
+          "anyMusicalInstrument": {
+            "type": [
+              "int"
+            ],
+            "required": false
+          },
+          "calligrapher's supplies": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "carpenter's tools": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "cartographer's tools": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "forgery kit": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "herbalism kit": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "navigator's tools": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          },
+          "thieves' tools": {
+            "type": [
+              "bool"
+            ],
+            "required": false
+          }
+        }
+      },
+      "required": true
+    }
   }
 }

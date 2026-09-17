@@ -1,21 +1,903 @@
 {
-  "climbSpeed": {
-    "type": [
-      "int"
-    ],
-    "required": true
-  },
-  "creatureType": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "entries": {
-    "type": [
-      "list"
-    ],
-    "items": {
+  "race": {
+    "_versions": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "_abstract": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "_mod": {
+                "type": [
+                  "dict"
+                ],
+                "properties": {
+                  "entries": {
+                    "type": [
+                      "list"
+                    ],
+                    "items": {
+                      "type": [
+                        "dict"
+                      ],
+                      "properties": {
+                        "items": {
+                          "type": [
+                            "dict"
+                          ],
+                          "properties": {
+                            "entries": {
+                              "type": [
+                                "list"
+                              ],
+                              "items": {
+                                "type": [
+                                  "str"
+                                ]
+                              },
+                              "required": true
+                            },
+                            "name": {
+                              "type": [
+                                "str"
+                              ],
+                              "required": true
+                            },
+                            "type": {
+                              "type": [
+                                "str"
+                              ],
+                              "required": true
+                            }
+                          },
+                          "required": false
+                        },
+                        "mode": {
+                          "type": [
+                            "str"
+                          ],
+                          "required": true
+                        },
+                        "names": {
+                          "type": [
+                            "str"
+                          ],
+                          "required": false
+                        },
+                        "replace": {
+                          "type": [
+                            "str"
+                          ],
+                          "required": false
+                        }
+                      }
+                    },
+                    "required": true
+                  }
+                },
+                "required": true
+              },
+              "name": {
+                "type": [
+                  "str"
+                ],
+                "required": true
+              },
+              "source": {
+                "type": [
+                  "str"
+                ],
+                "required": true
+              }
+            },
+            "required": false
+          },
+          "_implementations": {
+            "type": [
+              "list"
+            ],
+            "items": {
+              "type": [
+                "dict"
+              ],
+              "properties": {
+                "_variables": {
+                  "type": [
+                    "dict"
+                  ],
+                  "properties": {
+                    "color": {
+                      "type": [
+                        "str"
+                      ],
+                      "required": true
+                    },
+                    "damageType": {
+                      "type": [
+                        "str"
+                      ],
+                      "required": true
+                    }
+                  },
+                  "required": true
+                },
+                "resist": {
+                  "type": [
+                    "list"
+                  ],
+                  "items": {
+                    "type": [
+                      "str"
+                    ]
+                  },
+                  "required": true
+                }
+              }
+            },
+            "required": false
+          },
+          "_mod": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "entries": {
+                "type": [
+                  "dict",
+                  "list"
+                ],
+                "properties": {
+                  "items": {
+                    "type": [
+                      "dict"
+                    ],
+                    "properties": {
+                      "entries": {
+                        "type": [
+                          "list"
+                        ],
+                        "items": {
+                          "type": [
+                            "dict",
+                            "str"
+                          ],
+                          "properties": {
+                            "items": {
+                              "type": [
+                                "list"
+                              ],
+                              "items": {
+                                "type": [
+                                  "dict"
+                                ],
+                                "properties": {
+                                  "entries": {
+                                    "type": [
+                                      "list"
+                                    ],
+                                    "items": {
+                                      "type": [
+                                        "str"
+                                      ]
+                                    },
+                                    "required": true
+                                  },
+                                  "name": {
+                                    "type": [
+                                      "str"
+                                    ],
+                                    "required": true
+                                  },
+                                  "type": {
+                                    "type": [
+                                      "str"
+                                    ],
+                                    "required": true
+                                  }
+                                }
+                              },
+                              "required": true
+                            },
+                            "style": {
+                              "type": [
+                                "str"
+                              ],
+                              "required": true
+                            },
+                            "type": {
+                              "type": [
+                                "str"
+                              ],
+                              "required": true
+                            }
+                          }
+                        },
+                        "required": true
+                      },
+                      "name": {
+                        "type": [
+                          "str"
+                        ],
+                        "required": true
+                      },
+                      "type": {
+                        "type": [
+                          "str"
+                        ],
+                        "required": true
+                      }
+                    },
+                    "required": true
+                  },
+                  "mode": {
+                    "type": [
+                      "str"
+                    ],
+                    "required": true
+                  },
+                  "replace": {
+                    "type": [
+                      "str"
+                    ],
+                    "required": true
+                  }
+                },
+                "items": {
+                  "type": [
+                    "dict"
+                  ],
+                  "properties": {
+                    "items": {
+                      "type": [
+                        "dict"
+                      ],
+                      "properties": {
+                        "entries": {
+                          "type": [
+                            "list"
+                          ],
+                          "items": {
+                            "type": [
+                              "str"
+                            ]
+                          },
+                          "required": true
+                        },
+                        "name": {
+                          "type": [
+                            "str"
+                          ],
+                          "required": true
+                        },
+                        "type": {
+                          "type": [
+                            "str"
+                          ],
+                          "required": true
+                        }
+                      },
+                      "required": true
+                    },
+                    "mode": {
+                      "type": [
+                        "str"
+                      ],
+                      "required": true
+                    },
+                    "replace": {
+                      "type": [
+                        "str"
+                      ],
+                      "required": true
+                    }
+                  }
+                },
+                "required": true
+              }
+            },
+            "required": false
+          },
+          "additionalSpells": {
+            "type": [
+              "list"
+            ],
+            "items": {
+              "type": [
+                "dict"
+              ],
+              "properties": {
+                "ability": {
+                  "type": [
+                    "dict"
+                  ],
+                  "properties": {
+                    "choose": {
+                      "type": [
+                        "list"
+                      ],
+                      "items": {
+                        "type": [
+                          "str"
+                        ]
+                      },
+                      "required": true
+                    }
+                  },
+                  "required": true
+                },
+                "innate": {
+                  "type": [
+                    "dict"
+                  ],
+                  "properties": {
+                    "3": {
+                      "type": [
+                        "dict"
+                      ],
+                      "properties": {
+                        "daily": {
+                          "type": [
+                            "dict"
+                          ],
+                          "properties": {
+                            "1": {
+                              "type": [
+                                "list"
+                              ],
+                              "items": {
+                                "type": [
+                                  "str"
+                                ]
+                              },
+                              "required": false
+                            },
+                            "pb": {
+                              "type": [
+                                "list"
+                              ],
+                              "items": {
+                                "type": [
+                                  "str"
+                                ]
+                              },
+                              "required": false
+                            }
+                          },
+                          "required": true
+                        }
+                      },
+                      "required": true
+                    },
+                    "5": {
+                      "type": [
+                        "dict"
+                      ],
+                      "properties": {
+                        "daily": {
+                          "type": [
+                            "dict"
+                          ],
+                          "properties": {
+                            "1": {
+                              "type": [
+                                "list"
+                              ],
+                              "items": {
+                                "type": [
+                                  "str"
+                                ]
+                              },
+                              "required": true
+                            }
+                          },
+                          "required": true
+                        }
+                      },
+                      "required": false
+                    }
+                  },
+                  "required": false
+                },
+                "known": {
+                  "type": [
+                    "dict"
+                  ],
+                  "properties": {
+                    "1": {
+                      "type": [
+                        "dict",
+                        "list"
+                      ],
+                      "properties": {
+                        "_": {
+                          "type": [
+                            "list"
+                          ],
+                          "items": {
+                            "type": [
+                              "dict"
+                            ],
+                            "properties": {
+                              "choose": {
+                                "type": [
+                                  "str"
+                                ],
+                                "required": true
+                              }
+                            }
+                          },
+                          "required": true
+                        }
+                      },
+                      "items": {
+                        "type": [
+                          "str"
+                        ]
+                      },
+                      "required": true
+                    }
+                  },
+                  "required": true
+                }
+              }
+            },
+            "required": false
+          },
+          "darkvision": {
+            "type": [
+              "int"
+            ],
+            "required": false
+          },
+          "name": {
+            "type": [
+              "str"
+            ],
+            "required": false
+          },
+          "resist": {
+            "type": [
+              "list"
+            ],
+            "items": {
+              "type": [
+                "str"
+              ]
+            },
+            "required": false
+          },
+          "source": {
+            "type": [
+              "str"
+            ],
+            "required": false
+          },
+          "speed": {
+            "type": [
+              "int"
+            ],
+            "required": false
+          }
+        }
+      },
+      "required": false
+    },
+    "additionalSpells": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "ability": {
+            "type": [
+              "dict",
+              "str"
+            ],
+            "properties": {
+              "choose": {
+                "type": [
+                  "list"
+                ],
+                "items": {
+                  "type": [
+                    "str"
+                  ]
+                },
+                "required": true
+              }
+            },
+            "required": true
+          },
+          "innate": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "3": {
+                "type": [
+                  "dict"
+                ],
+                "properties": {
+                  "daily": {
+                    "type": [
+                      "dict"
+                    ],
+                    "properties": {
+                      "1": {
+                        "type": [
+                          "list"
+                        ],
+                        "items": {
+                          "type": [
+                            "str"
+                          ]
+                        },
+                        "required": true
+                      }
+                    },
+                    "required": true
+                  }
+                },
+                "required": true
+              },
+              "5": {
+                "type": [
+                  "dict"
+                ],
+                "properties": {
+                  "daily": {
+                    "type": [
+                      "dict"
+                    ],
+                    "properties": {
+                      "1": {
+                        "type": [
+                          "list"
+                        ],
+                        "items": {
+                          "type": [
+                            "str"
+                          ]
+                        },
+                        "required": true
+                      }
+                    },
+                    "required": true
+                  }
+                },
+                "required": true
+              }
+            },
+            "required": false
+          },
+          "known": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "1": {
+                "type": [
+                  "dict",
+                  "list"
+                ],
+                "properties": {
+                  "_": {
+                    "type": [
+                      "list"
+                    ],
+                    "items": {
+                      "type": [
+                        "dict"
+                      ],
+                      "properties": {
+                        "choose": {
+                          "type": [
+                            "str"
+                          ],
+                          "required": true
+                        }
+                      }
+                    },
+                    "required": true
+                  }
+                },
+                "items": {
+                  "type": [
+                    "str"
+                  ]
+                },
+                "required": true
+              }
+            },
+            "required": true
+          },
+          "name": {
+            "type": [
+              "str"
+            ],
+            "required": false
+          }
+        }
+      },
+      "required": false
+    },
+    "basicRules2024": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "creatureTypes": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "str"
+        ]
+      },
+      "required": true
+    },
+    "darkvision": {
+      "type": [
+        "int"
+      ],
+      "required": false
+    },
+    "edition": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "entries": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "entries": {
+            "type": [
+              "list"
+            ],
+            "items": {
+              "type": [
+                "dict",
+                "str"
+              ],
+              "properties": {
+                "caption": {
+                  "type": [
+                    "str"
+                  ],
+                  "required": false
+                },
+                "colLabels": {
+                  "type": [
+                    "list"
+                  ],
+                  "items": {
+                    "type": [
+                      "str"
+                    ]
+                  },
+                  "required": false
+                },
+                "colStyles": {
+                  "type": [
+                    "list"
+                  ],
+                  "items": {
+                    "type": [
+                      "str"
+                    ]
+                  },
+                  "required": false
+                },
+                "items": {
+                  "type": [
+                    "list"
+                  ],
+                  "items": {
+                    "type": [
+                      "dict"
+                    ],
+                    "properties": {
+                      "entries": {
+                        "type": [
+                          "list"
+                        ],
+                        "items": {
+                          "type": [
+                            "str"
+                          ]
+                        },
+                        "required": true
+                      },
+                      "name": {
+                        "type": [
+                          "str"
+                        ],
+                        "required": true
+                      },
+                      "type": {
+                        "type": [
+                          "str"
+                        ],
+                        "required": true
+                      }
+                    }
+                  },
+                  "required": false
+                },
+                "rows": {
+                  "type": [
+                    "list"
+                  ],
+                  "items": {
+                    "type": [
+                      "list"
+                    ],
+                    "items": {
+                      "type": [
+                        "str"
+                      ]
+                    }
+                  },
+                  "required": false
+                },
+                "style": {
+                  "type": [
+                    "str"
+                  ],
+                  "required": false
+                },
+                "type": {
+                  "type": [
+                    "str"
+                  ],
+                  "required": true
+                }
+              }
+            },
+            "required": true
+          },
+          "name": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          },
+          "type": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          }
+        }
+      },
+      "required": true
+    },
+    "feats": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "anyFromCategory": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "category": {
+                "type": [
+                  "list"
+                ],
+                "items": {
+                  "type": [
+                    "str"
+                  ]
+                },
+                "required": true
+              },
+              "count": {
+                "type": [
+                  "int"
+                ],
+                "required": true
+              }
+            },
+            "required": true
+          }
+        }
+      },
+      "required": false
+    },
+    "hasFluff": {
+      "type": [
+        "bool"
+      ],
+      "required": true
+    },
+    "hasFluffImages": {
+      "type": [
+        "bool"
+      ],
+      "required": true
+    },
+    "name": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "page": {
+      "type": [
+        "int"
+      ],
+      "required": true
+    },
+    "resist": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict",
+          "str"
+        ],
+        "properties": {
+          "choose": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "from": {
+                "type": [
+                  "list"
+                ],
+                "items": {
+                  "type": [
+                    "str"
+                  ]
+                },
+                "required": true
+              }
+            },
+            "required": true
+          }
+        }
+      },
+      "required": false
+    },
+    "size": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "str"
+        ]
+      },
+      "required": true
+    },
+    "sizeEntry": {
       "type": [
         "dict"
       ],
@@ -26,103 +908,8 @@
           ],
           "items": {
             "type": [
-              "dict",
               "str"
-            ],
-            "properties": {
-              "caption": {
-                "type": [
-                  "str"
-                ],
-                "required": false
-              },
-              "colLabels": {
-                "type": [
-                  "list"
-                ],
-                "items": {
-                  "type": [
-                    "str"
-                  ]
-                },
-                "required": false
-              },
-              "colStyles": {
-                "type": [
-                  "list"
-                ],
-                "items": {
-                  "type": [
-                    "str"
-                  ]
-                },
-                "required": false
-              },
-              "items": {
-                "type": [
-                  "list"
-                ],
-                "items": {
-                  "type": [
-                    "dict"
-                  ],
-                  "properties": {
-                    "entries": {
-                      "type": [
-                        "list"
-                      ],
-                      "items": {
-                        "type": [
-                          "str"
-                        ]
-                      },
-                      "required": true
-                    },
-                    "name": {
-                      "type": [
-                        "str"
-                      ],
-                      "required": true
-                    },
-                    "type": {
-                      "type": [
-                        "str"
-                      ],
-                      "required": true
-                    }
-                  }
-                },
-                "required": false
-              },
-              "rows": {
-                "type": [
-                  "list"
-                ],
-                "items": {
-                  "type": [
-                    "list"
-                  ],
-                  "items": {
-                    "type": [
-                      "str"
-                    ]
-                  }
-                },
-                "required": false
-              },
-              "style": {
-                "type": [
-                  "str"
-                ],
-                "required": false
-              },
-              "type": {
-                "type": [
-                  "str"
-                ],
-                "required": true
-              }
-            }
+            ]
           },
           "required": true
         },
@@ -138,85 +925,30 @@
           ],
           "required": true
         }
-      }
+      },
+      "required": true
     },
-    "required": true
-  },
-  "flySpeed": {
-    "type": [
-      "int"
-    ],
-    "required": true
-  },
-  "gallery": {
-    "type": [
-      "list"
-    ],
-    "items": {
+    "skillProficiencies": {
       "type": [
-        "dict"
+        "list"
       ],
-      "properties": {
-        "credit": {
-          "type": [
-            "str"
-          ],
-          "required": true
-        },
-        "path": {
-          "type": [
-            "str"
-          ],
-          "required": true
-        },
-        "title": {
-          "type": [
-            "str"
-          ],
-          "required": false
-        }
-      }
-    },
-    "required": false
-  },
-  "hidden": {
-    "type": [
-      "bool"
-    ],
-    "required": false
-  },
-  "id": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "image": {
-    "type": [
-      "str"
-    ],
-    "required": false
-  },
-  "lore": {
-    "type": [
-      "list"
-    ],
-    "items": {
-      "type": [
-        "dict"
-      ],
-      "properties": {
-        "entries": {
-          "type": [
-            "list"
-          ],
-          "items": {
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "any": {
             "type": [
-              "dict",
-              "str"
+              "int"
+            ],
+            "required": false
+          },
+          "choose": {
+            "type": [
+              "dict"
             ],
             "properties": {
-              "entries": {
+              "from": {
                 "type": [
                   "list"
                 ],
@@ -226,21 +958,23 @@
                   ]
                 },
                 "required": true
-              },
-              "name": {
-                "type": [
-                  "str"
-                ],
-                "required": false
-              },
-              "type": {
-                "type": [
-                  "str"
-                ],
-                "required": true
               }
-            }
-          },
+            },
+            "required": false
+          }
+        }
+      },
+      "required": false
+    },
+    "soundClip": {
+      "type": [
+        "dict"
+      ],
+      "properties": {
+        "path": {
+          "type": [
+            "str"
+          ],
           "required": true
         },
         "type": {
@@ -249,87 +983,38 @@
           ],
           "required": true
         }
-      }
+      },
+      "required": true
     },
-    "required": true
-  },
-  "name": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "otherVersions": {
-    "type": [
-      "list"
-    ],
-    "items": {
+    "source": {
       "type": [
-        "dict"
+        "str"
       ],
-      "properties": {
-        "id": {
-          "type": [
-            "str"
-          ],
-          "required": true
-        },
-        "source": {
-          "type": [
-            "str"
-          ],
-          "required": true
-        }
-      }
+      "required": true
     },
-    "required": false
+    "speed": {
+      "type": [
+        "int"
+      ],
+      "required": true
+    },
+    "srd52": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "traitTags": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "str"
+        ]
+      },
+      "required": false
+    }
   },
-  "page": {
-    "type": [
-      "int"
-    ],
-    "required": true
-  },
-  "parentRace": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "size": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "source": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "speed": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "srd": {
-    "type": [
-      "bool"
-    ],
-    "required": true
-  },
-  "swimSpeed": {
-    "type": [
-      "int"
-    ],
-    "required": true
-  },
-  "walkSpeed": {
-    "type": [
-      "int"
-    ],
-    "required": true
-  }
+  "subrace": {}
 }

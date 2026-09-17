@@ -1,74 +1,45 @@
 {
-  "ability": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "entries": {
-    "type": [
-      "list"
-    ],
-    "items": {
+  "skill": {
+    "ability": {
       "type": [
         "str"
-      ]
-    },
-    "required": true
-  },
-  "id": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "name": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "otherVersions": {
-    "type": [
-      "list"
-    ],
-    "items": {
-      "type": [
-        "dict"
       ],
-      "properties": {
-        "id": {
-          "type": [
-            "str"
-          ],
-          "required": true
-        },
-        "source": {
-          "type": [
-            "str"
-          ],
-          "required": true
-        }
-      }
+      "required": true
     },
-    "required": true
-  },
-  "page": {
-    "type": [
-      "int"
-    ],
-    "required": true
-  },
-  "source": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "srd": {
-    "type": [
-      "bool"
-    ],
-    "required": true
+    "entries": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "str"
+        ]
+      },
+      "required": true
+    },
+    "name": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "page": {
+      "type": [
+        "int"
+      ],
+      "required": true
+    },
+    "source": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "srd52": {
+      "type": [
+        "bool"
+      ],
+      "required": true
+    }
   }
 }

@@ -1,119 +1,90 @@
 {
-  "entries": {
-    "type": [
-      "list"
-    ],
-    "items": {
+  "sense": {
+    "entries": {
       "type": [
-        "dict",
-        "str"
+        "list"
       ],
-      "properties": {
-        "items": {
-          "type": [
-            "list"
-          ],
+      "items": {
+        "type": [
+          "dict",
+          "str"
+        ],
+        "properties": {
           "items": {
             "type": [
-              "dict"
+              "list"
             ],
-            "properties": {
-              "entries": {
-                "type": [
-                  "list"
-                ],
-                "items": {
+            "items": {
+              "type": [
+                "dict"
+              ],
+              "properties": {
+                "entries": {
+                  "type": [
+                    "list"
+                  ],
+                  "items": {
+                    "type": [
+                      "str"
+                    ]
+                  },
+                  "required": true
+                },
+                "name": {
                   "type": [
                     "str"
-                  ]
+                  ],
+                  "required": true
                 },
-                "required": true
-              },
-              "name": {
-                "type": [
-                  "str"
-                ],
-                "required": true
-              },
-              "type": {
-                "type": [
-                  "str"
-                ],
-                "required": true
+                "type": {
+                  "type": [
+                    "str"
+                  ],
+                  "required": true
+                }
               }
-            }
+            },
+            "required": true
           },
-          "required": true
-        },
-        "style": {
-          "type": [
-            "str"
-          ],
-          "required": true
-        },
-        "type": {
-          "type": [
-            "str"
-          ],
-          "required": true
+          "style": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          },
+          "type": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          }
         }
-      }
+      },
+      "required": true
     },
-    "required": true
-  },
-  "id": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "name": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "otherVersions": {
-    "type": [
-      "list"
-    ],
-    "items": {
+    "name": {
       "type": [
-        "dict"
+        "str"
       ],
-      "properties": {
-        "id": {
-          "type": [
-            "str"
-          ],
-          "required": true
-        },
-        "source": {
-          "type": [
-            "str"
-          ],
-          "required": true
-        }
-      }
+      "required": true
     },
-    "required": true
-  },
-  "page": {
-    "type": [
-      "int"
-    ],
-    "required": true
-  },
-  "source": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "srd": {
-    "type": [
-      "bool"
-    ],
-    "required": true
+    "page": {
+      "type": [
+        "int"
+      ],
+      "required": true
+    },
+    "source": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "srd52": {
+      "type": [
+        "bool"
+      ],
+      "required": true
+    }
   }
 }

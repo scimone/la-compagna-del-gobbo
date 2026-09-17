@@ -5,7 +5,7 @@ class CharacterProficiency(models.Model):
     """A proficiency (armor, weapon, tool, skill or saving throw) granted to a Character.
 
     Not FK'd exclusively to `rules.Proficiency`: that catalog only covers the flat
-    Class/Background grants (85 rows - see its docstring), while proficiencies can also come
+    Class/Background grants (47 rows - see its docstring), while proficiencies can also come
     from a species trait or a feat, which aren't in that catalog at all. So `category`/`name`
     are stored directly here (matching `rules.Proficiency`'s own shape), and
     `source_proficiency` is an optional provenance link back to the catalog row when the grant

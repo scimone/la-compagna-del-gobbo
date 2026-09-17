@@ -8,7 +8,7 @@ from apps.rules.models import Equipment, EquipmentProperty, Mastery
 def list_equipment(category: str | None = None):
     qs = Equipment.objects.all()
     if category:
-        qs = qs.filter(category__iexact=category)
+        qs = qs.filter(type__name__iexact=category)
     return qs
 
 

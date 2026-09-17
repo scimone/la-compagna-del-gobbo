@@ -7,6 +7,7 @@ from apps.rules.models import (
     ClassLevel,
     Effect,
     Equipment,
+    EquipmentType,
     Rule,
     Spell,
     Subclass,
@@ -110,8 +111,10 @@ def test_list_subclass_levels(klass):
 
 @pytest.mark.django_db
 def test_list_equipment_filters_by_category():
-    Equipment.objects.create(id="dagger", name="Dagger", page=1, srd=True, category="Melee Weapon")
-    Equipment.objects.create(id="rope", name="Rope", page=1, srd=True, category="Adventuring Gear")
+    melee = EquipmentType.objects.create(id="m", name="Melee Weapon", abbreviation="M")
+    gear = EquipmentType.objects.create(id="g", name="Adventuring Gear", abbreviation="G")
+    Equipment.objects.create(id="dagger", name="Dagger", page=1, srd=True, type=melee)
+    Equipment.objects.create(id="rope", name="Rope", page=1, srd=True, type=gear)
 
     weapons = equipment_service.list_equipment(category="Melee Weapon")
 
@@ -127,10 +130,10 @@ def test_list_spells_filters_by_class_and_level(spell):
         srd=True,
         level=1,
         school="Abjuration",
-        casting_time="1 action",
-        range="Touch",
-        components="V, S, M",
-        duration="8 hours",
+        casting_time=[{"number": 1, "unit": "action"}],
+        range={"type": "point", "distance": {"type": "touch"}},
+        components={"v": True, "s": True, "m": {"text": "a piece of cured leather"}},
+        duration=[{"type": "timed", "duration": {"type": "hour", "amount": 8}}],
         classes=["Sorcerer", "Wizard"],
     )
 

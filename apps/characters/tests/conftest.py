@@ -11,9 +11,9 @@ def species(db):
         name="Human",
         page=1,
         srd=True,
-        size="Medium",
-        speed="30 ft.",
-        creature_type="Humanoid",
+        size=["M"],
+        speed=30,
+        creature_types=["humanoid"],
     )
 
 
@@ -24,16 +24,15 @@ def background(db):
         name="Soldier",
         page=1,
         srd=True,
-        ability_scores="Choose from Strength, Constitution",
-        skills="Athletics, Intimidation",
+        ability_scores=[
+            {"choose": {"weighted": {"from": ["str", "dex", "con"], "weights": [2, 1]}}}
+        ],
     )
 
 
 @pytest.fixture
 def equipment_item(db):
-    return Equipment.objects.create(
-        id="longsword", name="Longsword", page=1, srd=True, category="Melee Weapon"
-    )
+    return Equipment.objects.create(id="longsword", name="Longsword", page=1, srd=True)
 
 
 @pytest.fixture
@@ -45,10 +44,10 @@ def spell(db):
         srd=True,
         level=3,
         school="Evocation",
-        casting_time="1 action",
-        range="150 feet",
-        components="V, S, M",
-        duration="Instantaneous",
+        casting_time=[{"number": 1, "unit": "action"}],
+        range={"type": "point", "distance": {"type": "feet", "amount": 150}},
+        components={"v": True, "s": True, "m": {"text": "a tiny ball of bat guano and sulfur"}},
+        duration=[{"type": "instant"}],
     )
 
 

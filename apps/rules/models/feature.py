@@ -87,6 +87,10 @@ class Feature(models.Model):
         on_delete=models.CASCADE,
     )
     name = models.CharField(max_length=200)
+    #: Names the resource this feature spends (e.g. "Channel Divinity"), from the source's
+    #: `consumes` field on `classFeature`/`subclassFeature` entries - see
+    #: `OptionalFeature.consumes_resource_name` for why this is a bare name, not a FK.
+    consumes_resource_name = models.CharField(max_length=100, blank=True, default="")
     entries = models.JSONField(default=list)
 
     class Meta:

@@ -1,81 +1,88 @@
 {
-  "entries": {
-    "type": [
-      "list"
-    ],
-    "required": true
-  },
-  "id": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "languageType": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "name": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "otherVersions": {
-    "type": [
-      "list"
-    ],
-    "items": {
+  "language": {
+    "basicRules2024": {
       "type": [
-        "dict"
+        "bool"
       ],
-      "properties": {
-        "id": {
-          "type": [
-            "str"
-          ],
-          "required": true
-        },
-        "source": {
-          "type": [
-            "str"
-          ],
-          "required": true
-        }
-      }
+      "required": true
     },
-    "required": false
+    "dialects": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "str"
+        ]
+      },
+      "required": false
+    },
+    "name": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "origin": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "page": {
+      "type": [
+        "int"
+      ],
+      "required": true
+    },
+    "script": {
+      "type": [
+        "str"
+      ],
+      "required": false
+    },
+    "source": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "srd52": {
+      "type": [
+        "bool"
+      ],
+      "required": true
+    },
+    "type": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    }
   },
-  "page": {
-    "type": [
-      "int"
-    ],
-    "required": true
-  },
-  "script": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "source": {
-    "type": [
-      "str"
-    ],
-    "required": true
-  },
-  "srd": {
-    "type": [
-      "bool"
-    ],
-    "required": true
-  },
-  "typicalSpeakers": {
-    "type": [
-      "str"
-    ],
-    "required": true
+  "languageScript": {
+    "fonts": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "str"
+        ]
+      },
+      "required": true
+    },
+    "name": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "source": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    }
   }
 }

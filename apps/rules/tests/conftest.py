@@ -1,6 +1,16 @@
 import pytest
 
-from apps.rules.models import Background, Class, ClassLevel, Feat, Feature, Species, Spell
+from apps.rules.models import (
+    Ability,
+    Background,
+    Class,
+    ClassLevel,
+    Feat,
+    Feature,
+    Skill,
+    Species,
+    Spell,
+)
 
 
 @pytest.fixture
@@ -21,22 +31,34 @@ def species(db):
         name="Elf",
         page=1,
         srd=True,
-        size="Medium",
-        speed="30 ft.",
-        creature_type="Humanoid",
+        size=["M"],
+        speed=30,
+        creature_types=["humanoid"],
     )
 
 
 @pytest.fixture
 def background(db):
-    return Background.objects.create(
+    bg = Background.objects.create(
         id="sage",
         name="Sage",
         page=1,
         srd=True,
-        ability_scores="Choose from Intelligence, Wisdom, Charisma",
-        skills="Arcana, History",
+        ability_scores=[
+            {"choose": {"weighted": {"from": ["int", "wis", "cha"], "weights": [2, 1]}}}
+        ],
     )
+    intelligence, _created = Ability.objects.get_or_create(
+        id="int", defaults={"name": "Intelligence", "description": "Reasoning and memory."}
+    )
+    arcana = Skill.objects.create(
+        id="arcana", name="Arcana", page=1, srd=True, ability=intelligence
+    )
+    history = Skill.objects.create(
+        id="history", name="History", page=1, srd=True, ability=intelligence
+    )
+    bg.skills.set([arcana, history])
+    return bg
 
 
 @pytest.fixture
@@ -53,10 +75,10 @@ def spell(db):
         srd=True,
         level=3,
         school="Evocation",
-        casting_time="1 action",
-        range="150 feet",
-        components="V, S, M",
-        duration="Instantaneous",
+        casting_time=[{"number": 1, "unit": "action"}],
+        range={"type": "point", "distance": {"type": "feet", "amount": 150}},
+        components={"v": True, "s": True, "m": {"text": "a tiny ball of bat guano and sulfur"}},
+        duration=[{"type": "instant"}],
         classes=["Sorcerer", "Wizard"],
     )
 

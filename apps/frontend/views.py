@@ -22,13 +22,155 @@ from apps.rules.services import rule as rule_service
 from apps.rules.services import species as species_service
 from apps.rules.services import spell as spell_service
 
-# Species menu art is keyed by "reprinted" 2024 slugs where they diverge from the plain
-# species name used in the art filenames (e.g. `elf-xphb` -> `elf-grey.png`).
-_SPECIES_IMAGE_SLUGS = {"elf-xphb": "elf"}
+# Species menu art is keyed by filename where it diverges from the Species' own id - empty now
+# that `db/species.json`'s ids no longer carry a source suffix to diverge from (`Species.id` is
+# plain `slugify(name)` post-migration, e.g. "elf", matching the art filenames directly) - kept as
+# a dict (not removed) since a future reprint could reintroduce the same kind of divergence.
+_SPECIES_IMAGE_SLUGS: dict[str, str] = {}
 
 # Background menu art is keyed by filename where it diverges from the Background's own id
 # (e.g. "scribe" -> "scriber.jpeg").
 _BACKGROUND_IMAGE_SLUGS = {"scribe": "scriber"}
+
+_ABILITY_NAMES = {
+    "str": "Strength",
+    "dex": "Dexterity",
+    "con": "Constitution",
+    "int": "Intelligence",
+    "wis": "Wisdom",
+    "cha": "Charisma",
+}
+_SIZE_CODES = {
+    "T": "Tiny",
+    "S": "Small",
+    "M": "Medium",
+    "L": "Large",
+    "H": "Huge",
+    "G": "Gargantuan",
+}
+
+
+def _format_ability_choice(raw_list):
+    """`Background.ability_scores`: a list of alternative weighted spreads (see the model's
+    docstring) - e.g. "Constitution +2, Intelligence +1 or Constitution +1, Intelligence +1,
+    Wisdom +1".
+    """
+    alternatives = []
+    for alt in raw_list or []:
+        weighted = ((alt.get("choose") or {}).get("weighted")) or {}
+        names = [_ABILITY_NAMES.get(c, c) for c in weighted.get("from", [])]
+        weights = weighted.get("weights", [])
+        pieces = [f"{n} +{w}" for n, w in zip(names, weights, strict=False)]
+        if pieces:
+            alternatives.append(", ".join(pieces))
+    return " or ".join(alternatives)
+
+
+def _format_flag_grant(raw_list):
+    """A flat/choice proficiency-grant list shared by `Class.armor_proficiencies`/
+    `weapon_proficiencies`/`tool_proficiencies` and `Background.tools` - each entry is either a
+    plain `{"name": true}` flag or an ad hoc placeholder+count/filter shape.
+    """
+    parts = []
+    for entry in raw_list or []:
+        for key, value in entry.items():
+            if value is True:
+                parts.append(key.capitalize())
+            elif isinstance(value, int):
+                parts.append(f"{_('Choose')} {value}: {key}")
+            elif isinstance(value, dict):
+                parts.append(key.capitalize())
+    return ", ".join(parts)
+
+
+def _format_prerequisite(raw_list):
+    """`Feat.prerequisite`/`OptionalFeature.prerequisite`: a structured list of `{level, ability,
+    feature, proficiency, otherSummary}` entries - see `Feat`'s docstring.
+    """
+    alternatives = []
+    for entry in raw_list or []:
+        bits = []
+        if "level" in entry:
+            bits.append(f"{_('Level')} {entry['level']}")
+        if "ability" in entry:
+            bits.append(
+                ", ".join(
+                    f"{_ABILITY_NAMES.get(code, code)} {score}+"
+                    for a in entry["ability"]
+                    for code, score in a.items()
+                )
+            )
+        if "feature" in entry:
+            bits.append(", ".join(entry["feature"]))
+        if "proficiency" in entry:
+            bits.append(
+                ", ".join(
+                    key.capitalize() for p in entry["proficiency"] for key, val in p.items() if val
+                )
+            )
+        if "otherSummary" in entry:
+            summary = entry["otherSummary"]
+            bits.append(summary.get("entrySummary") or summary.get("entry", ""))
+        alternatives.append(", ".join(b for b in bits if b))
+    return " or ".join(a for a in alternatives if a)
+
+
+def _format_size(codes: list[str] | None) -> str:
+    return "/".join(_SIZE_CODES.get(c, c) for c in codes or [])
+
+
+def _format_creature_types(codes: list[str] | None) -> str:
+    return ", ".join(c.capitalize() for c in codes or [])
+
+
+def _format_casting_time(raw_list):
+    parts = []
+    for entry in raw_list or []:
+        text = f"{entry.get('number', '')} {entry.get('unit', '')}".strip()
+        if entry.get("condition"):
+            text = f"{text}, {entry['condition']}"
+        parts.append(text)
+    return ", ".join(parts)
+
+
+def _format_range(range_data):
+    if not range_data:
+        return ""
+    distance = range_data.get("distance") or {}
+    if distance.get("amount") is not None:
+        return f"{distance['amount']} {distance.get('type', '')}".strip()
+    return (range_data.get("type") or "").capitalize()
+
+
+def _format_components(components):
+    if not components:
+        return ""
+    letters = [label for label, key in [("V", "v"), ("S", "s")] if components.get(key)]
+    material = components.get("m")
+    if material:
+        letters.append("M")
+        if isinstance(material, dict) and material.get("text"):
+            return f"{', '.join(letters)} ({material['text']})"
+    return ", ".join(letters)
+
+
+def _format_duration(raw_list):
+    parts = []
+    for entry in raw_list or []:
+        duration_type = entry.get("type", "")
+        if duration_type == "instant":
+            text = _("Instantaneous")
+        elif duration_type == "permanent":
+            text = _("Until dispelled")
+        elif duration_type == "timed":
+            timed = entry.get("duration") or {}
+            text = f"{timed.get('amount', '')} {timed.get('type', '')}".strip()
+        else:
+            text = duration_type.capitalize()
+        if entry.get("concentration"):
+            text = f"{_('Concentration')}, {_('up to')} {text}"
+        parts.append(text)
+    return ", ".join(parts)
 
 
 def _menu_image_url(folder: str, filename: str) -> str | None:
@@ -169,11 +311,14 @@ def world_background_detail(request, pk):
     bg = background_service.get_background(pk)
     equipment = _extract_named_entry(bg.entries, "Equipment:")
 
-    facts = [(_("Ability Scores"), bg.ability_scores), (_("Skills"), bg.skills)]
+    facts = [(_("Ability Scores"), _format_ability_choice(bg.ability_scores))]
+    skill_names = ", ".join(s.name for s in bg.skills.all())
+    if skill_names:
+        facts.append((_("Skills"), skill_names))
     if bg.tools:
-        facts.append((_("Tools"), bg.tools))
+        facts.append((_("Tools"), _format_flag_grant(bg.tools)))
     if bg.feat:
-        facts.append((_("Feat"), bg.feat))
+        facts.append((_("Feat"), bg.feat.name))
     facts.append((_("Page"), bg.page))
 
     sections = []
@@ -216,11 +361,11 @@ def world_class_detail(request, pk):
         (_("Saving Throws"), klass.saving_throws_display),
     ]
     if klass.armor_proficiencies:
-        facts.append((_("Armor Proficiencies"), klass.armor_proficiencies))
+        facts.append((_("Armor Proficiencies"), _format_flag_grant(klass.armor_proficiencies)))
     if klass.weapon_proficiencies:
-        facts.append((_("Weapon Proficiencies"), klass.weapon_proficiencies))
+        facts.append((_("Weapon Proficiencies"), _format_flag_grant(klass.weapon_proficiencies)))
     if klass.tool_proficiencies:
-        facts.append((_("Tool Proficiencies"), klass.tool_proficiencies))
+        facts.append((_("Tool Proficiencies"), _format_flag_grant(klass.tool_proficiencies)))
     facts.append((_("Page"), klass.page))
 
     sections = []
@@ -236,8 +381,25 @@ def world_class_detail(request, pk):
 
     levels = list(klass.levels.order_by("level"))
     if levels:
-        headers = list(levels[0].columns.keys())
-        rows = [lvl.columns for lvl in levels]
+        # Spell slots/cantrips/prepared-or-known counts are their own dedicated `ClassLevel`
+        # fields now (see the model's docstring), not part of the leftover `columns` blob - merge
+        # them into the same display table rather than leaving them invisible on caster classes.
+        max_slot_level = max(
+            (i for lvl in levels for i, n in enumerate(lvl.spell_slots, start=1) if n), default=0
+        )
+        rows = []
+        for lvl in levels:
+            row = dict(lvl.columns)
+            if lvl.cantrips_known is not None:
+                row[_("Cantrips Known")] = lvl.cantrips_known
+            if lvl.spells_known_or_prepared is not None:
+                row[_("Spells")] = lvl.spells_known_or_prepared
+            for spell_level in range(1, max_slot_level + 1):
+                idx = spell_level - 1
+                slots = lvl.spell_slots[idx] if idx < len(lvl.spell_slots) else 0
+                row[f"{_('Spell Slots')} {spell_level}"] = slots or ""
+            rows.append(row)
+        headers = list({key: None for row in rows for key in row}.keys())
         sections.append(_section(_("Level Progression"), render_key_value_table(rows, headers)))
 
     return _detail_page(request, klass.name, "world-classes", facts, sections)
@@ -263,7 +425,7 @@ def world_feat_detail(request, pk):
 
     facts = [(_("Category"), feat.category)]
     if feat.prerequisite:
-        facts.append((_("Prerequisite"), feat.prerequisite))
+        facts.append((_("Prerequisite"), _format_prerequisite(feat.prerequisite)))
     facts.append((_("Page"), feat.page))
 
     sections = [_section(_("Description"), render_entries(feat.entries))]
@@ -291,17 +453,12 @@ def world_species_detail(request, pk):
     species = species_service.get_species(pk)
 
     facts = [
-        (_("Size"), species.size),
-        (_("Speed"), species.speed),
-        (_("Creature Type"), species.creature_type),
+        (_("Size"), _format_size(species.size)),
+        (_("Speed"), f"{species.speed} ft."),
+        (_("Creature Type"), _format_creature_types(species.creature_types)),
     ]
-    for label, value in [
-        (_("Fly Speed"), species.fly_speed),
-        (_("Swim Speed"), species.swim_speed),
-        (_("Climb Speed"), species.climb_speed),
-    ]:
-        if value:
-            facts.append((label, f"{value} ft."))
+    if species.darkvision:
+        facts.append((_("Darkvision"), f"{species.darkvision} ft."))
     facts.append((_("Page"), species.page))
 
     sections = []
@@ -337,15 +494,18 @@ def world_spell_detail(request, pk):
     facts = [
         (_("Level"), level_value),
         (_("School"), spell.school),
-        (_("Casting Time"), spell.casting_time),
-        (_("Range"), spell.range),
-        (_("Components"), spell.components),
-        (_("Duration"), spell.duration),
+        (_("Casting Time"), _format_casting_time(spell.casting_time)),
+        (_("Range"), _format_range(spell.range)),
+        (_("Components"), _format_components(spell.components)),
+        (_("Duration"), _format_duration(spell.duration)),
     ]
     if spell.concentration:
         facts.append((_("Concentration"), _("Yes")))
     if spell.ritual:
         facts.append((_("Ritual"), _("Yes")))
+    saving_throws = ", ".join(a.name for a in spell.saving_throw_abilities.all())
+    if saving_throws:
+        facts.append((_("Saving Throw"), saving_throws))
     if spell.classes:
         facts.append((_("Classes"), ", ".join(spell.classes)))
     facts.append((_("Page"), spell.page))

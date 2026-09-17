@@ -1,0 +1,43 @@
+{
+  "entries": {
+    "type": [
+      "list"
+    ],
+    "items": {
+      "type": [
+        "str"
+      ]
+    },
+    "required": true
+  },
+  "id": {
+    "type": [
+      "str"
+    ],
+    "required": true
+  },
+  "name": {
+    "type": [
+      "str"
+    ],
+    "required": true
+  },
+  "page": {
+    "type": [
+      "int"
+    ],
+    "required": true
+  },
+  "source": {
+    "type": [
+      "str"
+    ],
+    "required": true
+  },
+  "srd": {
+    "type": [
+      "bool"
+    ],
+    "required": true
+  }
+}

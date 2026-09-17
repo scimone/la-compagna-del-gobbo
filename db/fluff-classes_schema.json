@@ -1,0 +1,222 @@
+{
+  "classFluff": {
+    "entries": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "entries": {
+            "type": [
+              "list"
+            ],
+            "items": {
+              "type": [
+                "str"
+              ]
+            },
+            "required": true
+          },
+          "name": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          },
+          "page": {
+            "type": [
+              "int"
+            ],
+            "required": true
+          },
+          "source": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          },
+          "type": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          }
+        }
+      },
+      "required": true
+    },
+    "images": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "credit": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          },
+          "height": {
+            "type": [
+              "int"
+            ],
+            "required": true
+          },
+          "href": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "path": {
+                "type": [
+                  "str"
+                ],
+                "required": true
+              },
+              "type": {
+                "type": [
+                  "str"
+                ],
+                "required": true
+              }
+            },
+            "required": true
+          },
+          "title": {
+            "type": [
+              "str"
+            ],
+            "required": false
+          },
+          "type": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          },
+          "width": {
+            "type": [
+              "int"
+            ],
+            "required": true
+          }
+        }
+      },
+      "required": true
+    },
+    "name": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "source": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    }
+  },
+  "subclassFluff": {
+    "className": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "classSource": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "images": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "credit": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          },
+          "height": {
+            "type": [
+              "int"
+            ],
+            "required": true
+          },
+          "href": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "path": {
+                "type": [
+                  "str"
+                ],
+                "required": true
+              },
+              "type": {
+                "type": [
+                  "str"
+                ],
+                "required": true
+              }
+            },
+            "required": true
+          },
+          "title": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          },
+          "type": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          },
+          "width": {
+            "type": [
+              "int"
+            ],
+            "required": true
+          }
+        }
+      },
+      "required": true
+    },
+    "name": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "shortName": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "source": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    }
+  }
+}

@@ -1,316 +1,183 @@
 {
-    "meta": {
-        "category": "skills",
-        "count": 18,
-        "sourceRepo": "https://github.com/5etools-mirror-3/5etools-src",
-        "sourceCommit": "ebd1827660ee61d1a59227d5979a137494dce1c8",
-        "generatedAt": "2026-08-28T18:47:44.839Z"
-    },
-    "items": [
+    "skill": [
         {
-            "id": "acrobatics",
             "name": "Acrobatics",
             "source": "XPHB",
             "page": 14,
-            "srd": true,
-            "ability": "Dexterity",
+            "srd52": true,
+            "ability": "dex",
             "entries": [
                 "Stay on your feet in a tricky situation, or perform an acrobatic stunt."
-            ],
-            "otherVersions": [
-                {
-                    "id": "acrobatics-phb",
-                    "source": "PHB"
-                }
             ]
         },
         {
-            "id": "animal-handling",
             "name": "Animal Handling",
             "source": "XPHB",
             "page": 14,
-            "srd": true,
-            "ability": "Wisdom",
+            "srd52": true,
+            "ability": "wis",
             "entries": [
                 "Calm or train an animal, or get an animal to behave in a certain way."
-            ],
-            "otherVersions": [
-                {
-                    "id": "animal-handling-phb",
-                    "source": "PHB"
-                }
             ]
         },
         {
-            "id": "arcana",
             "name": "Arcana",
             "source": "XPHB",
             "page": 14,
-            "srd": true,
-            "ability": "Intelligence",
+            "srd52": true,
+            "ability": "int",
             "entries": [
                 "Recall lore about spells, magic items, and the planes of existence."
-            ],
-            "otherVersions": [
-                {
-                    "id": "arcana-phb",
-                    "source": "PHB"
-                }
             ]
         },
         {
-            "id": "athletics",
             "name": "Athletics",
             "source": "XPHB",
             "page": 14,
-            "srd": true,
-            "ability": "Strength",
+            "srd52": true,
+            "ability": "str",
             "entries": [
                 "Jump farther than normal, stay afloat in rough water, or break something."
-            ],
-            "otherVersions": [
-                {
-                    "id": "athletics-phb",
-                    "source": "PHB"
-                }
             ]
         },
         {
-            "id": "deception",
             "name": "Deception",
             "source": "XPHB",
             "page": 14,
-            "srd": true,
-            "ability": "Charisma",
+            "srd52": true,
+            "ability": "cha",
             "entries": [
                 "Tell a convincing lie, or wear a disguise convincingly."
-            ],
-            "otherVersions": [
-                {
-                    "id": "deception-phb",
-                    "source": "PHB"
-                }
             ]
         },
         {
-            "id": "history",
             "name": "History",
             "source": "XPHB",
             "page": 14,
-            "srd": true,
-            "ability": "Intelligence",
+            "srd52": true,
+            "ability": "int",
             "entries": [
                 "Recall lore about historical events, people, nations, and cultures."
-            ],
-            "otherVersions": [
-                {
-                    "id": "history-phb",
-                    "source": "PHB"
-                }
             ]
         },
         {
-            "id": "insight",
             "name": "Insight",
             "source": "XPHB",
             "page": 14,
-            "srd": true,
-            "ability": "Wisdom",
+            "srd52": true,
+            "ability": "wis",
             "entries": [
                 "Discern a person's mood and intentions."
-            ],
-            "otherVersions": [
-                {
-                    "id": "insight-phb",
-                    "source": "PHB"
-                }
             ]
         },
         {
-            "id": "intimidation",
             "name": "Intimidation",
             "source": "XPHB",
             "page": 14,
-            "srd": true,
-            "ability": "Charisma",
+            "srd52": true,
+            "ability": "cha",
             "entries": [
                 "Awe or threaten someone into doing what you want."
-            ],
-            "otherVersions": [
-                {
-                    "id": "intimidation-phb",
-                    "source": "PHB"
-                }
             ]
         },
         {
-            "id": "investigation",
             "name": "Investigation",
             "source": "XPHB",
             "page": 14,
-            "srd": true,
-            "ability": "Intelligence",
+            "srd52": true,
+            "ability": "int",
             "entries": [
                 "Find obscure information in books, or deduce how something works."
-            ],
-            "otherVersions": [
-                {
-                    "id": "investigation-phb",
-                    "source": "PHB"
-                }
             ]
         },
         {
-            "id": "medicine",
             "name": "Medicine",
             "source": "XPHB",
             "page": 14,
-            "srd": true,
-            "ability": "Wisdom",
+            "srd52": true,
+            "ability": "wis",
             "entries": [
                 "Diagnose an illness, or determine what killed the recently slain."
-            ],
-            "otherVersions": [
-                {
-                    "id": "medicine-phb",
-                    "source": "PHB"
-                }
             ]
         },
         {
-            "id": "nature",
             "name": "Nature",
             "source": "XPHB",
             "page": 14,
-            "srd": true,
-            "ability": "Intelligence",
+            "srd52": true,
+            "ability": "int",
             "entries": [
                 "Recall lore about terrain, plants, animals, and weather."
-            ],
-            "otherVersions": [
-                {
-                    "id": "nature-phb",
-                    "source": "PHB"
-                }
             ]
         },
         {
-            "id": "perception",
             "name": "Perception",
             "source": "XPHB",
             "page": 14,
-            "srd": true,
-            "ability": "Wisdom",
+            "srd52": true,
+            "ability": "wis",
             "entries": [
                 "Using a combination of senses, notice something that's easy to miss."
-            ],
-            "otherVersions": [
-                {
-                    "id": "perception-phb",
-                    "source": "PHB"
-                }
             ]
         },
         {
-            "id": "performance",
             "name": "Performance",
             "source": "XPHB",
             "page": 14,
-            "srd": true,
-            "ability": "Charisma",
+            "srd52": true,
+            "ability": "cha",
             "entries": [
                 "Act, tell a story, perform music, or dance."
-            ],
-            "otherVersions": [
-                {
-                    "id": "performance-phb",
-                    "source": "PHB"
-                }
             ]
         },
         {
-            "id": "persuasion",
             "name": "Persuasion",
             "source": "XPHB",
             "page": 14,
-            "srd": true,
-            "ability": "Charisma",
+            "srd52": true,
+            "ability": "cha",
             "entries": [
                 "Honestly and graciously convince someone of something."
-            ],
-            "otherVersions": [
-                {
-                    "id": "persuasion-phb",
-                    "source": "PHB"
-                }
             ]
         },
         {
-            "id": "religion",
             "name": "Religion",
             "source": "XPHB",
             "page": 14,
-            "srd": true,
-            "ability": "Intelligence",
+            "srd52": true,
+            "ability": "int",
             "entries": [
                 "Recall lore about gods, religious rituals, and holy symbols."
-            ],
-            "otherVersions": [
-                {
-                    "id": "religion-phb",
-                    "source": "PHB"
-                }
             ]
         },
         {
-            "id": "sleight-of-hand",
             "name": "Sleight of Hand",
             "source": "XPHB",
             "page": 14,
-            "srd": true,
-            "ability": "Dexterity",
+            "srd52": true,
+            "ability": "dex",
             "entries": [
                 "Pick a pocket, conceal a handheld object, or perform legerdemain."
-            ],
-            "otherVersions": [
-                {
-                    "id": "sleight-of-hand-phb",
-                    "source": "PHB"
-                }
             ]
         },
         {
-            "id": "stealth",
             "name": "Stealth",
             "source": "XPHB",
             "page": 14,
-            "srd": true,
-            "ability": "Dexterity",
+            "srd52": true,
+            "ability": "dex",
             "entries": [
                 "Escape notice by moving quietly and hiding behind things."
-            ],
-            "otherVersions": [
-                {
-                    "id": "stealth-phb",
-                    "source": "PHB"
-                }
             ]
         },
         {
-            "id": "survival",
             "name": "Survival",
             "source": "XPHB",
             "page": 14,
-            "srd": true,
-            "ability": "Wisdom",
+            "srd52": true,
+            "ability": "wis",
             "entries": [
                 "Follow tracks, forage, find a trail, or avoid natural hazards."
-            ],
-            "otherVersions": [
-                {
-                    "id": "survival-phb",
-                    "source": "PHB"
-                }
             ]
         }
     ]

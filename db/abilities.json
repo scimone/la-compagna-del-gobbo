@@ -1,0 +1,58 @@
+{
+    "ability": [
+        {
+            "name": "Strength",
+            "short": "str",
+            "source": "XPHB",
+            "srd52": true,
+            "entries": [
+                "Physical might."
+            ]
+        },
+        {
+            "name": "Dexterity",
+            "short": "dex",
+            "source": "XPHB",
+            "srd52": true,
+            "entries": [
+                "Agility, reflexes, and balance."
+            ]
+        },
+        {
+            "name": "Constitution",
+            "short": "con",
+            "source": "XPHB",
+            "srd52": true,
+            "entries": [
+                "Health and stamina."
+            ]
+        },
+        {
+            "name": "Intelligence",
+            "short": "int",
+            "source": "XPHB",
+            "srd52": true,
+            "entries": [
+                "Reasoning and memory."
+            ]
+        },
+        {
+            "name": "Wisdom",
+            "short": "wis",
+            "source": "XPHB",
+            "srd52": true,
+            "entries": [
+                "Perceptiveness and mental fortitude."
+            ]
+        },
+        {
+            "name": "Charisma",
+            "short": "cha",
+            "source": "XPHB",
+            "srd52": true,
+            "entries": [
+                "Confidence, poise, and charm."
+            ]
+        }
+    ]
+}

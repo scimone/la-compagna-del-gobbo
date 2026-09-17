@@ -1,6 +1,6 @@
 import pytest
 
-from apps.rules.models import Effect, Equipment
+from apps.rules.models import Effect, Equipment, EquipmentType
 
 
 @pytest.mark.django_db
@@ -28,7 +28,8 @@ def test_list_spells_filters_by_query_params(client, spell):
 
 @pytest.mark.django_db
 def test_list_equipment_filters_by_category(client):
-    Equipment.objects.create(id="dagger", name="Dagger", page=1, srd=True, category="Melee Weapon")
+    melee = EquipmentType.objects.create(id="m", name="Melee Weapon", abbreviation="M")
+    Equipment.objects.create(id="dagger", name="Dagger", page=1, srd=True, type=melee)
 
     response = client.get("/api/rules/equipment", {"category": "Melee Weapon"})
 

@@ -1,27 +1,50 @@
 {
-    "meta": {
-        "category": "species",
-        "count": 11,
-        "sourceRepo": "https://github.com/5etools-mirror-3/5etools-src",
-        "sourceCommit": "ebd1827660ee61d1a59227d5979a137494dce1c8",
-        "generatedAt": "2026-08-28T18:47:44.009Z"
+    "_meta": {
+        "internalCopies": [
+            "race",
+            "subrace"
+        ]
     },
-    "items": [
+    "race": [
         {
-            "id": "aasimar",
             "name": "Aasimar",
             "source": "XPHB",
             "page": 186,
-            "srd": false,
-            "image": "races/XPHB/Aasimar.webp",
-            "size": "Small or Medium",
-            "speed": "30 ft.",
-            "walkSpeed": 30,
-            "flySpeed": 0,
-            "swimSpeed": 0,
-            "climbSpeed": 0,
-            "creatureType": "Humanoid",
-            "parentRace": "",
+            "edition": "one",
+            "creatureTypes": [
+                "humanoid"
+            ],
+            "size": [
+                "S",
+                "M"
+            ],
+            "speed": 30,
+            "darkvision": 60,
+            "resist": [
+                "necrotic",
+                "radiant"
+            ],
+            "soundClip": {
+                "type": "internal",
+                "path": "races/aasimar.opus"
+            },
+            "additionalSpells": [
+                {
+                    "ability": "cha",
+                    "known": {
+                        "1": [
+                            "light|xphb#c"
+                        ]
+                    }
+                }
+            ],
+            "sizeEntry": {
+                "type": "item",
+                "name": "Size:",
+                "entries": [
+                    "Medium (about 4-7 feet tall) or Small (about 2-4 feet tall), chosen when you select this species"
+                ]
+            },
             "entries": [
                 {
                     "type": "entries",
@@ -88,56 +111,48 @@
                     ]
                 }
             ],
-            "lore": [
-                {
-                    "type": "entries",
-                    "entries": [
-                        {
-                            "type": "entries",
-                            "entries": [
-                                "Aasimar (pronounced AH-sih-mar) are mortals who carry a spark of the Upper Planes within their souls. Whether descended from an angelic being or infused with celestial power, they can fan that spark to bring light, healing, and heavenly fury.",
-                                "Aasimar can arise among any population of mortals. They resemble their parents, but they live for up to 160 years and have features that hint at their celestial heritage, such as metallic freckles, luminous eyes, a halo, or the skin color of an angel (silver, opalescent green, or coppery red). These features start subtle and become obvious when the aasimar learns to reveal their full celestial nature."
-                            ]
-                        }
-                    ]
-                }
-            ],
-            "gallery": [
-                {
-                    "path": "races/XPHB/Aasimar.webp",
-                    "credit": "Aldo Domingues"
-                }
-            ],
-            "otherVersions": [
-                {
-                    "id": "aasimar-mpmm",
-                    "source": "MPMM"
-                },
-                {
-                    "id": "aasimar-vgm",
-                    "source": "VGM"
-                },
-                {
-                    "id": "aasimar-dmg",
-                    "source": "DMG"
-                }
-            ]
+            "hasFluff": true,
+            "hasFluffImages": true
         },
         {
-            "id": "dragonborn",
             "name": "Dragonborn",
             "source": "XPHB",
             "page": 187,
-            "srd": true,
-            "image": "races/XPHB/Dragonborn.webp",
-            "size": "Medium",
-            "speed": "30 ft.",
-            "walkSpeed": 30,
-            "flySpeed": 0,
-            "swimSpeed": 0,
-            "climbSpeed": 0,
-            "creatureType": "Humanoid",
-            "parentRace": "",
+            "srd52": true,
+            "basicRules2024": true,
+            "edition": "one",
+            "creatureTypes": [
+                "humanoid"
+            ],
+            "size": [
+                "M"
+            ],
+            "speed": 30,
+            "darkvision": 60,
+            "resist": [
+                {
+                    "choose": {
+                        "from": [
+                            "acid",
+                            "lightning",
+                            "fire",
+                            "poison",
+                            "cold"
+                        ]
+                    }
+                }
+            ],
+            "soundClip": {
+                "type": "internal",
+                "path": "races/dragonborn.opus"
+            },
+            "sizeEntry": {
+                "type": "item",
+                "name": "Size:",
+                "entries": [
+                    "Medium (about 5-7 feet tall)"
+                ]
+            },
             "entries": [
                 {
                     "type": "entries",
@@ -230,48 +245,169 @@
                     ]
                 }
             ],
-            "lore": [
+            "hasFluff": true,
+            "hasFluffImages": true,
+            "_versions": [
                 {
-                    "type": "entries",
-                    "entries": [
-                        {
-                            "type": "entries",
+                    "_abstract": {
+                        "name": "Dragonborn ({{color}})",
+                        "source": "XPHB",
+                        "_mod": {
                             "entries": [
-                                "The ancestors of dragonborn hatched from the eggs of chromatic and metallic dragons. One story holds that these eggs were blessed by the dragon gods Bahamut and Tiamat, who wanted to populate the multiverse with people created in their image. Another story claims that dragons created the first dragonborn without the gods' blessings. Whatever their origin, dragonborn have made homes for themselves on the Material Plane.",
-                                "Dragonborn look like wingless, bipedal dragons—scaly, bright-eyed, and thick-boned with horns on their heads—and their coloration and other features are reminiscent of their draconic ancestors."
+                                {
+                                    "mode": "removeArr",
+                                    "names": "Draconic Ancestry"
+                                },
+                                {
+                                    "mode": "replaceArr",
+                                    "replace": "Breath Weapon",
+                                    "items": {
+                                        "type": "entries",
+                                        "name": "Breath Weapon",
+                                        "entries": [
+                                            "When you take the {@action Attack|XPHB} action on your turn, you can replace one of your attacks with an exhalation of magical energy in either a 15-foot {@variantrule Cone [Area of Effect]|XPHB|Cone} or a 30-foot {@variantrule Line [Area of Effect]|XPHB|Line} that is 5 feet wide (choose the shape each time). Each creature in that area must make a Dexterity saving throw ({@dc 8} plus your Constitution modifier and {@variantrule Proficiency|XPHB|Proficiency Bonus}). On a failed save, a creature takes {@damage 1d10} {{damageType}} damage. On a successful save, a creature takes half as much damage. This damage increases by {@damage 1d10} when you reach character levels 5 ({@damage 2d10}), 11 ({@damage 3d10}), and 17 ({@damage 4d10}).",
+                                            "You can use this Breath Weapon a number of times equal to your {@variantrule Proficiency|XPHB|Proficiency Bonus}, and you regain all expended uses when you finish a {@variantrule Long Rest|XPHB}."
+                                        ]
+                                    }
+                                },
+                                {
+                                    "mode": "replaceArr",
+                                    "replace": "Damage Resistance",
+                                    "items": {
+                                        "type": "entries",
+                                        "name": "Damage Resistance",
+                                        "entries": [
+                                            "You have {@variantrule Resistance|XPHB} to {{damageType}} damage."
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "_implementations": [
+                        {
+                            "_variables": {
+                                "color": "Black",
+                                "damageType": "Acid"
+                            },
+                            "resist": [
+                                "acid"
+                            ]
+                        },
+                        {
+                            "_variables": {
+                                "color": "Blue",
+                                "damageType": "Lightning"
+                            },
+                            "resist": [
+                                "lightning"
+                            ]
+                        },
+                        {
+                            "_variables": {
+                                "color": "Brass",
+                                "damageType": "Fire"
+                            },
+                            "resist": [
+                                "fire"
+                            ]
+                        },
+                        {
+                            "_variables": {
+                                "color": "Bronze",
+                                "damageType": "Lightning"
+                            },
+                            "resist": [
+                                "lightning"
+                            ]
+                        },
+                        {
+                            "_variables": {
+                                "color": "Copper",
+                                "damageType": "Acid"
+                            },
+                            "resist": [
+                                "acid"
+                            ]
+                        },
+                        {
+                            "_variables": {
+                                "color": "Gold",
+                                "damageType": "Fire"
+                            },
+                            "resist": [
+                                "fire"
+                            ]
+                        },
+                        {
+                            "_variables": {
+                                "color": "Green",
+                                "damageType": "Poison"
+                            },
+                            "resist": [
+                                "poison"
+                            ]
+                        },
+                        {
+                            "_variables": {
+                                "color": "Red",
+                                "damageType": "Fire"
+                            },
+                            "resist": [
+                                "fire"
+                            ]
+                        },
+                        {
+                            "_variables": {
+                                "color": "Silver",
+                                "damageType": "Cold"
+                            },
+                            "resist": [
+                                "cold"
+                            ]
+                        },
+                        {
+                            "_variables": {
+                                "color": "White",
+                                "damageType": "Cold"
+                            },
+                            "resist": [
+                                "cold"
                             ]
                         }
                     ]
                 }
-            ],
-            "gallery": [
-                {
-                    "path": "races/XPHB/Dragonborn.webp",
-                    "credit": "David Auden Nash"
-                }
-            ],
-            "otherVersions": [
-                {
-                    "id": "dragonborn-phb",
-                    "source": "PHB"
-                }
             ]
         },
         {
-            "id": "dwarf",
             "name": "Dwarf",
             "source": "XPHB",
             "page": 188,
-            "srd": true,
-            "image": "races/XPHB/Dwarf.webp",
-            "size": "Medium",
-            "speed": "30 ft.",
-            "walkSpeed": 30,
-            "flySpeed": 0,
-            "swimSpeed": 0,
-            "climbSpeed": 0,
-            "creatureType": "Humanoid",
-            "parentRace": "",
+            "srd52": true,
+            "basicRules2024": true,
+            "edition": "one",
+            "creatureTypes": [
+                "humanoid"
+            ],
+            "size": [
+                "M"
+            ],
+            "speed": 30,
+            "darkvision": 120,
+            "resist": [
+                "poison"
+            ],
+            "soundClip": {
+                "type": "internal",
+                "path": "races/dwarf.opus"
+            },
+            "sizeEntry": {
+                "type": "item",
+                "name": "Size:",
+                "entries": [
+                    "Medium (about 4-5 feet tall)"
+                ]
+            },
             "entries": [
                 {
                     "type": "entries",
@@ -303,49 +439,148 @@
                     ]
                 }
             ],
-            "lore": [
-                {
-                    "type": "entries",
-                    "entries": [
-                        {
-                            "type": "entries",
-                            "entries": [
-                                "Dwarves were raised from the earth in the elder days by a deity of the forge. Called by various names on different worlds—Moradin, Reorx, and others—that god gave dwarves an affinity for stone and metal and for living underground. The god also made them resilient like the mountains, with a life span of about 350 years.",
-                                "Squat and often bearded, the original dwarves carved cities and strongholds into mountainsides and under the earth. Their oldest legends tell of conflicts with the monsters of mountaintops and the Underdark, whether those monsters were towering giants or subterranean horrors. Inspired by those tales, dwarves of any culture often sing of valorous deeds—especially of the little overcoming the mighty.",
-                                "On some worlds in the multiverse, the first settlements of dwarves were built in hills or mountains, and the families who trace their ancestry to those settlements call themselves hill dwarves or mountain dwarves, respectively. The Greyhawk and Dragonlance settings have such communities."
-                            ]
-                        }
-                    ]
-                }
-            ],
-            "gallery": [
-                {
-                    "path": "races/XPHB/Dwarf.webp",
-                    "credit": "Mike Pape"
-                }
-            ],
-            "otherVersions": [
-                {
-                    "id": "dwarf-phb",
-                    "source": "PHB"
-                }
-            ]
+            "hasFluff": true,
+            "hasFluffImages": true
         },
         {
-            "id": "elf-xphb",
             "name": "Elf",
             "source": "XPHB",
             "page": 189,
-            "srd": true,
-            "image": "races/XPHB/Elf.webp",
-            "size": "Medium",
-            "speed": "30 ft.",
-            "walkSpeed": 30,
-            "flySpeed": 0,
-            "swimSpeed": 0,
-            "climbSpeed": 0,
-            "creatureType": "Humanoid",
-            "parentRace": "",
+            "srd52": true,
+            "basicRules2024": true,
+            "edition": "one",
+            "creatureTypes": [
+                "humanoid"
+            ],
+            "size": [
+                "M"
+            ],
+            "speed": 30,
+            "darkvision": 60,
+            "traitTags": [
+                "Improved Resting"
+            ],
+            "skillProficiencies": [
+                {
+                    "choose": {
+                        "from": [
+                            "insight",
+                            "perception",
+                            "survival"
+                        ]
+                    }
+                }
+            ],
+            "soundClip": {
+                "type": "internal",
+                "path": "races/elf.opus"
+            },
+            "additionalSpells": [
+                {
+                    "name": "Drow",
+                    "innate": {
+                        "3": {
+                            "daily": {
+                                "1": [
+                                    "faerie fire|xphb"
+                                ]
+                            }
+                        },
+                        "5": {
+                            "daily": {
+                                "1": [
+                                    "darkness|xphb"
+                                ]
+                            }
+                        }
+                    },
+                    "ability": {
+                        "choose": [
+                            "int",
+                            "wis",
+                            "cha"
+                        ]
+                    },
+                    "known": {
+                        "1": [
+                            "dancing lights|xphb#c"
+                        ]
+                    }
+                },
+                {
+                    "name": "High Elf",
+                    "innate": {
+                        "3": {
+                            "daily": {
+                                "1": [
+                                    "detect magic|xphb"
+                                ]
+                            }
+                        },
+                        "5": {
+                            "daily": {
+                                "1": [
+                                    "misty step|xphb"
+                                ]
+                            }
+                        }
+                    },
+                    "ability": {
+                        "choose": [
+                            "int",
+                            "wis",
+                            "cha"
+                        ]
+                    },
+                    "known": {
+                        "1": {
+                            "_": [
+                                {
+                                    "choose": "level=0|class=Wizard"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Wood Elf",
+                    "innate": {
+                        "3": {
+                            "daily": {
+                                "1": [
+                                    "longstrider|xphb"
+                                ]
+                            }
+                        },
+                        "5": {
+                            "daily": {
+                                "1": [
+                                    "pass without trace|xphb"
+                                ]
+                            }
+                        }
+                    },
+                    "ability": {
+                        "choose": [
+                            "int",
+                            "wis",
+                            "cha"
+                        ]
+                    },
+                    "known": {
+                        "1": [
+                            "druidcraft|xphb#c"
+                        ]
+                    }
+                }
+            ],
+            "sizeEntry": {
+                "type": "item",
+                "name": "Size:",
+                "entries": [
+                    "Medium (about 5-6 feet tall)"
+                ]
+            },
             "entries": [
                 {
                     "type": "entries",
@@ -421,76 +656,209 @@
                     ]
                 }
             ],
-            "lore": [
+            "hasFluff": true,
+            "hasFluffImages": true,
+            "_versions": [
                 {
-                    "type": "entries",
-                    "entries": [
-                        "Created by the god Corellon, the first elves could change their forms at will. They lost this ability when Corellon cursed them for plotting with the deity Lolth, who tried and failed to usurp Corellon's dominion. When Lolth was cast into the Abyss, most elves renounced her and earned Corellon's forgiveness, but that which Corellon had taken from them was lost forever.",
-                        "No longer able to shape-shift at will, the elves retreated to the Feywild, where their sorrow was deepened by that plane's influence. Over time, curiosity led many of them to explore other planes of existence, including worlds in the Material Plane.",
-                        "Elves have pointed ears and lack facial and body hair. They live for around 750 years, and they don't sleep but instead enter a trance when they need to rest. In that state, they remain aware of their surroundings while immersing themselves in memories and meditations.",
-                        "An environment subtly transforms elves after they inhabit it for a millennium or more, and it grants them certain kinds of magic. Drow, high elves, and wood elves are examples of elves who have been transformed thus.",
+                    "name": "Elf; Drow Lineage",
+                    "source": "XPHB",
+                    "_mod": {
+                        "entries": [
+                            {
+                                "mode": "replaceArr",
+                                "replace": "Elven Lineage",
+                                "items": {
+                                    "name": "Elven Lineage (Drow)",
+                                    "type": "entries",
+                                    "entries": [
+                                        "You are part of a lineage that grants you supernatural abilities. The range of your {@sense Darkvision|XPHB} increases to 120 feet. You also know the {@spell Dancing Lights|XPHB} cantrip.",
+                                        "When you reach character level 3, you learn the {@spell Faerie Fire|XPHB} spell. When you reach character level 5, you also learn the {@spell Darkness|XPHB} spell. You always have these spells prepared, and you can cast each spell once without a spell slot. Once you cast either of these spells with this trait, you can't cast that spell with it again until you finish a {@variantrule Long Rest|XPHB}. You can also cast the spell using any spell slots you have of the appropriate level.",
+                                        "Intelligence, Wisdom, or Charisma is your spellcasting ability for the spells you cast with this trait (choose the ability when you select the lineage)."
+                                    ]
+                                }
+                            },
+                            {
+                                "mode": "replaceArr",
+                                "replace": "Darkvision",
+                                "items": {
+                                    "name": "Darkvision",
+                                    "type": "entries",
+                                    "entries": [
+                                        "You have {@sense Darkvision|XPHB} with a range of 120 feet."
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "darkvision": 120,
+                    "additionalSpells": [
                         {
-                            "type": "entries",
-                            "name": "Drow",
-                            "entries": [
-                                "Drow typically dwell in the Underdark and have been shaped by it. Some drow individuals and societies avoid the Underdark altogether yet carry its magic. In the Eberron setting, for example, drow dwell in rainforests and cyclopean ruins on the continent of Xen'drik."
-                            ]
-                        },
-                        {
-                            "type": "entries",
-                            "name": "High Elves",
-                            "entries": [
-                                "High elves have been infused with the magic of crossings between the Feywild and the Material Plane. On some worlds, high elves refer to themselves by other names. For example, they call themselves sun or moon elves in the Forgotten Realms setting, Silvanesti and Qualinesti in the Dragonlance setting, and Aereni in the Eberron setting."
-                            ]
-                        },
-                        {
-                            "type": "entries",
-                            "name": "Wood Elves",
-                            "entries": [
-                                "Wood elves carry the magic of primeval forests within themselves. They are known by many other names, including wild elves, green elves, and forest elves. Grugach are reclusive wood elves of the Greyhawk setting, while the Kagonesti and the Tairnadal are wood elves of the Dragonlance and Eberron settings, respectively."
-                            ]
+                            "innate": {
+                                "3": {
+                                    "daily": {
+                                        "1": [
+                                            "faerie fire|xphb"
+                                        ]
+                                    }
+                                },
+                                "5": {
+                                    "daily": {
+                                        "1": [
+                                            "darkness|xphb"
+                                        ]
+                                    }
+                                }
+                            },
+                            "ability": {
+                                "choose": [
+                                    "int",
+                                    "wis",
+                                    "cha"
+                                ]
+                            },
+                            "known": {
+                                "1": [
+                                    "dancing lights|xphb#c"
+                                ]
+                            }
                         }
                     ]
-                }
-            ],
-            "gallery": [
-                {
-                    "path": "races/XPHB/Elf.webp",
-                    "credit": "Mike Pape"
                 },
                 {
-                    "path": "races/XPHB/148-05-022.elf-city.webp",
-                    "title": "A ship departs from a city built by high elves",
-                    "credit": "Jedd Chevrier"
-                }
-            ],
-            "hidden": true,
-            "otherVersions": [
-                {
-                    "id": "elf",
-                    "source": "LFL"
+                    "name": "Elf; High Elf Lineage",
+                    "source": "XPHB",
+                    "_mod": {
+                        "entries": {
+                            "mode": "replaceArr",
+                            "replace": "Elven Lineage",
+                            "items": {
+                                "name": "Elven Lineage (High Elf)",
+                                "type": "entries",
+                                "entries": [
+                                    "You are part of a lineage that grants you supernatural abilities. You know the {@spell Prestidigitation|XPHB} cantrip. Whenever you finish a {@variantrule Long Rest|XPHB}, you can replace that cantrip with a different {@filter cantrip from the Wizard spell list|spells|level=0|class=Wizard}.",
+                                    "When you reach character level 3, you learn the {@spell Detect Magic|XPHB} spell. When you reach character level 5, you also learn the {@spell Misty Step|XPHB} spell. You always have these spells prepared, and you can cast each spell once without a spell slot. Once you cast either of these spells with this trait, you can't cast that spell with it again until you finish a {@variantrule Long Rest|XPHB}. You can also cast the spell using any spell slots you have of the appropriate level.",
+                                    "Intelligence, Wisdom, or Charisma is your spellcasting ability for the spells you cast with this trait (choose the ability when you select the lineage)."
+                                ]
+                            }
+                        }
+                    },
+                    "additionalSpells": [
+                        {
+                            "innate": {
+                                "3": {
+                                    "daily": {
+                                        "1": [
+                                            "detect magic|xphb"
+                                        ]
+                                    }
+                                },
+                                "5": {
+                                    "daily": {
+                                        "1": [
+                                            "misty step|xphb"
+                                        ]
+                                    }
+                                }
+                            },
+                            "ability": {
+                                "choose": [
+                                    "int",
+                                    "wis",
+                                    "cha"
+                                ]
+                            },
+                            "known": {
+                                "1": {
+                                    "_": [
+                                        {
+                                            "choose": "level=0|class=Wizard"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
                 },
                 {
-                    "id": "elf-phb",
-                    "source": "PHB"
+                    "name": "Elf; Wood Elf Lineage",
+                    "source": "XPHB",
+                    "_mod": {
+                        "entries": {
+                            "mode": "replaceArr",
+                            "replace": "Elven Lineage",
+                            "items": {
+                                "name": "Elven Lineage (Wood Elf)",
+                                "type": "entries",
+                                "entries": [
+                                    "You are part of a lineage that grants you supernatural abilities. Your {@variantrule Speed|XPHB} increases to 35 feet. You also know the {@spell Druidcraft|XPHB} cantrip.",
+                                    "When you reach character level 3, you learn the {@spell Longstrider|XPHB} spell. When you reach character level 5, you also learn the {@spell Pass without Trace|XPHB} spell. You always have these spells prepared, and you can cast each spell once without a spell slot. Once you cast either of these spells with this trait, you can't cast that spell with it again until you finish a {@variantrule Long Rest|XPHB}. You can also cast the spell using any spell slots you have of the appropriate level.",
+                                    "Intelligence, Wisdom, or Charisma is your spellcasting ability for the spells you cast with this trait (choose the ability when you select the lineage)."
+                                ]
+                            }
+                        }
+                    },
+                    "speed": 35,
+                    "additionalSpells": [
+                        {
+                            "innate": {
+                                "3": {
+                                    "daily": {
+                                        "1": [
+                                            "longstrider|xphb"
+                                        ]
+                                    }
+                                },
+                                "5": {
+                                    "daily": {
+                                        "1": [
+                                            "pass without trace|xphb"
+                                        ]
+                                    }
+                                }
+                            },
+                            "ability": {
+                                "choose": [
+                                    "int",
+                                    "wis",
+                                    "cha"
+                                ]
+                            },
+                            "known": {
+                                "1": [
+                                    "druidcraft|xphb#c"
+                                ]
+                            }
+                        }
+                    ]
                 }
             ]
         },
         {
-            "id": "gnome",
             "name": "Gnome",
             "source": "XPHB",
             "page": 191,
-            "srd": true,
-            "image": "races/XPHB/Gnome.webp",
-            "size": "Small",
-            "speed": "30 ft.",
-            "walkSpeed": 30,
-            "flySpeed": 0,
-            "swimSpeed": 0,
-            "climbSpeed": 0,
-            "creatureType": "Humanoid",
-            "parentRace": "",
+            "srd52": true,
+            "basicRules2024": true,
+            "edition": "one",
+            "creatureTypes": [
+                "humanoid"
+            ],
+            "size": [
+                "S"
+            ],
+            "speed": 30,
+            "darkvision": 60,
+            "soundClip": {
+                "type": "internal",
+                "path": "races/gnome.opus"
+            },
+            "sizeEntry": {
+                "type": "item",
+                "name": "Size:",
+                "entries": [
+                    "Small (about 3-4 feet tall)"
+                ]
+            },
             "entries": [
                 {
                     "type": "entries",
@@ -534,48 +902,115 @@
                     ]
                 }
             ],
-            "lore": [
+            "hasFluff": true,
+            "hasFluffImages": true,
+            "_versions": [
                 {
-                    "type": "entries",
-                    "entries": [
+                    "name": "Gnome; Forest Gnome Lineage",
+                    "source": "XPHB",
+                    "_mod": {
+                        "entries": {
+                            "mode": "replaceArr",
+                            "replace": "Gnomish Lineage",
+                            "items": {
+                                "name": "Gnomish Lineage (Forest Gnome)",
+                                "type": "entries",
+                                "entries": [
+                                    "You know the {@spell Minor Illusion|XPHB} cantrip. You also always have the {@spell Speak with Animals|XPHB} spell prepared. You can cast it without a spell slot a number of times equal to your {@variantrule Proficiency|XPHB|Proficiency Bonus}, and you regain all expended uses when you finish a {@variantrule Long Rest|XPHB}. You can also use any spell slots you have to cast the spell."
+                                ]
+                            }
+                        }
+                    },
+                    "additionalSpells": [
                         {
-                            "type": "entries",
-                            "entries": [
-                                "Gnomes are magical folk created by gods of invention, illusions, and life underground. The earliest gnomes were seldom seen by other folk due to the gnomes' secretive nature and their propensity for living in forests and burrows. What they lacked in size, they made up for in cleverness. They confounded predators with traps and labyrinthine tunnels. They also learned magic from gods like Garl Glittergold, Baervan Wildwanderer, and Baravar Cloakshadow, who visited them in disguise. That magic eventually created the lineages of forest gnomes and rock gnomes.",
-                                "Gnomes are petite folk with big eyes and pointed ears, who live around 425 years. Many gnomes like the feeling of a roof over their head, even if that \"roof\" is nothing more than a hat."
-                            ]
+                            "innate": {
+                                "3": {
+                                    "daily": {
+                                        "pb": [
+                                            "speak with animals|xphb"
+                                        ]
+                                    }
+                                }
+                            },
+                            "ability": {
+                                "choose": [
+                                    "int",
+                                    "wis",
+                                    "cha"
+                                ]
+                            },
+                            "known": {
+                                "1": [
+                                    "minor illusion|xphb#c"
+                                ]
+                            }
                         }
                     ]
-                }
-            ],
-            "gallery": [
+                },
                 {
-                    "path": "races/XPHB/Gnome.webp",
-                    "credit": "Eric Belisle"
-                }
-            ],
-            "otherVersions": [
-                {
-                    "id": "gnome-phb",
-                    "source": "PHB"
+                    "name": "Gnome; Rock Gnome Lineage",
+                    "source": "XPHB",
+                    "_mod": {
+                        "entries": {
+                            "mode": "replaceArr",
+                            "replace": "Gnomish Lineage",
+                            "items": {
+                                "name": "Gnomish Lineage (Rock Gnome)",
+                                "type": "entries",
+                                "entries": [
+                                    "You know the {@spell Mending|XPHB} and {@spell Prestidigitation|XPHB} cantrips. In addition, you can spend 10 minutes casting {@spell Prestidigitation|XPHB} to create a Tiny clockwork device (AC 5, 1 HP), such as a toy, fire starter, or music box. When you create the device, you determine its function by choosing one effect from {@spell Prestidigitation|XPHB}; the device produces that effect whenever you or another creature takes a {@variantrule Bonus Action|XPHB} to activate it with a touch. If the chosen effect has options within it, you choose one of those options for the device when you create it. For example, if you choose the spell's ignite-extinguish effect, you determine whether the device ignites or extinguishes fire; the device doesn't do both. You can have three such devices in existence at a time, and each falls apart 8 hours after its creation or when you dismantle it with a touch as a {@action Utilize|XPHB} action."
+                                ]
+                            }
+                        }
+                    },
+                    "additionalSpells": [
+                        {
+                            "ability": {
+                                "choose": [
+                                    "int",
+                                    "wis",
+                                    "cha"
+                                ]
+                            },
+                            "known": {
+                                "1": [
+                                    "mending|xphb#c",
+                                    "prestidigitation|xphb#c"
+                                ]
+                            }
+                        }
+                    ]
                 }
             ]
         },
         {
-            "id": "goliath",
             "name": "Goliath",
             "source": "XPHB",
             "page": 192,
-            "srd": true,
-            "image": "races/XPHB/Goliath.webp",
-            "size": "Medium",
-            "speed": "35 ft.",
-            "walkSpeed": 35,
-            "flySpeed": 0,
-            "swimSpeed": 0,
-            "climbSpeed": 0,
-            "creatureType": "Humanoid",
-            "parentRace": "",
+            "srd52": true,
+            "basicRules2024": true,
+            "edition": "one",
+            "creatureTypes": [
+                "humanoid"
+            ],
+            "size": [
+                "M"
+            ],
+            "speed": 35,
+            "traitTags": [
+                "Powerful Build"
+            ],
+            "soundClip": {
+                "type": "internal",
+                "path": "races/goliath.opus"
+            },
+            "sizeEntry": {
+                "type": "item",
+                "name": "Size:",
+                "entries": [
+                    "Medium (about 7-8 feet tall)"
+                ]
+            },
             "entries": [
                 {
                     "type": "entries",
@@ -647,105 +1082,216 @@
                     ]
                 }
             ],
-            "lore": [
+            "hasFluff": true,
+            "hasFluffImages": true,
+            "_versions": [
                 {
-                    "type": "entries",
-                    "entries": [
-                        {
-                            "type": "entries",
-                            "entries": [
-                                "Towering over most folk, goliaths are distant descendants of giants. Each goliath bears the favors of the first giants—favors that manifest in various supernatural boons, including the ability to quickly grow and temporarily approach the height of goliaths' gigantic kin.",
-                                "Goliaths have physical characteristics that are reminiscent of the giants in their family lines. For example, some goliaths look like stone giants, while others resemble fire giants. Whatever giants they count as kin, goliaths have forged their own path in the multiverse—unencumbered by the internecine conflicts that have ravaged giantkind for ages—and seek heights above those reached by their ancestors."
-                            ]
+                    "name": "Goliath; Cloud Giant Ancestry",
+                    "source": "XPHB",
+                    "_mod": {
+                        "entries": {
+                            "mode": "replaceArr",
+                            "replace": "Giant Ancestry",
+                            "items": {
+                                "name": "Giant Ancestry (Cloud)",
+                                "type": "entries",
+                                "entries": [
+                                    "You are descended from Giants, granting you a supernatural boon; you can use this boon a number of times equal to your {@variantrule Proficiency|XPHB|Proficiency Bonus}, and you regain all expended uses when you finish a {@variantrule Long Rest|XPHB}:",
+                                    {
+                                        "type": "list",
+                                        "style": "list-hang-notitle",
+                                        "items": [
+                                            {
+                                                "type": "item",
+                                                "name": "Cloud's Jaunt",
+                                                "entries": [
+                                                    "As a {@variantrule Bonus Action|XPHB}, you magically teleport up to 30 feet to an unoccupied space you can see."
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
                         }
-                    ]
-                }
-            ],
-            "gallery": [
-                {
-                    "path": "races/XPHB/Goliath.webp",
-                    "credit": "Hinchel Or"
-                }
-            ],
-            "otherVersions": [
-                {
-                    "id": "goliath-mpmm",
-                    "source": "MPMM"
+                    }
                 },
                 {
-                    "id": "goliath-vgm",
-                    "source": "VGM"
+                    "name": "Goliath; Fire Giant Ancestry",
+                    "source": "XPHB",
+                    "_mod": {
+                        "entries": {
+                            "mode": "replaceArr",
+                            "replace": "Giant Ancestry",
+                            "items": {
+                                "name": "Giant Ancestry (Fire)",
+                                "type": "entries",
+                                "entries": [
+                                    "You are descended from Giants, granting you a supernatural boon; you can use this boon a number of times equal to your {@variantrule Proficiency|XPHB|Proficiency Bonus}, and you regain all expended uses when you finish a {@variantrule Long Rest|XPHB}:",
+                                    {
+                                        "type": "list",
+                                        "style": "list-hang-notitle",
+                                        "items": [
+                                            {
+                                                "type": "item",
+                                                "name": "Fire's Burn",
+                                                "entries": [
+                                                    "When you hit a target with an attack roll and deal damage to it, you can also deal {@damage 1d10} Fire damage to that target."
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "Goliath; Frost Giant Ancestry",
+                    "source": "XPHB",
+                    "_mod": {
+                        "entries": {
+                            "mode": "replaceArr",
+                            "replace": "Giant Ancestry",
+                            "items": {
+                                "name": "Giant Ancestry (Frost)",
+                                "type": "entries",
+                                "entries": [
+                                    "You are descended from Giants, granting you a supernatural boon; you can use this boon a number of times equal to your {@variantrule Proficiency|XPHB|Proficiency Bonus}, and you regain all expended uses when you finish a {@variantrule Long Rest|XPHB}:",
+                                    {
+                                        "type": "list",
+                                        "style": "list-hang-notitle",
+                                        "items": [
+                                            {
+                                                "type": "item",
+                                                "name": "Frost's Chill",
+                                                "entries": [
+                                                    "When you hit a target with an attack roll and deal damage to it, you can also deal {@damage 1d6} Cold damage to that target and reduce its {@variantrule Speed|XPHB} by 10 feet until the start of your next turn."
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "Goliath; Hill Giant Ancestry",
+                    "source": "XPHB",
+                    "_mod": {
+                        "entries": {
+                            "mode": "replaceArr",
+                            "replace": "Giant Ancestry",
+                            "items": {
+                                "name": "Giant Ancestry (Hill)",
+                                "type": "entries",
+                                "entries": [
+                                    "You are descended from Giants, granting you a supernatural boon; you can use this boon a number of times equal to your {@variantrule Proficiency|XPHB|Proficiency Bonus}, and you regain all expended uses when you finish a {@variantrule Long Rest|XPHB}:",
+                                    {
+                                        "type": "list",
+                                        "style": "list-hang-notitle",
+                                        "items": [
+                                            {
+                                                "type": "item",
+                                                "name": "Hill's Tumble",
+                                                "entries": [
+                                                    "When you hit a Large or smaller creature with an attack roll and deal damage to it, you can give that target the {@condition Prone|XPHB} condition."
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "Goliath; Stone Giant Ancestry",
+                    "source": "XPHB",
+                    "_mod": {
+                        "entries": {
+                            "mode": "replaceArr",
+                            "replace": "Giant Ancestry",
+                            "items": {
+                                "name": "Giant Ancestry (Stone)",
+                                "type": "entries",
+                                "entries": [
+                                    "You are descended from Giants, granting you a supernatural boon; you can use this boon a number of times equal to your {@variantrule Proficiency|XPHB|Proficiency Bonus}, and you regain all expended uses when you finish a {@variantrule Long Rest|XPHB}:",
+                                    {
+                                        "type": "list",
+                                        "style": "list-hang-notitle",
+                                        "items": [
+                                            {
+                                                "type": "item",
+                                                "name": "Stone's Endurance",
+                                                "entries": [
+                                                    "When you take damage, you can take a {@variantrule Reaction|XPHB} to roll {@dice 1d12}. Add your Constitution modifier to the number rolled and reduce the damage by that total."
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "Goliath; Storm Giant Ancestry",
+                    "source": "XPHB",
+                    "_mod": {
+                        "entries": {
+                            "mode": "replaceArr",
+                            "replace": "Giant Ancestry",
+                            "items": {
+                                "name": "Giant Ancestry (Storm)",
+                                "type": "entries",
+                                "entries": [
+                                    "You are descended from Giants, granting you a supernatural boon; you can use this boon a number of times equal to your {@variantrule Proficiency|XPHB|Proficiency Bonus}, and you regain all expended uses when you finish a {@variantrule Long Rest|XPHB}:",
+                                    {
+                                        "type": "list",
+                                        "style": "list-hang-notitle",
+                                        "items": [
+                                            {
+                                                "type": "item",
+                                                "name": "Storm's Thunder",
+                                                "entries": [
+                                                    "When you take damage from a creature within 60 feet of you, you can take a {@variantrule Reaction|XPHB} to deal {@damage 1d8} Thunder damage to that creature."
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
                 }
             ]
         },
         {
-            "id": "grung",
-            "name": "Grung",
-            "source": "VGM",
-            "page": 0,
-            "srd": false,
-            "size": "Small",
-            "speed": "25 ft.",
-            "walkSpeed": 25,
-            "flySpeed": 0,
-            "swimSpeed": 25,
-            "climbSpeed": 0,
-            "creatureType": "Humanoid",
-            "parentRace": "",
-            "entries": [
-                {
-                    "name": "Amphibious",
-                    "type": "entries",
-                    "entries": [
-                        "You can breathe both air and water. Your body is naturally adapted to life in and around water."
-                    ]
-                },
-                {
-                    "name": "Swimming Instinct",
-                    "type": "entries",
-                    "entries": [
-                        "While swimming, you can move at your normal walking speed. Your powerful legs and webbed feet allow you to move through water with ease."
-                    ]
-                },
-                {
-                    "name": "Spring-Frog Leap",
-                    "type": "entries",
-                    "entries": [
-                        "Your natural jumping ability is exceptional. Your long jump, whether standing or with a running start, can cover a number of meters equal to your Strength score. Your high jump can also reach a height in meters equal to your Strength score."
-                    ]
-                }
-            ],
-            "lore": [
-                {
-                    "type": "entries",
-                    "entries": [
-                        {
-                            "type": "entries",
-                            "entries": [
-                                "Grungs are cheerful, curious frog-like humanoids who dwell among the rivers, ponds, and rainforests of the tropics. Unlike the territorial and warlike grungs of old, these grungs are known for their hospitality, playfulness, and strong sense of community. They often build their homes around pools and waterways, where they gather to trade stories, share food, and celebrate with music and colorful festivals.",
-                                "Grung society values cooperation rather than hierarchy. Individuals are encouraged to pursue the roles that suit their talents, whether as hunters, artisans, explorers, storytellers, or guardians of their communities. Their colorful skin is a source of pride and self-expression rather than a mark of social status.",
-                                "Grungs are naturally fascinated by the wider world and often become enthusiastic travelers. They have a particular fondness for other peoples, whom they regard as potential friends and sources of new stories, customs, and games. Though small in stature, grungs are energetic and remarkably athletic, equally comfortable climbing through dense jungle or swimming through rushing rivers."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "id": "halfling",
             "name": "Halfling",
             "source": "XPHB",
             "page": 193,
-            "srd": true,
-            "image": "races/XPHB/Halfling.webp",
-            "size": "Small",
-            "speed": "30 ft.",
-            "walkSpeed": 30,
-            "flySpeed": 0,
-            "swimSpeed": 0,
-            "climbSpeed": 0,
-            "creatureType": "Humanoid",
-            "parentRace": "",
+            "srd52": true,
+            "basicRules2024": true,
+            "edition": "one",
+            "creatureTypes": [
+                "humanoid"
+            ],
+            "size": [
+                "S"
+            ],
+            "speed": 30,
+            "soundClip": {
+                "type": "internal",
+                "path": "races/halfling.opus"
+            },
+            "sizeEntry": {
+                "type": "item",
+                "name": "Size:",
+                "entries": [
+                    "Small (about 2-3 feet tall)"
+                ]
+            },
             "entries": [
                 {
                     "type": "entries",
@@ -776,50 +1322,50 @@
                     ]
                 }
             ],
-            "lore": [
-                {
-                    "type": "entries",
-                    "entries": [
-                        {
-                            "type": "entries",
-                            "entries": [
-                                "Cherished and guided by gods who value life, home, and hearth, halflings gravitate toward bucolic havens where family and community help shape their lives. That said, many halflings possess a brave and adventurous spirit that leads them on journeys of discovery, affording them the chance to explore a bigger world and make new friends along the way. Their size—similar to that of a human child—helps them pass through crowds unnoticed and slip through tight spaces.",
-                                "Anyone who has spent time around halflings, particularly halfling adventurers, has likely witnessed the storied \"luck of the halflings\" in action. When a halfling is in mortal danger, an unseen force seems to intervene on the halfling's behalf. Many halflings believe in the power of luck, and they attribute their unusual gift to one or more of their benevolent gods, including Yondalla, Brandobaris, and Charmalaine. The same gift might contribute to their robust life spans (about 150 years).",
-                                "Halfling communities come in all varieties. For every sequestered shire tucked away in an unspoiled part of the world, there's a crime syndicate like the Boromar Clan in the Eberron setting or a territorial mob of halflings like those in the Dark Sun setting.",
-                                "Halflings who prefer to live underground are sometimes called strongheart halflings or stouts. Nomadic halflings, as well as those who live among humans and other tall folk, are sometimes called lightfoot halflings or tallfellows."
-                            ]
-                        }
-                    ]
-                }
-            ],
-            "gallery": [
-                {
-                    "path": "races/XPHB/Halfling.webp",
-                    "credit": "Jane Katsubo"
-                }
-            ],
-            "otherVersions": [
-                {
-                    "id": "halfling-phb",
-                    "source": "PHB"
-                }
-            ]
+            "hasFluff": true,
+            "hasFluffImages": true
         },
         {
-            "id": "human",
             "name": "Human",
             "source": "XPHB",
             "page": 194,
-            "srd": true,
-            "image": "races/XPHB/Human.webp",
-            "size": "Small or Medium",
-            "speed": "30 ft.",
-            "walkSpeed": 30,
-            "flySpeed": 0,
-            "swimSpeed": 0,
-            "climbSpeed": 0,
-            "creatureType": "Humanoid",
-            "parentRace": "",
+            "srd52": true,
+            "basicRules2024": true,
+            "edition": "one",
+            "creatureTypes": [
+                "humanoid"
+            ],
+            "size": [
+                "S",
+                "M"
+            ],
+            "speed": 30,
+            "feats": [
+                {
+                    "anyFromCategory": {
+                        "category": [
+                            "O"
+                        ],
+                        "count": 1
+                    }
+                }
+            ],
+            "skillProficiencies": [
+                {
+                    "any": 1
+                }
+            ],
+            "soundClip": {
+                "type": "internal",
+                "path": "races/human.opus"
+            },
+            "sizeEntry": {
+                "type": "item",
+                "name": "Size:",
+                "entries": [
+                    "Medium (about 4-7 feet tall) or Small (about 2-4 feet tall), chosen when you select this species"
+                ]
+            },
             "entries": [
                 {
                     "type": "entries",
@@ -843,48 +1389,35 @@
                     ]
                 }
             ],
-            "lore": [
-                {
-                    "type": "entries",
-                    "entries": [
-                        {
-                            "type": "entries",
-                            "entries": [
-                                "Found throughout the multiverse, humans are as varied as they are numerous, and they endeavor to achieve as much as they can in the years they are given. Their ambition and resourcefulness are commended, respected, and feared on many worlds.",
-                                "Humans are as diverse in appearance as the people of Earth, and they have many gods. Scholars dispute the origin of humanity, but one of the earliest known human gatherings is said to have occurred in Sigil, the torus-shaped city at the center of the multiverse and the place where the Common language was born. From there, humans could have spread to every part of the multiverse, bringing the City of Doors' cosmopolitanism with them."
-                            ]
-                        }
-                    ]
-                }
-            ],
-            "gallery": [
-                {
-                    "path": "races/XPHB/Human.webp",
-                    "credit": "Zuzanna Wužyk"
-                }
-            ],
-            "otherVersions": [
-                {
-                    "id": "human-phb",
-                    "source": "PHB"
-                }
-            ]
+            "hasFluff": true,
+            "hasFluffImages": true
         },
         {
-            "id": "orc",
             "name": "Orc",
             "source": "XPHB",
             "page": 195,
-            "srd": true,
-            "image": "races/XPHB/Orc.webp",
-            "size": "Medium",
-            "speed": "30 ft.",
-            "walkSpeed": 30,
-            "flySpeed": 0,
-            "swimSpeed": 0,
-            "climbSpeed": 0,
-            "creatureType": "Humanoid",
-            "parentRace": "",
+            "srd52": true,
+            "basicRules2024": true,
+            "edition": "one",
+            "creatureTypes": [
+                "humanoid"
+            ],
+            "size": [
+                "M"
+            ],
+            "speed": 30,
+            "darkvision": 120,
+            "soundClip": {
+                "type": "internal",
+                "path": "races/orc.opus"
+            },
+            "sizeEntry": {
+                "type": "item",
+                "name": "Size:",
+                "entries": [
+                    "Medium (about 6-7 feet tall)"
+                ]
+            },
             "entries": [
                 {
                     "type": "entries",
@@ -909,64 +1442,145 @@
                     ]
                 }
             ],
-            "lore": [
-                {
-                    "type": "entries",
-                    "entries": [
-                        {
-                            "type": "entries",
-                            "entries": [
-                                "Orcs trace their creation to Gruumsh, a powerful god who roamed the wide open spaces of the Material Plane. Gruumsh equipped his children with gifts to help them wander great plains, vast caverns, and churning seas and to face the monsters that lurk there. Even when they turn their devotion to other gods, orcs retain Gruumsh's gifts: endurance, determination, and the ability to see in darkness.",
-                                "Orcs are, on average, tall and broad. They have gray skin, ears that are sharply pointed, and prominent lower canines that resemble small tusks. Orc youths on some worlds are told about their ancestors' great travels and travails. Inspired by those tales, many of those orcs wonder when Gruumsh will call on them to match the heroic deeds of old and if they will prove worthy of his favor. Other orcs are happy to leave old tales in the past and find their own way."
-                            ]
-                        }
-                    ]
-                }
-            ],
-            "gallery": [
-                {
-                    "path": "races/XPHB/Orc.webp",
-                    "credit": "Mike Pape"
-                }
-            ],
-            "otherVersions": [
-                {
-                    "id": "orc-mpmm",
-                    "source": "MPMM"
-                },
-                {
-                    "id": "orc-egw",
-                    "source": "EGW"
-                },
-                {
-                    "id": "orc-erlw",
-                    "source": "ERLW"
-                },
-                {
-                    "id": "orc-vgm",
-                    "source": "VGM"
-                },
-                {
-                    "id": "orc-dmg",
-                    "source": "DMG"
-                }
-            ]
+            "hasFluff": true,
+            "hasFluffImages": true
         },
         {
-            "id": "tiefling",
             "name": "Tiefling",
             "source": "XPHB",
             "page": 197,
-            "srd": true,
-            "image": "races/XPHB/Tiefling.webp",
-            "size": "Small or Medium",
-            "speed": "30 ft.",
-            "walkSpeed": 30,
-            "flySpeed": 0,
-            "swimSpeed": 0,
-            "climbSpeed": 0,
-            "creatureType": "Humanoid",
-            "parentRace": "",
+            "srd52": true,
+            "basicRules2024": true,
+            "edition": "one",
+            "creatureTypes": [
+                "humanoid"
+            ],
+            "size": [
+                "S",
+                "M"
+            ],
+            "speed": 30,
+            "darkvision": 60,
+            "resist": [
+                {
+                    "choose": {
+                        "from": [
+                            "poison",
+                            "necrotic",
+                            "fire"
+                        ]
+                    }
+                }
+            ],
+            "soundClip": {
+                "type": "internal",
+                "path": "races/tiefling.opus"
+            },
+            "additionalSpells": [
+                {
+                    "name": "Abyssal",
+                    "ability": {
+                        "choose": [
+                            "int",
+                            "wis",
+                            "cha"
+                        ]
+                    },
+                    "known": {
+                        "1": [
+                            "thaumaturgy|xphb#c",
+                            "poison spray|xphb#c"
+                        ]
+                    },
+                    "innate": {
+                        "3": {
+                            "daily": {
+                                "1": [
+                                    "ray of sickness|xphb"
+                                ]
+                            }
+                        },
+                        "5": {
+                            "daily": {
+                                "1": [
+                                    "hold person|xphb"
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "Chthonic",
+                    "ability": {
+                        "choose": [
+                            "int",
+                            "wis",
+                            "cha"
+                        ]
+                    },
+                    "known": {
+                        "1": [
+                            "thaumaturgy|xphb#c",
+                            "chill touch|xphb#c"
+                        ]
+                    },
+                    "innate": {
+                        "3": {
+                            "daily": {
+                                "1": [
+                                    "false life|xphb"
+                                ]
+                            }
+                        },
+                        "5": {
+                            "daily": {
+                                "1": [
+                                    "ray of enfeeblement|xphb"
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "Infernal",
+                    "ability": {
+                        "choose": [
+                            "int",
+                            "wis",
+                            "cha"
+                        ]
+                    },
+                    "known": {
+                        "1": [
+                            "thaumaturgy|xphb#c",
+                            "fire bolt|xphb#c"
+                        ]
+                    },
+                    "innate": {
+                        "3": {
+                            "daily": {
+                                "1": [
+                                    "hellish rebuke|xphb"
+                                ]
+                            }
+                        },
+                        "5": {
+                            "daily": {
+                                "1": [
+                                    "darkness|xphb"
+                                ]
+                            }
+                        }
+                    }
+                }
+            ],
+            "sizeEntry": {
+                "type": "item",
+                "name": "Size:",
+                "entries": [
+                    "Medium (about 4-7 feet tall) or Small (about 3-4 feet tall), chosen when you select this species"
+                ]
+            },
             "entries": [
                 {
                     "type": "entries",
@@ -1027,57 +1641,177 @@
                     ]
                 }
             ],
-            "lore": [
+            "hasFluff": true,
+            "hasFluffImages": true,
+            "_versions": [
                 {
-                    "type": "entries",
-                    "entries": [
-                        "Tieflings are either born in the Lower Planes or have fiendish ancestors who originated there. A tiefling (pronounced TEE-fling) is linked by blood to a devil, a demon, or some other Fiend. This connection to the Lower Planes is the tiefling's fiendish legacy, which comes with the promise of power yet has no effect on the tiefling's moral outlook.",
-                        "A tiefling chooses whether to embrace or lament their fiendish legacy. The three legacies are described below.",
+                    "name": "Tiefling; Abyssal Legacy",
+                    "source": "XPHB",
+                    "_mod": {
+                        "entries": {
+                            "mode": "replaceArr",
+                            "replace": "Fiendish Legacy",
+                            "items": {
+                                "name": "Fiendish Legacy (Abyssal)",
+                                "type": "entries",
+                                "entries": [
+                                    "You are the recipient of a legacy that grants you supernatural abilities. You have {@variantrule Resistance|XPHB} to Poison damage. You also know the {@spell Poison Spray|XPHB} cantrip.",
+                                    "When you reach character level 3, you learn the {@spell Ray of Sickness|XPHB} spell. When you reach character level 5, you also learn the {@spell Hold Person|XPHB} spell. You always have these spells prepared, and you can cast each spell once without a spell slot. Once you cast either of these spells with this trait, you can't cast that spell with it again until you finish a {@variantrule Long Rest|XPHB}. You can also cast the spell using any spell slots you have of the appropriate level.",
+                                    "Intelligence, Wisdom, or Charisma is your spellcasting ability for the spells you cast with this trait (choose the ability when you select the legacy)."
+                                ]
+                            }
+                        }
+                    },
+                    "darkvision": 120,
+                    "resist": [
+                        "poison"
+                    ],
+                    "additionalSpells": [
                         {
-                            "type": "entries",
-                            "name": "Abyssal",
-                            "entries": [
-                                "The entropy of the Abyss, the chaos of Pandemonium, and the despair of Carceri call to tieflings who have the abyssal legacy. Horns, fur, tusks, and peculiar scents are common physical features of such tieflings, most of whom have the blood of demons coursing through their veins."
-                            ]
-                        },
+                            "innate": {
+                                "3": {
+                                    "daily": {
+                                        "1": [
+                                            "ray of sickness|xphb"
+                                        ]
+                                    }
+                                },
+                                "5": {
+                                    "daily": {
+                                        "1": [
+                                            "hold person|xphb"
+                                        ]
+                                    }
+                                }
+                            },
+                            "ability": {
+                                "choose": [
+                                    "int",
+                                    "wis",
+                                    "cha"
+                                ]
+                            },
+                            "known": {
+                                "1": [
+                                    "thaumaturgy|xphb#c",
+                                    "poison spray|xphb#c"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Tiefling; Chthonic Legacy",
+                    "source": "XPHB",
+                    "_mod": {
+                        "entries": {
+                            "mode": "replaceArr",
+                            "replace": "Fiendish Legacy",
+                            "items": {
+                                "name": "Fiendish Legacy (Chthonic)",
+                                "type": "entries",
+                                "entries": [
+                                    "You are the recipient of a legacy that grants you supernatural abilities. You have {@variantrule Resistance|XPHB} to Necrotic damage. You also know the {@spell Chill Touch|XPHB} cantrip.",
+                                    "When you reach character level 3, you learn the {@spell False Life|XPHB} spell. When you reach character level 5, you also learn the {@spell Ray of Enfeeblement|XPHB} spell. You always have these spells prepared, and you can cast each spell once without a spell slot. Once you cast either of these spells with this trait, you can't cast that spell with it again until you finish a {@variantrule Long Rest|XPHB}. You can also cast the spell using any spell slots you have of the appropriate level.",
+                                    "Intelligence, Wisdom, or Charisma is your spellcasting ability for the spells you cast with this trait (choose the ability when you select the legacy)."
+                                ]
+                            }
+                        }
+                    },
+                    "resist": [
+                        "necrotic"
+                    ],
+                    "additionalSpells": [
                         {
-                            "type": "entries",
-                            "name": "Chthonic",
-                            "entries": [
-                                "Tieflings who have the chthonic legacy feel not only the tug of Carceri but also the greed of Gehenna and the gloom of Hades. Some of these tieflings look cadaverous. Others possess the unearthly beauty of a succubus, or they have physical features in common with a night hag, a yugoloth, or some other Neutral Evil fiendish ancestor."
-                            ]
-                        },
+                            "innate": {
+                                "3": {
+                                    "daily": {
+                                        "1": [
+                                            "false life|xphb"
+                                        ]
+                                    }
+                                },
+                                "5": {
+                                    "daily": {
+                                        "1": [
+                                            "ray of enfeeblement|xphb"
+                                        ]
+                                    }
+                                }
+                            },
+                            "ability": {
+                                "choose": [
+                                    "int",
+                                    "wis",
+                                    "cha"
+                                ]
+                            },
+                            "known": {
+                                "1": [
+                                    "thaumaturgy|xphb#c",
+                                    "chill touch|xphb#c"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Tiefling; Infernal Legacy",
+                    "source": "XPHB",
+                    "_mod": {
+                        "entries": {
+                            "mode": "replaceArr",
+                            "replace": "Fiendish Legacy",
+                            "items": {
+                                "name": "Fiendish Legacy (Infernal)",
+                                "type": "entries",
+                                "entries": [
+                                    "You are the recipient of a legacy that grants you supernatural abilities. You have {@variantrule Resistance|XPHB} to Fire damage. You also know the {@spell Fire Bolt|XPHB} cantrip.",
+                                    "When you reach character level 3, you learn the {@spell Hellish Rebuke|XPHB} spell. When you reach character level 5, you also learn the {@spell Darkness|XPHB} spell. You always have these spells prepared, and you can cast each spell once without a spell slot. Once you cast either of these spells with this trait, you can't cast that spell with it again until you finish a {@variantrule Long Rest|XPHB}. You can also cast the spell using any spell slots you have of the appropriate level.",
+                                    "Intelligence, Wisdom, or Charisma is your spellcasting ability for the spells you cast with this trait (choose the ability when you select the legacy)."
+                                ]
+                            }
+                        }
+                    },
+                    "resist": [
+                        "fire"
+                    ],
+                    "additionalSpells": [
                         {
-                            "type": "entries",
-                            "name": "Infernal",
-                            "entries": [
-                                "The infernal legacy connects tieflings not only to Gehenna but also the Nine Hells and the raging battlefields of Acheron. Horns, spines, tails, golden eyes, and a faint odor of sulfur or smoke are common physical features of such tieflings, most of whom trace their ancestry to devils."
-                            ]
+                            "innate": {
+                                "3": {
+                                    "daily": {
+                                        "1": [
+                                            "hellish rebuke|xphb"
+                                        ]
+                                    }
+                                },
+                                "5": {
+                                    "daily": {
+                                        "1": [
+                                            "darkness|xphb"
+                                        ]
+                                    }
+                                }
+                            },
+                            "ability": {
+                                "choose": [
+                                    "int",
+                                    "wis",
+                                    "cha"
+                                ]
+                            },
+                            "known": {
+                                "1": [
+                                    "thaumaturgy|xphb#c",
+                                    "fire bolt|xphb#c"
+                                ]
+                            }
                         }
                     ]
                 }
-            ],
-            "gallery": [
-                {
-                    "path": "races/XPHB/Tiefling.webp",
-                    "credit": "Clint Cearley"
-                },
-                {
-                    "path": "races/XPHB/156-05-029.infernal-chthonic-abyssal.webp",
-                    "title": "Infernal Tiefling, Chthonic Tiefling, Abyssal Tiefling",
-                    "credit": "John Grello"
-                },
-                {
-                    "path": "races/XPHB/157-05-028.armored-tiefling.webp",
-                    "credit": "Jodie Muir"
-                }
-            ],
-            "otherVersions": [
-                {
-                    "id": "tiefling-phb",
-                    "source": "PHB"
-                }
             ]
         }
-    ]
+    ],
+    "subrace": []
 }

@@ -1,0 +1,593 @@
+{
+  "item": {
+    "basicRules2024": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "capCargo": {
+      "type": [
+        "float",
+        "int"
+      ],
+      "required": false
+    },
+    "capPassenger": {
+      "type": [
+        "int"
+      ],
+      "required": false
+    },
+    "carryingCapacity": {
+      "type": [
+        "int"
+      ],
+      "required": false
+    },
+    "containerCapacity": {
+      "type": [
+        "dict"
+      ],
+      "properties": {
+        "item": {
+          "type": [
+            "list"
+          ],
+          "items": {
+            "type": [
+              "dict"
+            ],
+            "properties": {
+              "arrow|xphb": {
+                "type": [
+                  "int"
+                ],
+                "required": false
+              },
+              "bolt|xphb": {
+                "type": [
+                  "int"
+                ],
+                "required": false
+              },
+              "firearm bullet|xphb": {
+                "type": [
+                  "int"
+                ],
+                "required": false
+              },
+              "needle|xphb": {
+                "type": [
+                  "int"
+                ],
+                "required": false
+              },
+              "paper|xphb": {
+                "type": [
+                  "int"
+                ],
+                "required": false
+              },
+              "parchment|xphb": {
+                "type": [
+                  "int"
+                ],
+                "required": false
+              },
+              "sling bullet|xphb": {
+                "type": [
+                  "int"
+                ],
+                "required": false
+              }
+            }
+          },
+          "required": false
+        },
+        "volume": {
+          "type": [
+            "list"
+          ],
+          "items": {
+            "type": [
+              "float",
+              "int"
+            ]
+          },
+          "required": false
+        },
+        "weight": {
+          "type": [
+            "list"
+          ],
+          "items": {
+            "type": [
+              "float",
+              "int"
+            ]
+          },
+          "required": false
+        }
+      },
+      "required": false
+    },
+    "crew": {
+      "type": [
+        "int"
+      ],
+      "required": false
+    },
+    "dmg1": {
+      "type": [
+        "str"
+      ],
+      "required": false
+    },
+    "dmgType": {
+      "type": [
+        "str"
+      ],
+      "required": false
+    },
+    "entries": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict",
+          "str"
+        ],
+        "properties": {
+          "caption": {
+            "type": [
+              "str"
+            ],
+            "required": false
+          },
+          "colLabels": {
+            "type": [
+              "list"
+            ],
+            "items": {
+              "type": [
+                "str"
+              ]
+            },
+            "required": false
+          },
+          "colStyles": {
+            "type": [
+              "list"
+            ],
+            "items": {
+              "type": [
+                "str"
+              ]
+            },
+            "required": false
+          },
+          "entries": {
+            "type": [
+              "list"
+            ],
+            "items": {
+              "type": [
+                "str"
+              ]
+            },
+            "required": false
+          },
+          "items": {
+            "type": [
+              "list"
+            ],
+            "items": {
+              "type": [
+                "dict"
+              ],
+              "properties": {
+                "entries": {
+                  "type": [
+                    "list"
+                  ],
+                  "items": {
+                    "type": [
+                      "str"
+                    ]
+                  },
+                  "required": true
+                },
+                "name": {
+                  "type": [
+                    "str"
+                  ],
+                  "required": true
+                },
+                "type": {
+                  "type": [
+                    "str"
+                  ],
+                  "required": true
+                }
+              }
+            },
+            "required": false
+          },
+          "name": {
+            "type": [
+              "str"
+            ],
+            "required": false
+          },
+          "rows": {
+            "type": [
+              "list"
+            ],
+            "items": {
+              "type": [
+                "list"
+              ],
+              "items": {
+                "type": [
+                  "str"
+                ]
+              }
+            },
+            "required": false
+          },
+          "style": {
+            "type": [
+              "str"
+            ],
+            "required": false
+          },
+          "type": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          }
+        }
+      },
+      "required": false
+    },
+    "group": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "str"
+        ]
+      },
+      "required": false
+    },
+    "hasFluffImages": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "light": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "bright": {
+            "type": [
+              "int"
+            ],
+            "required": false
+          },
+          "dim": {
+            "type": [
+              "int"
+            ],
+            "required": true
+          },
+          "shape": {
+            "type": [
+              "str"
+            ],
+            "required": false
+          }
+        }
+      },
+      "required": false
+    },
+    "mastery": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict"
+        ],
+        "properties": {
+          "note": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          },
+          "uid": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          }
+        }
+      },
+      "required": false
+    },
+    "miscTags": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "str"
+        ]
+      },
+      "required": false
+    },
+    "name": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "packContents": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "dict",
+          "str"
+        ],
+        "properties": {
+          "item": {
+            "type": [
+              "str"
+            ],
+            "required": true
+          },
+          "quantity": {
+            "type": [
+              "int"
+            ],
+            "required": true
+          }
+        }
+      },
+      "required": false
+    },
+    "page": {
+      "type": [
+        "int"
+      ],
+      "required": true
+    },
+    "poison": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "property": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "str"
+        ]
+      },
+      "required": false
+    },
+    "range": {
+      "type": [
+        "str"
+      ],
+      "required": false
+    },
+    "rarity": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "referenceSources": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "str"
+        ]
+      },
+      "required": false
+    },
+    "scfType": {
+      "type": [
+        "str"
+      ],
+      "required": false
+    },
+    "seeAlsoVehicle": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "str"
+        ]
+      },
+      "required": false
+    },
+    "source": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "speed": {
+      "type": [
+        "int"
+      ],
+      "required": false
+    },
+    "srd52": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "type": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "value": {
+      "type": [
+        "int"
+      ],
+      "required": false
+    },
+    "vehAc": {
+      "type": [
+        "int"
+      ],
+      "required": false
+    },
+    "vehDmgThresh": {
+      "type": [
+        "int"
+      ],
+      "required": false
+    },
+    "vehHp": {
+      "type": [
+        "int"
+      ],
+      "required": false
+    },
+    "vehSpeed": {
+      "type": [
+        "float",
+        "int"
+      ],
+      "required": false
+    },
+    "weaponCategory": {
+      "type": [
+        "str"
+      ],
+      "required": false
+    },
+    "weight": {
+      "type": [
+        "float",
+        "int"
+      ],
+      "required": false
+    },
+    "weightNote": {
+      "type": [
+        "str"
+      ],
+      "required": false
+    }
+  },
+  "itemGroup": {
+    "basicRules2024": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "focus": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "str"
+        ]
+      },
+      "required": false
+    },
+    "items": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "str"
+        ]
+      },
+      "required": true
+    },
+    "name": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "page": {
+      "type": [
+        "int"
+      ],
+      "required": true
+    },
+    "rarity": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "referenceSources": {
+      "type": [
+        "list"
+      ],
+      "items": {
+        "type": [
+          "str"
+        ]
+      },
+      "required": false
+    },
+    "scfType": {
+      "type": [
+        "str"
+      ],
+      "required": false
+    },
+    "source": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    },
+    "srd52": {
+      "type": [
+        "bool"
+      ],
+      "required": false
+    },
+    "type": {
+      "type": [
+        "str"
+      ],
+      "required": true
+    }
+  }
+}
