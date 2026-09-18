@@ -241,10 +241,52 @@
   .detail-section th {
     background: var(--surface);
   }
+
+  /* Same-page sub-navigation for a detail page split into tabs (e.g. a Class's About/Levels/
+     Subclasses) - each `<a>` is a full page reload with a `?tab=` query param (this app has no
+     client-side router), styled like `.world-tabs` in base.html but scoped to `.detail-body`
+     instead of sitting under the header, since it's specific to this one page. */
+  .detail-tabs {
+    display: flex;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .detail-tabs a {
+    flex: 1;
+    text-align: center;
+    padding: 0.6rem 0.5rem;
+    color: var(--muted);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-bottom: 2px solid transparent;
+    touch-action: manipulation;
+  }
+
+  .detail-tabs a.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .detail-tabs a:active {
+    background: var(--surface);
+  }
 {% endblock %}
 
 {% block content %}
   <div class="detail-body">
+    {% if tabs %}
+      <nav class="detail-tabs">
+        {% for key, label in tabs %}
+          <a
+            href="?tab={{ key }}"
+            class="{% if key == active_tab %}active{% endif %}"
+          >{{ label }}</a>
+        {% endfor %}
+      </nav>
+    {% endif %}
+
     {% if facts %}
       <div class="facts">
         <dl>
@@ -259,6 +301,13 @@
     {% if body %}
       <div class="detail-section plain">{{ body }}</div>
     {% endif %}
+
+    {% for heading, html in plain_sections %}
+      <div class="detail-section">
+        <h2>{{ heading }}</h2>
+        <div class="detail-section-body">{{ html }}</div>
+      </div>
+    {% endfor %}
 
     {% for heading, html, open in sections %}
       <details class="detail-section"{% if open %} open{% endif %}>

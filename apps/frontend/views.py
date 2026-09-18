@@ -235,7 +235,17 @@ def _section(heading, html, *, open=True):
     return (heading, html, open)
 
 
-def _detail_page(request, title, back_url_name, facts, sections=(), body=None):
+def _detail_page(
+    request,
+    title,
+    back_url_name,
+    facts,
+    sections=(),
+    body=None,
+    plain_sections=(),
+    tabs=None,
+    active_tab=None,
+):
     return render(
         request,
         "frontend/detail.html",
@@ -245,8 +255,21 @@ def _detail_page(request, title, back_url_name, facts, sections=(), body=None):
             "facts": facts,
             "sections": sections,
             "body": body,
+            "plain_sections": plain_sections,
+            "tabs": tabs,
+            "active_tab": active_tab,
         },
     )
+
+
+def _active_tab(request, tabs, default: str) -> str:
+    """Resolve the `?tab=` query param against a page's own `tabs` keys, falling back to
+    `default` for a missing/unknown value instead of erroring - lets a stale/hand-typed link
+    still land on a real tab rather than a blank page.
+    """
+    requested = request.GET.get("tab")
+    valid_keys = {key for key, _label in tabs}
+    return requested if requested in valid_keys else default
 
 
 # --- Handbook ----------------------------------------------------------------------------
@@ -335,84 +358,109 @@ def world_classes(request):
 
 def world_class_detail(request, pk):
     klass = class_service.get_class(pk)
-    class_features = list(Feature.objects.filter(class_level__klass=klass).order_by("pk"))
-    subclasses = list(
-        klass.subclasses.order_by("name").prefetch_related(
-            Prefetch("levels__feature_rows", queryset=Feature.objects.order_by("pk"))
-        )
-    )
 
-    facts = [
-        (_("Hit Die"), klass.hit_die.upper()),
-        (_("Primary Ability"), klass.primary_ability_display),
-        (_("Saving Throws"), klass.saving_throws_display),
-    ]
-    if klass.armor_proficiencies:
-        facts.append((_("Armor Proficiencies"), _format_flag_grant(klass.armor_proficiencies)))
-    if klass.weapon_proficiencies:
-        facts.append((_("Weapon Proficiencies"), _format_flag_grant(klass.weapon_proficiencies)))
-    if klass.tool_proficiencies:
-        facts.append((_("Tool Proficiencies"), _format_flag_grant(klass.tool_proficiencies)))
-    starting_equipment = klass.starting_equipment_options.select_related("item").order_by(
-        "option", "pk"
-    )
-    if starting_equipment:
-        facts.append((_("Starting Equipment"), render_starting_equipment(starting_equipment)))
-    facts.append((_("Page"), klass.page))
+    tabs = [("about", _("About")), ("levels", _("Levels")), ("subclasses", _("Subclasses"))]
+    active_tab = _active_tab(request, tabs, default="about")
 
+    facts = []
+    plain_sections = []
     sections = []
-    if klass.lore:
-        sections.append(_section(_("Lore"), render_entries(klass.lore)))
 
-    sections.append(
-        _section(_("Features by Level"), render_class_features(class_features), open=False)
-    )
-
-    if subclasses:
-        sections.append(_section(_("Subclasses"), render_subclasses(subclasses), open=False))
-
-    levels = list(klass.levels.order_by("level"))
-    if levels:
-        # Spell slots/cantrips/prepared-or-known counts are their own dedicated `ClassLevel`
-        # fields now (see the model's docstring), not part of the leftover `columns` blob - merge
-        # them into the same display table rather than leaving them invisible on caster classes.
-        max_slot_level = max(
-            (i for lvl in levels for i, n in enumerate(lvl.spell_slots, start=1) if n), default=0
+    if active_tab == "about":
+        facts = [
+            (_("Hit Die"), klass.hit_die.upper()),
+            (_("Primary Ability"), klass.primary_ability_display),
+            (_("Saving Throws"), klass.saving_throws_display),
+        ]
+        if klass.armor_proficiencies:
+            facts.append((_("Armor Proficiencies"), _format_flag_grant(klass.armor_proficiencies)))
+        if klass.weapon_proficiencies:
+            facts.append(
+                (_("Weapon Proficiencies"), _format_flag_grant(klass.weapon_proficiencies))
+            )
+        if klass.tool_proficiencies:
+            facts.append((_("Tool Proficiencies"), _format_flag_grant(klass.tool_proficiencies)))
+        starting_equipment = klass.starting_equipment_options.select_related("item").order_by(
+            "option", "pk"
         )
-        # Proficiency bonus follows the level directly (same formula for every class/character,
-        # not something the source stores per class) - the PHB's class tables print it anyway, so
-        # this table would look broken next to the official ones without it.
-        features_by_level: dict[int, list[Feature]] = {}
-        for feature in class_features:
-            features_by_level.setdefault(feature.class_level.level, []).append(feature)
+        if starting_equipment:
+            facts.append((_("Starting Equipment"), render_starting_equipment(starting_equipment)))
+        facts.append((_("Page"), klass.page))
 
-        rows = []
-        for lvl in levels:
-            row = {
-                _("Level"): lvl.level,
-                _("Proficiency Bonus"): f"+{2 + (lvl.level - 1) // 4}",
-                _("Features"): {
-                    "type": "features",
-                    "items": [
-                        {"pk": f.pk, "name": f.name}
-                        for f in features_by_level.get(lvl.level, [])
-                    ],
-                },
-            }
-            row.update(lvl.columns)
-            if lvl.cantrips_known is not None:
-                row[_("Cantrips Known")] = lvl.cantrips_known
-            if lvl.spells_known_or_prepared is not None:
-                row[_("Spells")] = lvl.spells_known_or_prepared
-            for spell_level in range(1, max_slot_level + 1):
-                idx = spell_level - 1
-                slots = lvl.spell_slots[idx] if idx < len(lvl.spell_slots) else 0
-                row[f"{_('Spell Slots')} {spell_level}"] = slots or ""
-            rows.append(row)
-        headers = list({key: None for row in rows for key in row}.keys())
-        sections.append(_section(_("Level Progression"), render_key_value_table(rows, headers)))
+        if klass.lore:
+            plain_sections.append((_("Lore"), render_entries(klass.lore)))
 
-    return _detail_page(request, klass.name, "world-classes", facts, sections)
+        levels = list(klass.levels.order_by("level"))
+        if levels:
+            # Spell slots/cantrips/prepared-or-known counts are their own dedicated `ClassLevel`
+            # fields now (see the model's docstring), not part of the leftover `columns` blob -
+            # merge them into the same display table rather than leaving them invisible on caster
+            # classes.
+            max_slot_level = max(
+                (i for lvl in levels for i, n in enumerate(lvl.spell_slots, start=1) if n),
+                default=0,
+            )
+            # Proficiency bonus follows the level directly (same formula for every
+            # class/character, not something the source stores per class) - the PHB's class
+            # tables print it anyway, so this table would look broken next to the official ones
+            # without it.
+            class_features = Feature.objects.filter(class_level__klass=klass).order_by("pk")
+            features_by_level: dict[int, list[Feature]] = {}
+            for feature in class_features:
+                features_by_level.setdefault(feature.class_level.level, []).append(feature)
+
+            rows = []
+            for lvl in levels:
+                row = {
+                    _("Level"): lvl.level,
+                    _("Proficiency Bonus"): f"+{2 + (lvl.level - 1) // 4}",
+                    _("Features"): {
+                        "type": "features",
+                        "items": [
+                            # The Features by Level cards this links to live on the Levels tab,
+                            # not this (About) page, so the link needs that tab's own URL, not
+                            # just a same-page `#feature-{pk}` fragment.
+                            {"name": f.name, "href": f"?tab=levels#feature-{f.pk}"}
+                            for f in features_by_level.get(lvl.level, [])
+                        ],
+                    },
+                }
+                row.update(lvl.columns)
+                if lvl.cantrips_known is not None:
+                    row[_("Cantrips Known")] = lvl.cantrips_known
+                if lvl.spells_known_or_prepared is not None:
+                    row[_("Spells")] = lvl.spells_known_or_prepared
+                for spell_level in range(1, max_slot_level + 1):
+                    idx = spell_level - 1
+                    slots = lvl.spell_slots[idx] if idx < len(lvl.spell_slots) else 0
+                    row[f"{_('Spell Slots')} {spell_level}"] = slots or ""
+                rows.append(row)
+            headers = list({key: None for row in rows for key in row}.keys())
+            plain_sections.append((_("Level Progression"), render_key_value_table(rows, headers)))
+
+    elif active_tab == "levels":
+        class_features = list(Feature.objects.filter(class_level__klass=klass).order_by("pk"))
+        sections.append(_section(_("Features by Level"), render_class_features(class_features)))
+
+    elif active_tab == "subclasses":
+        subclasses = list(
+            klass.subclasses.order_by("name").prefetch_related(
+                Prefetch("levels__feature_rows", queryset=Feature.objects.order_by("pk"))
+            )
+        )
+        if subclasses:
+            sections.append(_section(_("Subclasses"), render_subclasses(subclasses)))
+
+    return _detail_page(
+        request,
+        klass.name,
+        "world-classes",
+        facts,
+        sections,
+        plain_sections=plain_sections,
+        tabs=tabs,
+        active_tab=active_tab,
+    )
 
 
 # --- Feats -----------------------------------------------------------------------------------

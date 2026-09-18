@@ -379,10 +379,12 @@ def _format_table_cell(value) -> str:
     - `{"type": "bonusSpeed", "value": 0}` -> `"+0 ft."` (Monk's Unarmored Movement).
 
     `world_class_detail()`'s Features column adds a fourth, view-built shape not sourced from
-    `columns` at all - `{"type": "features", "items": [{"pk": ..., "name": ...}, ...]}` - one
-    `Feature` per grant at that level, rendered as links into the "Features by Level" section's
-    cards (`id="feature-{pk}"`, set in `_render_entry_cards()`) instead of plain text, since
-    unlike the other cell types this one carries markup and must come back as a `SafeString` -
+    `columns` at all - `{"type": "features", "items": [{"href": ..., "name": ...}, ...]}` - one
+    `Feature` per grant at that level, rendered as links into the Levels tab's "Features by Level"
+    section (`href` is that tab's own URL plus `#feature-{pk}`, since the cards this links to are
+    on a different tab/page now, not lower on this same page; the pk-to-DOM-id half, `id=
+    "feature-{pk}"`, is set in `_render_entry_cards()`) instead of plain text, since unlike the
+    other cell types this one carries markup and must come back as a `SafeString` -
     `render_key_value_table()` uses `conditional_escape()` rather than `escape()` for exactly this
     cell type, leaving every other (plain-text) cell escaped as before.
     """
@@ -397,7 +399,7 @@ def _format_table_cell(value) -> str:
         return f"+{value.get('value', 0)} ft."
     if cell_type == "features":
         links = ", ".join(
-            f'<a href="#feature-{item["pk"]}">{escape(item["name"])}</a>'
+            f'<a href="{escape(item["href"])}">{escape(item["name"])}</a>'
             for item in value.get("items", [])
         )
         return mark_safe(links)
