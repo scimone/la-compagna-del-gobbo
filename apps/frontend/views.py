@@ -364,6 +364,7 @@ def world_class_detail(request, pk):
 
     facts = []
     plain_sections = []
+    body = None
 
     if active_tab == "about":
         facts = [
@@ -439,7 +440,7 @@ def world_class_detail(request, pk):
 
     elif active_tab == "levels":
         class_features = list(Feature.objects.filter(class_level__klass=klass).order_by("pk"))
-        plain_sections.append((_("Features by Level"), render_class_features(class_features)))
+        body = render_class_features(class_features)
 
     elif active_tab == "subclasses":
         subclasses = list(
@@ -448,13 +449,14 @@ def world_class_detail(request, pk):
             )
         )
         if subclasses:
-            plain_sections.append((_("Subclasses"), render_subclasses(subclasses)))
+            body = render_subclasses(subclasses)
 
     return _detail_page(
         request,
         klass.name,
         "world-classes",
         facts,
+        body=body,
         plain_sections=plain_sections,
         tabs=tabs,
         active_tab=active_tab,

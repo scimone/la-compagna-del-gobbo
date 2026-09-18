@@ -245,21 +245,9 @@
 
 {% block content %}
   <div class="detail-body">
-    {% if tabs %}
-      {# Reuses `.world-tabs` (defined in base.html for the World hub's category nav) rather #}
-      {# than a lookalike of its own, so a detail page split into tabs (e.g. a Class's #}
-      {# About/Levels/Subclasses) looks identical to that nav - same horizontally-scrolling, #}
-      {# left-aligned tab strip, just swapped to full-reload `?tab=` links instead of URLs. #}
-      <nav class="world-tabs">
-        {% for key, label in tabs %}
-          <a
-            href="?tab={{ key }}"
-            class="{% if key == active_tab %}active{% endif %}"
-          >{{ label }}</a>
-        {% endfor %}
-      </nav>
-    {% endif %}
-
+    {# The `tabs` nav itself (when this page has one) is rendered by base.html, in the same #}
+    {# spot/markup as the World hub's own tab strip - not here, so it sits flush under the #}
+    {# header outside `<main>`'s padding instead of picking up `.detail-body`'s inset. #}
     {% if facts %}
       <div class="facts">
         <dl>

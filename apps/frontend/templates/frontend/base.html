@@ -272,6 +272,20 @@
         class="{% if '/world/spells/' in request.path %}active{% endif %}"
       >{% translate "Spells" %}</a>
     </nav>
+  {% elif tabs %}
+    {# A detail page split into its own sub-tabs (e.g. a Class's About/Levels/Subclasses) -     #}
+    {# same `.world-tabs` look and the same spot in the layout (flush under the header, outside #}
+    {# `<main>`'s padding) as the World hub's own tab strip above, just driven by the page's own #}
+    {# `tabs`/`active_tab` context instead of a fixed link list. Full-reload `?tab=` links, not  #}
+    {# client-side switching - this app has no JS router. #}
+    <nav class="world-tabs">
+      {% for key, label in tabs %}
+        <a
+          href="?tab={{ key }}"
+          class="{% if key == active_tab %}active{% endif %}"
+        >{{ label }}</a>
+      {% endfor %}
+    </nav>
   {% endif %}
 
   <main>
