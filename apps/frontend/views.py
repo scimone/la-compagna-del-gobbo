@@ -510,22 +510,40 @@ def world_species(request):
 def world_species_detail(request, pk):
     species = species_service.get_species(pk)
 
-    facts = [
-        (_("Size"), _format_size(species.size)),
-        (_("Speed"), f"{species.speed} ft."),
-        (_("Creature Type"), _format_creature_types(species.creature_types)),
-    ]
-    if species.darkvision:
-        facts.append((_("Darkvision"), f"{species.darkvision} ft."))
-    facts.append((_("Page"), species.page))
+    tabs = [("about", _("About")), ("traits", _("Traits"))]
+    active_tab = _active_tab(request, tabs, default="about")
 
-    sections = []
-    if species.lore:
-        sections.append(_section(_("Lore"), render_entries(species.lore)))
-    if species.entries:
-        sections.append(_section(_("Traits"), render_trait_cards(species.entries)))
+    facts = []
+    plain_sections = []
+    body = None
 
-    return _detail_page(request, species.name, "world-species", facts, sections)
+    if active_tab == "about":
+        facts = [
+            (_("Size"), _format_size(species.size)),
+            (_("Speed"), f"{species.speed} ft."),
+            (_("Creature Type"), _format_creature_types(species.creature_types)),
+        ]
+        if species.darkvision:
+            facts.append((_("Darkvision"), f"{species.darkvision} ft."))
+        facts.append((_("Page"), species.page))
+
+        if species.lore:
+            plain_sections.append((_("Lore"), render_entries(species.lore)))
+
+    elif active_tab == "traits":
+        if species.entries:
+            body = render_trait_cards(species.entries)
+
+    return _detail_page(
+        request,
+        species.name,
+        "world-species",
+        facts,
+        body=body,
+        plain_sections=plain_sections,
+        tabs=tabs,
+        active_tab=active_tab,
+    )
 
 
 # --- Spells ----------------------------------------------------------------------------------
