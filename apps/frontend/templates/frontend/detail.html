@@ -241,43 +241,16 @@
   .detail-section th {
     background: var(--surface);
   }
-
-  /* Same-page sub-navigation for a detail page split into tabs (e.g. a Class's About/Levels/
-     Subclasses) - each `<a>` is a full page reload with a `?tab=` query param (this app has no
-     client-side router), styled like `.world-tabs` in base.html but scoped to `.detail-body`
-     instead of sitting under the header, since it's specific to this one page. */
-  .detail-tabs {
-    display: flex;
-    flex-shrink: 0;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .detail-tabs a {
-    flex: 1;
-    text-align: center;
-    padding: 0.6rem 0.5rem;
-    color: var(--muted);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    border-bottom: 2px solid transparent;
-    touch-action: manipulation;
-  }
-
-  .detail-tabs a.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
-
-  .detail-tabs a:active {
-    background: var(--surface);
-  }
 {% endblock %}
 
 {% block content %}
   <div class="detail-body">
     {% if tabs %}
-      <nav class="detail-tabs">
+      {# Reuses `.world-tabs` (defined in base.html for the World hub's category nav) rather #}
+      {# than a lookalike of its own, so a detail page split into tabs (e.g. a Class's #}
+      {# About/Levels/Subclasses) looks identical to that nav - same horizontally-scrolling, #}
+      {# left-aligned tab strip, just swapped to full-reload `?tab=` links instead of URLs. #}
+      <nav class="world-tabs">
         {% for key, label in tabs %}
           <a
             href="?tab={{ key }}"
