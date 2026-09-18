@@ -29,7 +29,7 @@ features, and a Class's subclasses (each subclass reusing the same per-level car
 import re
 
 from django.urls import reverse
-from django.utils.html import escape
+from django.utils.html import conditional_escape, escape
 from django.utils.safestring import SafeString, mark_safe
 from django.utils.translation import gettext
 
@@ -148,15 +148,21 @@ def render_handbook_section(entries) -> SafeString:
 
 def _render_entry_cards(blocks: list, linker: _ReferenceLinker) -> str:
     """Render a flat list of {name, entries} blocks as one visually separated card per block -
-    shared by `render_trait_cards()` and `render_class_features()` below.
+    shared by `render_trait_cards()` and `render_class_features()` below. A block's optional `id`
+    (a `Feature` pk, set by `render_class_features()` so the Level Progression table's Features
+    column can link straight to the matching card) becomes the card's DOM id - browsers open an
+    ancestor `<details>` automatically when navigating to a fragment inside it, so no JS is needed
+    to expand the right level group/section.
     """
     cards = []
     for block in blocks:
         name = block.get("name", "") if isinstance(block, dict) else ""
         body_source = block.get("entries", []) if isinstance(block, dict) else block
+        block_id = block.get("id") if isinstance(block, dict) else None
+        id_attr = f' id="feature-{block_id}"' if block_id else ""
         heading_html = f"<h3>{_render_text(name, linker)}</h3>" if name else ""
         body_html = _render_node(body_source, linker)
-        cards.append(f'<div class="entry-card">{heading_html}{body_html}</div>')
+        cards.append(f'<div class="entry-card"{id_attr}>{heading_html}{body_html}</div>')
     return f'<div class="entry-cards">{"".join(cards)}</div>'
 
 
@@ -201,7 +207,7 @@ def render_class_features(features) -> SafeString:
     by_level: dict[int, list[dict]] = {}
     for feature in features:
         by_level.setdefault(feature.class_level.level, []).append(
-            {"name": feature.name, "entries": feature.entries}
+            {"id": feature.pk, "name": feature.name, "entries": feature.entries}
         )
     return mark_safe(_render_level_groups(by_level, linker))
 
@@ -371,6 +377,14 @@ def _format_table_cell(value) -> str:
       `"+"`.
     - `{"type": "bonus", "value": 2}` -> `"+2"` (Barbarian's Rage Damage).
     - `{"type": "bonusSpeed", "value": 0}` -> `"+0 ft."` (Monk's Unarmored Movement).
+
+    `world_class_detail()`'s Features column adds a fourth, view-built shape not sourced from
+    `columns` at all - `{"type": "features", "items": [{"pk": ..., "name": ...}, ...]}` - one
+    `Feature` per grant at that level, rendered as links into the "Features by Level" section's
+    cards (`id="feature-{pk}"`, set in `_render_entry_cards()`) instead of plain text, since
+    unlike the other cell types this one carries markup and must come back as a `SafeString` -
+    `render_key_value_table()` uses `conditional_escape()` rather than `escape()` for exactly this
+    cell type, leaving every other (plain-text) cell escaped as before.
     """
     if not isinstance(value, dict):
         return str(value)
@@ -381,6 +395,12 @@ def _format_table_cell(value) -> str:
         return f"+{value.get('value', 0)}"
     if cell_type == "bonusSpeed":
         return f"+{value.get('value', 0)} ft."
+    if cell_type == "features":
+        links = ", ".join(
+            f'<a href="#feature-{item["pk"]}">{escape(item["name"])}</a>'
+            for item in value.get("items", [])
+        )
+        return mark_safe(links)
     return str(value)
 
 
@@ -389,12 +409,16 @@ def render_key_value_table(rows, headers) -> SafeString:
     used for `rules.ClassLevel.columns`, which is already stored as one such dict per level.
     These are short catalog-table cells (e.g. "Rages", "+2"), not narrative text, and don't
     contain `{@tag ...}` markup in the source data, so no link resolution happens here - only
-    `_format_table_cell`'s dice/bonus decoding.
+    `_format_table_cell`'s dice/bonus/features decoding. `conditional_escape()` (not `escape()`)
+    lets that decoding return real markup (the Features column's links) for the one cell type
+    that needs it, while every plain-text cell is still escaped as before.
     """
     header_html = "".join(f"<th>{escape(h)}</th>" for h in headers)
     body_html = "".join(
         "<tr>"
-        + "".join(f"<td>{escape(_format_table_cell(row.get(h, '')))}</td>" for h in headers)
+        + "".join(
+            f"<td>{conditional_escape(_format_table_cell(row.get(h, '')))}</td>" for h in headers
+        )
         + "</tr>"
         for row in rows
     )

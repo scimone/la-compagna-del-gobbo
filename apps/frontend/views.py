@@ -337,7 +337,7 @@ def world_classes(request):
 
 def world_class_detail(request, pk):
     klass = class_service.get_class(pk)
-    class_features = Feature.objects.filter(class_level__klass=klass).order_by("pk")
+    class_features = list(Feature.objects.filter(class_level__klass=klass).order_by("pk"))
     subclasses = list(
         klass.subclasses.order_by("name").prefetch_related(
             Prefetch("levels__feature_rows", queryset=Feature.objects.order_by("pk"))
@@ -384,9 +384,27 @@ def world_class_detail(request, pk):
         max_slot_level = max(
             (i for lvl in levels for i, n in enumerate(lvl.spell_slots, start=1) if n), default=0
         )
+        # Proficiency bonus follows the level directly (same formula for every class/character,
+        # not something the source stores per class) - the PHB's class tables print it anyway, so
+        # this table would look broken next to the official ones without it.
+        features_by_level: dict[int, list[Feature]] = {}
+        for feature in class_features:
+            features_by_level.setdefault(feature.class_level.level, []).append(feature)
+
         rows = []
         for lvl in levels:
-            row = dict(lvl.columns)
+            row = {
+                _("Level"): lvl.level,
+                _("Proficiency Bonus"): f"+{2 + (lvl.level - 1) // 4}",
+                _("Features"): {
+                    "type": "features",
+                    "items": [
+                        {"pk": f.pk, "name": f.name}
+                        for f in features_by_level.get(lvl.level, [])
+                    ],
+                },
+            }
+            row.update(lvl.columns)
             if lvl.cantrips_known is not None:
                 row[_("Cantrips Known")] = lvl.cantrips_known
             if lvl.spells_known_or_prepared is not None:
