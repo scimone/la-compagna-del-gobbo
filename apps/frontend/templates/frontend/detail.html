@@ -206,16 +206,47 @@
     padding: 0 0.7rem 0.7rem;
   }
 
-  .subclass-block > h3 {
-    margin: 0 0 0.5rem;
-    color: var(--accent);
-    font-size: 1.05rem;
+  /* Each subclass is its own collapsed-by-default `<details>` (its name is the clickable
+     `<summary>` "button"), same look as `.level-group` above rather than a plain heading, since
+     a Class can have several and showing them all expanded at once buried the page. */
+  .subclass-block {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 0.6rem;
+    overflow: hidden;
   }
 
   .subclass-block + .subclass-block {
-    margin-top: 0.9rem;
-    padding-top: 0.9rem;
-    border-top: 1px solid var(--border);
+    margin-top: 0.6rem;
+  }
+
+  .subclass-block > summary {
+    cursor: pointer;
+    padding: 0.7rem 0.9rem;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--accent);
+    list-style: none;
+    touch-action: manipulation;
+  }
+
+  .subclass-block > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .subclass-block > summary::before {
+    content: "▸";
+    display: inline-block;
+    width: 1em;
+    transition: transform 0.15s ease;
+  }
+
+  .subclass-block[open] > summary::before {
+    transform: rotate(90deg);
+  }
+
+  .subclass-block .subclass-body {
+    padding: 0 0.9rem 0.9rem;
   }
 
   .detail-section table {

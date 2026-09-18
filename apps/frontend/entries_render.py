@@ -216,10 +216,11 @@ def render_subclasses(subclasses) -> SafeString:
     """Render a Class's `rules.Subclass` rows - each with its own `description` (flavor text)
     and `levels` (`SubclassLevel` rows, each with its features as `Feature` rows reachable via
     `.feature_rows` - `SubclassLevel` keeps no `features` JSON of its own, see its docstring for
-    why) - as one named block per subclass, reusing the same per-level collapsible card grouping
-    as `render_class_features()`. Iterate `subclasses` with `.levels` and `.levels__feature_rows`
-    already prefetched (e.g.
-    `klass.subclasses.prefetch_related("levels__feature_rows")`) to avoid a query per level.
+    why) - as one collapsed-by-default `<details>` block per subclass (its name is the clickable
+    `<summary>`), reusing the same per-level collapsible card grouping as `render_class_features()`
+    for the body. Iterate `subclasses` with `.levels` and `.levels__feature_rows` already
+    prefetched (e.g. `klass.subclasses.prefetch_related("levels__feature_rows")`) to avoid a query
+    per level.
 
     `Subclass.description` is already cleanly split out of the source's granting-level block at
     import time (see `_split_subclass_features` in
@@ -238,11 +239,10 @@ def render_subclasses(subclasses) -> SafeString:
         }
         groups_html = _render_level_groups(by_level, linker)
         blocks.append(
-            f'<div class="subclass-block">'
-            f"<h3>{_render_text(subclass.name, linker)}</h3>"
-            f"{description_html}"
-            f"{groups_html}"
-            f"</div>"
+            f'<details class="subclass-block">'
+            f"<summary>{_render_text(subclass.name, linker)}</summary>"
+            f'<div class="subclass-body">{description_html}{groups_html}</div>'
+            f"</details>"
         )
     return mark_safe("".join(blocks))
 
