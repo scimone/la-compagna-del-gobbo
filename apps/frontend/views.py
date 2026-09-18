@@ -306,13 +306,11 @@ def world_background_detail(request, pk):
         facts.append((_("Tools"), _format_flag_grant(bg.tools)))
     if bg.feat:
         facts.append((_("Feat"), bg.feat.name))
+    if starting_equipment:
+        facts.append((_("Starting Equipment"), render_starting_equipment(starting_equipment)))
     facts.append((_("Page"), bg.page))
 
     sections = []
-    if starting_equipment:
-        sections.append(
-            _section(_("Starting Equipment"), render_starting_equipment(starting_equipment))
-        )
     if bg.lore:
         sections.append(_section(_("Lore"), render_entries(bg.lore)))
 
@@ -355,19 +353,16 @@ def world_class_detail(request, pk):
         facts.append((_("Weapon Proficiencies"), _format_flag_grant(klass.weapon_proficiencies)))
     if klass.tool_proficiencies:
         facts.append((_("Tool Proficiencies"), _format_flag_grant(klass.tool_proficiencies)))
+    starting_equipment = klass.starting_equipment_options.select_related("item").order_by(
+        "option", "pk"
+    )
+    if starting_equipment:
+        facts.append((_("Starting Equipment"), render_starting_equipment(starting_equipment)))
     facts.append((_("Page"), klass.page))
 
     sections = []
     if klass.lore:
         sections.append(_section(_("Lore"), render_entries(klass.lore)))
-
-    starting_equipment = klass.starting_equipment_options.select_related("item").order_by(
-        "option", "pk"
-    )
-    if starting_equipment:
-        sections.append(
-            _section(_("Starting Equipment"), render_starting_equipment(starting_equipment))
-        )
 
     sections.append(
         _section(_("Features by Level"), render_class_features(class_features), open=False)
