@@ -407,7 +407,12 @@
   <header>
     <div class="header-left">
       {% if back_url %}
-        <a class="back-btn" href="{{ back_url }}" aria-label="{% translate 'Back' %}">&larr;</a>
+        {# `href` is the static per-page fallback (e.g. a Feat's own detail page always falls  #}
+        {# back to the Feats list) - `back-btn.js` below upgrades this to a real "previous      #}
+        {# page" jump (via `history.back()`) whenever that previous page was in the same        #}
+        {# bottom-nav section, so e.g. Background -> (clicked link) -> Feat -> back lands on     #}
+        {# that Background again instead of always the Feats list.                              #}
+        <a id="back-btn" class="back-btn" href="{{ back_url }}" aria-label="{% translate 'Back' %}">&larr;</a>
       {% endif %}
       {# The header shows the app name only on the very first page (no page_title set there);   #}
       {# everywhere else it shows the current page's own name instead of repeating the brand.   #}
@@ -657,6 +662,42 @@
           Array.from(document.querySelectorAll(".filter-popover[open]")).forEach(function (popover) {
             if (!popover.contains(event.target)) popover.open = false;
           });
+        });
+      })();
+    </script>
+  {% endif %}
+
+  {% if back_url %}
+    <script>
+      // Progressive enhancement over the plain `href="{{ back_url }}"` above: if the page we
+      // actually arrived from (document.referrer) is in the same bottom-nav section
+      // (Characters/Handbook/World) as this one, jump back to that exact page via
+      // history.back() instead of the static per-page fallback - real "one step back," not just
+      // "back to this section's list." A different section (or no/cross-origin referrer, e.g. a
+      // bookmark or an external link) leaves the static fallback in place, so switching sections
+      // never jumps back into the one just left.
+      (function () {
+        var backBtn = document.getElementById("back-btn");
+        if (!backBtn || !document.referrer) return;
+
+        var sectionPrefixes = ["/characters/", "/handbook/", "/world/"];
+        var section = sectionPrefixes.filter(function (prefix) {
+          return location.pathname.indexOf(prefix) === 0;
+        })[0];
+        if (!section) return;
+
+        var referrer;
+        try {
+          referrer = new URL(document.referrer);
+        } catch (error) {
+          return;
+        }
+        if (referrer.origin !== location.origin) return;
+        if (referrer.pathname.indexOf(section) !== 0) return;
+
+        backBtn.addEventListener("click", function (event) {
+          event.preventDefault();
+          history.back();
         });
       })();
     </script>
