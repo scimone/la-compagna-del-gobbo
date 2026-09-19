@@ -581,6 +581,10 @@ def world_feats(request):
             "name": f.name,
             "detail": f.category,
             "url": reverse("world-feat-detail", args=[f.pk]),
+            # "Fighting Style (P)"/"(R)" sub-variants share their base category's artwork.
+            "image": _menu_image_url(
+                "feats", f"{f.category.split(' (')[0].lower().replace(' ', '_')}.jpeg"
+            ),
         }
         for f in feats
     ]
@@ -589,6 +593,7 @@ def world_feats(request):
         "Feats",
         items,
         world_tabs=True,
+        compact_thumbs=True,
         search_query=q,
         search_placeholder=_("Search feats"),
         filters=[category_filter],
