@@ -257,3 +257,111 @@ msgstr "Applica"
 #: apps/frontend/entries_render.py
 msgid "DC"
 msgstr "CD"
+
+#: apps/frontend/views.py
+msgid "About"
+msgstr "Info"
+
+#: apps/frontend/views.py
+msgid "Levels"
+msgstr "Livelli"
+
+#: apps/frontend/views.py
+msgid "Darkvision"
+msgstr "Scurovisione"
+
+#: apps/frontend/views.py
+msgid "Features"
+msgstr "Caratteristiche"
+
+#: apps/frontend/views.py
+msgid "Proficiency Bonus"
+msgstr "Bonus di competenza"
+
+#: apps/frontend/views.py
+msgid "Cantrips Known"
+msgstr "Trucchetti"
+
+#: apps/frontend/views.py
+msgid "Spell Slots"
+msgstr "Slot Incantesimo"
+
+#: apps/frontend/views.py
+msgid "Starting Equipment"
+msgstr "Equipaggiamento Iniziale"
+
+#: apps/frontend/views.py
+msgid "Choose"
+msgstr "Scegli"
+
+#: apps/frontend/views.py
+msgid "Instantaneous"
+msgstr "Istantanea"
+
+#: apps/frontend/views.py
+msgid "Until dispelled"
+msgstr "Finché non viene dissolto"
+
+#: apps/frontend/views.py
+msgid "up to"
+msgstr "fino a"
+
+#: apps/frontend/views.py
+msgid "Rages"
+msgstr "Ire"
+
+#: apps/frontend/views.py
+msgid "Rage Damage"
+msgstr "Danni dell'ira"
+
+#: apps/frontend/views.py
+msgid "Weapon Mastery"
+msgstr "Padronanza d'armi"
+
+#: apps/frontend/views.py
+msgid "Bardic Die"
+msgstr "Dado bardico"
+
+#: apps/frontend/views.py
+msgid "Channel Divinity"
+msgstr "Incanalare divinità"
+
+#: apps/frontend/views.py
+msgid "Wild Shape"
+msgstr "Forma selvatica"
+
+#: apps/frontend/views.py
+msgid "Second Wind"
+msgstr "Recuperare energie"
+
+#: apps/frontend/views.py
+msgid "Focus Points"
+msgstr "Punti concentrazione"
+
+#: apps/frontend/views.py
+msgid "Martial Arts"
+msgstr "Arti marziali"
+
+#: apps/frontend/views.py
+msgid "Unarmored Movement"
+msgstr "Movimento senza armatura"
+
+#: apps/frontend/views.py
+msgid "Favored Enemy"
+msgstr "Nemico prescelto"
+
+#: apps/frontend/views.py
+msgid "Sneak Attack"
+msgstr "Attacco furtivo"
+
+#: apps/frontend/views.py
+msgid "Sorcery Points"
+msgstr "Punti stregoneria"
+
+#: apps/frontend/views.py
+msgid "Slot Level"
+msgstr "Livello di slot"
+
+#: apps/frontend/views.py
+msgid "Invocations"
+msgstr "Suppliche occulte"

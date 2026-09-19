@@ -86,3 +86,68 @@ def test_class_and_species_pages_render_in_italian(client, catalogs):
     assert "Ira" in _get(client, "/world/classes/barbarian/?tab=levels", "it")
     assert "Dragonide" in _get(client, "/world/species/dragonborn/", "it")
     assert "Scurovisione" in _get(client, "/world/species/dragonborn/?tab=traits", "it")
+
+
+def test_class_level_table_headers_and_units_are_translated_in_italian(client, catalogs):
+    html = _get(client, "/world/classes/monk/", "it")
+
+    # column headers translated from the source's English column names
+    assert "Punti concentrazione" in html
+    assert "Arti marziali" in html
+    assert "Movimento senza armatura" in html
+    # a Monk's Unarmored Movement bonus (feet in the source) shows in meters
+    assert "+3 m" in html  # level 2: +10 ft.
+    assert "+4,5 m" in html  # level 6: +15 ft.
+    assert "+10 ft." not in html
+    assert "+15 ft." not in html
+
+
+def test_class_level_table_stays_imperial_in_english(client, catalogs):
+    html = _get(client, "/world/classes/monk/", "en")
+
+    assert "Unarmored Movement" in html
+    assert "+10 ft." in html
+    assert "Punti concentrazione" not in html
+
+
+def test_species_speed_and_darkvision_show_in_metres_on_the_italian_site(client, catalogs):
+    html = _get(client, "/world/species/elf/", "it")
+    assert "9 m" in html
+    assert "30 ft." not in html
+
+    html = _get(client, "/world/species/dwarf/", "it")
+    assert "36 m" in html  # Darkvision 120 ft.
+
+
+def test_species_speed_and_darkvision_stay_imperial_in_english(client, catalogs):
+    html = _get(client, "/world/species/elf/", "en")
+    assert "30 ft." in html
+
+
+def test_spell_range_shows_in_metric_on_the_italian_site(client, catalogs):
+    # Fireball's range is 150 feet in the source
+    html = _get(client, "/world/spells/fireball/", "it")
+    assert "45 metri" in html
+    assert "150 feet" not in html
+
+    html = _get(client, "/world/spells/fireball/", "en")
+    assert "150 feet" in html
+
+
+def test_spell_range_filter_shows_metric_labels_on_the_italian_site(client, catalogs):
+    html = _get(client, "/world/spells/", "it")
+    assert "45 metri" in html
+
+    html = _get(client, "/world/spells/", "en")
+    assert "150 feet" in html
+
+
+def test_english_fallback_text_shows_metric_measurements_on_the_italian_site(client, catalogs):
+    # Thorn Whip has no Italian text yet (falls back to English); its body still mentions a
+    # distance ("10 feet"), which should read metric even though the sentence stays English.
+    html = _get(client, "/world/spells/thorn-whip/", "it")
+    assert "3 meters" in html
+    assert "10 feet" not in html
+
+    html = _get(client, "/world/spells/thorn-whip/", "en")
+    assert "10 feet" in html

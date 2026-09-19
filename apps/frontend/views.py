@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
+from apps.frontend import units
 from apps.frontend.entries_render import (
     render_class_features,
     render_entries,
@@ -136,7 +137,7 @@ def _format_casting_time(raw_list):
 
 
 def _format_range(range_data):
-    return spell_service.range_label(range_data)
+    return units.range_label(spell_service.range_label(range_data))
 
 
 def _format_components(components):
@@ -529,7 +530,11 @@ def world_class_detail(request, pk):
                         ],
                     },
                 }
-                row.update(lvl.columns)
+                # `lvl.columns`' own keys are the source's English column names (e.g. "Rages",
+                # "Unarmored Movement") - `gettext()` translates the ones the .po file covers
+                # (every class-specific column the SRD names) and passes anything else through
+                # unchanged, same as any other `_()` call with no matching msgid.
+                row.update({_(column): value for column, value in lvl.columns.items()})
                 if lvl.cantrips_known is not None:
                     row[_("Cantrips Known")] = lvl.cantrips_known
                 if lvl.spells_known_or_prepared is not None:
@@ -673,11 +678,11 @@ def world_species_detail(request, pk):
     if active_tab == "about":
         facts = [
             (_("Size"), _format_size(species.size)),
-            (_("Speed"), f"{species.speed} ft."),
+            (_("Speed"), units.distance(species.speed)),
             (_("Creature Type"), _format_creature_types(species.creature_types)),
         ]
         if species.darkvision:
-            facts.append((_("Darkvision"), f"{species.darkvision} ft."))
+            facts.append((_("Darkvision"), units.distance(species.darkvision)))
         facts.append((_("Page"), species.page))
 
         if species.lore:
@@ -717,7 +722,12 @@ def world_spells(request):
         request, "school", _("School"), [(s, s) for s in spell_service.list_schools()]
     )
     range_filter = _checklist_filter(
-        request, "range", _("Range"), [(k, k) for k in spell_service.list_range_kinds()]
+        request,
+        "range",
+        _("Range"),
+        # `k` (the raw English label) stays the filter's value - `range_kind()` matches querysets
+        # against that same English text - only the displayed label goes metric.
+        [(k, units.range_label(k)) for k in spell_service.list_range_kinds()],
     )
     casting_time_filter = _checklist_filter(
         request, "casting_time", _("Casting Time"), spell_service.list_casting_times()

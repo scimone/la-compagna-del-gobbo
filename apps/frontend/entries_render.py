@@ -33,6 +33,8 @@ from django.utils.html import conditional_escape, escape
 from django.utils.safestring import SafeString, mark_safe
 from django.utils.translation import gettext
 
+from apps.frontend.units import distance, metricize_text
+
 TAG_PATTERN = re.compile(r"\{@(\w+)\s+([^}]*)\}")
 
 
@@ -112,7 +114,12 @@ def _render_text(text: str, linker: _ReferenceLinker) -> str:
     """Render one string: literal text is HTML-escaped as usual, cross-reference tags that
     match a known catalog row become real links, and every other `{@tag ...}` is replaced with
     its (escaped) display text. Returns safe HTML - never call `escape()` on this result.
+
+    On the Italian site, English measurements ("30 feet") are converted to metric first (see
+    `units.metricize_text()`) - a no-op in English, and harmless here since tag syntax never
+    contains a bare number-plus-unit for it to mismatch.
     """
+    text = metricize_text(text)
     pieces = []
     last_end = 0
     for m in TAG_PATTERN.finditer(text):
@@ -384,7 +391,8 @@ def _format_table_cell(value) -> str:
       die) - multiple `toRoll` entries (not seen in practice, but the source allows it) join with
       `"+"`.
     - `{"type": "bonus", "value": 2}` -> `"+2"` (Barbarian's Rage Damage).
-    - `{"type": "bonusSpeed", "value": 0}` -> `"+0 ft."` (Monk's Unarmored Movement).
+    - `{"type": "bonusSpeed", "value": 0}` -> `"+0 ft."` (Monk's Unarmored Movement) - `"+0 m"`
+      in Italian, via `units.distance()`.
 
     `world_class_detail()`'s Features column adds a fourth, view-built shape not sourced from
     `columns` at all - `{"type": "features", "items": [{"href": ..., "name": ...}, ...]}` - one
@@ -404,7 +412,9 @@ def _format_table_cell(value) -> str:
     if cell_type == "bonus":
         return f"+{value.get('value', 0)}"
     if cell_type == "bonusSpeed":
-        return f"+{value.get('value', 0)} ft."
+        amount = value.get("value", 0)
+        sign = "+" if amount >= 0 else ""
+        return f"{sign}{distance(amount)}"
     if cell_type == "features":
         links = ", ".join(
             f'<a href="{escape(item["href"])}">{escape(item["name"])}</a>'

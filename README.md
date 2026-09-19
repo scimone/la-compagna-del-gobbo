@@ -728,6 +728,8 @@ translation keeps showing its English, so these pages can be partly Italian. Eac
 `apps/rules/translation_sync.py` (`TRANSLATED_CATALOGS` maps model -> file -> fields) at the end of
 `import_rules_data` and by `import_translations`. Search matches either language's name, and
 `{@tag}` lookups use each row's English name (`name_en`), so links still resolve when the display
+text is Italian.
+
 **Filled so far** (from `IT_SRD_CC_v5.2.1.md`): all 17 SRD feats; 335 of the 339 SRD spells
 (their names; 288 with full text - the rest differ structurally from the English text or lost their
 body in the SRD extraction, so they show an Italian name over English text); 101 of the 114 rules;
@@ -738,14 +740,30 @@ tools and gear whose description block aligned). Class and subclass *features* t
 differently from the English data (option rows, repeated "Ability Score Improvement" levels,
 features with big embedded tables) keep their English text. **Not yet filled** (their columns exist
 and fall back to English): skills, senses, languages, masteries, abilities, weapon properties,
-optional features, the non-SRD rows, and the UI-side rendering of *measurements* and structured
-values (feet, "1 action", size/creature-type codes, class-table column headers), which is still
-English. The extraction was done with throwaway scripts (paragraph-by-paragraph alignment of the
-Italian markdown to the English `entries` tree, tags mirrored by an English-to-Italian term
-dictionary); a first pass accepts a row only when the Italian and English structure line up exactly; a second
-pass (paragraph-level alignment on numbers, dice, damage types, abilities, conditions and mirrored
-terms) then fills what that pass rejected, translating the paragraphs it can pair and leaving the
-rest English rather than guessing. English.
+optional features, the non-SRD rows, and structured display values that aren't free text - casting
+time ("1 action"), size/creature-type codes. The extraction was done with throwaway scripts
+(paragraph-by-paragraph alignment of the Italian markdown to the English `entries` tree, tags
+mirrored by an English-to-Italian term dictionary); a first pass accepts a row only when the
+Italian and English structure line up exactly; a second pass (paragraph-level alignment on
+numbers, dice, damage types, abilities, conditions and mirrored terms) then fills what that pass
+rejected, translating the paragraphs it can pair and leaving the rest English rather than
+guessing.
+
+**Measurements are metric on the Italian site**, via `apps/frontend/units.py` - conversion
+factors (1 ft. = 0.3 m, 1 mile = 1.5 km, 1 lb. = 0.5 kg) taken from the SRD's own conversions
+(confirmed against the translated handbook's Travel Pace table and the equipment weights) rather
+than the real-world values, since that's what the Italian book actually prints. It converts, only
+while Italian is active: a class table's `bonusSpeed` cells (e.g. a Monk's Unarmored Movement),
+a Species' Speed/Darkvision facts, and a Spell's Range fact and filter option labels. For English
+text that still shows on an Italian page because that field isn't translated yet,
+`metricize_text()` (called from `entries_render._render_text()`) converts any imperial number it
+finds in the fallback prose itself ("30 feet" -> "9 meters") - the number goes metric even where
+the sentence around it is still English, rather than mixing in an Italian unit word that would
+read worse in an English sentence. Class table column headers sourced straight from
+`ClassLevel.columns` (e.g. "Rages", "Unarmored Movement") are plain `gettext()` calls in
+`world_class_detail()`, translated via the same `django.po` file as any other UI string - unlike
+the paragraph-level game content, these are effectively a small fixed vocabulary, one column
+header per class.
 
 **How it's wired**: `LANGUAGES = [("en", ...), ("it", ...)]` + `LocaleMiddleware` (in
 `config/settings.py`) + `path("i18n/", include("django.conf.urls.i18n"))` (in `config/urls.py`)
