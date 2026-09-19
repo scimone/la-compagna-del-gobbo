@@ -7,6 +7,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils.text import slugify
 
+from apps.rules.handbook_source import TranslationDataError, load_handbook
 from apps.rules.models import (
     Ability,
     Background,
@@ -150,13 +151,6 @@ def _load_if_exists(filename: str) -> dict | None:
 def _load_old(filename: str) -> dict:
     with open(DB_OLD_DIR / filename, encoding="utf-8") as f:
         return json.load(f)
-
-
-def _load_handbook() -> list[dict]:
-    # db/handbook.json uses a top-level "data" key (one item per chapter), unlike every other
-    # db/*.json file's type-named key - a different dump format from a different source pass
-    # (see docs/data_migration_2025.md - this file is copied verbatim from db_old/, unchanged).
-    return _load("handbook.json")["data"]
 
 
 def _slug(name: str) -> str:
@@ -447,7 +441,10 @@ def _class_levels_by_number(class_data: dict) -> dict[int, dict]:
 
 
 class Command(BaseCommand):
-    help = "Wipe and reload every rules model from the XPHB data dumped in db/."
+    help = (
+        "Wipe and reload every rules model from the XPHB data dumped in db/ "
+        "(plus the Italian translations in db/it/, where they exist)."
+    )
 
     @transaction.atomic
     def handle(self, *args, **options):
@@ -1201,33 +1198,30 @@ class Command(BaseCommand):
         self.stdout.write(f"  ChoiceDefinition: {ChoiceDefinition.objects.count()}")
 
     def _import_handbook(self):
-        # There's only one chapter in the source - flatten it one level rather than modeling
-        # chapters as their own grouping (see HandbookSection's docstring): the chapter's own
-        # root block becomes one row (its `entries` trimmed to just its own leading content, not
-        # the nested sections' content too, which becomes their own rows below), and each of its
-        # direct named children ("Rules Glossary", "Player or DM?", "Dice", ...) becomes one more.
-        chapter = _load_handbook()[0]
-        leading_entries = [
-            e for e in chapter["entries"] if not (isinstance(e, dict) and e.get("name"))
-        ]
-        named_children = [e for e in chapter["entries"] if isinstance(e, dict) and e.get("name")]
+        # The source's shape (one chapter, flattened one level into rows), the Italian overlay
+        # merge and the parts dropped for having no Italian text all live in
+        # `apps.rules.handbook_source`, shared with `import_translations`.
+        try:
+            english, italian = load_handbook()
+        except TranslationDataError as exc:
+            raise CommandError(str(exc)) from exc
 
         rows = [
             HandbookSection(
-                id=chapter["id"],
-                name=chapter["name"],
-                page=chapter["page"],
-                entries=leading_entries,
+                id=row["id"],
+                name_en=row["name"],
+                entries_en=row["entries"],
+                name_it=italian.get(row["id"], {}).get("name"),
+                entries_it=italian.get(row["id"], {}).get("entries"),
+                page=row["page"],
             )
+            for row in english
         ]
-        rows.extend(
-            HandbookSection(
-                id=child["id"], name=child["name"], page=child["page"], entries=child["entries"]
-            )
-            for child in named_children
-        )
         HandbookSection.objects.bulk_create(rows)
-        self.stdout.write(f"  HandbookSection: {HandbookSection.objects.count()}")
+        self.stdout.write(
+            f"  HandbookSection: {HandbookSection.objects.count()} "
+            f"({len(italian)} with Italian text)"
+        )
 
     def _import_lore(self):
         """Populates `Species.lore`/`Background.lore`/`Class.lore` from `db/fluff-*.json`, once

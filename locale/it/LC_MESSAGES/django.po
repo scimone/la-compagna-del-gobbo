@@ -253,3 +253,7 @@ msgstr "Tutte le categorie"
 #: apps/frontend/templates/frontend/base.html
 msgid "Apply"
 msgstr "Applica"
+
+#: apps/frontend/entries_render.py
+msgid "DC"
+msgstr "CD"

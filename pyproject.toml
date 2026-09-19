@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "django>=6.1.1",
+    "django-modeltranslation>=0.20.6",
     "django-ninja>=1.7.0",
     "django-pwa>=2.0.1",
     "psycopg[binary]>=3.3.5",

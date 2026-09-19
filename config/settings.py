@@ -30,6 +30,8 @@ CSRF_TRUSTED_ORIGINS = [
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 INSTALLED_APPS = [
+    # Must come before `django.contrib.admin` so the admin picks up its translated-field support.
+    "modeltranslation",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -107,6 +109,13 @@ LANGUAGES = [
     ("it", "Italiano"),
 ]
 LOCALE_PATHS = [BASE_DIR / "locale"]
+
+# Game-content translation (`rules` tables) - see `apps/rules/translation.py`. Translated columns
+# (`name_en`/`name_it`, ...) sit next to the original field, which then reads back in whichever
+# language `LocaleMiddleware` activated for the request, falling back to English when a
+# translation is missing so a partly translated catalog never shows blanks.
+MODELTRANSLATION_DEFAULT_LANGUAGE = "en"
+MODELTRANSLATION_FALLBACK_LANGUAGES = ("en",)
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True

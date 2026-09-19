@@ -47,11 +47,14 @@ def _tag_display_text(tag: str, body: str) -> str:
     this renderer has no use for (verified: all 63 occurrences end in that literal "x"); tags
     with 3+ segments are otherwise assumed to want the *last* one (an explicit display-text
     override, e.g. `{@variantrule Cover|XPHB|Total Cover}` should read "Total Cover"); anything
-    else wants the first segment.
+    else wants the first segment. `{@dc 15}` is the one tag whose body is a bare value rather than
+    text - it reads "DC 15" ("CD 15" in Italian, via the `.po` file), not just "15".
     """
     segments = body.split("|")
     if tag in ("filter", "area"):
         return segments[0]
+    if tag == "dc":
+        return f"{gettext('DC')} {segments[0]}"
     if len(segments) >= 3:
         return segments[-1]
     return segments[0]

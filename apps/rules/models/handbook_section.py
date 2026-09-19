@@ -13,6 +13,10 @@ class HandbookSection(models.Model):
     ever added to the source, this flattening still works the same way per chapter; there's just
     no `HandbookChapter`-style parent to group rows by chapter today, since there's nothing to
     group.
+
+    `name`/`entries` are translated (`name_en`/`name_it`, ...; see `apps/rules/translation.py`).
+    Rows and blocks that have no Italian text are left out of the import for both languages -
+    see `apps/rules/handbook_source.py` - so this table holds fewer rows than the source has.
     """
 
     id = models.SlugField(primary_key=True, max_length=100)
