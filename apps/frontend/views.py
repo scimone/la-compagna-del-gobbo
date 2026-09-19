@@ -237,6 +237,14 @@ def _search_query(request) -> str:
     return request.GET.get("q", "").strip()
 
 
+def _by_name(queryset, q: str):
+    """Rows whose English *or* Italian name contains `q` - a plain name filter only looks in the
+    active language's column, so an English name wouldn't be found from the Italian site (and a
+    row with no Italian name yet would never match at all).
+    """
+    return queryset.filter(Q(name_en__icontains=q) | Q(name_it__icontains=q))
+
+
 def _pill_filter(request, name, label, options, *, all_label=None):
     """One `{kind, name, label, value, options, all_label}` entry for `_list_page`'s `filters` -
     a single-select row of clickable pills (radio inputs under the hood, one implicit "any" pill
@@ -343,7 +351,7 @@ def world_backgrounds(request):
     q = _search_query(request)
     backgrounds = background_service.list_backgrounds()
     if q:
-        backgrounds = backgrounds.filter(name__icontains=q)
+        backgrounds = _by_name(backgrounds, q)
     items = [
         {
             "name": b.name,
@@ -401,7 +409,7 @@ def world_classes(request):
     q = _search_query(request)
     classes = class_service.list_classes()
     if q:
-        classes = classes.filter(name__icontains=q)
+        classes = _by_name(classes, q)
     items = [
         {
             "name": c.name,
@@ -415,7 +423,7 @@ def world_classes(request):
         # A class's own name isn't repeated in these two sub-object results (unlike the
         # `detail` above) - the class itself already appears as its own top-level `items` entry
         # when it matches, so its name lives in `item-name`, not `item-detail`, either way.
-        subclasses = Subclass.objects.filter(name__icontains=q).select_related("klass")
+        subclasses = _by_name(Subclass.objects.all(), q).select_related("klass")
         items += [
             {
                 "name": sc.name,
@@ -424,9 +432,9 @@ def world_classes(request):
             }
             for sc in subclasses
         ]
-        features = Feature.objects.filter(
-            class_level__isnull=False, name__icontains=q
-        ).select_related("class_level__klass")
+        features = _by_name(Feature.objects.filter(class_level__isnull=False), q).select_related(
+            "class_level__klass"
+        )
         items += [
             {
                 "name": feature.name,
@@ -573,7 +581,7 @@ def world_feats(request):
     )
     feats = feat_service.list_feats()
     if q:
-        feats = feats.filter(name__icontains=q)
+        feats = _by_name(feats, q)
     if category_filter["value"]:
         feats = feat_service.matching_category(feats, category_filter["value"])
     items = [
@@ -620,7 +628,7 @@ def world_species(request):
     q = _search_query(request)
     species_qs = species_service.list_species()
     if q:
-        species_qs = species_qs.filter(name__icontains=q)
+        species_qs = _by_name(species_qs, q)
     items = [
         {
             "name": s.name,
@@ -631,7 +639,7 @@ def world_species(request):
         for s in species_qs
     ]
     if q:
-        traits = Feature.objects.filter(species__isnull=False, name__icontains=q).select_related(
+        traits = _by_name(Feature.objects.filter(species__isnull=False), q).select_related(
             "species"
         )
         items += [
@@ -720,7 +728,7 @@ def world_spells(request):
 
     spells = spell_service.list_spells()
     if q:
-        spells = spells.filter(name__icontains=q)
+        spells = _by_name(spells, q)
     if level_filter["values"]:
         spells = spells.filter(level__in=[int(v) for v in level_filter["values"]])
     if class_filter["values"]:

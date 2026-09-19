@@ -5,6 +5,7 @@ from pathlib import Path
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+from django.utils import translation
 from django.utils.text import slugify
 
 from apps.rules.handbook_source import TranslationDataError, load_handbook
@@ -38,6 +39,7 @@ from apps.rules.models import (
     SubclassLevel,
 )
 from apps.rules.models.effect import TAG_PATTERN
+from apps.rules.translation_sync import sync_catalogs
 
 DB_DIR = Path(settings.BASE_DIR) / "db"
 #: `Spell.classes`/`subclasses` have no replacement anywhere in the new `db/` dump (see
@@ -447,7 +449,10 @@ class Command(BaseCommand):
     )
 
     @transaction.atomic
+    @translation.override(settings.MODELTRANSLATION_DEFAULT_LANGUAGE)
     def handle(self, *args, **options):
+        # name=/entries= on a translated model mean "the active language's column" - pin that to
+        # English so the source text always lands in the `*_en` columns.
         self._delete_existing()
 
         self._import_rules()
@@ -474,6 +479,10 @@ class Command(BaseCommand):
         self._import_choice_definitions()
         self._import_handbook()
         self._import_lore()
+        try:
+            sync_catalogs(lambda message: self.stdout.write(f"  {message}"))
+        except TranslationDataError as exc:
+            raise CommandError(str(exc)) from exc
 
         self.stdout.write(self.style.SUCCESS("Rules data imported."))
 

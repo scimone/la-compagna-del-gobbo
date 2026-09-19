@@ -1,0 +1,58 @@
+import pytest
+from django.core.management import call_command
+from django.utils import translation
+
+from apps.frontend.entries_render import render_entries
+from apps.rules.models import Feat, Rule, Spell
+
+
+@pytest.fixture
+def catalogs(db):
+    call_command("import_rules_data")  # also loads db/it/*.json (see sync_catalogs)
+
+
+def test_translated_rows_read_in_italian_and_the_rest_fall_back(catalogs):
+    with translation.override("it"):
+        assert Feat.objects.get(pk="alert").name == "Allerta"
+        assert Spell.objects.get(pk="fireball").name == "Palla di fuoco"
+        assert Rule.objects.get(pk="advantage").name == "Vantaggio"
+        # a feat outside the SRD has no Italian text: it keeps showing English, it isn't removed
+        assert Feat.objects.get(pk="actor").name == "Actor"
+        assert Feat.objects.get(pk="actor").entries == Feat.objects.get(pk="actor").entries_en
+
+    with translation.override("en"):
+        assert Spell.objects.get(pk="fireball").name == "Fireball"
+
+
+def test_translations_do_not_remove_or_change_english_rows(catalogs):
+    assert Spell.objects.count() == 391
+    assert Feat.objects.count() == 77
+    assert Rule.objects.count() == 114
+    assert not Spell.objects.filter(name_en__isnull=True).exists()
+
+
+def test_italian_text_keeps_the_english_tags(catalogs):
+    fireball = Spell.objects.get(pk="fireball")
+
+    # `{@damage 8d6}` wraps the dice in the Italian text too, and the higher-level block is
+    # translated separately from the main description
+    assert "{@damage 8d6}" in str(fireball.entries_it)
+    assert (
+        fireball.entries_higher_level_it[0]["name"]
+        == "Utilizzo di uno slot incantesimo di livello superiore"
+    )
+
+
+def test_reference_tags_still_link_when_the_display_text_is_italian(catalogs):
+    with translation.override("it"):
+        html = render_entries(["Tira per l'{@variantrule Initiative|XPHB|iniziativa}."])
+
+    assert 'href="/world/rules/initiative/"' in html
+    assert ">iniziativa</a>" in html
+
+
+def test_every_catalog_file_merges_onto_the_english_rows(catalogs):
+    # `import_rules_data` already raised if any tree was misaligned; also spot-check coverage
+    assert Spell.objects.filter(name_it__isnull=False).count() == 335
+    assert Feat.objects.filter(name_it__isnull=False).count() == 17
+    assert Rule.objects.filter(name_it__isnull=False).count() == 101

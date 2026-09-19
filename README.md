@@ -720,6 +720,22 @@ part back: translate it in `db/it/handbook.json`, take its id off the omit list,
 model-level English fallback still exists for any future translated field that's only partly
 filled in.) `{@dc 10}` renders "DC 10" / "CD 10" via `gettext`.
 
+**The other catalogs** (`Spell`, `Feat`, `Rule`, `Species`, `Background`, `Class`, `Subclass`,
+`Feature`, `Equipment`, ... - all registered in `apps/rules/translation.py`) work the same way but,
+unlike the handbook, **nothing is removed for lacking Italian text**: a row or a part with no
+translation keeps showing its English, so these pages can be partly Italian. Each has a file
+`db/it/<model>.json` (`{row id: {field: overlay}}`, same overlay format), loaded by
+`apps/rules/translation_sync.py` (`TRANSLATED_CATALOGS` maps model -> file -> fields) at the end of
+`import_rules_data` and by `import_translations`. Search matches either language's name, and
+`{@tag}` lookups use each row's English name (`name_en`), so links still resolve when the display
+text is Italian. **Filled so far** (from `IT_SRD_CC_v5.2.1.md`): all 17 SRD feats, 335 of the 339
+SRD spells (their names; 288 with full text - the rest differ structurally from the English text or
+lost their body in the SRD extraction, so they show an Italian name over English text) and 101 of
+the 114 rules. **Not yet filled**: species, backgrounds, classes/subclasses/features, equipment,
+skills, senses, languages, masteries, abilities (their columns exist and fall back to English), and
+the UI-side rendering of spell/equipment *measurements* (feet, "1 action", ...), which is still
+English.
+
 **How it's wired**: `LANGUAGES = [("en", ...), ("it", ...)]` + `LocaleMiddleware` (in
 `config/settings.py`) + `path("i18n/", include("django.conf.urls.i18n"))` (in `config/urls.py`)
 gives a `POST /i18n/setlang/` endpoint for free - that's the "change language with a button"

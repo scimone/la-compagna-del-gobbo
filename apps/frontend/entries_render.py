@@ -87,7 +87,12 @@ class _ReferenceLinker:
         self._lookups = {}
         for tag, (model_label, url_name) in _LINKABLE_TAGS.items():
             model = django_apps.get_model(model_label)
-            pk_by_name = {obj.name.lower(): obj.pk for obj in model.objects.only("pk", "name")}
+            # Tags carry the *English* catalog name (the Italian wording is only their display
+            # text), so look rows up by their `name_en` where the model is translated.
+            name_field = "name_en" if hasattr(model, "name_en") else "name"
+            pk_by_name = {
+                name.lower(): pk for pk, name in model.objects.values_list("pk", name_field) if name
+            }
             self._lookups[tag] = (pk_by_name, url_name)
         # Only `render_handbook_section()` sets this - a plain `<h3>` heading is still right for
         # every other model's nested `entries` blocks (e.g. a Wizard's Spellcasting feature card

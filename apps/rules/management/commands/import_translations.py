@@ -2,12 +2,14 @@ from django.core.management.base import BaseCommand, CommandError
 
 from apps.rules.handbook_source import TranslationDataError, load_handbook
 from apps.rules.models import HandbookSection
+from apps.rules.translation_sync import sync_catalogs
 
 
 class Command(BaseCommand):
     help = (
-        "Sync the translated models (so far HandbookSection) with db/ and db/it/ - English and "
-        "Italian text, creating/updating/deleting only those rows. Unlike import_rules_data this "
+        "Sync the translated models with db/ and db/it/: the handbook (English and Italian, "
+        "creating/updating/deleting only its rows) and the Italian columns of the other "
+        "catalogs. Unlike import_rules_data this "
         "wipes nothing else, so it's safe to re-run whenever a translation file or an omit list "
         "changes, including once Character rows reference the rules tables."
     )
@@ -15,6 +17,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             english, italian = load_handbook()
+            sync_catalogs(lambda message: self.stdout.write(message))
         except TranslationDataError as exc:
             raise CommandError(str(exc)) from exc
 

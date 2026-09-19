@@ -83,7 +83,7 @@ tags into real links — read it before touching how any catalog page's prose is
 i18n uses Django's `gettext` framework (cookie-based `/i18n/setlang/`, not URL-prefixed) for
 UI strings. `rules` game content is translated separately, with `django-modeltranslation`
 (`_en`/`_it` columns on the existing tables, Italian text loaded from `db/it/*.json` by
-`import_rules_data` / `import_translations`) - so far only `HandbookSection`; see the README's
+`import_rules_data` / `import_translations`) - handbook, feats, spells and rules so far; see the README's
 i18n section for the format and why the two are separate problems.
 
 ## Open design question

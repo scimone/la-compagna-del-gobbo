@@ -1,0 +1,224 @@
+{
+ "ability-score-improvement": {
+  "name": "Aumento dei punteggi di caratteristica",
+  "entries": [
+   "Aumenta un punteggio di caratteristica a sua scelta di 2, oppure aumenta due punteggi di caratteristica di 1. Questo talento non può incrementare un punteggio di caratteristica oltre il 20.",
+   {
+    "name": "Ripetibile",
+    "entries": [
+     "Questo talento è ottenibile più di una volta."
+    ]
+   }
+  ]
+ },
+ "alert": {
+  "name": "Allerta",
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "name": "Competenza in iniziativa",
+    "entries": [
+     "Quando tiri per l'{@variantrule Initiative|XPHB|iniziativa}, puoi aggiungere il bonus di {@variantrule Proficiency|XPHB|competenza} del personaggio al risultato del tiro."
+    ]
+   },
+   {
+    "name": "Scambio di iniziativa",
+    "entries": [
+     "Subito dopo aver tirato per l'{@variantrule Initiative|XPHB|iniziativa}, puoi scambiare il risultato ottenuto con quello di un alleato consenziente durante il medesimo combattimento. Se il tuo personaggio o il suo alleato è {@condition Incapacitated|XPHB|incapacitato}, non è possibile eseguire lo scambio."
+    ]
+   }
+  ]
+ },
+ "archery": {
+  "name": "Tiro",
+  "entries": [
+   "Il personaggio ottiene un bonus di +2 ai tiri per colpire che effettua con le armi a distanza."
+  ]
+ },
+ "boon-of-combat-prowess": {
+  "name": "Dono delle abilità di combattimento",
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "name": "Mira impareggiabile",
+    "entries": [
+     "Quando il tiro per colpire del personaggio non va a segno, è possibile colpire comunque il bersaglio. Una volta sfruttato questo beneficio, non può essere riutilizzato fino all'inizio del turno successivo del personaggio."
+    ]
+   }
+  ]
+ },
+ "boon-of-dimensional-travel": {
+  "name": "Dono del viaggio dimensionale",
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "name": "Passi fulminei",
+    "entries": [
+     "Subito dopo che il personaggio effettua un'azione di {@action Attack|XPHB|Attacco} o {@action Magic|XPHB|Magia}, può teletrasportarsi di massimo 9 metri in uno spazio libero che è in grado di vedere."
+    ]
+   }
+  ]
+ },
+ "boon-of-fate": {
+  "name": "Dono del fato",
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "name": "Fato migliorato",
+    "entries": [
+     "Quando il personaggio o un'altra creatura entro 18 metri da sé supera o fallisce una {@variantrule D20 Test|XPHB|prova con d20}, può tirare {@dice 2d4} e applicare il risultato ottenuto come bonus o penalità a tale prova con {@dice d20}. Una volta utilizzato questo beneficio, non può più utilizzarlo finché non tira per l'{@variantrule Initiative|XPHB|iniziativa} o non completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}."
+    ]
+   }
+  ]
+ },
+ "boon-of-irresistible-offense": {
+  "name": "Dono dell'offensiva irresistibile",
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "name": "Ignora difese",
+    "entries": [
+     "I danni contundenti, perforanti e taglienti inflitti dal personaggio ignorano sempre la {@variantrule Resistance|XPHB|resistenza}."
+    ]
+   },
+   {
+    "name": "Colpo soverchiante",
+    "entries": [
+     "Quando tira per colpire con il {@dice d20} e ottiene un 20, il personaggio può infliggere una quantità di danni extra al bersaglio pari al punteggio di caratteristica incrementato da questo talento. Il danno aggiuntivo è dello stesso tipo di quello dell'attacco."
+    ]
+   }
+  ]
+ },
+ "boon-of-spell-recall": {
+  "name": "Dono del richiamo degli incantesimi",
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "name": "Lancio libero",
+    "entries": [
+     "Quando lancia un incantesimo con uno slot di livello da 1 a 4, tira {@dice 1d4}. Se il risultato corrisponde al livello dello slot, questo non verrà consumato."
+    ]
+   }
+  ]
+ },
+ "boon-of-the-night-spirit": {
+  "name": "Dono dello spirito notturno",
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "name": "Fusione con le ombre",
+    "entries": [
+     "Finché si trova in un'area di {@variantrule Darkness|XPHB|oscurità} o {@variantrule Dim Light|XPHB|luce fioca}, può diventare {@condition Invisible|XPHB|invisibile} come {@variantrule Bonus Action|XPHB|azione bonus}. Tale condizione termina subito dopo che il personaggio effettua un'azione, un'{@variantrule Bonus Action|XPHB|azione bonus} o una {@variantrule Reaction|XPHB|reazione}."
+    ]
+   },
+   {
+    "name": "Forma d'ombra",
+    "entries": [
+     "Finché si trova in un'area di {@variantrule Darkness|XPHB|oscurità} o {@variantrule Dim Light|XPHB|luce fioca}, ha {@variantrule Resistance|XPHB|resistenza} a tutti i tipi di danno, tranne quelli psichici e radiosi."
+    ]
+   }
+  ]
+ },
+ "boon-of-truesight": {
+  "name": "Dono della vista pura",
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "name": "Vista pura",
+    "entries": [
+     "Il personaggio ottiene {@sense Truesight|XPHB|vista pura} con un raggio di 18 metri."
+    ]
+   }
+  ]
+ },
+ "defense": {
+  "name": "Difesa",
+  "entries": [
+   "Finché il personaggio indossa un'armatura leggera, media o pesante, ottiene un +1 alla {@variantrule Armor Class|XPHB|Classe Armatura}."
+  ]
+ },
+ "grappler": {
+  "name": "Lottatore",
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "name": "Colpisci e afferra",
+    "entries": [
+     "Quando il personaggio colpisce una creatura con un {@variantrule Unarmed Strike|XPHB|colpo senz'armi} come parte di un'azione di {@action Attack|XPHB|Attacco} nel proprio turno, può usare sia l'opzione Danni che Presa. Questo beneficio è utilizzabile una sola volta per turno."
+    ]
+   },
+   {
+    "name": "Attacco con vantaggio",
+    "entries": [
+     "Dispone di {@variantrule Advantage|XPHB|vantaggio} ai tiri per colpire contro le creature che ha {@condition Grappled|XPHB|afferrato}."
+    ]
+   },
+   {
+    "name": "Lottatore rapido",
+    "entries": [
+     "Il personaggio non deve spendere alcun movimento extra se sposta una creatura che ha {@condition Grappled|XPHB|afferrato} che sia della sua stessa categoria di taglia o inferiore."
+    ]
+   }
+  ]
+ },
+ "great-weapon-fighting": {
+  "name": "Combattere con armi possenti",
+  "entries": [
+   "Quando tiri per i danni per un attacco effettuato con un'arma da mischia che il personaggio impugna a due mani, se il risultato ottenuto è 1 o 2, puoi invece considerarlo come un 3. L'arma deve possedere la proprietà a due mani o versatile affinché ottenga questo beneficio."
+  ]
+ },
+ "magic-initiate": {
+  "name": "Iniziato alla magia",
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "name": "Due trucchetti",
+    "entries": [
+     "Il personaggio apprende due trucchetti a scelta tratti dalla lista degli incantesimi da chierico, druido o mago. La caratteristica da incantatore per gli incantesimi di questo talento può essere Intelligenza, Saggezza o Carisma (scegli la caratteristica quando ottieni questo talento)."
+    ]
+   },
+   {
+    "name": "Incantesimo di 1º livello",
+    "entries": [
+     "Scegli un incantesimo di 1º livello dalla stessa lista da cui hai selezionato i trucchetti forniti da questo talento. Tale incantesimo è sempre considerato come preparato. Il personaggio può lanciarlo una volta senza consumare uno slot incantesimo e ne recupera l'utilizzo in questo modo dopo aver completato un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciare l'incantesimo usando uno qualsiasi degli slot incantesimo a sua disposizione."
+    ]
+   },
+   {
+    "name": "Cambio incantesimo",
+    "entries": [
+     "Quando il personaggio ottiene un nuovo livello, puoi sostituire uno degli incantesimi scelti per questo talento con un altro dello stesso livello dalla lista prescelta."
+    ]
+   },
+   {
+    "name": "Ripetibile",
+    "entries": [
+     "Questo talento è ottenibile più di una volta, ma devi scegliere una lista degli incantesimi diversa a ogni selezione."
+    ]
+   }
+  ]
+ },
+ "savage-attacker": {
+  "name": "Aggressore selvaggio",
+  "entries": [
+   "Il personaggio si è allenato per sferrare colpi particolarmente letali. Una volta per turno, quando colpisce un bersaglio con un'arma, puoi tirare due volte per i danni dell'arma e scegliere il risultato che preferisci."
+  ]
+ },
+ "skilled": {
+  "name": "Abile",
+  "entries": [
+   "Il personaggio ottiene competenza in una combinazione di tre abilità o strumenti a scelta.",
+   {
+    "name": "Ripetibile",
+    "entries": [
+     "Questo talento è ottenibile più di una volta."
+    ]
+   }
+  ]
+ },
+ "two-weapon-fighting": {
+  "name": "Combattere con due armi",
+  "entries": [
+   "Quando il personaggio effettua un attacco extra come risultato dell'uso di un'arma leggera, puoi aggiungere il suo modificatore di caratteristica al danno di quell'attacco a patto che non sia già stato aggiunto in altro modo."
+  ]
+ }
+}

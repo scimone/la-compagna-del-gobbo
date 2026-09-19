@@ -1,4 +1,5 @@
 import pytest
+from django.core.management import call_command
 
 from apps.rules.management.commands.import_rules_data import Command as ImportCommand
 
@@ -63,3 +64,18 @@ def test_skills_table_is_fully_translated(client, handbook):
     assert "Furtività" in html
     assert "Sfuggi all&#x27;attenzione altrui" in html or "Sfuggi all'attenzione altrui" in html
     assert "Segui le tracce" in html
+
+
+@pytest.fixture
+def catalogs(db):
+    call_command("import_rules_data")
+
+
+def test_spell_page_and_english_name_search_work_from_the_italian_site(client, catalogs):
+    page = _get(client, "/world/spells/fireball/", "it")
+    assert "Palla di fuoco" in page
+
+    found = _get(client, "/world/spells/?q=Fireball", "it")  # English name, Italian site
+    assert "Palla di fuoco" in found
+    found = _get(client, "/world/spells/?q=palla", "en")  # Italian name, English site
+    assert "Fireball" in found

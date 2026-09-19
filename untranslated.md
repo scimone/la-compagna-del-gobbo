@@ -1,0 +1,806 @@
+# Not yet translated into Italian
+
+Generated from the database (`name_it` / text `_it` columns). Rows listed here show English on the Italian site.
+
+| Type | Total | Fully Italian | Name only | No Italian | of which SRD |
+|---|---|---|---|---|---|
+| Feat | 77 | 17 | 0 | 60 | 0 |
+| Spell | 391 | 288 | 47 | 56 | 4 |
+| Species | 11 | 0 | 0 | 11 | 9 |
+| Background | 16 | 0 | 0 | 16 | 4 |
+| Rule (glossary) | 114 | 101 | 0 | 13 | 13 |
+| Skill | 18 | 0 | 0 | 18 | 18 |
+| Sense | 4 | 0 | 0 | 4 | 4 |
+| Language | 19 | 0 | 0 | 19 | 19 |
+| Weapon mastery | 8 | 0 | 0 | 8 | 8 |
+| Weapon property | 9 | 0 | 0 | 9 | 0 |
+| Equipment item | 217 | 0 | 0 | 217 | 208 |
+| Ability | 6 | 0 | 0 | 6 | 0 |
+| Class | 12 | 0 | 0 | 12 | 12 |
+| Subclass | 48 | 0 | 0 | 48 | 0 |
+| Class/subclass/species/feat feature | 707 | 0 | 0 | 707 | 0 |
+| Optional feature | 58 | 0 | 0 | 58 | 29 |
+
+## Feat - 60 with no Italian, 0 with an Italian name but English text (of 77)
+
+- `actor` - Actor
+- `athlete` - Athlete
+- `blessed-warrior` - Blessed Warrior
+- `blind-fighting` - Blind Fighting
+- `boon-of-energy-resistance` - Boon of Energy Resistance
+- `boon-of-fortitude` - Boon of Fortitude
+- `boon-of-recovery` - Boon of Recovery
+- `boon-of-skill` - Boon of Skill
+- `boon-of-speed` - Boon of Speed
+- `charger` - Charger
+- `chef` - Chef
+- `crafter` - Crafter
+- `crossbow-expert` - Crossbow Expert
+- `crusher` - Crusher
+- `defensive-duelist` - Defensive Duelist
+- `druidic-warrior` - Druidic Warrior
+- `dual-wielder` - Dual Wielder
+- `dueling` - Dueling
+- `durable` - Durable
+- `elemental-adept` - Elemental Adept
+- `fey-touched` - Fey-Touched
+- `great-weapon-master` - Great Weapon Master
+- `healer` - Healer
+- `heavily-armored` - Heavily Armored
+- `heavy-armor-master` - Heavy Armor Master
+- `inspiring-leader` - Inspiring Leader
+- `interception` - Interception
+- `keen-mind` - Keen Mind
+- `lightly-armored` - Lightly Armored
+- `lucky` - Lucky
+- `mage-slayer` - Mage Slayer
+- `martial-weapon-training` - Martial Weapon Training
+- `medium-armor-master` - Medium Armor Master
+- `moderately-armored` - Moderately Armored
+- `mounted-combatant` - Mounted Combatant
+- `musician` - Musician
+- `observant` - Observant
+- `piercer` - Piercer
+- `poisoner` - Poisoner
+- `polearm-master` - Polearm Master
+- `protection` - Protection
+- `resilient` - Resilient
+- `ritual-caster` - Ritual Caster
+- `sentinel` - Sentinel
+- `shadow-touched` - Shadow-Touched
+- `sharpshooter` - Sharpshooter
+- `shield-master` - Shield Master
+- `skill-expert` - Skill Expert
+- `skulker` - Skulker
+- `slasher` - Slasher
+- `speedy` - Speedy
+- `spell-sniper` - Spell Sniper
+- `tavern-brawler` - Tavern Brawler
+- `telekinetic` - Telekinetic
+- `telepathic` - Telepathic
+- `thrown-weapon-fighting` - Thrown Weapon Fighting
+- `tough` - Tough
+- `unarmed-fighting` - Unarmed Fighting
+- `war-caster` - War Caster
+- `weapon-master` - Weapon Master
+
+## Spell - 56 with no Italian, 47 with an Italian name but English text (of 391)
+
+- `arcane-gate` - Arcane Gate
+- `arcane-vigor` - Arcane Vigor
+- `armor-of-agathys` - Armor of Agathys
+- `arms-of-hadar` - Arms of Hadar
+- `aura-of-purity` - Aura of Purity
+- `aura-of-vitality` - Aura of Vitality
+- `banishing-smite` - Banishing Smite
+- `beast-sense` - Beast Sense
+- `blade-ward` - Blade Ward
+- `blinding-smite` - Blinding Smite
+- `circle-of-power` - Circle of Power
+- `cloud-of-daggers` - Cloud of Daggers
+- `compelled-duel` - Compelled Duel
+- `conjure-barrage` - Conjure Barrage
+- `conjure-volley` - Conjure Volley
+- `cordon-of-arrows` - Cordon of Arrows
+- `crown-of-madness` - Crown of Madness
+- `crusaders-mantle` - Crusader's Mantle
+- `destructive-wave` - Destructive Wave
+- `dominate-monster` - Dominate Monster (SRD)
+- `elemental-weapon` - Elemental Weapon
+- `feign-death` - Feign Death
+- `foresight` - Foresight (SRD)
+- `fount-of-moonlight` - Fount of Moonlight
+- `friends` - Friends
+- `grasping-vine` - Grasping Vine
+- `hail-of-thorns` - Hail of Thorns
+- `hallow` - Hallow (SRD)
+- `hunger-of-hadar` - Hunger of Hadar
+- `jallarzis-storm-of-radiance` - Jallarzi's Storm of Radiance
+- `lightning-arrow` - Lightning Arrow
+- `mind-sliver` - Mind Sliver
+- `power-word-fortify` - Power Word Fortify
+- `shield` - Shield (SRD)
+- `staggering-smite` - Staggering Smite
+- `steel-wind-strike` - Steel Wind Strike
+- `summon-aberration` - Summon Aberration
+- `summon-beast` - Summon Beast
+- `summon-celestial` - Summon Celestial
+- `summon-construct` - Summon Construct
+- `summon-elemental` - Summon Elemental
+- `summon-fey` - Summon Fey
+- `summon-fiend` - Summon Fiend
+- `summon-undead` - Summon Undead
+- `swift-quiver` - Swift Quiver
+- `synaptic-static` - Synaptic Static
+- `tashas-bubbling-cauldron` - Tasha's Bubbling Cauldron
+- `telepathy` - Telepathy
+- `thorn-whip` - Thorn Whip
+- `thunderclap` - Thunderclap
+- `thunderous-smite` - Thunderous Smite
+- `toll-the-dead` - Toll the Dead
+- `witch-bolt` - Witch Bolt
+- `word-of-radiance` - Word of Radiance
+- `wrathful-smite` - Wrathful Smite
+- `yolandes-regal-presence` - Yolande's Regal Presence
+- `aid` - Aid (SRD) - name translated, text still English
+- `animate-objects` - Animate Objects (SRD) - name translated, text still English
+- `augury` - Augury (SRD) - name translated, text still English
+- `chromatic-orb` - Chromatic Orb (SRD) - name translated, text still English
+- `command` - Command (SRD) - name translated, text still English
+- `compulsion` - Compulsion (SRD) - name translated, text still English
+- `confusion` - Confusion (SRD) - name translated, text still English
+- `control-water` - Control Water (SRD) - name translated, text still English
+- `control-weather` - Control Weather (SRD) - name translated, text still English
+- `create-or-destroy-water` - Create or Destroy Water (SRD) - name translated, text still English
+- `darkness` - Darkness (SRD) - name translated, text still English
+- `darkvision` - Darkvision (SRD) - name translated, text still English
+- `detect-evil-and-good` - Detect Evil and Good (SRD) - name translated, text still English
+- `dimension-door` - Dimension Door (SRD) - name translated, text still English
+- `dispel-magic` - Dispel Magic (SRD) - name translated, text still English
+- `divine-word` - Divine Word (SRD) - name translated, text still English
+- `dominate-beast` - Dominate Beast (SRD) - name translated, text still English
+- `dominate-person` - Dominate Person (SRD) - name translated, text still English
+- `earthquake` - Earthquake (SRD) - name translated, text still English
+- `eldritch-blast` - Eldritch Blast (SRD) - name translated, text still English
+- `eyebite` - Eyebite (SRD) - name translated, text still English
+- `find-steed` - Find Steed (SRD) - name translated, text still English
+- `finger-of-death` - Finger of Death (SRD) - name translated, text still English
+- `fly` - Fly (SRD) - name translated, text still English
+- `giant-insect` - Giant Insect (SRD) - name translated, text still English
+- `hex` - Hex (SRD) - name translated, text still English
+- `hunters-mark` - Hunter's Mark (SRD) - name translated, text still English
+- `ice-knife` - Ice Knife (SRD) - name translated, text still English
+- `imprisonment` - Imprisonment (SRD) - name translated, text still English
+- `magic-weapon` - Magic Weapon (SRD) - name translated, text still English
+- `minor-illusion` - Minor Illusion (SRD) - name translated, text still English
+- `ottos-irresistible-dance` - Otto's Irresistible Dance (SRD) - name translated, text still English
+- `prestidigitation` - Prestidigitation (SRD) - name translated, text still English
+- `prismatic-spray` - Prismatic Spray (SRD) - name translated, text still English
+- `prismatic-wall` - Prismatic Wall (SRD) - name translated, text still English
+- `reincarnate` - Reincarnate (SRD) - name translated, text still English
+- `sanctuary` - Sanctuary (SRD) - name translated, text still English
+- `scrying` - Scrying (SRD) - name translated, text still English
+- `shapechange` - Shapechange (SRD) - name translated, text still English
+- `spirit-guardians` - Spirit Guardians (SRD) - name translated, text still English
+- `summon-dragon` - Summon Dragon (SRD) - name translated, text still English
+- `symbol` - Symbol (SRD) - name translated, text still English
+- `teleport` - Teleport (SRD) - name translated, text still English
+- `time-stop` - Time Stop (SRD) - name translated, text still English
+- `true-polymorph` - True Polymorph (SRD) - name translated, text still English
+- `wind-wall` - Wind Wall (SRD) - name translated, text still English
+- `wish` - Wish (SRD) - name translated, text still English
+
+## Species - 11 with no Italian, 0 with an Italian name but English text (of 11)
+
+- `aasimar` - Aasimar
+- `dragonborn` - Dragonborn (SRD)
+- `dwarf` - Dwarf (SRD)
+- `elf` - Elf (SRD)
+- `gnome` - Gnome (SRD)
+- `goliath` - Goliath (SRD)
+- `grung` - Grung
+- `halfling` - Halfling (SRD)
+- `human` - Human (SRD)
+- `orc` - Orc (SRD)
+- `tiefling` - Tiefling (SRD)
+
+## Background - 16 with no Italian, 0 with an Italian name but English text (of 16)
+
+- `acolyte` - Acolyte (SRD)
+- `artisan` - Artisan
+- `charlatan` - Charlatan
+- `criminal` - Criminal (SRD)
+- `entertainer` - Entertainer
+- `farmer` - Farmer
+- `guard` - Guard
+- `guide` - Guide
+- `hermit` - Hermit
+- `merchant` - Merchant
+- `noble` - Noble
+- `sage` - Sage (SRD)
+- `sailor` - Sailor
+- `scribe` - Scribe
+- `soldier` - Soldier (SRD)
+- `wayfarer` - Wayfarer
+
+## Rule (glossary) - 13 with no Italian, 0 with an Italian name but English text (of 114)
+
+- `action` - Action (SRD)
+- `area-of-effect` - Area of Effect (SRD)
+- `breaking-objects` - Breaking Objects (SRD)
+- `bright-light` - Bright Light (SRD)
+- `climbing` - Climbing (SRD)
+- `condition` - Condition (SRD)
+- `creature-type` - Creature Type (SRD)
+- `cube-area-of-effect` - Cube [Area of Effect] (SRD)
+- `fly-speed` - Fly Speed (SRD)
+- `grappling` - Grappling (SRD)
+- `long-rest` - Long Rest (SRD)
+- `save` - Save (SRD)
+- `vulnerability` - Vulnerability (SRD)
+
+## Skill - 18 with no Italian, 0 with an Italian name but English text (of 18)
+
+- `acrobatics` - Acrobatics (SRD)
+- `animal-handling` - Animal Handling (SRD)
+- `arcana` - Arcana (SRD)
+- `athletics` - Athletics (SRD)
+- `deception` - Deception (SRD)
+- `history` - History (SRD)
+- `insight` - Insight (SRD)
+- `intimidation` - Intimidation (SRD)
+- `investigation` - Investigation (SRD)
+- `medicine` - Medicine (SRD)
+- `nature` - Nature (SRD)
+- `perception` - Perception (SRD)
+- `performance` - Performance (SRD)
+- `persuasion` - Persuasion (SRD)
+- `religion` - Religion (SRD)
+- `sleight-of-hand` - Sleight of Hand (SRD)
+- `stealth` - Stealth (SRD)
+- `survival` - Survival (SRD)
+
+## Sense - 4 with no Italian, 0 with an Italian name but English text (of 4)
+
+- `blindsight` - Blindsight (SRD)
+- `darkvision` - Darkvision (SRD)
+- `tremorsense` - Tremorsense (SRD)
+- `truesight` - Truesight (SRD)
+
+## Language - 19 with no Italian, 0 with an Italian name but English text (of 19)
+
+- `abyssal` - Abyssal (SRD)
+- `celestial` - Celestial (SRD)
+- `common` - Common (SRD)
+- `common-sign-language` - Common Sign Language (SRD)
+- `deep-speech` - Deep Speech (SRD)
+- `draconic` - Draconic (SRD)
+- `druidic` - Druidic (SRD)
+- `dwarvish` - Dwarvish (SRD)
+- `elvish` - Elvish (SRD)
+- `giant` - Giant (SRD)
+- `gnomish` - Gnomish (SRD)
+- `goblin` - Goblin (SRD)
+- `halfling` - Halfling (SRD)
+- `infernal` - Infernal (SRD)
+- `orc` - Orc (SRD)
+- `primordial` - Primordial (SRD)
+- `sylvan` - Sylvan (SRD)
+- `thieves-cant` - Thieves' Cant (SRD)
+- `undercommon` - Undercommon (SRD)
+
+## Weapon mastery - 8 with no Italian, 0 with an Italian name but English text (of 8)
+
+- `cleave` - Cleave (SRD)
+- `graze` - Graze (SRD)
+- `nick` - Nick (SRD)
+- `push` - Push (SRD)
+- `sap` - Sap (SRD)
+- `slow` - Slow (SRD)
+- `topple` - Topple (SRD)
+- `vex` - Vex (SRD)
+
+## Weapon property - 9 with no Italian, 0 with an Italian name but English text (of 9)
+
+- `a` - Ammunition
+- `f` - Finesse
+- `h` - Heavy
+- `l` - Light
+- `ld` - Loading
+- `r` - Reach
+- `t` - Thrown
+- `2h` - Two-Handed
+- `v` - Versatile
+
+## Equipment item - 217 with no Italian, 0 with an Italian name but English text (of 217)
+
+- `acid` - Acid [Type: Adventuring Gear] (SRD)
+- `airship` - Airship [Type: Vehicle (Air)]
+- `alchemists-fire` - Alchemist's Fire [Type: Adventuring Gear] (SRD)
+- `alchemists-supplies` - Alchemist's Supplies [Type: Artisan's Tools] (SRD)
+- `ale-mug` - Ale (mug) [Type: Food and Drink] (SRD)
+- `amulet` - Amulet [Type: Spellcasting Focus] (SRD)
+- `antitoxin` - Antitoxin [Type: Adventuring Gear] (SRD)
+- `arrow` - Arrow [Type: Ammunition] (SRD)
+- `arrows-20` - Arrows (20) [Type: Ammunition] (SRD)
+- `backpack` - Backpack [Type: Adventuring Gear] (SRD)
+- `bagpipes` - Bagpipes [Type: Instrument] (SRD)
+- `ball-bearings` - Ball Bearings [Type: Adventuring Gear] (SRD)
+- `barrel` - Barrel [Type: Adventuring Gear] (SRD)
+- `basic-poison` - Basic Poison [Type: Adventuring Gear] (SRD)
+- `basket` - Basket [Type: Adventuring Gear] (SRD)
+- `battleaxe` - Battleaxe [Type: Melee Weapon] (SRD)
+- `bedroll` - Bedroll [Type: Adventuring Gear] (SRD)
+- `bell` - Bell [Type: Adventuring Gear] (SRD)
+- `blanket` - Blanket [Type: Adventuring Gear] (SRD)
+- `block-and-tackle` - Block and Tackle [Type: Adventuring Gear] (SRD)
+- `blowgun` - Blowgun [Type: Ranged Weapon] (SRD)
+- `bolt` - Bolt [Type: Ammunition] (SRD)
+- `bolts-20` - Bolts (20) [Type: Ammunition] (SRD)
+- `book` - Book [Type: Adventuring Gear] (SRD)
+- `bread-loaf` - Bread (loaf) [Type: Food and Drink] (SRD)
+- `breastplate` - Breastplate [Type: Medium Armor] (SRD)
+- `brewers-supplies` - Brewer's Supplies [Type: Artisan's Tools] (SRD)
+- `bucket` - Bucket [Type: Adventuring Gear] (SRD)
+- `bullseye-lantern` - Bullseye Lantern [Type: Adventuring Gear] (SRD)
+- `burglars-pack` - Burglar's Pack [Type: Adventuring Gear] (SRD)
+- `calligraphers-supplies` - Calligrapher's Supplies [Type: Artisan's Tools] (SRD)
+- `caltrops` - Caltrops [Type: Adventuring Gear] (SRD)
+- `camel` - Camel [Type: Mount] (SRD)
+- `candle` - Candle [Type: Adventuring Gear] (SRD)
+- `carpenters-tools` - Carpenter's Tools [Type: Artisan's Tools] (SRD)
+- `carriage` - Carriage [Type: Vehicle (Land)] (SRD)
+- `cart` - Cart [Type: Vehicle (Land)] (SRD)
+- `cartographers-tools` - Cartographer's Tools [Type: Artisan's Tools] (SRD)
+- `chain` - Chain [Type: Adventuring Gear] (SRD)
+- `chain-mail` - Chain Mail [Type: Heavy Armor] (SRD)
+- `chain-shirt` - Chain Shirt [Type: Medium Armor] (SRD)
+- `chariot` - Chariot [Type: Vehicle (Land)] (SRD)
+- `cheese-wedge` - Cheese (wedge) [Type: Food and Drink] (SRD)
+- `chest` - Chest [Type: Adventuring Gear] (SRD)
+- `climbers-kit` - Climber's Kit [Type: Adventuring Gear] (SRD)
+- `club` - Club [Type: Melee Weapon] (SRD)
+- `cobblers-tools` - Cobbler's Tools [Type: Artisan's Tools] (SRD)
+- `common-wine-bottle` - Common Wine (bottle) [Type: Food and Drink] (SRD)
+- `component-pouch` - Component Pouch [Type: Adventuring Gear] (SRD)
+- `cooks-utensils` - Cook's Utensils [Type: Artisan's Tools] (SRD)
+- `costume` - Costume [Type: Adventuring Gear] (SRD)
+- `crossbow-bolt-case` - Crossbow Bolt Case [Type: Adventuring Gear] (SRD)
+- `crowbar` - Crowbar [Type: Adventuring Gear] (SRD)
+- `crystal` - Crystal [Type: Spellcasting Focus] (SRD)
+- `dagger` - Dagger [Type: Melee Weapon] (SRD)
+- `dart` - Dart [Type: Ranged Weapon] (SRD)
+- `dice-set` - Dice Set [Type: Gaming Set] (SRD)
+- `diplomats-pack` - Diplomat's Pack [Type: Adventuring Gear] (SRD)
+- `disguise-kit` - Disguise Kit [Type: Tool] (SRD)
+- `draft-horse` - Draft Horse [Type: Mount] (SRD)
+- `dragonchess-set` - Dragonchess Set [Type: Gaming Set]
+- `drum` - Drum [Type: Instrument] (SRD)
+- `dulcimer` - Dulcimer [Type: Instrument] (SRD)
+- `dungeoneers-pack` - Dungeoneer's Pack [Type: Adventuring Gear] (SRD)
+- `elephant` - Elephant [Type: Mount] (SRD)
+- `emblem` - Emblem [Type: Spellcasting Focus] (SRD)
+- `entertainers-pack` - Entertainer's Pack [Type: Adventuring Gear] (SRD)
+- `exotic-saddle` - Exotic Saddle [Type: Tack and Harness] (SRD)
+- `explorers-pack` - Explorer's Pack [Type: Adventuring Gear] (SRD)
+- `feed-per-day` - Feed (per day) [Type: Tack and Harness] (SRD)
+- `fine-clothes` - Fine Clothes [Type: Adventuring Gear] (SRD)
+- `fine-wine-bottle` - Fine Wine (bottle) [Type: Food and Drink] (SRD)
+- `firearm-bullet` - Firearm Bullet [Type: Ammunition]
+- `firearm-bullets-10` - Firearm Bullets (10) [Type: Ammunition]
+- `flail` - Flail [Type: Melee Weapon] (SRD)
+- `flask` - Flask [Type: Adventuring Gear] (SRD)
+- `flute` - Flute [Type: Instrument] (SRD)
+- `forgery-kit` - Forgery Kit [Type: Tool] (SRD)
+- `galley` - Galley [Type: Vehicle (Water)] (SRD)
+- `glaive` - Glaive [Type: Melee Weapon] (SRD)
+- `glassblowers-tools` - Glassblower's Tools [Type: Artisan's Tools] (SRD)
+- `glass-bottle` - Glass Bottle [Type: Adventuring Gear] (SRD)
+- `grappling-hook` - Grappling Hook [Type: Adventuring Gear] (SRD)
+- `greataxe` - Greataxe [Type: Melee Weapon] (SRD)
+- `greatclub` - Greatclub [Type: Melee Weapon] (SRD)
+- `greatsword` - Greatsword [Type: Melee Weapon] (SRD)
+- `halberd` - Halberd [Type: Melee Weapon] (SRD)
+- `half-plate-armor` - Half Plate Armor [Type: Medium Armor] (SRD)
+- `handaxe` - Handaxe [Type: Melee Weapon] (SRD)
+- `hand-crossbow` - Hand Crossbow [Type: Ranged Weapon] (SRD)
+- `healers-kit` - Healer's Kit [Type: Adventuring Gear] (SRD)
+- `heavy-crossbow` - Heavy Crossbow [Type: Ranged Weapon] (SRD)
+- `herbalism-kit` - Herbalism Kit [Type: Tool] (SRD)
+- `hide-armor` - Hide Armor [Type: Medium Armor] (SRD)
+- `holy-water` - Holy Water [Type: Adventuring Gear] (SRD)
+- `hooded-lantern` - Hooded Lantern [Type: Adventuring Gear] (SRD)
+- `horn` - Horn [Type: Instrument] (SRD)
+- `hunting-trap` - Hunting Trap [Type: Adventuring Gear] (SRD)
+- `ink` - Ink [Type: Adventuring Gear] (SRD)
+- `ink-pen` - Ink Pen [Type: Adventuring Gear] (SRD)
+- `iron-pot` - Iron Pot [Type: Adventuring Gear] (SRD)
+- `iron-spike` - Iron Spike [Type: Adventuring Gear] (SRD)
+- `iron-spikes` - Iron Spikes [Type: Adventuring Gear] (SRD)
+- `javelin` - Javelin [Type: Melee Weapon] (SRD)
+- `jewelers-tools` - Jeweler's Tools [Type: Artisan's Tools] (SRD)
+- `jug` - Jug [Type: Adventuring Gear] (SRD)
+- `keelboat` - Keelboat [Type: Vehicle (Water)] (SRD)
+- `ladder` - Ladder [Type: Adventuring Gear] (SRD)
+- `lamp` - Lamp [Type: Adventuring Gear] (SRD)
+- `lance` - Lance [Type: Melee Weapon] (SRD)
+- `leather-armor` - Leather Armor [Type: Light Armor] (SRD)
+- `leatherworkers-tools` - Leatherworker's Tools [Type: Artisan's Tools] (SRD)
+- `light-crossbow` - Light Crossbow [Type: Ranged Weapon] (SRD)
+- `light-hammer` - Light Hammer [Type: Melee Weapon] (SRD)
+- `lock` - Lock [Type: Adventuring Gear] (SRD)
+- `longbow` - Longbow [Type: Ranged Weapon] (SRD)
+- `longship` - Longship [Type: Vehicle (Water)] (SRD)
+- `longsword` - Longsword [Type: Melee Weapon] (SRD)
+- `lute` - Lute [Type: Instrument] (SRD)
+- `lyre` - Lyre [Type: Instrument] (SRD)
+- `mace` - Mace [Type: Melee Weapon] (SRD)
+- `magnifying-glass` - Magnifying Glass [Type: Adventuring Gear] (SRD)
+- `manacles` - Manacles [Type: Adventuring Gear] (SRD)
+- `map` - Map [Type: Adventuring Gear]
+- `map-or-scroll-case` - Map or Scroll Case [Type: Adventuring Gear] (SRD)
+- `masons-tools` - Mason's Tools [Type: Artisan's Tools] (SRD)
+- `mastiff` - Mastiff [Type: Mount] (SRD)
+- `maul` - Maul [Type: Melee Weapon] (SRD)
+- `military-saddle` - Military Saddle [Type: Tack and Harness] (SRD)
+- `mirror` - Mirror [Type: Adventuring Gear] (SRD)
+- `morningstar` - Morningstar [Type: Melee Weapon] (SRD)
+- `mule` - Mule [Type: Mount] (SRD)
+- `musket` - Musket [Type: Ranged Weapon] (SRD)
+- `navigators-tools` - Navigator's Tools [Type: Tool] (SRD)
+- `needle` - Needle [Type: Ammunition] (SRD)
+- `needles-50` - Needles (50) [Type: Ammunition] (SRD)
+- `net` - Net [Type: Adventuring Gear] (SRD)
+- `oil` - Oil [Type: Adventuring Gear] (SRD)
+- `orb` - Orb [Type: Spellcasting Focus] (SRD)
+- `padded-armor` - Padded Armor [Type: Light Armor] (SRD)
+- `painters-supplies` - Painter's Supplies [Type: Artisan's Tools] (SRD)
+- `pan-flute` - Pan Flute [Type: Instrument] (SRD)
+- `paper` - Paper [Type: Adventuring Gear] (SRD)
+- `parchment` - Parchment [Type: Adventuring Gear] (SRD)
+- `perfume` - Perfume [Type: Adventuring Gear] (SRD)
+- `pike` - Pike [Type: Melee Weapon] (SRD)
+- `pistol` - Pistol [Type: Ranged Weapon] (SRD)
+- `plate-armor` - Plate Armor [Type: Heavy Armor] (SRD)
+- `playing-cards` - Playing Cards [Type: Gaming Set] (SRD)
+- `poisoners-kit` - Poisoner's Kit [Type: Tool] (SRD)
+- `pole` - Pole [Type: Adventuring Gear] (SRD)
+- `pony` - Pony [Type: Mount] (SRD)
+- `portable-ram` - Portable Ram [Type: Adventuring Gear] (SRD)
+- `potters-tools` - Potter's Tools [Type: Artisan's Tools] (SRD)
+- `pouch` - Pouch [Type: Adventuring Gear] (SRD)
+- `priests-pack` - Priest's Pack [Type: Adventuring Gear] (SRD)
+- `psychic-blade` - Psychic Blade [Type: Melee Weapon]
+- `quarterstaff` - Quarterstaff [Type: Melee Weapon] (SRD)
+- `quiver` - Quiver [Type: Adventuring Gear] (SRD)
+- `rapier` - Rapier [Type: Melee Weapon] (SRD)
+- `rations` - Rations [Type: Adventuring Gear] (SRD)
+- `reliquary` - Reliquary [Type: Spellcasting Focus] (SRD)
+- `riding-horse` - Riding Horse [Type: Mount] (SRD)
+- `riding-saddle` - Riding Saddle [Type: Tack and Harness] (SRD)
+- `ring-mail` - Ring Mail [Type: Heavy Armor] (SRD)
+- `robe` - Robe [Type: Adventuring Gear] (SRD)
+- `rod` - Rod [Type: Spellcasting Focus] (SRD)
+- `rope` - Rope [Type: Adventuring Gear] (SRD)
+- `rowboat` - Rowboat [Type: Vehicle (Water)] (SRD)
+- `sack` - Sack [Type: Adventuring Gear] (SRD)
+- `sailing-ship` - Sailing Ship [Type: Vehicle (Water)] (SRD)
+- `scale-mail` - Scale Mail [Type: Medium Armor] (SRD)
+- `scholars-pack` - Scholar's Pack [Type: Adventuring Gear] (SRD)
+- `scimitar` - Scimitar [Type: Melee Weapon] (SRD)
+- `shawm` - Shawm [Type: Instrument] (SRD)
+- `shield` - Shield [Type: Shield] (SRD)
+- `shortbow` - Shortbow [Type: Ranged Weapon] (SRD)
+- `shortsword` - Shortsword [Type: Melee Weapon] (SRD)
+- `shovel` - Shovel [Type: Adventuring Gear] (SRD)
+- `sickle` - Sickle [Type: Melee Weapon] (SRD)
+- `signal-whistle` - Signal Whistle [Type: Adventuring Gear] (SRD)
+- `sled` - Sled [Type: Vehicle (Land)] (SRD)
+- `sling` - Sling [Type: Ranged Weapon] (SRD)
+- `sling-bullet` - Sling Bullet [Type: Ammunition] (SRD)
+- `sling-bullets-20` - Sling Bullets (20) [Type: Ammunition] (SRD)
+- `smiths-tools` - Smith's Tools [Type: Artisan's Tools] (SRD)
+- `spear` - Spear [Type: Melee Weapon] (SRD)
+- `splint-armor` - Splint Armor [Type: Heavy Armor] (SRD)
+- `sprig-of-mistletoe` - Sprig of Mistletoe [Type: Spellcasting Focus] (SRD)
+- `spyglass` - Spyglass [Type: Adventuring Gear] (SRD)
+- `stabling-per-day` - Stabling (per day) [Type: Tack and Harness] (SRD)
+- `staff` - Staff [Type: Spellcasting Focus] (SRD)
+- `string` - String [Type: Adventuring Gear]
+- `studded-leather-armor` - Studded Leather Armor [Type: Light Armor] (SRD)
+- `tent` - Tent [Type: Adventuring Gear] (SRD)
+- `thieves-tools` - Thieves' Tools [Type: Tool] (SRD)
+- `three-dragon-ante-set` - Three-Dragon Ante Set [Type: Gaming Set]
+- `tinderbox` - Tinderbox [Type: Adventuring Gear] (SRD)
+- `tinkers-tools` - Tinker's Tools [Type: Artisan's Tools] (SRD)
+- `torch` - Torch [Type: Adventuring Gear] (SRD)
+- `travelers-clothes` - Traveler's Clothes [Type: Adventuring Gear] (SRD)
+- `trident` - Trident [Type: Melee Weapon] (SRD)
+- `trinket` - Trinket [Type: Adventuring Gear]
+- `vial` - Vial [Type: Adventuring Gear] (SRD)
+- `viol` - Viol [Type: Instrument] (SRD)
+- `wagon` - Wagon [Type: Vehicle (Land)] (SRD)
+- `wand` - Wand [Type: Spellcasting Focus] (SRD)
+- `warhammer` - Warhammer [Type: Melee Weapon] (SRD)
+- `warhorse` - Warhorse [Type: Mount] (SRD)
+- `war-pick` - War Pick [Type: Melee Weapon] (SRD)
+- `warship` - Warship [Type: Vehicle (Water)] (SRD)
+- `waterskin` - Waterskin [Type: Adventuring Gear] (SRD)
+- `weavers-tools` - Weaver's Tools [Type: Artisan's Tools] (SRD)
+- `whip` - Whip [Type: Melee Weapon] (SRD)
+- `woodcarvers-tools` - Woodcarver's Tools [Type: Artisan's Tools] (SRD)
+- `wooden-staff` - Wooden Staff [Type: Spellcasting Focus] (SRD)
+- `yew-wand` - Yew Wand [Type: Spellcasting Focus] (SRD)
+
+## Ability - 6 with no Italian, 0 with an Italian name but English text (of 6)
+
+- `cha` - Charisma
+- `con` - Constitution
+- `dex` - Dexterity
+- `int` - Intelligence
+- `str` - Strength
+- `wis` - Wisdom
+
+## Class - 12 with no Italian, 0 with an Italian name but English text (of 12)
+
+- `barbarian` - Barbarian (SRD)
+- `bard` - Bard (SRD)
+- `cleric` - Cleric (SRD)
+- `druid` - Druid (SRD)
+- `fighter` - Fighter (SRD)
+- `monk` - Monk (SRD)
+- `paladin` - Paladin (SRD)
+- `ranger` - Ranger (SRD)
+- `rogue` - Rogue (SRD)
+- `sorcerer` - Sorcerer (SRD)
+- `warlock` - Warlock (SRD)
+- `wizard` - Wizard (SRD)
+
+## Subclass - 48 with no Italian, 0 with an Italian name but English text (of 48)
+
+- `277` - Aberrant Sorcery [Class: Sorcerer]
+- `285` - Abjurer [Class: Wizard]
+- `273` - Arcane Trickster [Class: Rogue]
+- `281` - Archfey Patron [Class: Warlock]
+- `274` - Assassin [Class: Rogue]
+- `257` - Battle Master [Class: Fighter]
+- `269` - Beast Master [Class: Ranger]
+- `282` - Celestial Patron [Class: Warlock]
+- `258` - Champion [Class: Fighter]
+- `253` - Circle of the Land [Class: Druid]
+- `254` - Circle of the Moon [Class: Druid]
+- `255` - Circle of the Sea [Class: Druid]
+- `256` - Circle of the Stars [Class: Druid]
+- `278` - Clockwork Sorcery [Class: Sorcerer]
+- `245` - College of Dance [Class: Bard]
+- `246` - College of Glamour [Class: Bard]
+- `247` - College of Lore [Class: Bard]
+- `248` - College of Valor [Class: Bard]
+- `286` - Diviner [Class: Wizard]
+- `279` - Draconic Sorcery [Class: Sorcerer]
+- `259` - Eldritch Knight [Class: Fighter]
+- `287` - Evoker [Class: Wizard]
+- `270` - Fey Wanderer [Class: Ranger]
+- `283` - Fiend Patron [Class: Warlock]
+- `271` - Gloom Stalker [Class: Ranger]
+- `284` - Great Old One Patron [Class: Warlock]
+- `272` - Hunter [Class: Ranger]
+- `288` - Illusionist [Class: Wizard]
+- `249` - Life Domain [Class: Cleric]
+- `250` - Light Domain [Class: Cleric]
+- `265` - Oath of Devotion [Class: Paladin]
+- `266` - Oath of Glory [Class: Paladin]
+- `267` - Oath of the Ancients [Class: Paladin]
+- `268` - Oath of Vengeance [Class: Paladin]
+- `241` - Path of the Berserker [Class: Barbarian]
+- `242` - Path of the Wild Heart [Class: Barbarian]
+- `243` - Path of the World Tree [Class: Barbarian]
+- `244` - Path of the Zealot [Class: Barbarian]
+- `260` - Psi Warrior [Class: Fighter]
+- `275` - Soulknife [Class: Rogue]
+- `276` - Thief [Class: Rogue]
+- `251` - Trickery Domain [Class: Cleric]
+- `252` - War Domain [Class: Cleric]
+- `261` - Warrior of Mercy [Class: Monk]
+- `262` - Warrior of Shadow [Class: Monk]
+- `263` - Warrior of the Elements [Class: Monk]
+- `264` - Warrior of the Open Hand [Class: Monk]
+- `280` - Wild Magic Sorcery [Class: Sorcerer]
+
+## Class/subclass/species/feat feature - 707 with no Italian, 0 with an Italian name but English text (of 707)
+
+- **Class: Barbarian** (26): Ability Score Improvement; Barbarian Subclass; Brutal Strike; Danger Sense; Epic Boon; Extra Attack; Fast Movement; Feral Instinct; Improved Brutal Strike; Indomitable Might; Instinctive Pounce; Persistent Rage; Primal Champion; Primal Knowledge; Rage; Reckless Attack; Relentless Rage; Subclass Feature; Unarmored Defense; Weapon Mastery
+- **Class: Bard** (18): Ability Score Improvement; Bard Subclass; Bardic Inspiration; Countercharm; Epic Boon; Expertise; Font of Inspiration; Jack of All Trades; Magical Secrets; Spellcasting; Subclass Feature; Superior Inspiration; Words of Creation
+- **Class: Cleric** (22): Ability Score Improvement; Blessed Strikes; Channel Divinity; Cleric Subclass; Divine Intervention; Divine Order; Divine Spark; Divine Strike; Epic Boon; Greater Divine Intervention; Improved Blessed Strikes; Potent Spellcasting; Protector; Sear Undead; Spellcasting; Subclass Feature; Thaumaturge; Turn Undead
+- **Class: Druid** (23): Ability Score Improvement; Archdruid; Beast Spells; Druid Subclass; Druidic; Elemental Fury; Epic Boon; Improved Elemental Fury; Magician; Potent Spellcasting; Primal Order; Primal Strike; Spellcasting; Subclass Feature; Warden; Wild Companion; Wild Resurgence; Wild Shape
+- **Class: Fighter** (27): Ability Score Improvement; Action Surge; Epic Boon; Extra Attack; Fighter Subclass; Fighting Style; Indomitable; Second Wind; Studied Attacks; Subclass Feature; Tactical Master; Tactical Mind; Tactical Shift; Three Extra Attacks; Two Extra Attacks; Weapon Mastery
+- **Class: Monk** (34): Ability Score Improvement; Acrobatic Movement; Body and Mind; Bonus Unarmed Strike; Deflect Attacks; Deflect Energy; Dexterous Attacks; Disciplined Survivor; Empowered Strikes; Epic Boon; Evasion; Extra Attack; Flurry of Blows; Heightened Focus; Martial Arts; Martial Arts Die; Monk Subclass; Monk's Focus; Patient Defense; Perfect Focus; Self-Restoration; Slow Fall; Step of the Wind; Stunning Strike; Subclass Feature; Superior Defense; Unarmored Defense; Unarmored Movement; Uncanny Metabolism
+- **Class: Paladin** (24): Ability Score Improvement; Abjure Foes; Aura Expansion; Aura of Courage; Aura of Protection; Channel Divinity; Divine Sense; Epic Boon; Extra Attack; Faithful Steed; Fighting Style; Lay on Hands; Paladin Subclass; Paladin's Smite; Radiant Strikes; Restoring Touch; Spellcasting; Subclass Feature; Weapon Mastery
+- **Class: Ranger** (23): Ability Score Improvement; Deft Explorer; Epic Boon; Expertise; Extra Attack; Favored Enemy; Feral Senses; Fighting Style; Foe Slayer; Nature's Veil; Precise Hunter; Ranger Subclass; Relentless Hunter; Roving; Spellcasting; Subclass Feature; Tireless; Weapon Mastery
+- **Class: Rogue** (32): Ability Score Improvement; Cunning Action; Cunning Strike; Daze (Cost: 2d6); Devious Strikes; Elusive; Epic Boon; Evasion; Expertise; Improved Cunning Strike; Knock Out (Cost: 6d6); Obscure (Cost: 3d6); Poison (Cost: 1d6); Reliable Talent; Rogue Subclass; Slippery Mind; Sneak Attack; Steady Aim; Stroke of Luck; Subclass Feature; Thieves' Cant; Trip (Cost: 1d6); Uncanny Dodge; Weapon Mastery; Withdraw (Cost: 1d6)
+- **Class: Sorcerer** (19): Ability Score Improvement; Arcane Apotheosis; Epic Boon; Font of Magic; Innate Sorcery; Metamagic; Metamagic Options; Sorcerer Subclass; Sorcerous Restoration; Sorcery Incarnate; Spellcasting; Subclass Feature
+- **Class: Warlock** (19): Ability Score Improvement; Contact Patron; Eldritch Invocation Options; Eldritch Invocations; Eldritch Master; Epic Boon; Magical Cunning; Mystic Arcanum; Pact Magic; Subclass Feature; Warlock Subclass
+- **Class: Wizard** (16): Ability Score Improvement; Arcane Recovery; Epic Boon; Memorize Spell; Ritual Adept; Scholar; Signature Spells; Spell Mastery; Spellcasting; Subclass Feature; Wizard Subclass
+- **Feat: Ability Score Improvement** (1): Repeatable
+- **Feat: Actor** (2): Impersonation; Mimicry
+- **Feat: Alert** (2): Initiative Proficiency; Initiative Swap
+- **Feat: Athlete** (3): Climb Speed; Hop Up; Jumping
+- **Feat: Boon of Combat Prowess** (1): Peerless Aim
+- **Feat: Boon of Dimensional Travel** (1): Blink Steps
+- **Feat: Boon of Energy Resistance** (2): Energy Redirection; Energy Resistances
+- **Feat: Boon of Fate** (1): Improve Fate
+- **Feat: Boon of Fortitude** (1): Fortified Health
+- **Feat: Boon of Irresistible Offense** (2): Overcome Defenses; Overwhelming Strike
+- **Feat: Boon of Recovery** (2): Last Stand; Recover Vitality
+- **Feat: Boon of Skill** (2): All-Around Adept; Expertise
+- **Feat: Boon of Speed** (2): Escape Artist; Quickness
+- **Feat: Boon of Spell Recall** (1): Free Casting
+- **Feat: Boon of Truesight** (1): Truesight
+- **Feat: Boon of the Night Spirit** (2): Merge with Shadows; Shadowy Form
+- **Feat: Charger** (2): Charge Attack; Improved Dash
+- **Feat: Chef** (3): Bolstering Treats; Cook's Utensils; Replenishing Meal
+- **Feat: Crafter** (3): Discount; Fast Crafting; Tool Proficiency
+- **Feat: Crossbow Expert** (3): Dual Wielding; Firing in Melee; Ignore Loading
+- **Feat: Crusher** (2): Enhanced Critical; Push
+- **Feat: Defensive Duelist** (1): Parry
+- **Feat: Dual Wielder** (2): Enhanced Dual Wielding; Quick Draw
+- **Feat: Durable** (2): Defy Death; Speedy Recovery
+- **Feat: Elemental Adept** (2): Energy Mastery; Repeatable
+- **Feat: Fey-Touched** (1): Fey Magic
+- **Feat: Grappler** (3): Attack Advantage; Fast Wrestler; Punch and Grab
+- **Feat: Great Weapon Master** (2): Heavy Weapon Mastery; Hew
+- **Feat: Healer** (2): Battle Medic; Healing Rerolls
+- **Feat: Heavily Armored** (1): Armor Training
+- **Feat: Heavy Armor Master** (1): Damage Reduction
+- **Feat: Inspiring Leader** (1): Bolstering Performance
+- **Feat: Keen Mind** (2): Lore Knowledge; Quick Study
+- **Feat: Lightly Armored** (1): Armor Training
+- **Feat: Lucky** (3): Advantage; Disadvantage; Luck Points
+- **Feat: Mage Slayer** (2): Concentration Breaker; Guarded Mind
+- **Feat: Magic Initiate** (4): Level 1 Spell; Repeatable; Spell Change; Two Cantrips
+- **Feat: Martial Weapon Training** (1): Weapon Proficiency
+- **Feat: Medium Armor Master** (1): Dexterous Wearer
+- **Feat: Moderately Armored** (1): Armor Training
+- **Feat: Mounted Combatant** (3): Leap Aside; Mounted Strike; Veer
+- **Feat: Musician** (2): Encouraging Song; Instrument Training
+- **Feat: Observant** (2): Keen Observer; Quick Search
+- **Feat: Piercer** (2): Enhanced Critical; Puncture
+- **Feat: Poisoner** (2): Brew Poison; Potent Poison
+- **Feat: Polearm Master** (2): Pole Strike; Reactive Strike
+- **Feat: Resilient** (1): Saving Throw Proficiency
+- **Feat: Ritual Caster** (2): Quick Ritual; Ritual Spells
+- **Feat: Sentinel** (2): Guardian; Halt
+- **Feat: Shadow-Touched** (1): Shadow Magic
+- **Feat: Sharpshooter** (3): Bypass Cover; Firing in Melee; Long Shots
+- **Feat: Shield Master** (2): Interpose Shield; Shield Bash
+- **Feat: Skill Expert** (2): Expertise; Skill Proficiency
+- **Feat: Skilled** (1): Repeatable
+- **Feat: Skulker** (3): Blindsight; Fog of War; Sniper
+- **Feat: Slasher** (2): Enhanced Critical; Hamstring
+- **Feat: Speedy** (3): Agile Movement; Dash over Difficult Terrain; Speed Increase
+- **Feat: Spell Sniper** (3): Bypass Cover; Casting in Melee; Increased Range
+- **Feat: Tavern Brawler** (4): Damage Rerolls; Enhanced Unarmed Strike; Improvised Weaponry; Push
+- **Feat: Telekinetic** (2): Minor Telekinesis; Telekinetic Shove
+- **Feat: Telepathic** (2): Detect Thoughts; Telepathic Utterance
+- **Feat: War Caster** (3): Concentration; Reactive Spell; Somatic Components
+- **Feat: Weapon Master** (1): Mastery Property
+- **Species: Aasimar** (5): Celestial Resistance; Celestial Revelation; Darkvision; Healing Hands; Light Bearer
+- **Species: Dragonborn** (5): Breath Weapon; Damage Resistance; Darkvision; Draconic Ancestry; Draconic Flight
+- **Species: Dwarf** (4): Darkvision; Dwarven Resilience; Dwarven Toughness; Stonecunning
+- **Species: Elf** (5): Darkvision; Elven Lineage; Fey Ancestry; Keen Senses; Trance
+- **Species: Gnome** (3): Darkvision; Gnomish Cunning; Gnomish Lineage
+- **Species: Goliath** (3): Giant Ancestry; Large Form; Powerful Build
+- **Species: Grung** (3): Amphibious; Spring-Frog Leap; Swimming Instinct
+- **Species: Halfling** (4): Brave; Halfling Nimbleness; Luck; Naturally Stealthy
+- **Species: Human** (3): Resourceful; Skillful; Versatile
+- **Species: Orc** (3): Adrenaline Rush; Darkvision; Relentless Endurance
+- **Species: Tiefling** (3): Darkvision; Fiendish Legacy; Otherworldly Presence
+- **Subclass: Aberrant Sorcery** (6): Psionic Sorcery; Psionic Spells; Psychic Defenses; Revelation in Flesh; Telepathic Speech; Warping Implosion
+- **Subclass: Abjurer** (5): Abjuration Savant; Arcane Ward; Projected Ward; Spell Breaker; Spell Resistance
+- **Subclass: Arcane Trickster** (5): Mage Hand Legerdemain; Magical Ambush; Spell Thief; Spellcasting; Versatile Trickster
+- **Subclass: Archfey Patron** (5): Archfey Spells; Beguiling Defenses; Bewitching Magic; Misty Escape; Steps of the Fey
+- **Subclass: Assassin** (5): Assassin's Tools; Assassinate; Death Strike; Envenom Weapons; Infiltration Expertise
+- **Subclass: Battle Master** (7): Combat Superiority; Improved Combat Superiority; Know Your Enemy; Maneuver Options; Relentless; Student of War; Ultimate Combat Superiority
+- **Subclass: Beast Master** (4): Bestial Fury; Exceptional Training; Primal Companion; Share Spells
+- **Subclass: Celestial Patron** (5): Celestial Resilience; Celestial Spells; Healing Light; Radiant Soul; Searing Vengeance
+- **Subclass: Champion** (6): Additional Fighting Style; Heroic Warrior; Improved Critical; Remarkable Athlete; Superior Critical; Survivor
+- **Subclass: Circle of the Land** (5): Circle of the Land Spells; Land's Aid; Natural Recovery; Nature's Sanctuary; Nature's Ward
+- **Subclass: Circle of the Moon** (5): Circle Forms; Circle of the Moon Spells; Improved Circle Forms; Lunar Form; Moonlight Step
+- **Subclass: Circle of the Sea** (5): Aquatic Affinity; Circle of the Sea Spells; Oceanic Gift; Stormborn; Wrath of the Sea
+- **Subclass: Circle of the Stars** (8): Archer; Chalice; Cosmic Omen; Dragon; Full of Stars; Star Map; Starry Form; Twinkling Constellations
+- **Subclass: Clockwork Sorcery** (5): Bastion of Law; Clockwork Cavalcade; Clockwork Spells; Restore Balance; Trance of Order
+- **Subclass: College of Dance** (8): Agile Strikes; Bardic Damage; Dance Virtuoso; Dazzling Footwork; Inspiring Movement; Leading Evasion; Tandem Footwork; Unarmored Defense
+- **Subclass: College of Glamour** (4): Beguiling Magic; Mantle of Inspiration; Mantle of Majesty; Unbreakable Majesty
+- **Subclass: College of Lore** (4): Bonus Proficiencies; Cutting Words; Magical Discoveries; Peerless Skill
+- **Subclass: College of Valor** (4): Battle Magic; Combat Inspiration; Extra Attack; Martial Training
+- **Subclass: Diviner** (5): Divination Savant; Expert Divination; Greater Portent; Portent; The Third Eye
+- **Subclass: Draconic Sorcery** (5): Draconic Resilience; Draconic Spells; Dragon Companion; Dragon Wings; Elemental Affinity
+- **Subclass: Eldritch Knight** (6): Arcane Charge; Eldritch Strike; Improved War Magic; Spellcasting; War Bond; War Magic
+- **Subclass: Evoker** (5): Empowered Evocation; Evocation Savant; Overchannel; Potent Cantrip; Sculpt Spells
+- **Subclass: Fey Wanderer** (6): Beguiling Twist; Dreadful Strikes; Fey Reinforcements; Fey Wanderer Spells; Misty Wanderer; Otherworldly Glamour
+- **Subclass: Fiend Patron** (5): Dark One's Blessing; Dark One's Own Luck; Fiend Spells; Fiendish Resilience; Hurl Through Hell
+- **Subclass: Gloom Stalker** (6): Dread Ambusher; Gloom Stalker Spells; Iron Mind; Shadowy Dodge; Stalker's Flurry; Umbral Sight
+- **Subclass: Great Old One Patron** (7): Awakened Mind; Clairvoyant Combatant; Create Thrall; Eldritch Hex; Great Old One Spells; Psychic Spells; Thought Shield
+- **Subclass: Hunter** (5): Defensive Tactics; Hunter's Lore; Hunter's Prey; Superior Hunter's Defense; Superior Hunter's Prey
+- **Subclass: Illusionist** (5): Illusion Savant; Illusory Reality; Illusory Self; Improved Illusions; Phantasmal Creatures
+- **Subclass: Life Domain** (5): Blessed Healer; Disciple of Life; Life Domain Spells; Preserve Life; Supreme Healing
+- **Subclass: Light Domain** (5): Corona of Light; Improved Warding Flare; Light Domain Spells; Radiance of the Dawn; Warding Flare
+- **Subclass: Oath of Devotion** (5): Aura of Devotion; Holy Nimbus; Oath of Devotion Spells; Sacred Weapon; Smite of Protection
+- **Subclass: Oath of Glory** (6): Aura of Alacrity; Glorious Defense; Inspiring Smite; Living Legend; Oath of Glory Spells; Peerless Athlete
+- **Subclass: Oath of Vengeance** (5): Avenging Angel; Oath of Vengeance Spells; Relentless Avenger; Soul of Vengeance; Vow of Enmity
+- **Subclass: Oath of the Ancients** (5): Aura of Warding; Elder Champion; Nature's Wrath; Oath of the Ancients Spells; Undying Sentinel
+- **Subclass: Path of the Berserker** (4): Frenzy; Intimidating Presence; Mindless Rage; Retaliation
+- **Subclass: Path of the Wild Heart** (5): Animal Speaker; Aspect of the Wilds; Nature Speaker; Power of the Wilds; Rage of the Wilds
+- **Subclass: Path of the World Tree** (4): Battering Roots; Branches of the Tree; Travel Along the Tree; Vitality of the Tree
+- **Subclass: Path of the Zealot** (5): Divine Fury; Fanatical Focus; Rage of the Gods; Warrior of the Gods; Zealous Presence
+- **Subclass: Psi Warrior** (10): Bulwark of Force; Guarded Mind; Protective Field; Psi-Powered Leap; Psionic Power; Psionic Strike; Telekinetic Adept; Telekinetic Master; Telekinetic Movement; Telekinetic Thrust
+- **Subclass: Soulknife** (9): Homing Strikes; Psi-Bolstered Knack; Psionic Power; Psychic Blades; Psychic Teleportation; Psychic Veil; Psychic Whispers; Rend Mind; Soul Blades
+- **Subclass: Thief** (5): Fast Hands; Second-Story Work; Supreme Sneak; Thief's Reflexes; Use Magic Device
+- **Subclass: Trickery Domain** (5): Blessing of the Trickster; Improved Duplicity; Invoke Duplicity; Trickery Domain Spells; Trickster's Transposition
+- **Subclass: War Domain** (5): Avatar of Battle; Guided Strike; War Domain Spells; War God's Blessing; War Priest
+- **Subclass: Warrior of Mercy** (6): Flurry of Healing and Harm; Hand of Harm; Hand of Healing; Hand of Ultimate Mercy; Implements of Mercy; Physician's Touch
+- **Subclass: Warrior of Shadow** (7): Cloak of Shadows; Darkness; Darkvision; Improved Shadow Step; Shadow Arts; Shadow Step; Shadowy Figments
+- **Subclass: Warrior of the Elements** (5): Elemental Attunement; Elemental Burst; Elemental Epitome; Manipulate Elements; Stride of the Elements
+- **Subclass: Warrior of the Open Hand** (4): Fleet Step; Open Hand Technique; Quivering Palm; Wholeness of Body
+- **Subclass: Wild Magic Sorcery** (5): Bend Luck; Controlled Chaos; Tamed Surge; Tides of Chaos; Wild Magic Surge
+
+## Optional feature - 58 with no Italian, 0 with an Italian name but English text (of 58)
+
+- `agonizing-blast` - Agonizing Blast (SRD)
+- `ambush` - Ambush
+- `armor-of-shadows` - Armor of Shadows (SRD)
+- `ascendant-step` - Ascendant Step (SRD)
+- `bait-and-switch` - Bait and Switch
+- `careful-spell` - Careful Spell (SRD)
+- `commanders-strike` - Commander's Strike
+- `commanding-presence` - Commanding Presence
+- `devils-sight` - Devil's Sight (SRD)
+- `devouring-blade` - Devouring Blade
+- `disarming-attack` - Disarming Attack
+- `distant-spell` - Distant Spell (SRD)
+- `distracting-strike` - Distracting Strike
+- `eldritch-mind` - Eldritch Mind
+- `eldritch-smite` - Eldritch Smite
+- `eldritch-spear` - Eldritch Spear (SRD)
+- `empowered-spell` - Empowered Spell (SRD)
+- `evasive-footwork` - Evasive Footwork
+- `extended-spell` - Extended Spell (SRD)
+- `feinting-attack` - Feinting Attack
+- `fiendish-vigor` - Fiendish Vigor (SRD)
+- `gaze-of-two-minds` - Gaze of Two Minds (SRD)
+- `gift-of-the-depths` - Gift of the Depths
+- `gift-of-the-protectors` - Gift of the Protectors
+- `goading-attack` - Goading Attack
+- `heightened-spell` - Heightened Spell (SRD)
+- `investment-of-the-chain-master` - Investment of the Chain Master
+- `lessons-of-the-first-ones` - Lessons of the First Ones
+- `lifedrinker` - Lifedrinker (SRD)
+- `lunging-attack` - Lunging Attack
+- `maneuvering-attack` - Maneuvering Attack
+- `mask-of-many-faces` - Mask of Many Faces (SRD)
+- `master-of-myriad-forms` - Master of Myriad Forms (SRD)
+- `menacing-attack` - Menacing Attack
+- `misty-visions` - Misty Visions (SRD)
+- `one-with-shadows` - One with Shadows (SRD)
+- `otherworldly-leap` - Otherworldly Leap (SRD)
+- `pact-of-the-blade` - Pact of the Blade (SRD)
+- `pact-of-the-chain` - Pact of the Chain (SRD)
+- `pact-of-the-tome` - Pact of the Tome (SRD)
+- `parry` - Parry
+- `precision-attack` - Precision Attack
+- `pushing-attack` - Pushing Attack
+- `quickened-spell` - Quickened Spell (SRD)
+- `rally` - Rally
+- `repelling-blast` - Repelling Blast (SRD)
+- `riposte` - Riposte
+- `seeking-spell` - Seeking Spell
+- `subtle-spell` - Subtle Spell (SRD)
+- `sweeping-attack` - Sweeping Attack
+- `tactical-assessment` - Tactical Assessment
+- `thirsting-blade` - Thirsting Blade (SRD)
+- `transmuted-spell` - Transmuted Spell
+- `trip-attack` - Trip Attack
+- `twinned-spell` - Twinned Spell (SRD)
+- `visions-of-distant-realms` - Visions of Distant Realms (SRD)
+- `whispers-of-the-grave` - Whispers of the Grave (SRD)
+- `witch-sight` - Witch Sight (SRD)

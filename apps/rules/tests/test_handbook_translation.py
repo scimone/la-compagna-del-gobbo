@@ -17,7 +17,7 @@ from apps.rules.handbook_source import (
     overlay_translation,
 )
 from apps.rules.management.commands.import_rules_data import Command as ImportCommand
-from apps.rules.models import HandbookSection
+from apps.rules.models import HandbookSection, Spell
 
 TAG = re.compile(r"\{@(\w+)\s+([^}]*)\}")
 
@@ -241,10 +241,11 @@ def test_import_handbook_stores_both_languages_and_drops_the_omitted_rows():
 
 @pytest.mark.django_db
 def test_import_translations_syncs_rows_without_wiping_anything_else():
-    ImportCommand()._import_handbook()
+    call_command("import_rules_data")
     HandbookSection.objects.filter(pk="06b").delete()  # a row that went missing
     HandbookSection.objects.update(name_it=None, entries_it=None)  # Italian never loaded
     HandbookSection.objects.create(id="009", page=7, name_en="Player or DM?", entries_en=[])
+    spells_before = Spell.objects.count()
 
     call_command("import_translations")
 
@@ -252,3 +253,4 @@ def test_import_translations_syncs_rows_without_wiping_anything_else():
     assert (combat.name_en, combat.name_it) == ("Combat", "Combattimento")
     assert not HandbookSection.objects.filter(pk="009").exists()  # stale row removed
     assert not HandbookSection.objects.filter(name_it__isnull=True).exists()
+    assert Spell.objects.count() == spells_before  # other catalogs left in place

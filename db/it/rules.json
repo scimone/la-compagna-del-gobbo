@@ -1,0 +1,977 @@
+{
+ "ability-check": {
+  "name": "Prova di caratteristica",
+  "entries": [
+   "Una prova di caratteristica è una prova effettuata con un d20: rappresenta l'uso di una delle sei caratteristiche (o di un'abilità speciale associata a una caratteristica) al fine di superare una sfida. Vedi anche \"Come si gioca\" (\"{@variantrule D20 Test|XPHB|Prove con d20}\" e \"Competenza\")."
+  ]
+ },
+ "ability-score-and-modifier": {
+  "name": "Punteggio di caratteristica e modificatore",
+  "entries": [
+   "Una creatura ha sei punteggi di caratteristica (Forza, Destrezza, Costituzione, Intelligenza, Saggezza e Carisma), ognuno dei quali ha un modificatore corrispondente. Quando effettui una {@variantrule D20 Test|XPHB|prova con d20} relativa a una caratteristica, o quando una regola lo richiede, aggiungi il modificatore corrispondente. Vedi anche \"Come si gioca\" (\"Le sei caratteristiche\")."
+  ]
+ },
+ "advantage": {
+  "name": "Vantaggio",
+  "entries": [
+   "Se il tuo personaggio dispone di vantaggio a una {@variantrule D20 Test|XPHB|prova con d20}, tira due d20 e scegli il risultato più alto. Un tiro non può essere influenzato da più di un vantaggio; inoltre, vantaggio e {@variantrule Disadvantage|XPHB|svantaggio} sullo stesso tiro si annullano a vicenda. Vedi anche \"Come si gioca\" (\"Prove con d20\")."
+  ]
+ },
+ "adventure": {
+  "name": "Avventura",
+  "entries": [
+   "Un'avventura consiste in una serie di incontri: giocandoci, prende vita una storia. Vedi anche \"{@variantrule Encounter|XPHB|Incontro}\"."
+  ]
+ },
+ "alignment": {
+  "name": "Allineamento",
+  "entries": [
+   "L'allineamento di una creatura descrive a grandi linee i suoi ideali e atteggiamenti etici, ed è una combinazione di due fattori: il primo identifica la moralità (buona, malvagia o neutrale), mentre il secondo descrive l'atteggiamento nei confronti dell'ordine (legale, caotico o neutrale). Questi fattori danno vita a nove possibili combinazioni come, ad esempio, legale buono e neutrale malvagio. Vedi anche \"Creazione del personaggio\" (\"Creare il personaggio\")."
+  ]
+ },
+ "ally": {
+  "name": "Alleato",
+  "entries": [
+   "Una creatura si definisce \"alleata\" se fa parte del gruppo di avventurieri del tuo personaggio, se gli è amica, se si schiera al suo fianco in combattimento o se si tratta di una creatura indicata come alleata dalle regole del gioco o dal GM."
+  ]
+ },
+ "armor-class": {
+  "name": "Classe Armatura",
+  "entries": [
+   "La Classe Armatura (CA) è il numero bersaglio per un tiro per colpire: rappresenta il grado di difficoltà per colpire un bersaglio.",
+   "La CA base del tuo personaggio si calcola sommando 10 al modificatore di Destrezza. Se una regola prevede che tu debba calcolare la CA base diversamente, scegli quale metodo adottare per definirla: non puoi usarne più di uno. Vedi anche \"Tiro per colpire\"."
+  ]
+ },
+ "armor-training": {
+  "name": "Competenza nelle armature",
+  "entries": [
+   "La competenza nelle armature consente al tuo personaggio di utilizzare un'armatura di una certa categoria senza gli svantaggi illustrati di seguito. Se il personaggio indossa un'armatura leggera, media o pesante senza avere la competenza per farlo, subisce {@variantrule Disadvantage|XPHB|svantaggio} a tutte le {@variantrule D20 Test|XPHB|prove con d20} relative a Forza o Destrezza, e non può lanciare incantesimi. Se il personaggio usa uno scudo senza avere la competenza per farlo, non riceve il bonus alla CA. Vedi anche \"Svantaggio\" e \"Equipaggiamento\" (\"Armatura\")."
+  ]
+ },
+ "attack-roll": {
+  "name": "Tiro per colpire",
+  "entries": [
+   "Un tiro per colpire è una {@variantrule D20 Test|XPHB|prova con d20} che rappresenta un attacco con un'arma, con un {@variantrule Unarmed Strike|XPHB|colpo senz'armi} o con un incantesimo. Vedi anche \"Come si gioca\" (\"Prove con d20\")."
+  ]
+ },
+ "attitude": {
+  "name": "Atteggiamento",
+  "entries": [
+   "Ogni {@variantrule Monster|XPHB|mostro} ha un atteggiamento iniziale verso il {@variantrule Player Character|XPHB|personaggio giocante}: {@variantrule Friendly [Attitude]|XPHB|amichevole}, {@variantrule Hostile [Attitude]|XPHB|ostile} o {@variantrule Indifferent [Attitude]|XPHB|indifferente}. Vedi anche \"Amichevole\", \"Ostile\", \"Indifferente\" e \"Influenza\"."
+  ]
+ },
+ "attunement": {
+  "name": "Sintonia",
+  "entries": [
+   "Alcuni oggetti magici richiedono che la creatura entri in sintonia con loro prima che possa utilizzarne le proprietà magiche. Una creatura può avere sintonia con non più di tre oggetti magici alla volta. Vedi anche \"Equipaggiamento\" (\"Oggetti magici\")."
+  ]
+ },
+ "bonus-action": {
+  "name": "Azione bonus",
+  "entries": [
+   "Un'azione bonus è un'azione speciale che il personaggio può effettuare nello stesso turno in cui effettua un'azione. Il personaggio non può effettuare più di un'azione bonus per turno, e ne ha una a disposizione solo se una regola lo indica esplicitamente. Vedi anche \"Come si gioca\" (\"Azioni\")."
+  ]
+ },
+ "burrow-speed": {
+  "name": "Velocità di scavo",
+  "entries": [
+   "Una creatura dotata di velocità di scavo può usare tale velocità per muoversi attraverso la sabbia, la terra, il fango o il ghiaccio. Non può scavare nella roccia solida, a meno che non abbia un tratto che le consenta di farlo. Vedi anche \"Velocità\"."
+  ]
+ },
+ "campaign": {
+  "name": "Campagna",
+  "entries": [
+   "Una campagna consiste in una serie di {@variantrule Adventure|XPHB|avventure}. Vedi anche \"Avventura\"."
+  ]
+ },
+ "cantrip": {
+  "name": "Trucchetto",
+  "entries": [
+   "Un trucchetto è un incantesimo di livello 0 che si lancia senza slot incantesimo. Vedi anche \"Incantesimi\"."
+  ]
+ },
+ "carrying-capacity": {
+  "name": "Capacità di trasporto",
+  "entries": [
+   "La taglia e il punteggio di Forza del tuo personaggio determinano il peso massimo, misurato in chilogrammi, che il personaggio può trasportare, come indicato nella tabella \"Capacità di trasporto\". La tabella indica anche il peso massimo che il personaggio può trascinare, sollevare o spingere.",
+   "Mentre il personaggio trascina, solleva o spinge un peso superiore a quello massimo che è capace di trasportare, la sua velocità non può superare 1,5 metri.",
+   {
+    "caption": "Capacità di trasporto",
+    "colLabels": [
+     "Taglia delle creature",
+     "Trasportare",
+     "Trascinare/ sollevare/spingere"
+    ],
+    "rows": [
+     [
+      "Minuscola",
+      "For × 3,75 kg",
+      "For × 7,5 kg"
+     ],
+     [
+      "Piccola/Media",
+      "For × 7,5 kg",
+      "For × 15 kg"
+     ],
+     [
+      "Grande",
+      "For × 15 kg",
+      "For × 30 kg"
+     ],
+     [
+      "Enorme",
+      "For × 30 kg",
+      "For × 60 kg"
+     ],
+     [
+      "Mastodontica",
+      "For × 60 kg",
+      "For × 120 kg"
+     ]
+    ]
+   }
+  ]
+ },
+ "challenge-rating": {
+  "name": "Grado di sfida",
+  "entries": [
+   "Il grado di sfida (GS) indica quanto è grave la minaccia costituita da un {@variantrule Monster|XPHB|mostro} per un gruppo di quattro personaggi giocanti. Confronta il GS di un {@variantrule Monster|XPHB|mostro} con il livello dei personaggi. Se il GS è superiore, è probabile che il {@variantrule Monster|XPHB|mostro} costituisca un pericolo. Se il GS è inferiore, è probabile che il {@variantrule Monster|XPHB|mostro} non costituisca una seria minaccia. Tuttavia, le circostanze e il numero di personaggi giocanti possono alterare significativamente l'effettivo grado di minaccia di un {@variantrule Monster|XPHB|mostro} nel gioco. \"Strumenti di gioco\" (\"{@variantrule Encounter|XPHB|Incontri} di combattimento\") fornisce una guida per il GM su come utilizzare i GS nel pianificare potenziali incontri di combattimento. Vedi anche \"Scheda delle statistiche\"."
+  ]
+ },
+ "character-sheet": {
+  "name": "Scheda del personaggio",
+  "entries": [
+   "La scheda del personaggio è una nota digitale o cartacea che usi per tenere traccia delle informazioni sul tuo personaggio. Vedi anche \"Creazione del personaggio\"."
+  ]
+ },
+ "climb-speed": {
+  "name": "Velocità di scalata",
+  "entries": [
+   "La {@variantrule Speed|XPHB|velocità} di scalata può essere usata al posto della velocità per arrampicarsi su una superficie verticale, senza spendere movimento extra normalmente associato alla scalata. Vedi anche \"Scalare\" e \"Velocità\"."
+  ]
+ },
+ "cone-area-of-effect": {
+  "name": "Cono [area di effetto]",
+  "entries": [
+   "Un cono è un'area di effetto che si estende in linee rette da un punto di origine nella direzione scelta dal suo creatore. La larghezza del cono, misurata in un qualsiasi punto della sua lunghezza, è pari alla distanza di quel punto dal punto di origine. Per esempio, un cono è largo 4,5 metri in un determinato punto della sua lunghezza che misura 4,5 metri dal punto di origine. L'effetto che crea un cono ne specifica la lunghezza massima.",
+   "Il punto di origine di un cono non è incluso nell'area di effetto, a meno che il suo creatore non decida altrimenti."
+  ]
+ },
+ "cover": {
+  "name": "Copertura",
+  "entries": [
+   "La copertura fornisce un certo grado di protezione a un bersaglio che si trova dietro di essa. Esistono tre gradi di copertura, ognuno dei quali offre un beneficio diverso a un bersaglio: mezza copertura (bonus di +2 alla CA e ai {@variantrule Saving Throw|XPHB|tiri salvezza} su Destrezza), tre quarti di copertura (bonus di +5 alla CA e ai tiri salvezza su Destrezza) e copertura totale (il bersaglio non può essere bersagliato direttamente). Se il bersaglio si trova dietro a più di un grado di copertura, beneficia solo del grado più protettivo. Vedi anche \"Come si gioca\" (\"Combattimento\")."
+  ]
+ },
+ "crawling": {
+  "name": "Strisciare",
+  "entries": [
+   "Quando il personaggio striscia, ogni 30 centimetri di movimento costano 30 centimetri extra (60 centimetri extra in caso di {@variantrule Difficult Terrain|XPHB|terreno difficile}). Vedi anche \"Velocità\"."
+  ]
+ },
+ "creature": {
+  "name": "Creatura",
+  "entries": [
+   "Qualsiasi essere all'interno del gioco, incluso il personaggio di un giocatore, è una creatura. Vedi anche \"Tipo di creatura\"."
+  ]
+ },
+ "critical-hit": {
+  "name": "Colpo critico",
+  "entries": [
+   "Se un tiro per colpire ottiene un 20 sul {@dice d20}, metti a segno un colpo critico, e l'attacco va a segno a prescindere da qualsiasi modificatore o dalla CA del bersaglio. Un colpo critico ti consente di tirare dadi extra per i danni dell'attacco contro il bersaglio. Tira tutti i dadi di danno dell'attacco due volte e sommali, poi aggiungi gli eventuali modificatori rilevanti. Vedi anche \"Come si gioca\" (\"Danni e guarigione\")."
+  ]
+ },
+ "curses": {
+  "name": "Maledizioni",
+  "entries": [
+   "Alcuni effetti di gioco maledicono creature e oggetti. L'effetto che infligge una maledizione ne definisce le conseguenze. È possibile rimuovere le maledizioni con gli incantesimi rimuovi maledizione e ristorare superiore, o con altre magie in grado di porre fine alle maledizioni."
+  ]
+ },
+ "cylinder-area-of-effect": {
+  "name": "Cilindro [area di effetto]",
+  "entries": [
+   "Un cilindro è un'area di effetto che si estende in linee rette da un punto di origine situato al centro della parte circolare superiore o inferiore del cilindro. L'effetto che crea un cilindro specifica il raggio della base e l'altezza del cilindro.",
+   "Il punto di origine di un cilindro è incluso nell'area di effetto."
+  ]
+ },
+ "d20-test": {
+  "name": "Prova con D20",
+  "entries": [
+   "Le prove con d20 includono i tre principali tiri con d20 presenti nel gioco: la {@variantrule Ability Check|XPHB|prova di caratteristica}, il {@variantrule Attack Roll|XPHB|tiro per colpire} e il {@variantrule Saving Throw|XPHB|tiro salvezza}. Se qualche elemento di gioco influisce sulle prove con d20, influisce su tutti e tre i tiri descritti. È il GM a determinare se una prova con d20 è giustificata in una certa circostanza. Vedi anche \"Come si gioca\" (\"Prove con d20\")."
+  ]
+ },
+ "damage": {
+  "name": "Danni",
+  "entries": [
+   "I danni rappresentano ciò che fa perdere {@variantrule Hit Points|XPHB|punti ferita} a creature e oggetti colpiti."
+  ]
+ },
+ "damage-roll": {
+  "name": "Tiro per i danni",
+  "entries": [
+   "Un tiro per i danni è un tiro di dado (regolato dall'aggiunta dei modificatori applicabili) che infligge danni a un bersaglio. Vedi anche \"Come si gioca\" (\"Danni e guarigione\")."
+  ]
+ },
+ "damage-threshold": {
+  "name": "Soglia di danno",
+  "entries": [
+   "Una creatura o un oggetto che possiede una soglia di danno è immune a tutti i danni, a meno che non subisca una quantità di danni pari o superiore alla sua soglia di danno da un singolo attacco o effetto, nel qual caso subisce l'intera istanza di danno. I danni che non riescono a eguagliare o superare la soglia di danno sono superficiali e non riducono i {@variantrule Hit Points|XPHB|punti ferita}. Ad esempio, se un oggetto ha una soglia di danno pari a 10, non subisce danni se gli vengono inflitti 9 danni, poiché questa quantità di danni non supera la soglia di danno. Se all'oggetto vengono inflitti 11 danni, l'oggetto li subisce interamente."
+  ]
+ },
+ "damage-types": {
+  "name": "Tipi di danno",
+  "entries": [
+   "Gli attacchi e altri effetti dannosi infliggono vari tipi di danno. I tipi di danno non seguono regole particolari; tuttavia, altre regole, come quelle riguardanti la resistenza, possono farvi riferimento. La tabella \"Tipi di danno\" fornisce degli esempi per aiutare il GM ad assegnare un tipo di danno a un determinato effetto.",
+   {
+    "caption": "Tipi di danno",
+    "colLabels": [
+     "Tipo",
+     "Esempi"
+    ],
+    "rows": [
+     [
+      "Acido",
+      "Liquidi corrosivi, enzimi digestivi"
+     ],
+     [
+      "Contundente",
+      "Oggetti contundenti, stritolamento, caduta"
+     ],
+     [
+      "Forza",
+      "Pura energia magica"
+     ],
+     [
+      "Freddo",
+      "Acqua gelata, getti ghiacciati"
+     ],
+     [
+      "Fulmine",
+      "Elettricità"
+     ],
+     [
+      "Fuoco",
+      "Fiamme, calore insopportabile"
+     ],
+     [
+      "Necrotico",
+      "Energia in grado di risucchiare la vita"
+     ],
+     [
+      "Perforante",
+      "Zanne, oggetti perforanti"
+     ],
+     [
+      "Psichico",
+      "Energia in grado di spezzare la mente"
+     ],
+     [
+      "Radioso",
+      "Energia sacra, radiazione incandescente"
+     ],
+     [
+      "Tagliente",
+      "Artigli, oggetti taglienti"
+     ],
+     [
+      "Tuono",
+      "Suono concussivo"
+     ],
+     [
+      "Veleno",
+      "Gas tossico, veleno"
+     ]
+    ]
+   }
+  ]
+ },
+ "darkness": {
+  "name": "Oscurità",
+  "entries": [
+   "Un'area di oscurità è un'area {@variantrule Heavily Obscured|XPHB|pesantemente oscurata}. Vedi anche \"Pesantemente oscurata\" e \"Come si gioca\" (\"Esplorazione\")."
+  ]
+ },
+ "dead": {
+  "name": "Morte",
+  "entries": [
+   "Una creatura morta non ha {@variantrule Hit Points|XPHB|punti ferita} e non può recuperarne, a meno che non venga prima riportata in vita dalla magia, come tramite gli incantesimi {@spell Raise Dead|XPHB|rianimare morti} e rinascita. Quando un incantesimo di questo tipo viene lanciato, lo spirito riconosce l'incantatore che lo sta lanciando e può rifiutarlo. Lo spirito di una creatura morta ha lasciato il suo corpo e si è recato nei Piani Esterni: per riportare in vita la creatura è necessario richiamarne lo spirito.",
+   "Se la creatura torna in vita, l'effetto di rinascita ne determina i {@variantrule Hit Points|XPHB|punti ferita} attuali. Salvo diversamente indicato, la creatura ritorna in vita con tutte le {@variantrule Condition|XPHB|condizioni}, i contagi magici o le maledizioni che la affliggevano al momento della morte, se la durata di tali effetti è ancora in corso. Se la creatura è morta mentre aveva uno o più livelli di {@condition Exhaustion|XPHB|indebolimento}, ritorna in vita con 1 livello in meno. Se la creatura aveva {@variantrule Attunement|XPHB|sintonia} con uno o più oggetti magici, perde la sintonia con ognuno di essi."
+  ]
+ },
+ "death-saving-throw": {
+  "name": "Tiro salvezza contro morte",
+  "entries": [
+   "Un {@variantrule Player Character|XPHB|personaggio giocante} deve effettuare un tiro salvezza contro morte se inizia il proprio turno con 0 {@variantrule Hit Points|XPHB|punti ferita}. Vedi anche \"Come si gioca\" (\"Danni e guarigione\")."
+  ]
+ },
+ "difficult-terrain": {
+  "name": "Terreno difficile",
+  "entries": [
+   "Se uno spazio è terreno difficile, ogni 30 centimetri di movimento in quello spazio costano 30 centimetri extra. Per esempio, spostarsi di 1,5 metri su terreno difficile costa 3 metri di movimento. Il terreno difficile non è cumulativo: o uno spazio è terreno difficile o non lo è.",
+   "Uno spazio è terreno difficile se contiene uno dei seguenti elementi o qualcosa di simile:",
+   {
+    "items": [
+     "Una creatura che non sia minuscola o una creatura alleata",
+     "Mobili a misura di creature di taglia pari o superiore a quella del personaggio",
+     "Neve alta, ghiaccio, detriti o sottobosco",
+     "Liquido a livello degli stinchi o fino alla vita",
+     "Un'apertura stretta adatta a una creatura di una taglia inferiore a quella del personaggio",
+     "Una pendenza di 20 gradi o più"
+    ]
+   }
+  ]
+ },
+ "difficulty-class": {
+  "name": "Classe Difficoltà",
+  "entries": [
+   "La Classe Difficoltà (CD) è il numero bersaglio per una prova di caratteristica o per un {@variantrule Saving Throw|XPHB|tiro salvezza}. Vedi anche \"Come si gioca\" (\"Prove con d20\")."
+  ]
+ },
+ "dim-light": {
+  "name": "Luce fioca",
+  "entries": [
+   "Un'area con luce fioca è {@variantrule Lightly Obscured|XPHB|leggermente oscurata}. Vedi anche \"Leggermente oscurata\" e \"Come si gioca\" (\"Esplorazione\")."
+  ]
+ },
+ "disadvantage": {
+  "name": "Svantaggio",
+  "entries": [
+   "Se il personaggio subisce svantaggio a una {@variantrule D20 Test|XPHB|prova con d20}, tira due d20 e scegli il risultato più basso. Un tiro non può essere influenzato da più di uno svantaggio; inoltre, {@variantrule Advantage|XPHB|vantaggio} e svantaggio sullo stesso tiro si annullano a vicenda. Vedi anche \"Come si gioca\" (\"Prove con d20\")."
+  ]
+ },
+ "emanation-area-of-effect": {
+  "name": "Emanazione [area di effetto]",
+  "entries": [
+   "Un'emanazione è un'area di effetto che si estende in linee rette da una creatura o da un oggetto in tutte le direzioni. L'effetto che crea un'emanazione specifica la distanza fino a cui essa si estende.",
+   "Un'emanazione si muove insieme alla creatura o all'oggetto che ne costituisce l'origine, a meno che non si tratti di un effetto istantaneo o stazionario.",
+   "L'origine di un'emanazione (creatura o oggetto) non è inclusa nell'area di effetto, a meno che il suo creatore non decida altrimenti."
+  ]
+ },
+ "encounter": {
+  "name": "Incontro",
+  "entries": [
+   "Un incontro è una scena di un'avventura che fa parte di almeno uno dei tre pilastri del gioco: interazioni sociali, esplorazione o combattimento. Vedi anche \"Come si gioca\" (\"Interazioni sociali\", \"Esplorazione\" e \"Combattimento\")."
+  ]
+ },
+ "enemy": {
+  "name": "Nemico",
+  "entries": [
+   "Una creatura si definisce \"nemica\" se combatte contro il personaggio in combattimento, se si adopera attivamente per danneggiarlo o se si tratta di una creatura indicata come nemica dalle regole del gioco o dal GM."
+  ]
+ },
+ "experience-points": {
+  "name": "Punti esperienza",
+  "entries": [
+   "Superando sfide e completando avventure, i personaggi ottengono punti esperienza (PE), che vengono assegnati dal Game Master. Quando il totale dei PE di un personaggio supera una certa soglia, il livello del personaggio aumenta. Vedi anche \"Avanzamento di livello\"."
+  ]
+ },
+ "expertise": {
+  "name": "Maestria",
+  "entries": [
+   "La maestria è un privilegio che migliora l'uso di una {@variantrule Proficiency|XPHB|competenza} in un'abilità. Quando il tuo personaggio effettua una prova di caratteristica con una competenza in un'abilità in cui ha maestria, il suo bonus di competenza è raddoppiato per quella prova, a meno che il bonus non sia raddoppiato da un altro privilegio.",
+   "Se il personaggio ottiene maestria, la ottiene in un'{@variantrule skill|XPHB|abilità} in cui è competente. Non è possibile avere più di una maestria nella stessa competenza in un'abilità."
+  ]
+ },
+ "flying": {
+  "name": "Volare",
+  "entries": [
+   "Esistono vari effetti che consentono a una creatura di volare. Mentre il tuo personaggio vola, cade al suolo se è {@condition Incapacitated|XPHB|incapacitato} o {@condition Prone|XPHB|prono}, o se la sua {@variantrule Fly Speed|XPHB|velocità di volo} scende a 0. In queste circostanze, il personaggio può rimanere sospeso in aria se è in grado di fluttuare. Vedi anche \"Caduta\" e \"Velocità di volo\"."
+  ]
+ },
+ "friendly-attitude": {
+  "name": "Amichevole [atteggiamento]",
+  "entries": [
+   "Una creatura amichevole ha un'opinione positiva del personaggio, il quale dispone di {@variantrule Advantage|XPHB|vantaggio} a una prova di caratteristica per influenzare una creatura amichevole. Vedi anche \"Influenza\"."
+  ]
+ },
+ "hazard": {
+  "name": "Pericolo",
+  "entries": [
+   "Un pericolo è un rischio ambientale. Vedi anche \"Caduta\", \"Disidratazione\", \"In fiamme\", \"Malnutrizione\" e \"Soffocamento\"."
+  ]
+ },
+ "healing": {
+  "name": "Guarigione",
+  "entries": [
+   "La guarigione è il modo in cui il tuo personaggio recupera {@variantrule Hit Points|XPHB|punti ferita}. Vedi anche \"Come si gioca\" (\"Danni e guarigione\")."
+  ]
+ },
+ "heavily-obscured": {
+  "name": "Pesantemente oscurata",
+  "entries": [
+   "Se il personaggio cerca di scorgere qualcosa in un'area pesantemente oscurata, ha la condizione \"{@condition Blinded|XPHB|accecato}\". Vedi anche \"Accecato\", \"Oscurità\" e \"Come si gioca\" (\"Esplorazione\")."
+  ]
+ },
+ "heroic-inspiration": {
+  "name": "Ispirazione eroica",
+  "entries": [
+   "Se un {@variantrule Player Character|XPHB|personaggio giocante} ha Ispirazione eroica, può spenderla per ripetere il tiro di un dado subito dopo averlo tirato, usando obbligatoriamente il nuovo risultato ottenuto.",
+   "Se il personaggio già possiede Ispirazione eroica e la ottiene di nuovo, quest'ultima va perduta, a meno che il personaggio non decida di donarla a un {@variantrule Player Character|XPHB|personaggio giocante} che non ce l'ha."
+  ]
+ },
+ "high-jump": {
+  "name": "Salto in alto",
+  "entries": [
+   "Quando il tuo personaggio compie un salto in alto, si solleva in aria di un'altezza pari a 3 + il suo modificatore di Forza moltiplicato per 30 centimetri (minimo 0 centimetri), purché si sia mosso di almeno 3 metri a piedi immediatamente prima di saltare. Se compie un salto in alto da fermo, raggiunge solo metà di quell'altezza. In entrambi i casi, ogni 30 centimetri percorsi con il salto costano 30 centimetri di movimento.",
+   "Il personaggio può allungare le braccia fino a metà della propria altezza durante il salto, al fine di raggiungere una distanza pari all'altezza del salto più 1,5 volte la propria altezza."
+  ]
+ },
+ "hit-point-dice": {
+  "name": "Dadi Vita",
+  "entries": [
+   "I Dadi Vita aiutano a determinare i {@variantrule Hit Points|XPHB|punti ferita} massimi di un {@variantrule Player Character|XPHB|personaggio giocante}, come spiegato in \"Creazione del personaggio\". Anche la maggior parte dei {@variantrule Monster|XPHB|mostri} ha i Dadi Vita. Durante un {@variantrule Short Rest|XPHB|riposo breve}, una creatura può spendere Dadi Vita per recuperare punti ferita. Vedi anche \"Riposo breve\"."
+  ]
+ },
+ "hit-points": {
+  "name": "Punti ferita",
+  "entries": [
+   "I punti ferita (PF) servono a misurare quanto è difficile uccidere o distruggere una creatura o un oggetto. I danni riducono i punti ferita e la guarigione li ripristina. Un personaggio non può avere più punti ferita dei suoi punti ferita massimi, e non può averne meno di 0. Vedi anche \"Rompere gli oggetti\" e \"Come si gioca\" (\"Danni e guarigione\")."
+  ]
+ },
+ "hostile-attitude": {
+  "name": "Ostile [atteggiamento]",
+  "entries": [
+   "Una creatura ostile ha un'opinione negativa del personaggio, il quale subisce {@variantrule Disadvantage|XPHB|svantaggio} a una prova di caratteristica per influenzare una creatura ostile. Vedi anche \"Influenza\"."
+  ]
+ },
+ "hover": {
+  "name": "Fluttuare",
+  "entries": [
+   "Alcune creature sono in grado di fluttuare, come specificato nella loro scheda delle statistiche. Inoltre, alcuni incantesimi e altri effetti concedono l'abilità di fluttuare. Fluttuando mentre è in volo, il personaggio evita di cadere in determinate circostanze. Vedi anche \"{@variantrule Flying|XPHB|Volare}\"."
+  ]
+ },
+ "illusions": {
+  "name": "Illusioni",
+  "entries": [
+   "Incantesimi e altri effetti a volte creano illusioni magiche. Tali effetti definiscono cosa fa l'illusione e in che modo essa inganna i sensi o le facoltà mentali di una creatura.",
+   "Se un'illusione si manifesta in uno spazio, è inconsistente e priva di peso, ma sembra essere influenzata dall'ambiente come se fosse reale, a meno che l'effetto che l'ha creata non specifichi diversamente. Per esempio, l'illusione visiva di una creatura proietta ombre e riflessi, e il vento sembra influenzare la creatura illusoria. Allo stesso modo, un'illusione acustica riecheggia in uno spazio che produce eco."
+  ]
+ },
+ "immunity": {
+  "name": "Immunità",
+  "entries": [
+   "Se il personaggio è immune a un tipo di danno o a una {@variantrule Condition|XPHB|condizione}, significa che non ne subisce gli effetti in alcun modo."
+  ]
+ },
+ "improvised-weapons": {
+  "name": "Armi improvvisate",
+  "entries": [
+   "Un'arma improvvisata è un oggetto brandito come un'arma alla buona, quale ad esempio vetri rotti, la gamba di un tavolo o una padella. Anche un'arma semplice o da guerra conta come un'arma improvvisata se è impugnata in modo contrario al suo scopo originario; inoltre, qualora il personaggio utilizzi un'arma a distanza per effettuare un attacco in mischia o lanci un'arma da mischia priva della proprietà da lancio, l'arma conta come un'arma improvvisata. Un'arma improvvisata segue le regole illustrate di seguito:",
+   {
+    "entries": [
+     {
+      "name": "Competenza",
+      "entries": [
+       "Il personaggio non aggiunge il bonus di {@variantrule Proficiency|XPHB|competenza} ai tiri per colpire con un'arma improvvisata."
+      ]
+     },
+     {
+      "name": "Danni",
+      "entries": [
+       "Se il colpo va a segno, l'arma infligge {@damage 1d4} danni del tipo ritenuto appropriato dal GM per l'oggetto utilizzato."
+      ]
+     },
+     {
+      "name": "Gittata",
+      "entries": [
+       "Un'arma improvvisata ha una gittata normale di 6 metri e una gittata lunga di 18 metri."
+      ]
+     },
+     {
+      "name": "Equivalenti delle armi",
+      "entries": [
+       "Se un'arma improvvisata assomiglia a un'arma semplice o da guerra, il GM può decretarne un funzionamento analogo e usare le stesse regole di quell'arma. Per esempio, il GM può considerare la gamba di un tavolo come un randello."
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "indifferent-attitude": {
+  "name": "Indifferente [atteggiamento]",
+  "entries": [
+   "Una creatura indifferente non ha alcun desiderio di aiutare o ostacolare il personaggio. L'indifferenza è l'atteggiamento predefinito dei {@variantrule Monster|XPHB|mostri}. Vedi anche \"Influenza\"."
+  ]
+ },
+ "initiative": {
+  "name": "Iniziativa",
+  "entries": [
+   "L'iniziativa determina l'ordine dei turni durante il combattimento. Le regole di combattimento in \"Come si gioca\" spiegano in che modo tirare per l'iniziativa.",
+   "Talvolta, il GM potrebbe chiedere ai combattenti di utilizzare i loro punteggi di iniziativa piuttosto che tirare per l'iniziativa. Il punteggio di iniziativa è pari a 10 più il modificatore di Destrezza. Se il personaggio dispone di {@variantrule Advantage|XPHB|vantaggio} ai tiri per l'iniziativa, il suo punteggio di iniziativa aumenta di 5; se invece subisce {@variantrule Disadvantage|XPHB|svantaggio} ai tiri, il suo punteggio di iniziativa diminuisce di 5. Vedi anche \"Come si gioca\" (\"Combattimento\")."
+  ]
+ },
+ "jumping": {
+  "name": "Saltare",
+  "entries": [
+   "Quando il tuo personaggio salta, può compiere un {@variantrule Long Jump|XPHB|salto in lungo} (in orizzontale) o un {@variantrule High Jump|XPHB|salto in alto} (in verticale). Vedi anche \"Salto in lungo\" e \"Salto in alto\"."
+  ]
+ },
+ "knocking-out-a-creature": {
+  "name": "Tramortire una creatura",
+  "entries": [
+   "Quando il personaggio sta per ridurre una creatura a 0 {@variantrule Hit Points|XPHB|punti ferita} con un attacco in mischia, può invece ridurla a 1 punto ferita. La creatura diventa quindi {@condition Unconscious|XPHB|priva di sensi} e inizia un {@variantrule Short Rest|XPHB|riposo breve}.",
+   "La creatura rimane priva di sensi fino a quando non riacquista {@variantrule Hit Points|XPHB|punti ferita} o fino a quando qualcuno non usa un'azione per somministrarle cure di pronto soccorso, il che richiede superare una prova di Saggezza ({@skill Medicine|XPHB|Medicina}) con {@dc 10}."
+  ]
+ },
+ "lightly-obscured": {
+  "name": "Leggermente oscurata",
+  "entries": [
+   "Un personaggio che cerca di vedere qualcosa in un'area leggermente oscurata subisce {@variantrule Disadvantage|XPHB|svantaggio} alle prove di Saggezza ({@skill Perception|XPHB|Percezione}). Vedi anche \"Luce Fioca\", \"Oscurità\" e \"Come si gioca\" (\"Esplorazione\")."
+  ]
+ },
+ "line-area-of-effect": {
+  "name": "Linea [area di effetto]",
+  "entries": [
+   "Una linea è un'area di effetto che si estende da un punto di origine in linea retta lungo la sua lunghezza e copre un'area definita dalla sua larghezza. L'effetto che crea una linea ne specifica la lunghezza e la larghezza.",
+   "Il punto di origine di una linea non è incluso nell'area di effetto, a meno che il suo creatore non decida altrimenti."
+  ]
+ },
+ "long-jump": {
+  "name": "Salto in lungo",
+  "entries": [
+   "Quando un personaggio compie un salto in lungo, copre una distanza pari al suo punteggio di Forza moltiplicato per 30 centimetri, purché si sia mosso di almeno 3 metri immediatamente prima di saltare. Se compie un salto in lungo da fermo, copre solo metà di quella distanza. In entrambi i casi, ogni 30 centimetri percorsi con il salto costano 30 centimetri di movimento.",
+   "Se il personaggio atterra su {@variantrule Difficult Terrain|XPHB|terreno difficile}, deve superare una prova di Destrezza ({@skill Acrobatics|XPHB|Acrobazia}) con {@dc 10}, altrimenti cade a terra {@condition Prone|XPHB|prono}.",
+   "Questa regola riguardo al salto in lungo presume che l'altezza del salto sia irrilevante, come per esempio nel caso di un salto oltre un corso d'acqua o un baratro. A discrezione del GM, un personaggio potrebbe dover superare una prova di Forza ({@skill Athletics|XPHB|Atletica}) con {@dc 10} per superare un ostacolo basso (che non superi in altezza un quarto della distanza coperta dal salto), come una siepe o un muretto. Se fallisce, il personaggio colpisce l'ostacolo."
+  ]
+ },
+ "magical-effect": {
+  "name": "Effetto magico",
+  "entries": [
+   "Un effetto si definisce \"magico\" se viene creato da un incantesimo, da un oggetto magico o da un fenomeno che una regola definisce come \"magico\"."
+  ]
+ },
+ "monster": {
+  "name": "Mostro",
+  "entries": [
+   "Una creatura controllata dal GM viene definita \"mostro\", anche se tale creatura è benevola. Vedi anche \"Creatura\" e \"PNG\"."
+  ]
+ },
+ "nonplayer-character": {
+  "name": "Personaggio non giocante",
+  "entries": [
+   "Un personaggio non giocante (PNG) è un {@variantrule Monster|XPHB|mostro} che ha un nome proprio e una personalità distinta. Vedi anche \"Mostro\"."
+  ]
+ },
+ "object": {
+  "name": "Oggetto",
+  "entries": [
+   "Un oggetto è una cosa ben distinta e non vivente. Cose dal carattere composito, come gli edifici, comprendono più di un oggetto. Vedi anche \"Rompere gli oggetti\"."
+  ]
+ },
+ "occupied-space": {
+  "name": "Spazio occupato",
+  "entries": [
+   "Uno spazio si definisce \"occupato\" se una creatura si trova al suo interno o se esso è completamente pieno di oggetti."
+  ]
+ },
+ "passive-perception": {
+  "name": "Percezione passiva",
+  "entries": [
+   "La {@skill Perception|XPHB|Percezione} passiva è un punteggio che riflette la consapevolezza generale dell'ambiente circostante da parte di una creatura. Il GM usa questo punteggio per determinare se una creatura nota qualcosa senza effettuare consapevolmente una prova di Saggezza (Percezione).",
+   "La {@skill Perception|XPHB|Percezione} passiva di una creatura è pari a 10 più il suo bonus alla prova di Saggezza ({@skill Perception|XPHB|Percezione}). Se la creatura dispone di {@variantrule Advantage|XPHB|vantaggio} a tali prove, il punteggio di Percezione passiva aumenta di 5; se invece subisce {@variantrule Disadvantage|XPHB|svantaggio} a tali prove, il punteggio di Percezione passiva diminuisce di 5. Per esempio, un personaggio di 1º livello con Saggezza 15 e una competenza in Percezione, ha una Percezione passiva pari a 14 ({@dice 10 + 2 + 2}). Se lo stesso personaggio dispone anche di {@variantrule Advantage|XPHB|vantaggio} alle prove di Saggezza (Percezione), il punteggio di Percezione passiva arriva a 19."
+  ]
+ },
+ "per-day": {
+  "name": "Al giorno",
+  "entries": [
+   "Se una regola stabilisce che il personaggio può utilizzare qualcosa per un certo numero di volte al giorno, significa che, una volta esaurite le possibilità d'uso, deve terminare un {@variantrule Long Rest|XPHB|riposo lungo} per poter utilizzare quel qualcosa nuovamente."
+  ]
+ },
+ "player-character": {
+  "name": "Personaggio giocante",
+  "entries": [
+   "Un personaggio giocante è un personaggio controllato da un giocatore. Vedi anche \"Creazione del personaggio\"."
+  ]
+ },
+ "possession": {
+  "name": "Possessione",
+  "entries": [
+   "Alcuni effetti fanno sì che una creatura venga posseduta da un'altra creatura o entità. Un effetto di possessione definisce in che modo questa si verifica. È possibile impedire le possessioni utilizzando l'incantesimo protezione dal bene e dal male ed è possibile terminarle con l'incantesimo dissolvi il bene e il male."
+  ]
+ },
+ "proficiency": {
+  "name": "Competenza",
+  "entries": [
+   "Se il tuo personaggio ha una competenza in qualcosa, può aggiungere il bonus di competenza a qualsiasi {@variantrule D20 Test|XPHB|prova con d20} effettuata per utilizzare ciò in cui è competente. Una creatura può avere competenza nell'uso di un'abilità, in un {@variantrule Saving Throw|XPHB|tiro salvezza} o nell'uso di un'arma o strumento. Vedi anche \"Come si gioca\" (\"Competenza\")."
+  ]
+ },
+ "reaction": {
+  "name": "Reazione",
+  "entries": [
+   "Una reazione è un'azione speciale effettuata in risposta a una circostanza di innesco indicata nella descrizione della reazione. Il tuo personaggio può effettuare una reazione nel turno di un'altra creatura. Se effettua la reazione nel proprio turno, può comunque effettuare anche un'azione, un'{@variantrule Bonus Action|XPHB|azione bonus} o entrambe. Una volta effettuata una reazione, il personaggio non può effettuarne un'altra fino all'inizio del suo turno successivo. L'attacco di opportunità è una reazione disponibile per tutte le creature. Vedi anche \"{@action Opportunity Attack|XPHB|Attacchi di opportunità}\" e \"Come si gioca\" (\"Azioni\")."
+  ]
+ },
+ "resistance": {
+  "name": "Resistenza",
+  "entries": [
+   "Se un personaggio è dotato di resistenza a un tipo di danno, i danni di quel tipo che subisce sono dimezzati (arrotondando per difetto). La resistenza si applica una sola volta per ogni istanza di danno ricevuta. Vedi anche \"Come si gioca\" (\"Danni e guarigione\")."
+  ]
+ },
+ "ritual": {
+  "name": "Rituale",
+  "entries": [
+   "Se il tuo personaggio ha un incantesimo con il descrittore \"rituale\" preparato, può lanciarlo come rituale. La versione rituale di un incantesimo richiede 10 minuti in più rispetto alla norma per essere lanciata. Inoltre non consuma uno slot incantesimo, il che significa che la versione rituale di un incantesimo non può essere lanciata a un livello superiore. Vedi anche \"Incantesimi\"."
+  ]
+ },
+ "round-down": {
+  "name": "Arrotondare per difetto",
+  "entries": [
+   "Ogni volta che è necessario dividere o moltiplicare un numero nel gioco, si deve arrotondare per difetto se il risultato è una frazione, anche nel caso in cui la frazione raggiunga o superi la metà. Alcune regole fanno eccezione e specificano di arrotondare per eccesso."
+  ]
+ },
+ "saving-throw": {
+  "name": "Tiro salvezza",
+  "entries": [
+   "Un tiro salvezza rappresenta il tentativo di evitare o di resistere a una minaccia. Solitamente, effettui un tiro salvezza solo quando una regola lo richiede, ma puoi anche decidere di fallire il tiro senza tirare il dado. Il risultato di un tiro salvezza è descritto nell'effetto che l'ha reso necessario. Se un bersaglio è costretto a effettuare un tiro salvezza e non possiede il punteggio di caratteristica utilizzato dal tiro, fallisce automaticamente. Vedi anche \"Come si gioca\" (\"Prove con d20\")."
+  ]
+ },
+ "shape-shifting": {
+  "name": "Mutaforma",
+  "entries": [
+   "Se un effetto, come Forma Selvatica o l'incantesimo metamorfosi, consente al tuo personaggio di mutare forma, la descrizione dell'effetto specifica cosa gli accade. A meno che la descrizione non indichi diversamente, qualsiasi effetto in corso che stia influenzando il personaggio ({@variantrule Condition|XPHB|condizioni}, incantesimi, maledizioni e simili) si trasmette alla sua nuova forma. Se muore, il personaggio torna alla sua forma naturale."
+  ]
+ },
+ "short-rest": {
+  "name": "Riposo breve",
+  "entries": [
+   "Un riposo breve è un periodo di inattività della durata di 1 ora, durante il quale una creatura non svolge alcuna attività che sia più faticosa di leggere, parlare, mangiare o montare la guardia. Per iniziare un riposo breve, il personaggio deve avere almeno 1 punto ferita.",
+   {
+    "entries": [
+     {
+      "name": "Benefici del riposo",
+      "entries": [
+       "Una volta terminato il riposo, il personaggio ottiene i seguenti benefici:"
+      ]
+     }
+    ]
+   },
+   {
+    "entries": [
+     {
+      "items": [
+       {
+        "name": "Dadi Vita da spendere",
+        "entries": [
+         "Puoi spendere uno o più dei {@variantrule Hit Point Dice|XPHB|Dadi Vita} del tuo personaggio per fargli recuperare {@variantrule Hit Points|XPHB|punti ferita}. Per ogni Dado Vita speso in questo modo, lancia il dado e aggiungi al risultato il modificatore di Costituzione del personaggio. Il personaggio recupera un numero di {@variantrule Hit Points|XPHB|punti ferita} pari al totale ottenuto (il minimo è 1). Dopo ogni tiro, puoi decidere se spendere un Dado Vita aggiuntivo."
+        ]
+       },
+       {
+        "name": "Capacità speciali",
+        "entries": [
+         "Alcune capacità si ricaricano con un riposo breve. Se il personaggio possiede una capacità del genere, essa si ricarica nella modalità indicata nella sua descrizione."
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "entries": [
+     {
+      "name": "Interruzione del riposo",
+      "entries": [
+       "Un riposo breve viene interrotto dai seguenti eventi:"
+      ]
+     }
+    ]
+   },
+   {
+    "items": [
+     "Tirare per l'{@variantrule Initiative|XPHB|iniziativa}",
+     "Lanciare un incantesimo diverso da un trucchetto",
+     "Subire danni"
+    ]
+   },
+   "Un riposo breve interrotto non conferisce alcun beneficio."
+  ]
+ },
+ "simultaneous-effects": {
+  "name": "Effetti simultanei",
+  "entries": [
+   "Se due o più eventi accadono nello stesso momento in un turno, a decidere l'ordine degli eventi è la persona al tavolo (giocatore o GM) che sta giocando il turno in quel momento. Ad esempio, se due effetti si applicano all'inizio del turno di un {@variantrule Player Character|XPHB|personaggio giocante}, il giocatore che controlla quel personaggio decide quale dei due effetti si applica per primo."
+  ]
+ },
+ "size": {
+  "name": "Taglia",
+  "entries": [
+   "A ogni creatura o oggetto è assegnata una categoria di taglia: Minuscola, Piccola, Media, Grande, Enorme o Mastodontica. La taglia di una creatura determina quanto spazio essa occupa in combattimento. La dimensione di un oggetto influisce sui suoi {@variantrule Hit Points|XPHB|punti ferita}. Vedi anche \"Rompere gli oggetti\" e \"Come si gioca\" (\"Combattimento\")."
+  ]
+ },
+ "skill": {
+  "name": "Abilità",
+  "entries": [
+   "Un'abilità è un'area di specializzazione associata a una prova di caratteristica. Se il tuo personaggio ha {@variantrule Proficiency|XPHB|competenza} in un'abilità, può aggiungere il suo bonus di competenza al risultato di una prova di caratteristica associata a quella abilità. Vedi anche \"Come si gioca\" (\"Competenza\")."
+  ]
+ },
+ "speed": {
+  "name": "Velocità",
+  "entries": [
+   "Ogni creatura ha la propria velocità, che è la distanza in metri che la creatura può percorrere quando si muove nel suo turno. Vedi anche \"Nuotare\", \"Saltare\", \"Scalare\", \"Strisciare\", \"Volare\" e \"Come si gioca\" (\"Combattimento\").",
+   {
+    "entries": [
+     {
+      "name": "Velocità speciali",
+      "entries": [
+       "Alcune creature hanno velocità speciali, come la {@variantrule Swim Speed|XPHB|velocità di nuoto}, la {@variantrule Climb Speed|XPHB|velocità di scalata}, la {@variantrule Burrow Speed|XPHB|velocità di scavo} o la {@variantrule Fly Speed|XPHB|velocità di volo} (ognuna di esse è descritta nel glossario). Se il personaggio ha più di una velocità, sceglie quale utilizzare per muoversi; quando si muove, può passare da un tipo di velocità all'altra. Ogni volta che il personaggio cambia velocità, sottrai la distanza di cui si è già mosso dalla nuova velocità: il risultato determina la distanza di cui può ancora muoversi. Se il risultato è pari o inferiore a 0, il personaggio non può usare la nuova velocità durante il movimento in corso. Per esempio, se il personaggio possiede una velocità di 9 metri e una velocità in {@variantrule Fly Speed|XPHB|volo} di 18 metri, può volare per 6 metri, poi camminare per 3 metri e poi volare di nuovo per altri 9 metri."
+      ]
+     },
+     {
+      "name": "Modifiche alle velocità",
+      "entries": [
+       "Se un effetto aumenta o diminuisce la velocità del personaggio per un certo periodo di tempo, anche le sue velocità speciali (se presenti) aumentano o diminuiscono della stessa quantità e per la stessa durata. Per esempio, se la velocità del personaggio scende a 0 e il personaggio ha anche una {@variantrule Climb Speed|XPHB|velocità di scalata}, anche la sua {@variantrule Climb Speed|XPHB|velocità di scalata} scende a 0. Allo stesso modo, se la sua velocità è dimezzata e il personaggio ha anche una {@variantrule Fly Speed|XPHB|velocità di volo}, anche la sua {@variantrule Fly Speed|XPHB|velocità di volo} è dimezzata."
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "spell": {
+  "name": "Incantesimo",
+  "entries": [
+   "Un incantesimo è un {@variantrule Magical Effect|XPHB|effetto magico} che ha le caratteristiche descritte in \"Incantesimi\"."
+  ]
+ },
+ "spell-attack": {
+  "name": "Attacco con incantesimo",
+  "entries": [
+   "Un attacco con incantesimo è un tiro per colpire effettuato come parte di un incantesimo o di un altro {@variantrule Magical Effect|XPHB|effetto magico}. Vedi anche \"Incantesimi\" (\"Lanciare gli incantesimi\")."
+  ]
+ },
+ "spellcasting-focus": {
+  "name": "Focus da incantatore",
+  "entries": [
+   "Un focus da incantatore è un oggetto che alcune creature possono utilizzare al posto delle componenti materiali di un incantesimo solo se tali materiali non vengono consumati dall'incantesimo e non hanno un costo specificato. Alcune classi consentono ai propri membri di utilizzare tipi specifici di focus da incantatore. Vedi anche \"Incantesimi\" (\"Lanciare gli incantesimi\")."
+  ]
+ },
+ "sphere-area-of-effect": {
+  "name": "Sfera [area di effetto]",
+  "entries": [
+   "Una sfera è un'area di effetto che si estende in linee rette da un punto di origine verso l'esterno in tutte le direzioni. L'effetto che crea una sfera specifica la distanza fino a cui essa si estende, indicando il raggio della sfera.",
+   "Il punto di origine di una sfera è incluso nella sua area di effetto."
+  ]
+ },
+ "stable": {
+  "name": "Stabile",
+  "entries": [
+   "Una creatura è stabile se ha 0 {@variantrule Hit Points|XPHB|punti ferita} ma non deve effettuare {@variantrule Death Saving Throw|XPHB|tiri salvezza contro morte}. Vedi anche \"Come si gioca\" (\"Danni e guarigione\")."
+  ]
+ },
+ "stat-block": {
+  "name": "Scheda delle statistiche",
+  "entries": [
+   "Una scheda delle statistiche contiene le statistiche di gioco di un {@variantrule Monster|XPHB|mostro}. Ogni scheda contiene le seguenti informazioni, presentate subito dopo il nome del {@variantrule Monster|XPHB|mostro}:",
+   {
+    "entries": [
+     {
+      "name": "Taglia",
+      "entries": [
+       "Un {@variantrule Monster|XPHB|mostro} può essere Minuscolo, Piccolo, Medio, Grande, Enorme o Mastodontico. Vedi anche \"Taglia\"."
+      ]
+     },
+     {
+      "name": "Tipo di creatura",
+      "entries": [
+       "Questa voce riporta la famiglia a cui appartiene il {@variantrule Monster|XPHB|mostro}, insieme ad altri descrittori. Vedi anche \"Tipo di creatura\"."
+      ]
+     },
+     {
+      "name": "Allineamento",
+      "entries": [
+       "Per ogni {@variantrule Monster|XPHB|mostro} viene suggerito un allineamento, ma questo può essere definito a discrezione del GM. Vedi anche \"Allineamento\"."
+      ]
+     },
+     {
+      "name": "CA, iniziativa e PF",
+      "entries": [
+       "Queste voci indicano la {@variantrule Armor Class|XPHB|Classe Armatura}, l'{@variantrule Initiative|XPHB|iniziativa} e i {@variantrule Hit Points|XPHB|punti ferita} del {@variantrule Monster|XPHB|mostro}, descritti in dettaglio in \"Come si gioca\". Tra parentesi, dopo i {@variantrule Hit Points|XPHB|punti ferita}, sono indicati i {@variantrule Hit Point Dice|XPHB|Dadi Vita} del {@variantrule Monster|XPHB|mostro} e, se presente, il contributo dato dalla sua caratteristica Costituzione ai suoi {@variantrule Hit Points|XPHB|punti ferita}. Il punteggio di {@variantrule Initiative|XPHB|iniziativa} è indicato subito dopo il modificatore di {@variantrule Initiative|XPHB|iniziativa}. Alcune creature che sono state create dalla magia non presentano informazioni riguardanti i Dadi Vita e l'{@variantrule Initiative|XPHB|iniziativa}."
+      ]
+     },
+     {
+      "name": "Velocità",
+      "entries": [
+       "Qui viene indicata la velocità del {@variantrule Monster|XPHB|mostro}, insieme a eventuali velocità speciali. Vedi anche \"Velocità di nuoto\", \"Velocità di scalata\", \"Velocità di scavo\" e \"Velocità di volo\"."
+      ]
+     },
+     {
+      "name": "Punteggi di caratteristica",
+      "entries": [
+       "In una tabella sono indicati i punteggi di caratteristica, i modificatori e i modificatori ai {@variantrule Saving Throw|XPHB|tiri salvezza} del {@variantrule Monster|XPHB|mostro}, descritti in dettaglio in \"Come si gioca\"."
+      ]
+     },
+     {
+      "name": "Abilità",
+      "entries": [
+       "Questa voce elenca le competenze nelle abilità del {@variantrule Monster|XPHB|mostro}, se presenti. Vedi anche \"Come si gioca\" (\"Competenza\")."
+      ]
+     },
+     {
+      "name": "Resistenza e vulnerabilità",
+      "entries": [
+       "Queste voci elencano le resistenze e le vulnerabilità del {@variantrule Monster|XPHB|mostro}, se presenti. Vedi anche \"Resistenza\" e \"Vulnerabilità\"."
+      ]
+     },
+     {
+      "name": "Immunità",
+      "entries": [
+       "Questa sezione indica le immunità del {@variantrule Monster|XPHB|mostro} a danni e {@variantrule Condition|XPHB|condizioni}, se presenti. Vedi anche \"Immunità\"."
+      ]
+     },
+     {
+      "name": "Attrezzatura",
+      "entries": [
+       "Se il {@variantrule Monster|XPHB|mostro} ha qualsiasi tipo di equipaggiamento recuperabile o che può essere ceduto, viene indicato in questa voce."
+      ]
+     },
+     {
+      "name": "Sensi",
+      "entries": [
+       "Questa voce elenca i sensi speciali del {@variantrule Monster|XPHB|mostro}, come la {@skill Perception|XPHB|percezione} passiva e la {@sense Darkvision|XPHB|scurovisione}. Vedi anche \"Percezione passiva\"."
+      ]
+     },
+     {
+      "name": "Lingue",
+      "entries": [
+       "Questa voce elenca le lingue che il {@variantrule Monster|XPHB|mostro} conosce."
+      ]
+     },
+     {
+      "name": "GS",
+      "entries": [
+       "Il grado di sfida indica quanto è grave la minaccia costituita dal {@variantrule Monster|XPHB|mostro} ed è descritta in dettaglio in \"{@variantrule Monster|XPHB|Mostri}\". Subito dopo vengono indicati i punti esperienza che i personaggi ricevono per aver sconfitto il mostro, e il bonus di {@variantrule Proficiency|XPHB|competenza} del mostro. Alcune creature create dalla magia non hanno alcun GS. Vedi anche \"Grado di sfida\" e \"Punti esperienza\"."
+      ]
+     },
+     {
+      "name": "Tratti",
+      "entries": [
+       "I tratti del {@variantrule Monster|XPHB|mostro}, se presenti, sono caratteristiche sempre attive o attive solo in certe situazioni."
+      ]
+     },
+     {
+      "name": "Azioni",
+      "entries": [
+       "Oltre alle azioni descritte nel glossario, il {@variantrule Monster|XPHB|mostro} può effettuare le azioni indicate in questa sezione. Vedi anche \"Come si gioca\" (\"Azioni\")."
+      ]
+     },
+     {
+      "name": "Azioni bonus",
+      "entries": [
+       "Se il {@variantrule Monster|XPHB|mostro} ha delle {@variantrule Bonus Action|XPHB|azioni bonus} da effettuare, sono indicate in questa sezione."
+      ]
+     },
+     {
+      "name": "Reazioni",
+      "entries": [
+       "Se il {@variantrule Monster|XPHB|mostro} può effettuare delle {@variantrule Reaction|XPHB|reazioni} speciali, sono indicate in questa sezione."
+      ]
+     },
+     {
+      "name": "Informazioni sull'attacco",
+      "entries": [
+       "La voce che descrive l'attacco di un {@variantrule Monster|XPHB|mostro} fornisce varie informazioni, a partire dal tipo di attacco (in mischia o a distanza), il bonus al tiro per colpire, la sua portata o gittata, e le conseguenze se il colpo va a segno. Un attacco è inteso contro un singolo bersaglio, a meno che la voce non indichi altrimenti."
+      ]
+     },
+     {
+      "name": "Informazioni sul tiro salvezza",
+      "entries": [
+       "Se un effetto costringe a effettuare un {@variantrule Saving Throw|XPHB|tiro salvezza}, la voce riferita all'effetto indica il tipo di {@variantrule Saving Throw|XPHB|tiro salvezza} richiesto e fornisce la CD dell'incantesimo, una descrizione di quali creature devono effettuare il tiro, e le conseguenze di un tiro salvezza riuscito o fallito."
+      ]
+     },
+     {
+      "name": "Informazioni sui danni",
+      "entries": [
+       "La scheda delle statistiche, per ogni istanza di danno, di solito fornisce sia un numero statico sia una formula che utilizza i dadi. Ad esempio, un attacco potrebbe infliggere 4 ({@damage 1d4 + 2}) danni se il colpo va a segno. È il GM a scegliere se far utilizzare il numero statico o la formula con i dadi in parentesi. Non bisogna utilizzare entrambi."
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "swim-speed": {
+  "name": "Velocità di nuoto",
+  "entries": [
+   "La velocità di nuoto può essere usata per nuotare senza spendere movimento extra normalmente associato al nuoto. Vedi anche \"Nuotare\" e \"Velocità\"."
+  ]
+ },
+ "swimming": {
+  "name": "Nuotare",
+  "entries": [
+   "Quando il personaggio nuota, ogni 30 centimetri di movimento costano 30 centimetri extra (60 centimetri extra in caso di {@variantrule Difficult Terrain|XPHB|terreno difficile}). Se il personaggio ha una {@variantrule Swim Speed|XPHB|velocità di nuoto} e la usa per nuotare, ignora i costi extra descritti. A discrezione del GM, se il personaggio si muove di una qualsiasi distanza in acque agitate, potrebbe dover superare una prova di Forza ({@skill Athletics|XPHB|Atletica}) con {@dc 15}."
+  ]
+ },
+ "target": {
+  "name": "Bersaglio",
+  "entries": [
+   "Un bersaglio è la creatura o l'oggetto bersagliato da un tiro per colpire, costretto da un effetto a effettuare un {@variantrule Saving Throw|XPHB|tiro salvezza}, o selezionato per ricevere gli effetti di un incantesimo o di un altro fenomeno."
+  ]
+ },
+ "telepathy": {
+  "name": "Telepatia",
+  "entries": [
+   "La telepatia è un'abilità magica che consente a una creatura di comunicare mentalmente con un'altra creatura entro un raggio specificato. A meno che non indicato diversamente da una regola, per comprendere la comunicazione ricevuta, non è necessario che la creatura contattata parli la stessa lingua della creatura telepatica, ma deve essere in grado di comprendere almeno una lingua o essere essa stessa telepatica.",
+   "La creatura telepatica non deve necessariamente vedere la creatura che ha contattato, e può iniziare o terminare il contatto telepatico in qualsiasi momento (nessuna azione richiesta). Il contatto telepatico non può essere iniziato ed è immediatamente interrotto se la creatura telepatica o la creatura contattata è {@condition Incapacitated|XPHB|incapacitata}. Inoltre, il contatto telepatico si interrompe se la creatura contattata non è più nel raggio della telepatia o se la creatura telepatica contatta una creatura diversa entro gittata.",
+   "Una creatura priva di telepatia può ricevere i messaggi telepatici, ma non può avviare una conversazione telepatica. Una volta iniziata la conversazione telepatica, la creatura che è stata contattata può comunicare mentalmente con la creatura telepatica fino al termine della connessione."
+  ]
+ },
+ "teleportation": {
+  "name": "Teletrasporto",
+  "entries": [
+   "Il teletrasporto è un tipo speciale di trasporto magico. Se il tuo personaggio si teletrasporta, scompare e riappare altrove istantaneamente, senza muoversi nello spazio che separa i due luoghi. Questo tipo di trasporto non consuma movimento, a meno che una regola non indichi il contrario, e il teletrasporto non provoca mai {@action Opportunity Attack|XPHB|attacchi di opportunità}.",
+   "Quando il personaggio si teletrasporta, si teletrasporta anche l'equipaggiamento che indossa e trasporta. Se, mentre si teletrasporta, il personaggio tocca un'altra creatura, questa non si teletrasporta insieme al personaggio, a meno che l'effetto di teletrasporto non indichi il contrario.",
+   "Se lo spazio di destinazione del teletrasporto è occupato da un'altra creatura o è bloccato da un ostacolo solido, il personaggio appare nello spazio libero più vicino a sua scelta.",
+   "La descrizione di un effetto di teletrasporto indica se è necessario che il personaggio veda la destinazione del teletrasporto."
+  ]
+ },
+ "temporary-hit-points": {
+  "name": "Punti ferita temporanei",
+  "entries": [
+   "I {@variantrule Hit Points|XPHB|punti ferita} temporanei sono concessi da alcuni effetti e servono ad ammortizzare la perdita dei punti ferita veri e propri. Vedi anche \"Come si gioca\" (\"Danni e guarigione\")."
+  ]
+ },
+ "unarmed-strike": {
+  "name": "Colpo senz'armi",
+  "entries": [
+   "Invece di usare un'arma per effettuare un attacco in mischia, il personaggio può sferrare un pugno, un calcio, una testata o un altro colpo violento di natura simile. In termini di gioco, questo si definisce un colpo senz'armi: un attacco in mischia che prevede l'uso del corpo per danneggiare, afferrare o spingere un bersaglio entro 1,5 metri dal personaggio.",
+   "Ogni volta che il personaggio usa un colpo senz'armi, scegli una delle seguenti opzioni per determinarne l'effetto:",
+   {
+    "entries": [
+     {
+      "name": "Danni",
+      "entries": [
+       "Effettui un tiro per colpire contro il bersaglio. Il tuo bonus al tiro è pari al modificatore di Forza del personaggio più il bonus di {@variantrule Proficiency|XPHB|competenza}. Se il colpo va a segno, il bersaglio subisce danni contundenti pari a 1 più il modificatore di Forza del personaggio."
+      ]
+     },
+     {
+      "name": "Presa",
+      "entries": [
+       "Il bersaglio deve superare un {@variantrule Saving Throw|XPHB|tiro salvezza} su Forza o su Destrezza (a sua scelta), altrimenti viene {@condition Grappled|XPHB|afferrato}. La CD per il {@variantrule Saving Throw|XPHB|tiro salvezza} e per qualsiasi tentativo di sfuggire alla presa è pari a 8 più il modificatore di Forza e il bonus di {@variantrule Proficiency|XPHB|competenza} del personaggio. La presa è possibile solo se il bersaglio è al massimo di una taglia più grande del personaggio e se quest'ultimo ha una mano libera per afferrarlo. Vedi anche \"Afferrare\"."
+      ]
+     },
+     {
+      "name": "Spinta",
+      "entries": [
+       "Il bersaglio deve superare un {@variantrule Saving Throw|XPHB|tiro salvezza} su Forza o su Destrezza (a sua scelta), altrimenti il personaggio lo spinge a 1,5 metri di distanza oppure lo fa diventare {@condition Prone|XPHB|prono}. La CD per il {@variantrule Saving Throw|XPHB|tiro salvezza} è pari a 8 più il modificatore di Forza e il bonus di {@variantrule Proficiency|XPHB|competenza} del personaggio. La spinta è possibile solo se il bersaglio è al massimo di una taglia più grande del personaggio."
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "unoccupied-space": {
+  "name": "Spazio libero",
+  "entries": [
+   "Uno spazio si definisce \"libero\" se nessuna creatura si trova al suo interno o se esso non è completamente pieno di oggetti."
+  ]
+ },
+ "weapon": {
+  "name": "Arma",
+  "entries": [
+   "Un'arma è un oggetto che rientra nella categoria delle armi semplici o da guerra. Vedi anche \"Equipaggiamento\" (\"Armi\")."
+  ]
+ },
+ "weapon-attack": {
+  "name": "Attacco con arma",
+  "entries": [
+   "Un attacco con arma è un tiro per colpire effettuato con un'arma. Vedi anche \"Arma\"."
+  ]
+ }
+}
