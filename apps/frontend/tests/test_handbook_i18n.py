@@ -79,3 +79,10 @@ def test_spell_page_and_english_name_search_work_from_the_italian_site(client, c
     assert "Palla di fuoco" in found
     found = _get(client, "/world/spells/?q=palla", "en")  # Italian name, English site
     assert "Fireball" in found
+
+
+def test_class_and_species_pages_render_in_italian(client, catalogs):
+    assert "Barbaro" in _get(client, "/world/classes/barbarian/", "it")
+    assert "Ira" in _get(client, "/world/classes/barbarian/?tab=levels", "it")
+    assert "Dragonide" in _get(client, "/world/species/dragonborn/", "it")
+    assert "Scurovisione" in _get(client, "/world/species/dragonborn/?tab=traits", "it")

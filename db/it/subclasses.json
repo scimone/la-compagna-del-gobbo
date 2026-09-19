@@ -1,0 +1,75 @@
+{
+ "barbarian:path-of-the-berserker": {
+  "name": "Cammino del berserker",
+  "description": [
+   "{@i Incanala l'ira in furia violenta}",
+   "L'ira dei barbari che percorrono il Cammino del berserker è diretta principalmente verso la violenza. È un cammino di furia indiscriminata in cui i barbari si esaltano nel caos della battaglia, lasciando che l'ira si impadronisca di loro e li renda più forti."
+  ]
+ },
+ "bard:college-of-lore": {
+  "name": "Collegio della Sapienza",
+  "description": [
+   "Scandaglia le profondità della conoscenza magica",
+   "I bardi del Collegio della Sapienza accumulano incantesimi e segreti da varie fonti, come tomi accademici, riti mistici e racconti della tradizione contadina. I membri del collegio si riuniscono nelle biblioteche e nelle università per condividere la loro sapienza con gli altri. Si incontrano anche in occasione di feste popolari e ricevimenti di stato, dove possono denunciare casi di corruzione, smascherare bugie e farsi beffe dei più pomposi esponenti delle autorità."
+  ]
+ },
+ "cleric:life-domain": {
+  "name": "Dominio della Vita",
+  "description": [
+   "{@i Allevia le ferite del mondo}",
+   "Il Dominio della Vita si concentra sull'energia positiva che aiuta a sostenere ogni essere vivente del multiverso. I chierici che attingono a questo dominio sono maestri della guarigione e usano la forza vitale per curare molte ferite.",
+   "L'esistenza stessa si basa sull'energia positiva associata a questo dominio, rendendolo adatto a pressoché qualsiasi tradizione religiosa. Questo dominio è associato in particolare alle divinità dell'agricoltura, agli dèi della guarigione o della resistenza e agli dèi della casa e della comunità. La magia di questo dominio viene cercata anche dagli ordini religiosi dei guaritori."
+  ]
+ },
+ "druid:circle-of-the-land": {
+  "name": "Circolo della Terra",
+  "description": [
+   "{@i Celebra la connessione con il mondo naturale}",
+   "Il Circolo della Terra è composto da mistici e sapienti che preservano i riti e le conoscenze dei tempi antichi. Questi druidi si incontrano all'interno di circoli sacri di alberi o monoliti, per rivelarsi in Druidico i segreti primordiali che hanno appreso. I più saggi membri del circolo presiedono come sommi sacerdoti delle comunità."
+  ]
+ },
+ "fighter:champion": {
+  "name": "Campione",
+  "description": [
+   "{@i Raggiungi l'eccellenza fisica nel combattimento}",
+   "Il campione si concentra sullo sviluppo delle abilità marziali in un'incessante ricerca della vittoria. Unisce un rigoroso addestramento a una condizione fisica eccellente per infliggere colpi devastanti, resistere ai pericoli e ottenere la gloria. Che si tratti di gare atletiche o di battaglie sanguinose, i campioni lottano per la corona del vincitore."
+  ]
+ },
+ "monk:warrior-of-the-open-hand": {
+  "name": "Guerriero della Mano Aperta",
+  "description": [
+   "{@i Padroneggia le tecniche di combattimento senz'armi}",
+   "I Guerrieri della Mano Aperta sono i maestri del combattimento senz'armi. Apprendono tecniche speciali per spingere e sbilanciare i loro avversari e manipolano la propria energia per proteggersi dai danni."
+  ]
+ },
+ "paladin:oath-of-devotion": {
+  "name": "Giuramento di devozione"
+ },
+ "ranger:hunter": {
+  "name": "Cacciatore",
+  "description": [
+   "Proteggi la natura e le persone dalla distruzione",
+   "Bracchi la preda sia nelle terre selvagge che in ogni altro luogo, utilizzando le tue abilità di cacciatore per proteggere la natura e le persone dalle forze che intendono distruggerle."
+  ]
+ },
+ "rogue:thief": {
+  "name": "Furfante",
+  "description": [
+   "Vai a caccia di tesori nei panni di un autentico avventuriero",
+   "Grazie alle capacità da scassinatore, cacciatore di tesori ed esploratore, il personaggio ormai rappresenta l'avventuriero per antonomasia. Oltre a vantare agilità e furtività migliorate, ottiene abilità utili per addentrarsi in rovine inesplorate e acquisire il massimo beneficio dagli oggetti magici al loro interno."
+  ]
+ },
+ "sorcerer:draconic-sorcery": {
+  "name": "Stregoneria draconica"
+ },
+ "warlock:fiend-patron": {
+  "name": "Patrono immondo"
+ },
+ "wizard:evoker": {
+  "name": "Invocatore",
+  "description": [
+   "Crea effetti elementali esplosivi",
+   "Un invocatore concentra i suoi studi sulle magie che generano potenti effetti elementali come un freddo pungente, una fiamma incandescente, un rombo di tuono, un fulmine crepitante o un acido sfrigolante. Alcuni invocatori prestano servizio nelle forze militari come unità di artiglieria in grado di colpire gli eserciti nemici da lontano. Altri usano i loro poteri per proteggere il prossimo, mentre altri ancora li sfruttano per il proprio tornaconto personale."
+  ]
+ }
+}

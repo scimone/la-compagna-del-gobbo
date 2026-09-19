@@ -10,6 +10,8 @@ its untranslated parts so both languages show the same content).
 
 import json
 
+from django.utils.text import slugify
+
 from apps.rules.handbook_source import DB_DIR, TranslationDataError, overlay_translation
 from apps.rules.models import (
     Ability,
@@ -53,27 +55,64 @@ TRANSLATED_CATALOGS = {
 }
 
 
+def key_map(model) -> dict:
+    """`{row pk: key used in db/it/<model>.json}`. Most catalogs are keyed by their slug pk;
+    `Subclass` and `Feature` have auto-incrementing numeric pks that change on every re-import,
+    so they get a natural key built from their parent and name instead - e.g.
+    `class:barbarian:1:rage`,
+    `subclass:barbarian:path-of-the-berserker:3:frenzy` (`-2`, `-3`, ... if a name repeats within
+    one parent).
+    """
+    if model is Subclass:
+        return {s.pk: f"{s.klass_id}:{slugify(s.name_en)}" for s in Subclass.objects.all()}
+    if model is not Feature:
+        return {pk: pk for pk in model.objects.values_list("pk", flat=True)}
+
+    keys, seen = {}, {}
+    rows = Feature.objects.select_related(
+        "class_level", "subclass_level__subclass", "species", "feat"
+    ).order_by("pk")
+    for f in rows:
+        if f.class_level_id:
+            parent = f"class:{f.class_level.klass_id}:{f.class_level.level}"
+        elif f.subclass_level_id:
+            sub = f.subclass_level.subclass
+            parent = f"subclass:{sub.klass_id}:{slugify(sub.name_en)}:{f.subclass_level.level}"
+        elif f.species_id:
+            parent = f"species:{f.species_id}"
+        elif f.feat_id:
+            parent = f"feat:{f.feat_id}"
+        else:
+            parent = "feature"
+        key = f"{parent}:{slugify(f.name_en)}"
+        seen[key] = seen.get(key, 0) + 1
+        keys[f.pk] = key if seen[key] == 1 else f"{key}-{seen[key]}"
+    return keys
+
+
 def sync_catalog(model, filename: str, fields: tuple[str, ...]) -> tuple[int, int]:
     """Set every `<field>_it` of `model`'s rows from `db/it/<filename>`; returns `(rows in the
-    file, rows updated)`. Raises `TranslationDataError` for an unknown id or a misaligned tree.
+    file, rows updated)`. Raises `TranslationDataError` for an unknown key or a misaligned tree.
     """
     path = IT_DIR / filename
     source = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
 
+    keys = key_map(model)
     rows = list(model.objects.all())
-    unknown = sorted(set(source) - {row.pk for row in rows})
+    unknown = sorted(set(source) - set(keys.values()))
     if unknown:
         raise TranslationDataError(
-            f"db/it/{filename}: {len(unknown)} ids not in the database, e.g. {unknown[:5]}"
+            f"db/it/{filename}: {len(unknown)} keys not in the database, e.g. {unknown[:5]}"
         )
 
     for row in rows:
-        translated = source.get(row.pk, {})
+        key = keys[row.pk]
+        translated = source.get(key, {})
         for field in fields:
             value = translated.get(field)
             if value is not None:
                 english = getattr(row, f"{field}_en")
-                value = overlay_translation(english, value, f"{filename}:{row.pk}.{field}")
+                value = overlay_translation(english, value, f"{filename}:{key}.{field}")
             setattr(row, f"{field}_it", value)
     model.objects.bulk_update(rows, [f"{field}_it" for field in fields])
     return len(source), len(rows)

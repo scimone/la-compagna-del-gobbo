@@ -1,0 +1,2058 @@
+{
+ "class:barbarian:11:relentless-rage": {
+  "name": "Ira implacabile",
+  "entries": [
+   "Grazie alla sua ira, il barbaro può continuare a combattere nonostante le ferite più gravi. Se scende a 0 {@variantrule Hit Points|XPHB|punti ferita} mentre è in preda all'ira e non è ucciso sul colpo, può effettuare un tiro salvezza su Costituzione con {@dc 10}. Se lo supera, i {@variantrule Hit Points|XPHB|punti ferita} cambiano invece in un numero pari al doppio del livello da barbaro.",
+   "Ogni volta che utilizza questo privilegio dopo la prima, la CD aumenta di 5. Quando completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}, la CD è ripristinata a 10."
+  ]
+ },
+ "class:barbarian:13:improved-brutal-strike": {
+  "name": "Colpo brutale migliorato",
+  "entries": [
+   "Il barbaro ha affinato nuovi metodi per attaccare furiosamente. I seguenti effetti si aggiungono alle opzioni di Colpo brutale.",
+   {
+    "entries": [
+     {
+      "name": "Colpo sbalorditivo",
+      "entries": [
+       "Il bersaglio subisce {@variantrule Disadvantage|XPHB|svantaggio} al prossimo tiro salvezza e non può effettuare {@action Opportunity Attack|XPHB|attacchi di opportunità} fino all'inizio del turno successivo del personaggio."
+      ]
+     },
+     {
+      "name": "Colpo di scissione",
+      "entries": [
+       "Prima dell'inizio del turno successivo del barbaro, il prossimo tiro per colpire effettuato da un'altra creatura contro il bersaglio ottiene un bonus di +5 al tiro. Un tiro per colpire può ottenere un solo bonus Colpo di scissione."
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "class:barbarian:15:persistent-rage": {
+  "name": "Ira persistente",
+  "entries": [
+   "Quando effettua un tiro per l'{@variantrule Initiative|XPHB|iniziativa}, il barbaro può recuperare tutti gli utilizzi di ira spesi. Dopo aver recuperato gli utilizzi di ira in questo modo, non può ripetere l'azione prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}.",
+   "Inoltre, la sua ira è così feroce che ora dura 10 minuti senza che debba fare nulla per prolungarla a ogni round. L'ira termina anticipatamente se il personaggio è {@condition Unconscious|XPHB|privo di sensi} (e non semplicemente {@condition Incapacitated|XPHB|incapacitato}) o indossa un'armatura pesante."
+  ]
+ },
+ "class:barbarian:17:improved-brutal-strike": {
+  "name": "Colpo brutale migliorato",
+  "entries": [
+   "I danni extra del Colpo brutale aumentano a {@damage 2d10}. Inoltre, il barbaro può utilizzare due diversi effetti del Colpo brutale quando usa questo privilegio."
+  ]
+ },
+ "class:barbarian:18:indomitable-might": {
+  "name": "Potenza indomabile",
+  "entries": [
+   "Se il totale di una prova di Forza o di un tiro salvezza su Forza del barbaro è inferiore al suo punteggio di Forza, il barbaro può usare quel punteggio al posto del totale."
+  ]
+ },
+ "class:barbarian:19:epic-boon": {
+  "name": "Dono epico",
+  "entries": [
+   "Il personaggio ottiene un Dono epico (vedi \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. È consigliato il {@feat Boon of Irresistible Offense|XPHB|Dono dell'offensiva irresistibile}."
+  ]
+ },
+ "class:barbarian:1:rage": {
+  "name": "Ira",
+  "entries": [
+   "Può infondere in se stesso un potere primordiale chiamato \"ira\", una forza che conferisce una potenza e una resistenza straordinarie. Può entrare in ira come {@variantrule Bonus Action|XPHB|azione bonus} se non sta indossando un'armatura pesante.",
+   "Il barbaro può entrare in ira il numero di volte indicato per il proprio livello da barbaro nella colonna Ire della tabella Privilegi del barbaro. Per quanto riguarda gli utilizzi consumati, ne recupera uno dopo aver completato un {@variantrule Short Rest|XPHB|riposo breve} e li recupera tutti dopo un {@variantrule Long Rest|XPHB|riposo lungo}.",
+   "Quando è in atto, l'ira segue le regole indicate di seguito.",
+   {
+    "entries": [
+     {
+      "name": "Resistenza ai danni",
+      "entries": [
+       "Un barbaro dispone di {@variantrule Resistance|XPHB|resistenza} ai danni contundenti, perforanti e taglienti."
+      ]
+     },
+     {
+      "name": "Danni dell'ira",
+      "entries": [
+       "Quando effettua un attacco con un'arma o con un {@variantrule Unarmed Strike|XPHB|colpo senz'armi} usando Forza, e infligge danni al bersaglio, il barbaro ottiene un bonus ai danni che aumenta man mano che sale di livello, come indicato nella colonna Danni dell'ira della tabella Privilegi del barbaro."
+      ]
+     },
+     {
+      "name": "Vantaggio nella Forza",
+      "entries": [
+       "Il barbaro dispone di {@variantrule Advantage|XPHB|vantaggio} alle prove di Forza e ai tiri salvezza su Forza."
+      ]
+     },
+     {
+      "name": "Niente concentrazione o incantesimi",
+      "entries": [
+       "Il barbaro non può mantenere la {@status Concentration|XPHB|concentrazione} e non può lanciare incantesimi."
+      ]
+     },
+     {
+      "name": "Durata",
+      "entries": [
+       "L'ira dura fino al termine del turno successivo del barbaro e termina anticipatamente se il barbaro indossa un'armatura pesante o è {@condition Incapacitated|XPHB|incapacitato}. Se l'ira è ancora in atto nel suo turno successivo, è possibile prolungarla per un altro turno eseguendo una delle seguenti azioni:",
+       {
+        "items": [
+         "Effettuando un tiro per colpire contro un nemico.",
+         "Costringendo un nemico a effettuare un tiro salvezza.",
+         "Effettuando un'{@variantrule Bonus Action|XPHB|azione bonus} per prolungare l'ira."
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "Ogni volta che l'ira viene prolungata, dura fino alla fine del turno successivo del barbaro. Si può mantenere un'ira per un massimo di 10 minuti."
+  ]
+ },
+ "class:barbarian:1:unarmored-defense": {
+  "name": "Difesa senza armatura",
+  "entries": [
+   "Se il barbaro non indossa un'armatura, la {@variantrule Armor Class|XPHB|Classe Armatura} base corrisponde a 10 più i modificatori di Destrezza e Costituzione. Un barbaro può usare uno {@item Shield|XPHB|scudo} e ottenere comunque questo beneficio."
+  ]
+ },
+ "class:barbarian:1:weapon-mastery": {
+  "name": "Padronanza d'armi",
+  "entries": [
+   "Il barbaro è addestrato nell'uso delle armi, e per questo può avvalersi della proprietà di padronanza per due tipi di armi da mischia semplici o da guerra a sua scelta, come le asce bipenne e le asce. Ogni volta che termina un {@variantrule Long Rest|XPHB|riposo lungo}, può esercitarsi con le armi e cambiare una delle armi scelte.",
+   "Quando si raggiungono determinati livelli da barbaro, si ottiene la capacità di utilizzare le proprietà di padronanza di più tipi di armi, come indicato nella colonna Padronanza d'armi della tabella Privilegi del barbaro."
+  ]
+ },
+ "class:barbarian:20:primal-champion": {
+  "name": "Campione primordiale",
+  "entries": [
+   "Il barbaro diventa un'incarnazione del potere primordiale. Il suo punteggio di Forza e Costituzione aumenta di 4, fino a un massimo di 25."
+  ]
+ },
+ "class:barbarian:3:barbarian-subclass": {
+  "name": "Sottoclasse del barbaro",
+  "entries": [
+   "Il personaggio ottiene una sottoclasse del barbaro a scelta. La descrizione della sottoclasse Cammino del berserker segue quella di questa classe. Una sottoclasse è una specializzazione che conferisce dei privilegi a determinati livelli da barbaro. Per il resto della sua carriera, il personaggio ottiene tutti i privilegi della sottoclasse pari al suo livello da barbaro attuale o a quelli inferiori."
+  ]
+ },
+ "class:barbarian:3:primal-knowledge": {
+  "name": "Conoscenza primordiale",
+  "entries": [
+   "Il barbaro acquisisce competenza in un'altra abilità a scelta dalla lista delle abilità disponibili per i barbari di 1º livello.",
+   "Inoltre, mentre l'ira è in atto, può incanalare il potere primordiale quando compie dei tentativi per la riuscita di determinate attività; ogni volta che effettua una prova di caratteristica utilizzando una delle seguenti abilità, può effettuarla come prova di Forza anche se normalmente usa una caratteristica diversa: {@skill Acrobatics|XPHB|Acrobazia}, {@skill Intimidation|XPHB|Intimidire}, {@skill Perception|XPHB|Percezione}, {@skill Stealth|XPHB|Furtività} o {@skill Survival|XPHB|Sopravvivenza}. Quando usa questa caratteristica, la Forza rappresenta il potere primordiale che scorre nel suo corpo, affinandone l'agilità, l'orientamento e i sensi."
+  ]
+ },
+ "class:barbarian:4:ability-score-improvement": {
+  "name": "Aumento dei punteggi di caratteristica",
+  "entries": [
+   "Il personaggio ottiene l'{@feat Ability Score Improvement|XPHB|aumento dei punteggi di caratteristica} (vedi capitolo \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. Questo privilegio si ottiene nuovamente all'8º, al 12º e al 16º livello da barbaro."
+  ]
+ },
+ "class:barbarian:5:extra-attack": {
+  "name": "Attacco extra",
+  "entries": [
+   "Quando effettua l'azione di {@action Attack|XPHB|Attacco} nel proprio turno, il barbaro può attaccare due volte anziché una."
+  ]
+ },
+ "class:barbarian:5:fast-movement": {
+  "name": "Movimento veloce",
+  "entries": [
+   "La velocità del barbaro aumenta di 3 metri, purché non indossi un'armatura pesante."
+  ]
+ },
+ "class:barbarian:9:brutal-strike": {
+  "name": "Colpo brutale",
+  "entries": [
+   "Usando Attacco irruento, nel proprio turno il personaggio può rinunciare a qualsiasi {@variantrule Advantage|XPHB|vantaggio} su un tiro per colpire a scelta basato sulla Forza. Il tiro per colpire scelto non deve disporre di {@variantrule Disadvantage|XPHB|svantaggio}. Se il tiro per colpire va a segno, il bersaglio subisce {@damage 1d10} di danni extra dello stesso tipo di danni inflitti dall'arma o dal {@variantrule Unarmed Strike|XPHB|colpo senz'armi}, e il personaggio può causare uno degli effetti di Colpo brutale tra quelli elencati di seguito.",
+   {
+    "entries": [
+     {
+      "name": "Colpo violento",
+      "entries": [
+       "Il bersaglio viene spinto a 4,5 metri di distanza dal personaggio. In seguito, il personaggio può muoversi fino alla metà della sua {@variantrule Speed|XPHB|velocità} in linea retta verso il bersaglio senza provocare {@action Opportunity Attack|XPHB|attacchi di opportunità}."
+      ]
+     },
+     {
+      "name": "Colpo spaccaossa",
+      "entries": [
+       "La {@variantrule Speed|XPHB|velocità} del bersaglio viene ridotta di 4,5 metri fino all'inizio del turno successivo del barbaro. Un bersaglio può essere influenzato da un solo Colpo spaccaossa alla volta, quello più recente."
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "class:bard:10:magical-secrets": {
+  "name": "Segreti magici",
+  "entries": [
+   "Il bardo ha attinto ai segreti provenienti da una vasta gamma di tradizioni magiche. Ogni volta che il personaggio raggiunge un livello da bardo (incluso il livello attuale) e il numero di incantesimi preparati nella tabella Privilegi del bardo aumenta, il personaggio può scegliere un nuovo incantesimo preparato qualsiasi dalle liste degli incantesimi da bardo, chierico, druido e mago. Per il personaggio, gli incantesimi scelti contano come incantesimi da bardo (vedi la sezione di ciascuna classe per i rispettivi incantesimi). Inoltre, ogni volta che sostituisce un incantesimo preparato per la propria classe, può farlo con un incantesimo di queste liste."
+  ]
+ },
+ "class:bard:18:superior-inspiration": {
+  "name": "Ispirazione superiore",
+  "entries": [
+   "Quando il bardo tira per l'{@variantrule Initiative|XPHB|iniziativa}, se ha meno di due utilizzi di Ispirazione bardica, li recupera finché non ne ha due."
+  ]
+ },
+ "class:bard:19:epic-boon": {
+  "name": "Dono epico",
+  "entries": [
+   "Il personaggio ottiene un Dono epico (vedi \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. È consigliato il {@feat Boon of Spell Recall|XPHB|Dono del richiamo degli incantesimi}."
+  ]
+ },
+ "class:bard:1:bardic-inspiration": {
+  "name": "Ispirazione bardica",
+  "entries": [
+   "Un bardo può ispirare gli altri in maniera soprannaturale tramite le parole, la musica o la danza. Questa ispirazione è rappresentata dal dado di Ispirazione bardica, un {@dice d6}.",
+   {
+    "entries": [
+     {
+      "name": "Utilizzare l'Ispirazione bardica",
+      "entries": [
+       "Come {@variantrule Bonus Action|XPHB|azione bonus}, il bardo può ispirare un'altra creatura entro 18 metri da sé che può vederlo o sentirlo. Quella creatura ottiene uno dei suoi dadi di Ispirazione bardica. Una creatura può possedere un solo dado di Ispirazione bardica alla volta.",
+       "Una volta entro l'ora successiva, quando fallisce una {@variantrule D20 Test|XPHB|prova con d20}, la creatura può tirare il dado di Ispirazione bardica e aggiungere il risultato al {@dice d20}, trasformando potenzialmente il fallimento in un successo. Un dado di Ispirazione bardica viene speso quando viene tirato."
+      ]
+     },
+     {
+      "name": "Numero di utilizzi",
+      "entries": [
+       "Il bardo può conferire un dado di Ispirazione bardica un numero di volte pari al valore del suo modificatore di Carisma (minimo di una volta) e recuperare tutti gli utilizzi spesi quando completa un {@variantrule Long Rest|XPHB|riposo lungo}."
+      ]
+     },
+     {
+      "name": "Ai livelli superiori",
+      "entries": [
+       "Il dado di Ispirazione bardica cambia quando si raggiungono determinati livelli da bardo, come indicato nella colonna Dado bardico della tabella Privilegi del bardo. Il dado diventa un {@dice d8} al 5º livello, un {@dice d10} al 10º livello e un {@dice d12} al 15º livello."
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "class:bard:1:spellcasting": {
+  "name": "Incantesimi",
+  "entries": [
+   "Il bardo impara a lanciare incantesimi attraverso le arti bardiche. Consulta il capitolo \"Incantesimi\" per le regole relative al lancio degli incantesimi. Le informazioni sottostanti spiegano come applicare tali regole agli incantesimi da bardo, elencati nella relativa lista degli incantesimi più avanti nella descrizione della classe.",
+   {
+    "entries": [
+     {
+      "name": "Trucchetti",
+      "entries": [
+       "Un bardo conosce due trucchetti a scelta tratti dalla lista degli incantesimi da bardo. Sono consigliati {@spell Vicious Mockery|XPHB|beffa crudele} e {@spell Dancing Lights|XPHB|luci danzanti}.",
+       "Ogni volta che il personaggio ottiene un livello da bardo, può sostituire uno dei suoi trucchetti con un altro trucchetto a scelta dalla lista degli incantesimi da bardo.",
+       "Quando il personaggio raggiunge il 4º e il 10º livello da bardo, impara un altro trucchetto a scelta dalla lista degli incantesimi da bardo, come indicato nella colonna Trucchetti della tabella Privilegi del bardo."
+      ]
+     },
+     {
+      "name": "Slot incantesimo",
+      "entries": [
+       "La tabella Privilegi del bardo mostra gli slot incantesimo disponibili per i propri incantesimi di 1º livello o superiore. Tutti gli slot incantesimo consumati vengono ripristinati una volta completato un {@variantrule Long Rest|XPHB|riposo lungo}."
+      ]
+     },
+     {
+      "name": "Incantesimi preparati di 1º livello o superiore",
+      "entries": [
+       "Con questo privilegio, il personaggio prepara una lista di incantesimi di 1º livello o superiore che può lanciare. Per iniziare, sceglie quattro incantesimi di 1º livello dalla lista degli incantesimi da bardo. Sono consigliati {@spell Charm Person|XPHB|charme su persone}, {@spell Color Spray|XPHB|spruzzo colorato}, {@spell Dissonant Whispers|XPHB|sussurri dissonanti} e {@spell Healing Word|XPHB|parola guaritrice}.",
+       "Il numero di incantesimi nella lista aumenta man mano che si ottengono livelli da bardo, come mostrato nella colonna Incantesimi preparati della tabella Privilegi del bardo. Ogni volta che il numero cresce, il bardo deve scegliere altri incantesimi dalla lista degli incantesimi da bardo finché il numero di incantesimi sulla sua lista non combacia con quello mostrato nella tabella. Gli incantesimi scelti devono essere di un livello di cui possiede degli slot incantesimo. Per esempio, nel caso di un bardo di 3º livello, la sua lista di incantesimi preparati può includere sei incantesimi di 1º e 2º livello in qualsiasi combinazione.",
+       "Se un altro privilegio del bardo gli fornisce incantesimi che sono sempre preparati, questi non contano ai fini del numero di incantesimi preparabili con questo privilegio. Tuttavia, valgono comunque come incantesimi da bardo."
+      ]
+     },
+     {
+      "name": "Cambiare gli incantesimi preparati",
+      "entries": [
+       "Quando ottiene un livello da bardo, il personaggio può sostituire un incantesimo sulla propria lista con un altro incantesimo da bardo di cui possiede degli slot."
+      ]
+     },
+     {
+      "name": "Caratteristica da incantatore",
+      "entries": [
+       "Carisma è la caratteristica da incantatore per gli incantesimi da bardo."
+      ]
+     },
+     {
+      "name": "Focus da incantatore",
+      "entries": [
+       "Un bardo può usare uno strumento musicale come {@variantrule Spellcasting Focus|XPHB|focus da incantatore} per i suoi incantesimi da bardo."
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "class:bard:20:words-of-creation": {
+  "name": "Parole della creazione",
+  "entries": [
+   "Il bardo padroneggia due Parole della creazione: le parole della vita e della morte. Pertanto, gli incantesimi {@spell Power Word Heal|XPHB|parola del potere guarire} e {@spell Power Word Kill|XPHB|parola del potere uccidere} sono sempre considerati preparati. Quando lancia uno dei due incantesimi, il bardo può bersagliare una seconda creatura se questa si trova entro 3 metri dal primo bersaglio."
+  ]
+ },
+ "class:bard:2:expertise": {
+  "name": "Maestria",
+  "entries": [
+   "Il bardo ottiene {@variantrule Expertise|XPHB|Maestria} (vedi \"Glossario delle regole\") in due abilità a scelta in cui ha competenza. Sono consigliate {@skill Performance|XPHB|Intrattenere} e {@skill Persuasion|XPHB|Persuasione} se il personaggio ha competenza in queste due.",
+   "Al livello 9, il bardo ottiene {@variantrule Expertise|XPHB|Maestria} in altre due abilità a scelta in cui ha competenza."
+  ]
+ },
+ "class:bard:3:bard-subclass": {
+  "name": "Sottoclasse del bardo",
+  "entries": [
+   "Il personaggio ottiene una sottoclasse del bardo a scelta. La descrizione della sottoclasse Collegio della Sapienza segue quella di questa classe. Una sottoclasse è una specializzazione che conferisce dei privilegi a determinati livelli da bardo. Per il resto della sua carriera, il personaggio ottiene tutti i privilegi della sottoclasse pari al suo livello da bardo attuale o a quelli inferiori."
+  ]
+ },
+ "class:bard:4:ability-score-improvement": {
+  "name": "Aumento dei punteggi di caratteristica",
+  "entries": [
+   "Il personaggio ottiene l'{@feat Ability Score Improvement|XPHB|aumento dei punteggi di caratteristica} (vedi capitolo \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. Questo privilegio si ottiene nuovamente all'8º, al 12º e al 16º livello da bardo."
+  ]
+ },
+ "class:bard:5:font-of-inspiration": {
+  "name": "Fonte di ispirazione",
+  "entries": [
+   "Il bardo recupera tutti i suoi utilizzi spesi di Ispirazione bardica quando completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}.",
+   "Inoltre, può spendere uno slot incantesimo (nessuna azione richiesta) per recuperare un utilizzo speso di Ispirazione bardica."
+  ]
+ },
+ "class:bard:7:countercharm": {
+  "name": "Controfascino",
+  "entries": [
+   "Il bardo ottiene la capacità di usare note musicali o parole del potere per interferire negli effetti di influenza mentale. Se il bardo o una creatura entro 9 metri da lui fallisce un tiro salvezza contro un effetto che applica la condizione {@condition Charmed|XPHB|affascinato} o {@condition Frightened|XPHB|spaventato}, il bardo può usare una {@variantrule Reaction|XPHB|reazione} per far sì che il tiro salvezza venga ripetuto e che il nuovo tiro disponga di {@variantrule Advantage|XPHB|vantaggio}."
+  ]
+ },
+ "class:cleric:19:epic-boon": {
+  "name": "Dono epico",
+  "entries": [
+   "Il personaggio ottiene un Dono epico (vedi \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. È consigliato il {@feat Boon of Fate|XPHB|Dono del fato}."
+  ]
+ },
+ "class:cleric:1:spellcasting": {
+  "name": "Incantesimi",
+  "entries": [
+   "Il chierico impara a lanciare incantesimi attraverso la preghiera e la meditazione. Consulta il capitolo \"Incantesimi\" per le regole relative al lancio degli incantesimi. Le informazioni sottostanti spiegano come applicarle agli incantesimi del chierico, elencati nella relativa lista degli incantesimi più avanti nella descrizione della classe.",
+   {
+    "entries": [
+     {
+      "name": "Trucchetti",
+      "entries": [
+       "Il chierico conosce tre trucchetti a scelta tratti dalla lista degli incantesimi da chierico. Sono consigliati {@spell Guidance|XPHB|guida}, {@spell Sacred Flame|XPHB|fiamma sacra} e {@spell Thaumaturgy|XPHB|taumaturgia}.",
+       "Ogni volta che il personaggio ottiene un livello da chierico, può sostituire uno dei suoi trucchetti con un altro trucchetto a scelta dalla lista degli incantesimi da chierico.",
+       "Quando il personaggio raggiunge il 4º e il 10º livello da chierico, impara un altro trucchetto a scelta dalla lista degli incantesimi da chierico, come indicato nella colonna Trucchetti della tabella Privilegi del chierico."
+      ]
+     },
+     {
+      "name": "Slot incantesimo",
+      "entries": [
+       "La tabella Privilegi del chierico mostra gli slot incantesimo disponibili per i propri incantesimi di 1º livello o superiore. Tutti gli slot incantesimo consumati vengono ripristinati una volta completato un {@variantrule Long Rest|XPHB|riposo lungo}."
+      ]
+     },
+     {
+      "name": "Incantesimi preparati di 1º livello o superiore",
+      "entries": [
+       "Con questo privilegio, il personaggio prepara una lista di incantesimi di 1º livello o superiore che può lanciare. Per iniziare, sceglie quattro incantesimi di 1º livello dalla lista degli incantesimi da chierico. Sono consigliati {@spell Bless|XPHB|benedizione}, {@spell Cure Wounds|XPHB|cura ferite}, {@spell Guiding Bolt|XPHB|dardo tracciante} e {@spell Shield of Faith|XPHB|scudo della fede}.",
+       "Il numero di incantesimi nella lista aumenta man mano che il personaggio ottiene livelli da chierico, come mostrato nella colonna Incantesimi preparati della tabella Privilegi del chierico. Ogni volta che il numero cresce, il chierico deve scegliere altri incantesimi dalla lista degli incantesimi da chierico finché il numero di incantesimi sulla sua lista non combacia con quello mostrato nella tabella. Gli incantesimi scelti devono essere di un livello di cui possiede degli slot incantesimo. Per esempio, nel caso di un chierico di 3º livello, la sua lista di incantesimi preparati può includere sei incantesimi di 1º e 2º livello in qualsiasi combinazione.",
+       "Se un altro privilegio del chierico gli fornisce incantesimi che sono sempre preparati, questi non contano ai fini del numero di incantesimi preparabili con questo privilegio. Tuttavia, valgono comunque come incantesimi da chierico."
+      ]
+     },
+     {
+      "name": "Cambiare gli incantesimi preparati",
+      "entries": [
+       "Quando il chierico completa un {@variantrule Long Rest|XPHB|riposo lungo}, può modificare la sua lista di incantesimi preparati, sostituendo quelli che preferisce con altri incantesimi da chierico di cui possiede degli slot incantesimo."
+      ]
+     },
+     {
+      "name": "Caratteristica da incantatore",
+      "entries": [
+       "Saggezza è la caratteristica da incantatore usata per gli incantesimi da chierico."
+      ]
+     },
+     {
+      "name": "Focus da incantatore",
+      "entries": [
+       "Il chierico può usare un {@item Holy Symbol|XPHB|simbolo sacro} come {@variantrule Spellcasting Focus|XPHB|focus da incantatore} per i suoi incantesimi da chierico."
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "class:cleric:20:greater-divine-intervention": {
+  "name": "Intervento divino superiore",
+  "entries": [
+   "Il chierico può invocare un intervento divino ancora più potente. Quando usa il privilegio Intervento divino, può scegliere {@spell Wish|XPHB|desiderio} tra gli incantesimi. Se lo fa, non può usare di nuovo Intervento divino finché non completa {@dice 2d4} riposi lunghi."
+  ]
+ },
+ "class:cleric:3:cleric-subclass": {
+  "name": "Sottoclasse del chierico",
+  "entries": [
+   "Il personaggio ottiene una sottoclasse del chierico a scelta. La descrizione della sottoclasse Dominio della Vita segue quella di questa classe. Una sottoclasse è una specializzazione che conferisce dei privilegi a determinati livelli da chierico. Per il resto della sua carriera, il personaggio ottiene tutti i privilegi della sottoclasse pari al suo livello da chierico attuale o a quelli inferiori."
+  ]
+ },
+ "class:cleric:4:ability-score-improvement": {
+  "name": "Aumento dei punteggi di caratteristica",
+  "entries": [
+   "Il personaggio ottiene l'{@feat Ability Score Improvement|XPHB|aumento dei punteggi di caratteristica} (vedi capitolo \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. Questo privilegio si ottiene nuovamente all'8º, al 12º e al 16º livello da chierico."
+  ]
+ },
+ "class:cleric:5:sear-undead": {
+  "name": "Bruciare i non morti",
+  "entries": [
+   "Ogni volta che il chierico usa scacciare non morti, può tirare un numero di d8 pari al modificatore di Saggezza (minimo di {@dice 1d8}) e sommarli. Ogni non morto che fallisce il tiro salvezza contro quell'utilizzo di scacciare non morti subisce danni radiosi pari alla somma dei tiri. I danni non interrompono l'effetto di Scacciare non morti."
+  ]
+ },
+ "class:druid:15:improved-elemental-fury": {
+  "name": "Furia elementale migliorata",
+  "entries": [
+   "L'opzione scelta per la Furia elementale diventa più potente, come descritto di seguito.",
+   {
+    "entries": [
+     {
+      "name": "Incantesimi potenti",
+      "entries": [
+       "Quando il personaggio lancia un trucchetto da druido con un raggio pari o superiore a 3 metri, la gittata dell'incantesimo aumenta di 90 metri."
+      ]
+     },
+     {
+      "name": "Colpo primordiale",
+      "entries": [
+       "I danni extra del Colpo primordiale aumentano a {@damage 2d8}."
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "class:druid:18:beast-spells": {
+  "name": "Incantesimi bestiali",
+  "entries": [
+   "Mentre utilizza Forma selvatica, il druido può lanciare incantesimi in forma bestiale, fatta eccezione per gli incantesimi che abbiano bisogno di componenti materiali con un costo specificato o che consumino la propria componente materiale."
+  ]
+ },
+ "class:druid:19:epic-boon": {
+  "name": "Dono epico",
+  "entries": [
+   "Il personaggio ottiene un Dono epico (vedi \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. È consigliato il {@feat Boon of Dimensional Travel|XPHB|Dono del viaggio dimensionale}."
+  ]
+ },
+ "class:druid:1:druidic": {
+  "name": "Druidico",
+  "entries": [
+   "Un druido conosce il Druidico, la lingua segreta del suo ordine. Imparando questa lingua antica, ha sbloccato anche la magia della comunicazione con gli animali; l'incantesimo {@spell Speak with Animals|XPHB|parlare con gli animali} è sempre considerato preparato.",
+   "Il druido può usare il Druidico per lasciare messaggi nascosti. Il druido e coloro che conoscono il Druidico sono in grado di individuare tali messaggi automaticamente. Altri possono notare la presenza di un messaggio superando una prova di Intelligenza ({@skill Investigation|XPHB|Indagare}) con {@dc 15}, ma non possono decifrarlo senza l'aiuto della magia."
+  ]
+ },
+ "class:druid:20:archdruid": {
+  "name": "Arcidruido",
+  "entries": [
+   "La vitalità della natura fiorisce costantemente all'interno del druido, concedendogli i seguenti benefici.",
+   {
+    "entries": [
+     {
+      "name": "Forma selvatica sempreverde",
+      "entries": [
+       "Ogni volta che il druido tira per l'{@variantrule Initiative|XPHB|iniziativa} e non ha utilizzi disponibili di Forma Selvatica, ne recupera uno."
+      ]
+     },
+     {
+      "name": "Mago della natura",
+      "entries": [
+       "Il druido può convertire gli utilizzi di Forma selvatica in slot incantesimo (nessuna azione richiesta). Sceglie un numero di utilizzi di Forma selvatica non spesi e li converte in un singolo slot incantesimo; ogni utilizzo contribuisce a 2 livelli di incantesimo. Per esempio, se converte due utilizzi di Forma selvatica, ottiene uno slot incantesimo di 4º livello. Dopo aver usato questo privilegio, il personaggio non può riutilizzarlo prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}."
+      ]
+     },
+     {
+      "name": "Corpo senza tempo",
+      "entries": [
+       "La magia primordiale che fluisce nel druido rallenta il suo invecchiamento. Per ogni 10 anni trascorsi, il corpo del druido invecchia soltanto di 1 anno."
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "class:druid:2:wild-companion": {
+  "name": "Compagno selvatico",
+  "entries": [
+   "Il druido può evocare in suo soccorso uno spirito della natura che assume una forma animale. Come azione di {@action Magic|XPHB|Magia}, il druido può spendere uno slot incantesimo o un utilizzo di Forma selvatica per lanciare l'incantesimo {@spell Find Familiar|XPHB|trova famiglio} senza l'ausilio di componenti materiali.",
+   "Una volta lanciato l'incantesimo in questo modo, il famiglio evocato sarà un folletto e svanirà quando il druido avrà completato un {@variantrule Long Rest|XPHB|riposo lungo}."
+  ]
+ },
+ "class:druid:3:druid-subclass": {
+  "name": "Sottoclasse del druido",
+  "entries": [
+   "Il personaggio ottiene una sottoclasse del druido a scelta. La descrizione della sottoclasse Circolo della Terra segue quella di questa classe. Una sottoclasse è una specializzazione che conferisce dei privilegi a determinati livelli da druido. Per il resto della sua carriera, il personaggio ottiene tutti i privilegi della sottoclasse pari al suo livello da druido attuale o a quelli inferiori."
+  ]
+ },
+ "class:druid:4:ability-score-improvement": {
+  "name": "Aumento dei punteggi di caratteristica",
+  "entries": [
+   "Il personaggio ottiene l'{@feat Ability Score Improvement|XPHB|aumento dei punteggi di caratteristica} (vedi capitolo \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. Questo privilegio si ottiene nuovamente all'8º, al 12º e al 16º livello da druido."
+  ]
+ },
+ "class:druid:5:wild-resurgence": {
+  "name": "Rinascita selvatica",
+  "entries": [
+   "Una volta per ogni suo turno, se il druido ha consumato tutti i suoi utilizzi di Forma selvatica, può ripristinare un utilizzo spendendo uno slot incantesimo (nessuna azione richiesta).",
+   "Inoltre, può spendere un utilizzo di Forma selvatica (nessuna azione richiesta) per ottenere uno slot incantesimo di 1º livello, ma non potrà farlo di nuovo finché non completa un {@variantrule Long Rest|XPHB|riposo lungo}."
+  ]
+ },
+ "class:fighter:11:two-extra-attacks": {
+  "name": "Due attacchi extra",
+  "entries": [
+   "Quando effettua l'azione di {@action Attack|XPHB|attacco} nel proprio turno, il guerriero può attaccare tre volte anziché una."
+  ]
+ },
+ "class:fighter:13:studied-attacks": {
+  "name": "Attacchi studiati",
+  "entries": [
+   "Il guerriero studia gli avversari e apprende da ogni attacco che effettua. Se effettua un tiro per colpire contro una creatura e manca il bersaglio, dispone di {@variantrule Advantage|XPHB|vantaggio} sul tiro per colpire successivo che effettua contro quella creatura prima della fine del suo turno successivo."
+  ]
+ },
+ "class:fighter:19:epic-boon": {
+  "name": "Dono epico",
+  "entries": [
+   "Il personaggio ottiene un Dono epico (vedi \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. È consigliato il {@feat Boon of Combat Prowess|XPHB|Dono delle abilità di combattimento}."
+  ]
+ },
+ "class:fighter:1:second-wind": {
+  "name": "Recuperare energie",
+  "entries": [
+   "Un guerriero possiede una riserva limitata di resistenza fisica e mentale a cui può attingere. Come {@variantrule Bonus Action|XPHB|azione bonus}, può usarla per recuperare {@variantrule Hit Points|XPHB|punti ferita} pari a {@dice 1d10} più il suo livello da guerriero.",
+   "Può utilizzare questo privilegio due volte. Per quanto riguarda gli utilizzi consumati, ne recupera uno dopo aver completato un {@variantrule Short Rest|XPHB|riposo breve} e li recupera tutti dopo un {@variantrule Long Rest|XPHB|riposo lungo}.",
+   "Quando il personaggio raggiunge determinati livelli da guerriero, ottiene più utilizzi di questo privilegio, come indicato nella colonna Recuperare energie della tabella Privilegi del guerriero."
+  ]
+ },
+ "class:fighter:1:weapon-mastery": {
+  "name": "Padronanza d'armi",
+  "entries": [
+   "Il guerriero è addestrato nell'uso delle armi, e per questo può avvalersi della proprietà di padronanza per tre tipi di armi semplici o da guerra a sua scelta. Ogni volta che termina un {@variantrule Long Rest|XPHB|riposo lungo}, può esercitarsi con le armi e cambiare una delle armi scelte.",
+   "Quando si raggiungono determinati livelli da guerriero, si ottiene la capacità di utilizzare le proprietà di padronanza di più tipi di armi, come indicato nella colonna Padronanza d'armi della tabella Privilegi del guerriero."
+  ]
+ },
+ "class:fighter:20:three-extra-attacks": {
+  "name": "Tre attacchi extra",
+  "entries": [
+   "Quando effettua l'azione di {@action Attack|XPHB|attacco} nel proprio turno, il guerriero può attaccare quattro volte anziché una."
+  ]
+ },
+ "class:fighter:2:action-surge": {
+  "name": "Azione impetuosa",
+  "entries": [
+   "Il guerriero può spingersi oltre i suoi normali limiti per un istante. Nel suo turno, può effettuare un'azione aggiuntiva, fatta eccezione per l'azione di {@action Magic|XPHB|Magia}.",
+   "Dopo aver usato questo privilegio, il personaggio non può riutilizzarlo prima di aver completato un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}. A partire dal 17º livello, il guerriero può utilizzare questo privilegio due volte prima di un riposo, ma soltanto una volta nello stesso turno."
+  ]
+ },
+ "class:fighter:2:tactical-mind": {
+  "name": "Mente tattica",
+  "entries": [
+   "Il guerriero possiede una mente tattica sia sul campo di battaglia che fuori. Quando fallisce una prova di caratteristica, può spendere un utilizzo di Recuperare energie per spingersi verso il successo. Invece di recuperare {@variantrule Hit Points|XPHB|punti ferita}, il guerriero tira {@dice 1d10} e aggiunge il risultato alla prova di caratteristica, trasformandola potenzialmente in un successo. Se la prova fallisce di nuovo, questo utilizzo di Recuperare energie non viene speso."
+  ]
+ },
+ "class:fighter:3:fighter-subclass": {
+  "name": "Sottoclasse del guerriero",
+  "entries": [
+   "Il personaggio ottiene una sottoclasse del guerriero a scelta. La descrizione della sottoclasse Campione segue quella di questa classe. Una sottoclasse è una specializzazione che conferisce dei privilegi a determinati livelli da guerriero. Per il resto della sua carriera, il personaggio ottiene tutti i privilegi della sottoclasse pari al suo livello da guerriero attuale o a quelli inferiori."
+  ]
+ },
+ "class:fighter:4:ability-score-improvement": {
+  "name": "Aumento dei punteggi di caratteristica",
+  "entries": [
+   "Il personaggio ottiene l'{@feat Ability Score Improvement|XPHB|aumento dei punteggi di caratteristica} (vedi capitolo \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. Questo privilegio si ottiene nuovamente al 6º, all'8º, al 12º, al 14º e al 16º livello da guerriero."
+  ]
+ },
+ "class:fighter:5:extra-attack": {
+  "name": "Attacco extra",
+  "entries": [
+   "Quando effettua l'azione di {@action Attack|XPHB|Attacco} nel proprio turno, il guerriero può attaccare due volte anziché una."
+  ]
+ },
+ "class:fighter:5:tactical-shift": {
+  "name": "Spostamento tattico",
+  "entries": [
+   "Ogni volta che il guerriero attiva Recuperare energie con un'{@variantrule Bonus Action|XPHB|azione bonus}, può muoversi fino a metà della sua {@variantrule Speed|XPHB|velocità} senza provocare {@action Opportunity Attack|XPHB|attacchi di opportunità}."
+  ]
+ },
+ "class:fighter:9:indomitable": {
+  "name": "Indomabile",
+  "entries": [
+   "Se il personaggio fallisce un tiro salvezza, può ripetere il tiro con un bonus pari al suo livello da guerriero. Deve usare il nuovo risultato e non può riutilizzare questo privilegio prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}.",
+   "Prima di un {@variantrule Long Rest|XPHB|riposo lungo}, il personaggio può utilizzare questo privilegio due volte a partire dal 13º livello e tre volte a partire dal 17º livello."
+  ]
+ },
+ "class:fighter:9:tactical-master": {
+  "name": "Signore delle tattiche",
+  "entries": [
+   "Quando il guerriero attacca con un'arma di cui può utilizzare la proprietà di padronanza, per quell'attacco può sostituirla con le proprietà spinta, fiaccare o lentezza."
+  ]
+ },
+ "class:monk:10:self-restoration": {
+  "name": "Autorigenerazione",
+  "entries": [
+   "Con la sola forza di volontà, il monaco può rimuovere le seguenti condizioni da se stesso al termine di ogni suo turno: {@condition Charmed|XPHB|affascinato}, {@condition Frightened|XPHB|spaventato} o {@condition Poisoned|XPHB|avvelenato}.",
+   "Inoltre, la rinuncia a cibo e bevande non comporta livelli di {@condition Exhaustion|XPHB|indebolimento}."
+  ]
+ },
+ "class:monk:13:deflect-energy": {
+  "name": "Deviare energia",
+  "entries": [
+   "Ora il monaco può utilizzare il suo privilegio Devia attacchi contro gli attacchi che infliggono qualsiasi tipo di danno, non solo quelli contundenti, perforanti o taglienti."
+  ]
+ },
+ "class:monk:14:disciplined-survivor": {
+  "name": "Esperto di sopravvivenza disciplinato",
+  "entries": [
+   "La disciplina fisica e mentale del monaco gli conferisce competenza in tutti i tiri salvezza.",
+   "Inoltre, ogni volta che effettua un tiro salvezza e fallisce, può spendere 1 punto concentrazione per ripetere il tiro. Deve usare il nuovo risultato."
+  ]
+ },
+ "class:monk:15:perfect-focus": {
+  "name": "Concentrazione perfetta",
+  "entries": [
+   "Quando il monaco tira per l'{@variantrule Initiative|XPHB|iniziativa} e non usa Metabolismo straordinario, può recuperare i punti concentrazione spesi fino ad averne 4, se ne ha 3 o meno."
+  ]
+ },
+ "class:monk:18:superior-defense": {
+  "name": "Difesa superiore",
+  "entries": [
+   "All'inizio del suo turno, il monaco può spendere 3 punti concentrazione per rafforzare se stesso contro i danni per 1 minuto o finché non è {@condition Incapacitated|XPHB|incapacitato}. In quell'intervallo di tempo, ottiene {@variantrule Resistance|XPHB|resistenza} a tutti i danni tranne a quelli da Forza."
+  ]
+ },
+ "class:monk:19:epic-boon": {
+  "name": "Dono epico",
+  "entries": [
+   "Il personaggio ottiene un Dono epico (vedi \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. È consigliato il {@feat Boon of Irresistible Offense|XPHB|Dono dell'offensiva irresistibile}."
+  ]
+ },
+ "class:monk:1:unarmored-defense": {
+  "name": "Difesa senza armatura",
+  "entries": [
+   "Se il personaggio non sta indossando un'armatura o impugnando uno {@item Shield|XPHB|scudo}, la {@variantrule Armor Class|XPHB|Classe Armatura} base corrisponde a 10 più i modificatori di Destrezza e Saggezza."
+  ]
+ },
+ "class:monk:20:body-and-mind": {
+  "name": "Corpo e mente",
+  "entries": [
+   "La mente e il corpo del monaco hanno raggiunto nuove vette. I punteggi di Destrezza e Saggezza aumentano di 4, fino a un massimo di 25."
+  ]
+ },
+ "class:monk:2:uncanny-metabolism": {
+  "name": "Metabolismo straordinario",
+  "entries": [
+   "Quando effettua un tiro per l'{@variantrule Initiative|XPHB|iniziativa}, il monaco può recuperare tutti i punti concentrazione spesi. Quando lo fa, tira un dado di Arti marziali e recupera un numero di {@variantrule Hit Points|XPHB|punti ferita} pari al suo livello da monaco più il risultato ottenuto.",
+   "Dopo aver utilizzato questo privilegio, il personaggio non può riutilizzarlo prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}."
+  ]
+ },
+ "class:monk:3:deflect-attacks": {
+  "name": "Devia attacchi",
+  "entries": [
+   "Quando viene colpito da un tiro per colpire che include danni contundenti, perforanti o taglienti, il monaco può usare una {@variantrule Reaction|XPHB|reazione} per ridurre i danni totali dell'attacco che ha subito. La riduzione è pari a {@dice 1d10} più il suo modificatore di Destrezza e il suo livello da monaco.",
+   "Se i danni vengono ridotti a 0, il monaco può spendere 1 punto concentrazione per deviare parte della forza dell'attacco. Se lo fa, deve scegliere una creatura nel suo campo visivo entro 1,5 metri da sé se l'attacco era in mischia; se l'attacco era a distanza, deve scegliere una creatura nel suo campo visivo entro 18 metri da sé che non sia dietro {@variantrule Cover|XPHB|copertura} totale. Quella creatura deve superare un tiro salvezza su Destrezza o subire danni pari a due tiri del dado di Arti marziali più il modificatore di Destrezza del monaco. I danni sono dello stesso tipo di danni inflitti dall'attacco."
+  ]
+ },
+ "class:monk:3:monk-subclass": {
+  "name": "Sottoclasse del monaco",
+  "entries": [
+   "Il personaggio ottiene una sottoclasse del monaco a scelta. La descrizione della sottoclasse Guerriero della Mano Aperta segue quella di questa classe. Una sottoclasse è una specializzazione che conferisce dei privilegi a determinati livelli da monaco. Per il resto della sua carriera, il personaggio ottiene tutti i privilegi della sottoclasse pari al suo livello da monaco attuale o a quelli inferiori."
+  ]
+ },
+ "class:monk:4:ability-score-improvement": {
+  "name": "Aumento dei punteggi di caratteristica",
+  "entries": [
+   "Il personaggio ottiene l'{@feat Ability Score Improvement|XPHB|aumento dei punteggi di caratteristica} (vedi capitolo \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. Questo privilegio si ottiene nuovamente all'8º, al 12º e al 16º livello da monaco."
+  ]
+ },
+ "class:monk:4:slow-fall": {
+  "name": "Caduta lenta",
+  "entries": [
+   "Un monaco può usare la sua {@variantrule Reaction|XPHB|reazione} quando cade per ridurre gli eventuali danni da caduta di un ammontare pari a cinque volte il suo livello da monaco."
+  ]
+ },
+ "class:monk:5:extra-attack": {
+  "name": "Attacco extra",
+  "entries": [
+   "Quando effettua l'azione di {@action Attack|XPHB|Attacco} nel proprio turno, il monaco può attaccare due volte anziché una."
+  ]
+ },
+ "class:monk:5:stunning-strike": {
+  "name": "Colpo stordente",
+  "entries": [
+   "Una volta per turno, quando il monaco colpisce una creatura con un'arma da monaco o un {@variantrule Unarmed Strike|XPHB|colpo senz'armi}, può spendere 1 punto concentrazione per tentare un colpo stordente. Il bersaglio deve effettuare un tiro salvezza su Costituzione. Se lo fallisce, è {@condition Stunned|XPHB|stordito} fino all'inizio del turno successivo del monaco. Se lo supera, la {@variantrule Speed|XPHB|velocità} del bersaglio è dimezzata fino all'inizio del turno successivo del monaco, e il prossimo tiro per colpire effettuato contro il bersaglio prima di allora dispone di {@variantrule Advantage|XPHB|vantaggio}."
+  ]
+ },
+ "class:monk:7:evasion": {
+  "name": "Elusione",
+  "entries": [
+   "Quando è soggetto a un effetto che gli consente di effettuare un tiro salvezza su Destrezza per dimezzare i danni, non subisce alcun danno se lo supera, e soltanto la metà dei danni se lo fallisce.",
+   "Il monaco non beneficia di questo privilegio se è {@condition Incapacitated|XPHB|incapacitato}."
+  ]
+ },
+ "class:monk:9:acrobatic-movement": {
+  "name": "Movimento acrobatico",
+  "entries": [
+   "Se il personaggio non sta indossando un'armatura o impugnando uno {@item Shield|XPHB|scudo}, ottiene la capacità di muoversi lungo le superfici verticali e sulle superfici liquide durante il suo turno senza cadere durante il movimento."
+  ]
+ },
+ "class:paladin:10:aura-of-courage": {
+  "name": "Aura di coraggio",
+  "entries": [
+   "Il paladino e i suoi alleati sono immuni alla paura finché si trovano all'interno dell'Aura di protezione. Se un alleato {@condition Frightened|XPHB|spaventato} entra nel suo raggio d'influenza, non subirà più l'effetto della paura finché sarà al suo interno."
+  ]
+ },
+ "class:paladin:11:radiant-strikes": {
+  "name": "Colpi radiosi",
+  "entries": [
+   "I colpi del paladino ora possiedono poteri soprannaturali. Quando colpisce un bersaglio con un tiro per colpire utilizzando un'arma da mischia o un {@variantrule Unarmed Strike|XPHB|colpo senz'armi}, questo subisce {@damage 1d8} danni radiosi aggiuntivi."
+  ]
+ },
+ "class:paladin:14:restoring-touch": {
+  "name": "Tocco rigenerante",
+  "entries": [
+   "Quando il paladino usa Imposizione delle mani su una creatura, può anche liberarla da una delle seguenti condizioni: {@condition Blinded|XPHB|accecato}, {@condition Charmed|XPHB|affascinato}, {@condition Deafened|XPHB|assordato}, {@condition Paralyzed|XPHB|paralizzato}, {@condition Frightened|XPHB|spaventato} o {@condition Stunned|XPHB|stordito}. Per farlo, è necessario attingere a 5 {@variantrule Hit Points|XPHB|punti ferita} della riserva curativa di Imposizione delle mani per ognuna delle condizioni rimosse. Tuttavia, i punti consumati non ripristinano i {@variantrule Hit Points|XPHB|punti ferita} della creatura."
+  ]
+ },
+ "class:paladin:18:aura-expansion": {
+  "name": "Ampliamento dell'aura",
+  "entries": [
+   "L'Aura di protezione del paladino è ora un'{@variantrule Emanation [Area of Effect]|XPHB|emanazione} di 9 metri."
+  ]
+ },
+ "class:paladin:19:epic-boon": {
+  "name": "Dono epico",
+  "entries": [
+   "Il personaggio ottiene un Dono epico (vedi \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. È consigliato il {@feat Boon of Truesight|XPHB|Dono della vista pura}."
+  ]
+ },
+ "class:paladin:1:lay-on-hands": {
+  "name": "Imposizione delle mani",
+  "entries": [
+   "Il tocco benedetto di un paladino è in grado di guarire le ferite. Un paladino possiede una riserva di poteri curativi che si ricostituisce quando completa un {@variantrule Long Rest|XPHB|riposo lungo}. Questa gli consente di ripristinare un numero totale di {@variantrule Hit Points|XPHB|punti ferita} pari a cinque volte il proprio livello da paladino.",
+   "Come {@variantrule Bonus Action|XPHB|azione bonus}, il paladino può toccare una creatura (anche se stesso) e attingere al potere della sua riserva per ripristinare un certo numero di {@variantrule Hit Points|XPHB|punti ferita} in quella creatura, fino all'ammontare massimo in essa disponibile.",
+   "Inoltre, può consumare 5 {@variantrule Hit Points|XPHB|punti ferita} della riserva per curare l'avvelenamento. In questo caso, i {@variantrule Hit Points|XPHB|punti ferita} impiegati non vanno a ripristinare quelli della creatura interessata."
+  ]
+ },
+ "class:paladin:1:weapon-mastery": {
+  "name": "Padronanza d'armi",
+  "entries": [
+   "Il paladino è addestrato nell'uso delle armi, e per questo può avvalersi della proprietà di padronanza per due tipi di armi a sua scelta in cui ha competenza, come le spade lunghe e i {@item Javelin|XPHB|giavellotti}.",
+   "Ogni volta che completa un {@variantrule Long Rest|XPHB|riposo lungo}, può cambiare il tipo di arma utilizzato. Per esempio, è possibile passare alle proprietà di padronanza per {@item Halberd|XPHB|alabarde} e {@item Flail|XPHB|mazzafrusti}."
+  ]
+ },
+ "class:paladin:4:ability-score-improvement": {
+  "name": "Aumento dei punteggi di caratteristica",
+  "entries": [
+   "Il personaggio ottiene l'{@feat Ability Score Improvement|XPHB|aumento dei punteggi di caratteristica} (vedi capitolo \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. Questo privilegio si ottiene nuovamente all'8º, al 12º e al 16º livello da paladino."
+  ]
+ },
+ "class:paladin:5:extra-attack": {
+  "name": "Attacco extra",
+  "entries": [
+   "Quando effettua l'azione di {@action Attack|XPHB|Attacco} nel proprio turno, il paladino può attaccare due volte anziché una."
+  ]
+ },
+ "class:paladin:5:faithful-steed": {
+  "name": "Fido destriero",
+  "entries": [
+   "Il paladino può richiedere l'aiuto di una cavalcatura ultraterrena e l'incantesimo {@spell Find Steed|XPHB|trova cavalcatura} è sempre considerato preparato.",
+   "Può lanciarlo una volta senza consumare uno slot incantesimo e ne recupera l'utilizzo dopo aver completato un {@variantrule Long Rest|XPHB|riposo lungo}."
+  ]
+ },
+ "class:paladin:6:aura-of-protection": {
+  "name": "Aura di protezione",
+  "entries": [
+   "Il paladino sprigiona un'aura protettiva invisibile in una {@variantrule Emanation [Area of Effect]|XPHB|emanazione} di 3 metri che ha origine da sé. L'aura diventa inattiva quando è {@condition Incapacitated|XPHB|incapacitato}.",
+   "L'aura conferisce al personaggio e ai suoi alleati un bonus ai tiri salvezza pari al suo modificatore di Carisma (fino a un bonus minimo di +1).",
+   "Se è presente un altro paladino, le creature possono usufruire di una sola Aura di protezione per volta: spetta alla creatura interessata scegliere quale."
+  ]
+ },
+ "class:paladin:9:abjure-foes": {
+  "name": "Abiurare nemici",
+  "entries": [
+   "Come azione di {@action Magic|XPHB|Magia}, il paladino può consumare uno degli usi di Incanalare divinità per sopraffare gli avversari. Dopo aver estratto il suo {@item Holy Symbol|XPHB|simbolo sacro} o l'arma, può prendere di mira un numero di creature corrispondente al proprio modificatore di Carisma (minimo una creatura) che egli può vedere in un raggio di 18 metri da sé. Ogni bersaglio deve superare un tiro salvezza su Saggezza, altrimenti sarà {@condition Frightened|XPHB|spaventato} per 1 minuto o finché non subirà dei danni. Mentre è in questa condizione, nel proprio turno può svolgere solo una delle seguenti azioni: muoversi, effettuare un'azione o un'{@variantrule Bonus Action|XPHB|azione bonus}."
+  ]
+ },
+ "class:ranger:10:tireless": {
+  "name": "Instancabile",
+  "entries": [
+   "Le forze primordiali ora alimentano i viaggi del ranger, fornendogli i seguenti benefici.",
+   {
+    "entries": [
+     {
+      "name": "Punti ferita temporanei",
+      "entries": [
+       "Come azione di {@action Magic|XPHB|Magia}, il ranger può ottenere un numero di {@variantrule Temporary Hit Points|XPHB|punti ferita temporanei} pari a {@dice 1d8} + il suo modificatore di Saggezza (minimo di 1 punto ferita temporaneo). Il personaggio può utilizzare questa azione un numero di volte pari al valore del suo modificatore di Saggezza (minimo una volta) e recupera tutti gli utilizzi consumati quando completa un {@variantrule Long Rest|XPHB|riposo lungo}."
+      ]
+     },
+     {
+      "name": "Diminuisci indebolimento",
+      "entries": [
+       "Quando il ranger completa un {@variantrule Short Rest|XPHB|riposo breve}, il suo livello di {@condition Exhaustion|XPHB|indebolimento}, se presente, diminuisce di 1."
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "class:ranger:13:relentless-hunter": {
+  "name": "Cacciatore implacabile",
+  "entries": [
+   "Pur subendo danni, il ranger non interrompe la sua {@status Concentration|XPHB|concentrazione} sul marchio del cacciatore."
+  ]
+ },
+ "class:ranger:14:natures-veil": {
+  "name": "Velo della natura",
+  "entries": [
+   "Il ranger invoca gli spiriti della natura per nascondersi magicamente. Come {@variantrule Bonus Action|XPHB|azione bonus}, può conferirsi la condizione di invisibilità fino al termine del suo turno successivo.",
+   "Il personaggio può utilizzare questo privilegio un numero di volte pari al valore del suo modificatore di Saggezza (minimo una volta) e recupera tutti gli utilizzi consumati quando completa un {@variantrule Long Rest|XPHB|riposo lungo}."
+  ]
+ },
+ "class:ranger:17:precise-hunter": {
+  "name": "Precisione del cacciatore",
+  "entries": [
+   "Il ranger ottiene {@variantrule Advantage|XPHB|vantaggio} ai tiri per colpire contro la creatura su cui è posto il suo marchio del cacciatore."
+  ]
+ },
+ "class:ranger:18:feral-senses": {
+  "name": "Sensi ferini",
+  "entries": [
+   "Il legame con le forze della natura conferisce al ranger {@sense Blindsight|XPHB|vista cieca} entro un raggio di 9 metri."
+  ]
+ },
+ "class:ranger:19:epic-boon": {
+  "name": "Dono epico",
+  "entries": [
+   "Il personaggio ottiene un Dono epico (vedi \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. È consigliato il {@feat Boon of Dimensional Travel|XPHB|Dono del viaggio dimensionale}."
+  ]
+ },
+ "class:ranger:1:favored-enemy": {
+  "name": "Nemico prescelto",
+  "entries": [
+   "L'incantesimo {@spell Hunter's Mark|XPHB|marchio del cacciatore} del ranger è sempre considerato come preparato. È possibile lanciarlo due volte senza spendere alcuno slot incantesimo. I suoi utilizzi vengono ripristinati dopo aver completato un {@variantrule Long Rest|XPHB|riposo lungo}.",
+   "Il numero di volte in cui è possibile lanciare tale incantesimo aumenta al raggiungimento di determinati livelli da ranger, come mostrato nella colonna Nemico prescelto della tabella Privilegi del ranger."
+  ]
+ },
+ "class:ranger:1:weapon-mastery": {
+  "name": "Padronanza d'armi",
+  "entries": [
+   "Il ranger è addestrato nell'uso delle armi, e per questo può avvalersi della proprietà di padronanza per due tipi di armi a sua scelta in cui ha competenza, come gli archi lunghi e le {@item Shortsword|XPHB|spade corte}.",
+   "Ogni volta che completa un {@variantrule Long Rest|XPHB|riposo lungo}, può cambiare il tipo di arma utilizzato. Per esempio, è possibile passare alle proprietà di padronanza per {@item Scimitar|XPHB|scimitarre} e spade lunghe."
+  ]
+ },
+ "class:ranger:2:deft-explorer": {
+  "name": "Esploratore esperto",
+  "entries": [
+   "Grazie ai suoi tanti viaggi, il ranger ottiene i seguenti benefici.",
+   {
+    "entries": [
+     {
+      "name": "Maestria",
+      "entries": [
+       "Il ranger può scegliere una delle competenze nelle abilità in cui non possiede {@variantrule Expertise|XPHB|maestria}, così da ottenerla."
+      ]
+     },
+     {
+      "name": "Lingue",
+      "entries": [
+       "Il ranger conosce due lingue a scelta dal relativo elenco nel capitolo \"Creazione del personaggio\"."
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "class:ranger:3:ranger-subclass": {
+  "name": "Sottoclasse del ranger",
+  "entries": [
+   "Il personaggio ottiene una sottoclasse del ranger a scelta. La descrizione della sottoclasse Cacciatore segue quella di questa classe. Una sottoclasse è una specializzazione che conferisce dei privilegi a determinati livelli da ranger. Per il resto della sua carriera, il personaggio ottiene tutti i privilegi della sottoclasse pari al suo livello da ranger attuale o a quelli inferiori."
+  ]
+ },
+ "class:ranger:4:ability-score-improvement": {
+  "name": "Aumento dei punteggi di caratteristica",
+  "entries": [
+   "Il personaggio ottiene l'{@feat Ability Score Improvement|XPHB|aumento dei punteggi di caratteristica} (vedi capitolo \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. Questo privilegio si ottiene nuovamente all'8º, al 12º e al 16º livello da ranger."
+  ]
+ },
+ "class:ranger:5:extra-attack": {
+  "name": "Attacco extra",
+  "entries": [
+   "Quando effettua l'azione di {@action Attack|XPHB|Attacco} nel proprio turno, il ranger può attaccare due volte anziché una."
+  ]
+ },
+ "class:ranger:6:roving": {
+  "name": "Girovago",
+  "entries": [
+   "La {@variantrule Speed|XPHB|velocità} del ranger aumenta di 3 metri, purché non indossi un'armatura pesante. Inoltre, ha una {@variantrule Climb Speed|XPHB|velocità di scalata} e {@variantrule Swim Speed|XPHB|nuoto} pari alla propria {@variantrule Speed|XPHB|velocità}."
+  ]
+ },
+ "class:ranger:9:expertise": {
+  "name": "Maestria",
+  "entries": [
+   "Il ranger può scegliere due delle competenze nelle abilità in cui non possiede {@variantrule Expertise|XPHB|maestria}, così da ottenerla."
+  ]
+ },
+ "class:rogue:11:improved-cunning-strike": {
+  "name": "Colpo astuto migliorato",
+  "entries": [
+   "Il ladro può utilizzare fino a due effetti di Colpo astuto quando infligge danni da Attacco furtivo, pagando il relativo costo in dadi per ciascuno di essi."
+  ]
+ },
+ "class:rogue:15:slippery-mind": {
+  "name": "Mente sfuggente",
+  "entries": [
+   "La mente arguta del ladro è particolarmente difficile da controllare, per questo ottiene competenza nei tiri salvezza su Saggezza e Carisma."
+  ]
+ },
+ "class:rogue:18:elusive": {
+  "name": "Inafferrabile",
+  "entries": [
+   "Il ladro è talmente sfuggente che gli attaccanti riescono raramente ad avere il sopravvento su di lui. Nessun tiro per colpire può avere {@variantrule Advantage|XPHB|vantaggio} contro il ladro, a meno che non sia {@condition Incapacitated|XPHB|incapacitato}."
+  ]
+ },
+ "class:rogue:19:epic-boon": {
+  "name": "Dono epico",
+  "entries": [
+   "Il personaggio ottiene un Dono epico (vedi \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. È consigliato il Dono dello spirito notturno."
+  ]
+ },
+ "class:rogue:1:expertise": {
+  "name": "Maestria",
+  "entries": [
+   "Il ladro ottiene {@variantrule Expertise|XPHB|maestria} in due abilità a scelta in cui ha competenza. Se il personaggio ha competenza in {@skill Sleight of Hand|XPHB|Rapidità di mano} e {@skill Stealth|XPHB|Furtività}, è consigliabile scegliere queste due.",
+   "Al livello 6, il ladro ottiene {@variantrule Expertise|XPHB|maestria} in altre due competenze nelle abilità a sua scelta."
+  ]
+ },
+ "class:rogue:1:sneak-attack": {
+  "name": "Attacco furtivo",
+  "entries": [
+   "Il ladro sa come colpire con precisione sfruttando la distrazione di un avversario. Una volta per turno, può infliggere {@damage 1d6} danni extra a una creatura che colpisce con un tiro per colpire, se dispone di {@variantrule Advantage|XPHB|vantaggio} al tiro e l'attacco è eseguito con un'arma accurata o a distanza. Il danno aggiuntivo è dello stesso tipo di quello dell'arma.",
+   "Non è necessario avere {@variantrule Advantage|XPHB|vantaggio} al tiro per colpire se almeno uno degli alleati si trova entro 1,5 metri dal bersaglio, l'alleato non è {@condition Incapacitated|XPHB|incapacitato} e il ladro non dispone di {@variantrule Disadvantage|XPHB|svantaggio} al tiro per colpire.",
+   "Il danno extra aumenta man mano che il ladro sale di livello, come mostrato nella colonna Attacco furtivo della tabella Privilegi del ladro."
+  ]
+ },
+ "class:rogue:1:thieves-cant": {
+  "name": "Gergo ladresco",
+  "entries": [
+   "Il ladro ha appreso varie lingue nelle comunità in cui ha affinato le proprie competenze illecite. Per questo, conosce il Gergo ladresco e un'altra lingua a scelta, selezionabili dalle tabelle delle lingue al capitolo \"Creazione del personaggio\"."
+  ]
+ },
+ "class:rogue:1:weapon-mastery": {
+  "name": "Padronanza d'armi",
+  "entries": [
+   "Il ladro è addestrato nell'uso delle armi, e per questo può avvalersi della proprietà di padronanza per due tipi di armi a sua scelta in cui ha competenza, come i {@item Dagger|XPHB|pugnali} e gli archi corti.",
+   "Ogni volta che completa un {@variantrule Long Rest|XPHB|riposo lungo}, può cambiare il tipo di arma utilizzato. Per esempio, è possibile passare alle proprietà di padronanza per {@item Scimitar|XPHB|scimitarre} e {@item Shortsword|XPHB|spade corte}."
+  ]
+ },
+ "class:rogue:20:stroke-of-luck": {
+  "name": "Colpo di fortuna",
+  "entries": [
+   "Il ladro ha un'incredibile propensione per avere successo quando ne ha bisogno. Se fallisce una {@variantrule D20 Test|XPHB|prova con d20}, può trasformare il risultato in un 20.",
+   "Dopo aver usato questo privilegio, il personaggio non può riutilizzarlo prima di aver completato un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}."
+  ]
+ },
+ "class:rogue:2:cunning-action": {
+  "name": "Azione scaltra",
+  "entries": [
+   "La prontezza di spirito e l'agilità ti consentono di muoverti e di agire in fretta. Per questo, durante il suo turno può eseguire una delle seguenti azioni come {@variantrule Bonus Action|XPHB|azione bonus}: {@action Dash|XPHB|Scatto}, {@action Disengage|XPHB|Disimpegno} o {@action Hide|XPHB|Nascondersi}."
+  ]
+ },
+ "class:rogue:3:rogue-subclass": {
+  "name": "Sottoclasse del ladro",
+  "entries": [
+   "Il personaggio ottiene una sottoclasse del ladro a scelta. La descrizione della sottoclasse Furfante segue quella di questa classe. Una sottoclasse è una specializzazione che conferisce dei privilegi a determinati livelli da ladro. Per il resto della sua carriera, il personaggio ottiene tutti i privilegi della sottoclasse pari al suo livello da ladro attuale o a quelli inferiori."
+  ]
+ },
+ "class:rogue:3:steady-aim": {
+  "name": "Mira ferma",
+  "entries": [
+   "Come {@variantrule Bonus Action|XPHB|azione bonus}, il ladro ottiene un {@variantrule Advantage|XPHB|vantaggio} al prossimo tiro per colpire durante il turno in corso. Può utilizzare questo privilegio solo se non si è mosso durante questo turno e, dopo averlo usato, la sua {@variantrule Speed|XPHB|velocità} è ridotta a 0 fino al termine del turno."
+  ]
+ },
+ "class:rogue:4:ability-score-improvement": {
+  "name": "Aumento dei punteggi di caratteristica",
+  "entries": [
+   "Il personaggio ottiene l'{@feat Ability Score Improvement|XPHB|aumento dei punteggi di caratteristica} (vedi capitolo \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. Questo privilegio si ottiene nuovamente all'8º, al 10º, al 12º e al 16º livello da ladro."
+  ]
+ },
+ "class:rogue:7:evasion": {
+  "name": "Elusione",
+  "entries": [
+   "Ora il ladro può schivare agilmente determinati pericoli. Quando è soggetto a un effetto che gli consente di effettuare un tiro salvezza su Destrezza per dimezzare i danni, non subisce alcun danno se lo supera, e soltanto la metà dei danni se lo fallisce. Il personaggio non può utilizzare questo privilegio se è {@condition Incapacitated|XPHB|incapacitato}."
+  ]
+ },
+ "class:rogue:7:reliable-talent": {
+  "name": "Dote affidabile",
+  "entries": [
+   "Ogni volta che il ladro effettua una prova di caratteristica in un'abilità o uno strumento in cui ha competenza, può considerare un tiro di {@dice d20} dal 9 in giù come 10."
+  ]
+ },
+ "class:sorcerer:19:epic-boon": {
+  "name": "Dono epico",
+  "entries": [
+   "Il personaggio ottiene un Dono epico (vedi \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. È consigliato il {@feat Boon of Dimensional Travel|XPHB|Dono del viaggio dimensionale}."
+  ]
+ },
+ "class:sorcerer:1:innate-sorcery": {
+  "name": "Stregoneria innata",
+  "entries": [
+   "Lo stregone è stato segnato in maniera indelebile da un evento del suo passato, che gli ha conferito un potere magico dormiente. Come {@variantrule Bonus Action|XPHB|azione bonus}, può scatenarlo per 1 minuto e ottenere i seguenti benefici per la sua durata:",
+   {
+    "items": [
+     "La CD del tiro salvezza sull'incantesimo degli incantesimi da stregone aumenta di 1.",
+     "Lo stregone ha {@variantrule Advantage|XPHB|vantaggio} ai tiri per colpire degli incantesimi lanciati."
+    ]
+   },
+   "Il personaggio può utilizzare questo privilegio per due volte e recuperare tutti gli utilizzi spesi quando completa un {@variantrule Long Rest|XPHB|riposo lungo}."
+  ]
+ },
+ "class:sorcerer:1:spellcasting": {
+  "name": "Incantesimi",
+  "entries": [
+   "Attingendo alla propria magia innata, lo stregone è in grado di lanciare incantesimi. Consulta il capitolo \"Incantesimi\" per le regole relative al lancio degli incantesimi. Le informazioni sottostanti spiegano come applicare tali regole agli incantesimi da stregone, elencati nella relativa lista degli incantesimi più avanti nella descrizione della classe.",
+   {
+    "entries": [
+     {
+      "name": "Trucchetti",
+      "entries": [
+       "Il personaggio conosce quattro trucchetti da stregone a scelta. Sono consigliati {@spell Light|XPHB|luce}, {@spell Prestidigitation|XPHB|prestidigitazione}, {@spell Shocking Grasp|XPHB|stretta folgorante} e {@spell Sorcerous Burst|XPHB|stregoneria esplosiva}. Ogni volta che il personaggio ottiene un livello da stregone, può sostituire uno dei trucchetti di questo privilegio con un altro trucchetto a scelta.",
+       "Dopo aver raggiunto il 4º e il 10º livello da stregone, il personaggio apprende un altro trucchetto a scelta, come mostrato nella colonna Trucchetti della tabella Privilegi dello stregone."
+      ]
+     },
+     {
+      "name": "Slot incantesimo",
+      "entries": [
+       "La tabella Privilegi dello stregone mostra gli slot incantesimo disponibili per i propri incantesimi di 1º livello o superiore. Tutti gli slot incantesimo consumati vengono ripristinati una volta completato un {@variantrule Long Rest|XPHB|riposo lungo}."
+      ]
+     },
+     {
+      "name": "Incantesimi preparati di 1º livello o superiore",
+      "entries": [
+       "Con questo privilegio, il personaggio prepara una lista di incantesimi di 1º livello o superiore che può lanciare. Per iniziare, sceglie due incantesimi da stregone di 1º livello. Sono consigliati {@spell Burning Hands|XPHB|mani brucianti} e {@spell Detect Magic|XPHB|individuazione del magico}.",
+       "Il numero di incantesimi nella lista aumenta man mano che il personaggio ottiene livelli da stregone, come mostrato nella colonna Incantesimi preparati della tabella Privilegi dello stregone. Ogni volta che il numero cresce, lo stregone deve scegliere altri incantesimi finché il numero sulla lista non combacia con quello mostrato nella tabella Privilegi dello stregone. Gli incantesimi scelti devono essere di un livello di cui possiede degli slot incantesimo. Per esempio, nel caso di uno stregone di 3º livello, la sua lista di incantesimi preparati può includere sei incantesimi da stregone di 1º e 2º livello in qualsiasi combinazione.",
+       "Se un altro privilegio dello stregone gli fornisce incantesimi che sono sempre preparati, questi non contano ai fini del numero di incantesimi preparabili con questo privilegio. Tuttavia, valgono comunque come incantesimi da stregone."
+      ]
+     },
+     {
+      "name": "Cambiare gli incantesimi preparati",
+      "entries": [
+       "Quando completa un riposo lungo, lo stregone può sostituire un incantesimo sulla propria lista con un altro incantesimo da stregone di cui possiede degli slot."
+      ]
+     },
+     {
+      "name": "Caratteristica da incantatore",
+      "entries": [
+       "Carisma è la caratteristica da incantatore per gli incantesimi da stregone."
+      ]
+     },
+     {
+      "name": "Focus da incantatore",
+      "entries": [
+       "Uno stregone può usare un {@item Arcane Focus|XPHB|focus arcano} come {@variantrule Spellcasting Focus|XPHB|focus da incantatore} per i suoi incantesimi da stregone."
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "class:sorcerer:20:arcane-apotheosis": {
+  "name": "Apoteosi arcana",
+  "entries": [
+   "Quando il privilegio Stregoneria innata è attivo, lo stregone può usare un'opzione di Metamagia a ogni turno senza dover consumare punti stregoneria."
+  ]
+ },
+ "class:sorcerer:2:metamagic": {
+  "name": "Metamagia",
+  "entries": [
+   "Poiché la magia è un'abilità innata dello stregone, quest'ultimo può alterare i suoi incantesimi secondo necessità, per questo ottiene due opzioni di Metamagia dalla sezione Opzioni di metamagia, che si trova più avanti nella descrizione della classe. Le opzioni selezionate possono essere utilizzate per modificare temporaneamente gli incantesimi lanciati. Per fare uso di un'opzione, è necessario consumare il costo corrispondente in punti stregoneria.",
+   "Lo stregone può usare soltanto un'opzione di Metamagia su un incantesimo quando lo lancia, a meno che non sia specificato diversamente.",
+   "Ogni volta che il personaggio ottiene un livello da stregone, è possibile sostituire una delle opzioni di Metamagia con una che ancora non conosce. Lo stregone ottiene due ulteriori opzioni al 10º livello e altre due al 17º livello."
+  ]
+ },
+ "class:sorcerer:3:sorcerer-subclass": {
+  "name": "Sottoclasse dello stregone",
+  "entries": [
+   "Il personaggio ottiene una sottoclasse dello stregone a scelta. La descrizione della sottoclasse Stregoneria draconica segue quella di questa classe. Una sottoclasse è una specializzazione che conferisce dei privilegi a determinati livelli da stregone. Per il resto della sua carriera, il personaggio ottiene tutti i privilegi della sottoclasse pari al suo livello da stregone attuale o a quelli inferiori."
+  ]
+ },
+ "class:sorcerer:4:ability-score-improvement": {
+  "name": "Aumento dei punteggi di caratteristica",
+  "entries": [
+   "Il personaggio ottiene l'{@feat Ability Score Improvement|XPHB|aumento dei punteggi di caratteristica} (vedi capitolo \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. Questo privilegio si ottiene nuovamente all'8º, al 12º e al 16º livello da stregone."
+  ]
+ },
+ "class:sorcerer:5:sorcerous-restoration": {
+  "name": "Ripristino stregonesco",
+  "entries": [
+   "Quando lo stregone completa un {@variantrule Short Rest|XPHB|riposo breve}, può recuperare i punti stregoneria consumati, ma non più di un numero pari a metà del proprio livello da stregone (arrotondato per difetto). Dopo aver usato questo privilegio, il personaggio non può riutilizzarlo prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}."
+  ]
+ },
+ "class:sorcerer:7:sorcery-incarnate": {
+  "name": "Stregoneria incarnata",
+  "entries": [
+   "Se ha consumato tutti i suoi utilizzi di Stregoneria innata, come {@variantrule Bonus Action|XPHB|azione bonus} può spendere 2 punti stregoneria per attivarla.",
+   "Inoltre, mentre il privilegio Stregoneria innata è attivo, lo stregone può usare fino a due delle sue opzioni di Metamagia su ogni incantesimo lanciato."
+  ]
+ },
+ "class:warlock:19:epic-boon": {
+  "name": "Dono epico",
+  "entries": [
+   "Il personaggio ottiene un Dono epico (vedi \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. È consigliato il {@feat Boon of Fate|XPHB|Dono del fato}."
+  ]
+ },
+ "class:warlock:1:eldritch-invocations": {
+  "name": "Suppliche occulte",
+  "entries": [
+   "Il warlock ha scoperto le Suppliche occulte, ovvero frammenti di conoscenze proibite che gli conferiscono persistenti doti magiche o altre verità nascoste, tra cui la capacità di effettuare una supplica a scelta, come il Patto del Tomo. Per ulteriori dettagli sulle suppliche, consulta la sezione Opzioni di suppliche occulte dopo la descrizione di questa classe.",
+   {
+    "entries": [
+     {
+      "name": "Prerequisiti",
+      "entries": [
+       "Se una supplica ha un prerequisito, questo deve essere soddisfatto affinché venga appresa con successo. Per esempio, se la supplica richiede un warlock di 5º livello o superiore, è possibile farne uso solo una volta raggiunto il livello indicato."
+      ]
+     },
+     {
+      "name": "Sostituire e ottenere suppliche",
+      "entries": [
+       "Ogni volta che il personaggio ottiene un livello da warlock, può sostituire una delle sue suppliche con un'altra di cui possiede i prerequisiti. Non è possibile sostituire una supplica che sia un prerequisito per un'altra supplica già in possesso del personaggio."
+      ]
+     }
+    ]
+   },
+   "Quando il warlock raggiunge livelli superiori, ottiene ulteriori suppliche a scelta, come indicato nella colonna Suppliche nella tabella Privilegi del warlock.",
+   "Non è possibile scegliere una supplica più di una volta, salvo diversamente indicato."
+  ]
+ },
+ "class:warlock:1:pact-magic": {
+  "name": "Magia del patto",
+  "entries": [
+   "Attraverso una cerimonia occulta, il warlock ha stretto un patto con un'entità misteriosa al fine di ottenere dei poteri magici. Nonostante sia poco più di una voce nelle tenebre dall'identità sconosciuta, il suo dono è alquanto concreto: la capacità di lanciare incantesimi. Consulta il capitolo \"Incantesimi\" per le regole relative al lancio degli incantesimi. Le informazioni sottostanti spiegano come applicare tali regole agli incantesimi da warlock, elencati nella relativa lista degli incantesimi più avanti nella descrizione della classe.",
+   {
+    "entries": [
+     {
+      "name": "Trucchetti",
+      "entries": [
+       "Il warlock conosce due trucchetti a scelta. Sono consigliati {@spell Eldritch Blast|XPHB|deflagrazione occulta} e {@spell Prestidigitation|XPHB|prestidigitazione}. Ogni volta che il personaggio ottiene un livello da warlock, può sostituire uno dei trucchetti di questo privilegio con un altro trucchetto a scelta.",
+       "Dopo aver raggiunto il 4º e il 10º livello da warlock, il personaggio apprende un altro trucchetto a scelta, come mostrato nella colonna Trucchetti della tabella Privilegi del warlock."
+      ]
+     },
+     {
+      "name": "Slot incantesimo",
+      "entries": [
+       "La tabella Privilegi del warlock mostra quanti slot incantesimo sono a disposizione del personaggio per lanciare incantesimi da warlock dal 1º al 5º livello. La tabella mostra anche il livello di tali slot (tutti dello stesso livello). Il warlock recupera tutti gli slot incantesimo della Magia del patto spesi quando completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}.",
+       "Per esempio, se il warlock è di 5º livello, possiede due slot incantesimo di 3º livello. Per lanciare l'incantesimo di 1º livello charme su persone, deve consumare uno di questi slot e lanciarlo come un incantesimo di 3º livello."
+      ]
+     },
+     {
+      "name": "Incantesimi preparati di 1º livello o superiore",
+      "entries": [
+       "Con questo privilegio, il personaggio prepara una lista di incantesimi di 1º livello o superiore che può lanciare. Per iniziare, sceglie due incantesimi da warlock di 1º livello. Sono consigliati {@spell Charm Person|XPHB|charme su persone} e {@spell Hex|XPHB|sortilegio}."
+      ]
+     }
+    ]
+   },
+   "Il numero di incantesimi nella lista aumenta man mano che il personaggio ottiene livelli da warlock, come mostrato nella colonna Incantesimi preparati della tabella Privilegi del warlock. Ogni volta che il numero cresce, il warlock deve scegliere altri incantesimi finché il numero sulla lista non combacia con quello mostrato nella tabella Privilegi del warlock. Ognuno di questi incantesimi deve appartenere a un livello pari o inferiore al livello dello slot relativo al livello attuale del personaggio e indicato nella sua tabella. Per esempio, quando il warlock raggiunge il 6º livello, ottiene un nuovo incantesimo di un livello dal 1º al 3º.",
+   "Se un altro privilegio del warlock gli fornisce incantesimi che sono sempre preparati, questi non contano ai fini del numero di incantesimi preparabili con questo privilegio. Tuttavia, valgono comunque come incantesimi da warlock.",
+   {
+    "entries": [
+     {
+      "name": "Cambiare gli incantesimi preparati",
+      "entries": [
+       "Ogni volta che il personaggio ottiene un livello da warlock, può sostituire un incantesimo della lista con un altro incantesimo da warlock di livello adeguato."
+      ]
+     },
+     {
+      "name": "Caratteristica da incantatore",
+      "entries": [
+       "La caratteristica da incantatore per gli incantesimi da warlock è il Carisma."
+      ]
+     },
+     {
+      "name": "Focus da incantatore",
+      "entries": [
+       "Un warlock può usare un {@item Arcane Focus|XPHB|focus arcano} come {@variantrule Spellcasting Focus|XPHB|focus da incantatore} per i suoi incantesimi da warlock."
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "class:warlock:20:eldritch-master": {
+  "name": "Maestro dell'occulto",
+  "entries": [
+   "Quando il warlock usa il suo privilegio Scaltrezza magica, recupera tutti gli slot incantesimo spesi di Magia del patto."
+  ]
+ },
+ "class:warlock:2:magical-cunning": {
+  "name": "Scaltrezza magica",
+  "entries": [
+   "patto, ma non più di un numero pari a metà del loro massimo (arrotondando per eccesso). Dopo aver usato questo privilegio, il personaggio non può riutilizzarlo prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}."
+  ]
+ },
+ "class:warlock:3:warlock-subclass": {
+  "name": "Sottoclasse del warlock",
+  "entries": [
+   "Il personaggio ottiene una sottoclasse del warlock a scelta. La descrizione della sottoclasse Patrono immondo segue quella di questa classe. Una sottoclasse è una specializzazione che conferisce dei privilegi a determinati livelli da warlock. Per il resto della sua carriera, il personaggio ottiene tutti i privilegi della sottoclasse pari al suo livello da warlock attuale o a quelli inferiori."
+  ]
+ },
+ "class:warlock:4:ability-score-improvement": {
+  "name": "Aumento dei punteggi di caratteristica",
+  "entries": [
+   "Il personaggio ottiene l'{@feat Ability Score Improvement|XPHB|aumento dei punteggi di caratteristica} (vedi capitolo \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. Questo privilegio si ottiene nuovamente all'8º, al 12º e al 16º livello da warlock."
+  ]
+ },
+ "class:warlock:9:contact-patron": {
+  "name": "Contatta patrono",
+  "entries": [
+   "In passato, il warlock contattava il proprio patrono attraverso degli intermediari. Invece, ora è in grado di farlo in maniera diretta e ha l'incantesimo {@spell Contact Other Plane|XPHB|contattare altri piani} sempre preparato. Con questo privilegio, il warlock può lanciare l'incantesimo senza consumare uno slot, in modo da contattare il patrono. Inoltre, supera automaticamente il relativo tiro salvezza.",
+   "Dopo aver lanciato l'incantesimo in questo modo, non può farlo di nuovo prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}."
+  ]
+ },
+ "class:wizard:18:spell-mastery": {
+  "name": "Maestria negli incantesimi",
+  "entries": [
+   "Il mago raggiunge una tale padronanza nell'uso di certi incantesimi da poterli lanciare a volontà. Dal suo libro degli incantesimi, sceglie un incantesimo di 1º livello e uno di 2º livello con il tempo di lancio di un'azione. Tali incantesimi sono sempre considerati come preparati. Inoltre, il mago può lanciarli al loro livello più basso senza spendere slot incantesimo. Per lanciarli a un livello superiore, deve invece spendere uno slot incantesimo.",
+   "Ogni volta che il mago completa un {@variantrule Long Rest|XPHB|riposo lungo}, può studiare il proprio libro e sostituire uno di quegli incantesimi con un altro pertinente dello stesso livello (preso dal libro)."
+  ]
+ },
+ "class:wizard:19:epic-boon": {
+  "name": "Dono epico",
+  "entries": [
+   "Il personaggio ottiene un Dono epico (vedi \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. È consigliato il {@feat Boon of Spell Recall|XPHB|Dono del richiamo degli incantesimi}."
+  ]
+ },
+ "class:wizard:1:arcane-recovery": {
+  "name": "Recupero arcano",
+  "entries": [
+   "Il mago può recuperare parte della sua energia magica studiando il libro degli incantesimi. Quando completa un {@variantrule Short Rest|XPHB|riposo breve}, sceglie quali slot incantesimo spesi desidera recuperare. Gli slot incantesimo possono avere un livello totale pari o inferiore alla metà del livello da mago (arrotondato per eccesso) e nessuno slot può essere di livello pari o superiore al 6º. Per esempio, se il mago è di 4º livello, può recuperare un massimo di due livelli di slot incantesimo, ripristinando o uno slot incantesimo di 2º livello o due di 1º livello.",
+   "Dopo aver usato questo privilegio, il personaggio non può riutilizzarlo prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}."
+  ]
+ },
+ "class:wizard:1:ritual-adept": {
+  "name": "Adepto dei rituali",
+  "entries": [
+   "Il mago può lanciare qualsiasi incantesimo come {@variantrule Ritual|XPHB|rituale} se quell'incantesimo possiede il descrittore {@variantrule Ritual|XPHB|rituale} ed è presente nel suo libro degli incantesimi. Non è necessario che sia preparato, ma per poterlo lanciare in questo modo è necessario leggere il libro."
+  ]
+ },
+ "class:wizard:20:signature-spells": {
+  "name": "Incantesimi personali",
+  "entries": [
+   "Il mago sceglie due incantesimi di 3º livello contenuti nel suo libro degli incantesimi come suoi incantesimi personali. Tali incantesimi sono sempre considerati come preparati. Inoltre, il mago può lanciarli una volta ciascuno al 3º livello senza spendere slot incantesimo. Quando lo fa, non può lanciarli di nuovo in questo modo finché non completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}. Per lanciarli a un livello superiore, deve invece spendere uno slot incantesimo."
+  ]
+ },
+ "class:wizard:2:scholar": {
+  "name": "Studioso",
+  "entries": [
+   "Durante il suo studio della magia, il mago si è specializzato anche in un'altra disciplina. Scegli una delle seguenti abilità in cui il personaggio ha competenza: {@skill Arcana|XPHB|Arcano}, {@skill Investigation|XPHB|Indagare}, {@skill Medicine|XPHB|Medicina}, {@skill Nature|XPHB|Natura}, {@skill Religion|XPHB|Religione} o {@skill History|XPHB|Storia}. Il mago possiederà {@variantrule Expertise|XPHB|maestria} nell'abilità selezionata."
+  ]
+ },
+ "class:wizard:3:wizard-subclass": {
+  "name": "Sottoclasse del mago",
+  "entries": [
+   "Il personaggio ottiene una sottoclasse del mago a scelta. La descrizione della sottoclasse Invocatore segue quella di questa classe. Una sottoclasse è una specializzazione che conferisce dei privilegi a determinati livelli da mago. Per il resto della sua carriera, il personaggio ottiene tutti i privilegi della sottoclasse pari al suo livello da mago attuale o a quelli inferiori."
+  ]
+ },
+ "class:wizard:4:ability-score-improvement": {
+  "name": "Aumento dei punteggi di caratteristica",
+  "entries": [
+   "Il personaggio ottiene l'{@feat Ability Score Improvement|XPHB|aumento dei punteggi di caratteristica} (vedi capitolo \"Talenti\") o un altro talento a scelta di cui possiede i prerequisiti. Questo privilegio si ottiene nuovamente all'8º, al 12º e al 16º livello da mago."
+  ]
+ },
+ "feat:ability-score-improvement:repeatable": {
+  "name": "Ripetibile",
+  "entries": [
+   "Questo talento è ottenibile più di una volta."
+  ]
+ },
+ "feat:alert:initiative-proficiency": {
+  "name": "Competenza in iniziativa",
+  "entries": [
+   "Quando tiri per l'{@variantrule Initiative|XPHB|iniziativa}, puoi aggiungere il bonus di {@variantrule Proficiency|XPHB|competenza} del personaggio al risultato del tiro."
+  ]
+ },
+ "feat:alert:initiative-swap": {
+  "name": "Scambio di iniziativa",
+  "entries": [
+   "Subito dopo aver tirato per l'{@variantrule Initiative|XPHB|iniziativa}, puoi scambiare il risultato ottenuto con quello di un alleato consenziente durante il medesimo combattimento. Se il tuo personaggio o il suo alleato è {@condition Incapacitated|XPHB|incapacitato}, non è possibile eseguire lo scambio."
+  ]
+ },
+ "feat:boon-of-combat-prowess:peerless-aim": {
+  "name": "Mira impareggiabile",
+  "entries": [
+   "Quando il tiro per colpire del personaggio non va a segno, è possibile colpire comunque il bersaglio. Una volta sfruttato questo beneficio, non può essere riutilizzato fino all'inizio del turno successivo del personaggio."
+  ]
+ },
+ "feat:boon-of-dimensional-travel:blink-steps": {
+  "name": "Passi fulminei",
+  "entries": [
+   "Subito dopo che il personaggio effettua un'azione di {@action Attack|XPHB|Attacco} o {@action Magic|XPHB|Magia}, può teletrasportarsi di massimo 9 metri in uno spazio libero che è in grado di vedere."
+  ]
+ },
+ "feat:boon-of-fate:improve-fate": {
+  "name": "Fato migliorato",
+  "entries": [
+   "Quando il personaggio o un'altra creatura entro 18 metri da sé supera o fallisce una {@variantrule D20 Test|XPHB|prova con d20}, può tirare {@dice 2d4} e applicare il risultato ottenuto come bonus o penalità a tale prova con {@dice d20}. Una volta utilizzato questo beneficio, non può più utilizzarlo finché non tira per l'{@variantrule Initiative|XPHB|iniziativa} o non completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}."
+  ]
+ },
+ "feat:boon-of-irresistible-offense:overcome-defenses": {
+  "name": "Ignora difese",
+  "entries": [
+   "I danni contundenti, perforanti e taglienti inflitti dal personaggio ignorano sempre la {@variantrule Resistance|XPHB|resistenza}."
+  ]
+ },
+ "feat:boon-of-irresistible-offense:overwhelming-strike": {
+  "name": "Colpo soverchiante",
+  "entries": [
+   "Quando tira per colpire con il {@dice d20} e ottiene un 20, il personaggio può infliggere una quantità di danni extra al bersaglio pari al punteggio di caratteristica incrementato da questo talento. Il danno aggiuntivo è dello stesso tipo di quello dell'attacco."
+  ]
+ },
+ "feat:boon-of-spell-recall:free-casting": {
+  "name": "Lancio libero",
+  "entries": [
+   "Quando lancia un incantesimo con uno slot di livello da 1 a 4, tira {@dice 1d4}. Se il risultato corrisponde al livello dello slot, questo non verrà consumato."
+  ]
+ },
+ "feat:boon-of-the-night-spirit:merge-with-shadows": {
+  "name": "Fusione con le ombre",
+  "entries": [
+   "Finché si trova in un'area di {@variantrule Darkness|XPHB|oscurità} o {@variantrule Dim Light|XPHB|luce fioca}, può diventare {@condition Invisible|XPHB|invisibile} come {@variantrule Bonus Action|XPHB|azione bonus}. Tale condizione termina subito dopo che il personaggio effettua un'azione, un'{@variantrule Bonus Action|XPHB|azione bonus} o una {@variantrule Reaction|XPHB|reazione}."
+  ]
+ },
+ "feat:boon-of-the-night-spirit:shadowy-form": {
+  "name": "Forma d'ombra",
+  "entries": [
+   "Finché si trova in un'area di {@variantrule Darkness|XPHB|oscurità} o {@variantrule Dim Light|XPHB|luce fioca}, ha {@variantrule Resistance|XPHB|resistenza} a tutti i tipi di danno, tranne quelli psichici e radiosi."
+  ]
+ },
+ "feat:boon-of-truesight:truesight": {
+  "name": "Vista pura",
+  "entries": [
+   "Il personaggio ottiene {@sense Truesight|XPHB|vista pura} con un raggio di 18 metri."
+  ]
+ },
+ "feat:grappler:attack-advantage": {
+  "name": "Attacco con vantaggio",
+  "entries": [
+   "Dispone di {@variantrule Advantage|XPHB|vantaggio} ai tiri per colpire contro le creature che ha {@condition Grappled|XPHB|afferrato}."
+  ]
+ },
+ "feat:grappler:fast-wrestler": {
+  "name": "Lottatore rapido",
+  "entries": [
+   "Il personaggio non deve spendere alcun movimento extra se sposta una creatura che ha {@condition Grappled|XPHB|afferrato} che sia della sua stessa categoria di taglia o inferiore."
+  ]
+ },
+ "feat:grappler:punch-and-grab": {
+  "name": "Colpisci e afferra",
+  "entries": [
+   "Quando il personaggio colpisce una creatura con un {@variantrule Unarmed Strike|XPHB|colpo senz'armi} come parte di un'azione di {@action Attack|XPHB|Attacco} nel proprio turno, può usare sia l'opzione Danni che Presa. Questo beneficio è utilizzabile una sola volta per turno."
+  ]
+ },
+ "feat:magic-initiate:level-1-spell": {
+  "name": "Incantesimo di 1º livello",
+  "entries": [
+   "Scegli un incantesimo di 1º livello dalla stessa lista da cui hai selezionato i trucchetti forniti da questo talento. Tale incantesimo è sempre considerato come preparato. Il personaggio può lanciarlo una volta senza consumare uno slot incantesimo e ne recupera l'utilizzo in questo modo dopo aver completato un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciare l'incantesimo usando uno qualsiasi degli slot incantesimo a sua disposizione."
+  ]
+ },
+ "feat:magic-initiate:repeatable": {
+  "name": "Ripetibile",
+  "entries": [
+   "Questo talento è ottenibile più di una volta, ma devi scegliere una lista degli incantesimi diversa a ogni selezione."
+  ]
+ },
+ "feat:magic-initiate:spell-change": {
+  "name": "Cambio incantesimo",
+  "entries": [
+   "Quando il personaggio ottiene un nuovo livello, puoi sostituire uno degli incantesimi scelti per questo talento con un altro dello stesso livello dalla lista prescelta."
+  ]
+ },
+ "feat:magic-initiate:two-cantrips": {
+  "name": "Due trucchetti",
+  "entries": [
+   "Il personaggio apprende due trucchetti a scelta tratti dalla lista degli incantesimi da chierico, druido o mago. La caratteristica da incantatore per gli incantesimi di questo talento può essere Intelligenza, Saggezza o Carisma (scegli la caratteristica quando ottieni questo talento)."
+  ]
+ },
+ "feat:skilled:repeatable": {
+  "name": "Ripetibile",
+  "entries": [
+   "Questo talento è ottenibile più di una volta."
+  ]
+ },
+ "species:dragonborn:breath-weapon": {
+  "name": "Soffio",
+  "entries": [
+   "Quando il personaggio esegue l'azione di {@action Attack|XPHB|Attacco} durante il turno, può sostituire uno dei suoi attacchi con un'esalazione di energia magica in un {@variantrule Cone [Area of Effect]|XPHB|cono} di 4,5 metri o in una {@variantrule Line [Area of Effect]|XPHB|linea} lunga 9 metri e larga 1,5 (puoi scegliere la forma a ogni utilizzo). Ogni creatura nell'area deve effettuare un tiro salvezza su Destrezza ({@dc 8} più il modificatore di Costituzione e il bonus di {@variantrule Proficiency|XPHB|competenza} del personaggio). In caso di fallimento, vengono inflitti {@damage 1d10} danni del tipo determinato dal tratto Discendenza draconica. In caso di successo, subisce soltanto la metà di quei danni. I danni aumentano di {@damage 1d10} quando il personaggio raggiunge il 5º livello ({@damage 2d10}), l'11º livello ({@damage 3d10}) e il 17º livello ({@damage 4d10}).",
+   "Il personaggio può utilizzare il Soffio un numero di volte pari al valore del suo bonus di {@variantrule Proficiency|XPHB|competenza} e recuperare tutti gli utilizzi spesi quando completa un {@variantrule Long Rest|XPHB|riposo lungo}."
+  ]
+ },
+ "species:dragonborn:damage-resistance": {
+  "name": "Resistenza ai danni",
+  "entries": [
+   "Il personaggio dispone di {@variantrule Resistance|XPHB|resistenza} ai danni del tipo determinato dal tratto Discendenza draconica."
+  ]
+ },
+ "species:dragonborn:darkvision": {
+  "name": "Scurovisione",
+  "entries": [
+   "Il personaggio ha {@sense Darkvision|XPHB|scurovisione} fino a un raggio di 18 metri."
+  ]
+ },
+ "species:dragonborn:draconic-ancestry": {
+  "name": "Discendenza draconica",
+  "entries": [
+   "Il personaggio discende da un progenitore draconico. Scegli la tipologia dalla tabella Antenati draconici. La tua decisione definisce il tipo soffio e il tratto di {@variantrule Resistance|XPHB|resistenza} ai {@variantrule Damage|XPHB|danni}, ma anche l'aspetto del personaggio.",
+   {
+    "caption": "Antenati draconici",
+    "colLabels": [
+     "Drago",
+     "Tipo di danni"
+    ],
+    "rows": [
+     [
+      "Nero",
+      "Acido"
+     ],
+     [
+      "Blu",
+      "Fulmine"
+     ],
+     [
+      "Ottone",
+      "Fuoco"
+     ],
+     [
+      "Bronzo",
+      "Fulmine"
+     ],
+     [
+      "Rame",
+      "Acido"
+     ],
+     [
+      "Oro",
+      "Fuoco"
+     ],
+     [
+      "Verde",
+      "Veleno"
+     ],
+     [
+      "Rosso",
+      "Fuoco"
+     ],
+     [
+      "Argento",
+      "Freddo"
+     ],
+     [
+      "Bianco",
+      "Freddo"
+     ]
+    ]
+   }
+  ]
+ },
+ "species:dragonborn:draconic-flight": {
+  "name": "Volo draconico",
+  "entries": [
+   "Quando il personaggio raggiunge il 5º livello, può incanalare dell'energia draconica per volare temporaneamente. Come {@variantrule Bonus Action|XPHB|azione bonus}, può far spuntare delle ali spettrali dalla sua schiena che durano per 10 minuti, fino al momento in cui decide di farle scomparire (nessuna azione richiesta) o finché non diventa {@condition Incapacitated|XPHB|incapacitato}. Durante quel periodo, è dotato di una {@variantrule Fly Speed|XPHB|velocità di volo} pari alla sua {@variantrule Speed|XPHB|velocità}. L'aspetto delle ali varia in base al tipo di energia del Soffio. Dopo aver usato questo tratto, il personaggio non può riutilizzarlo prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}."
+  ]
+ },
+ "species:dwarf:darkvision": {
+  "name": "Scurovisione",
+  "entries": [
+   "Ha {@sense Darkvision|XPHB|scurovisione} fino a un raggio di 36 metri."
+  ]
+ },
+ "species:dwarf:dwarven-resilience": {
+  "name": "Resilienza nanica",
+  "entries": [
+   "Ha {@variantrule Resistance|XPHB|resistenza} ai danni da veleno. Dispone di {@variantrule Advantage|XPHB|vantaggio} sui tiri salvezza eseguiti per evitare o terminare la condizione {@condition Poisoned|XPHB|avvelenato} su se stesso."
+  ]
+ },
+ "species:dwarf:dwarven-toughness": {
+  "name": "Robustezza nanica",
+  "entries": [
+   "I {@variantrule Hit Points|XPHB|punti ferita} massimi di un nano aumentano di 1 e aumentano di nuovo di 1 ogni volta che acquisisce un livello."
+  ]
+ },
+ "species:dwarf:stonecunning": {
+  "name": "Esperto minatore",
+  "entries": [
+   "Come {@variantrule Bonus Action|XPHB|azione bonus}, il personaggio ottiene {@sense Tremorsense|XPHB|percezione tellurica} con un raggio di 18 metri per 10 minuti. Per poterla utilizzare, deve trovarsi su una superficie di pietra o toccarla. La pietra deve essere naturale o lavorata.",
+   "Il personaggio può utilizzare questa {@variantrule Bonus Action|XPHB|azione bonus} un numero di volte pari al valore del suo bonus di {@variantrule Proficiency|XPHB|competenza}, recuperando tutti gli utilizzi spesi quando completa un {@variantrule Long Rest|XPHB|riposo lungo}."
+  ]
+ },
+ "species:elf:darkvision": {
+  "name": "Scurovisione",
+  "entries": [
+   "Il personaggio ha {@sense Darkvision|XPHB|scurovisione} fino a un raggio di 18 metri."
+  ]
+ },
+ "species:elf:elven-lineage": {
+  "name": "Lignaggio elfico",
+  "entries": [
+   "Come parte di un lignaggio, è dotato di abilità soprannaturali. Scegli un lignaggio dalla tabella Lignaggi elfici. Il personaggio otterrà il beneficio di 1º livello di quel determinato lignaggio.",
+   "Quando raggiunge i livelli 3 e 5, apprenderà un incantesimo di livello superiore, come mostrato nella tabella. Tale incantesimo è sempre considerato come preparato. Può lanciarlo una volta senza consumare uno slot incantesimo e ne recupera l'utilizzo in questo modo dopo aver completato un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciarlo usando gli slot incantesimo a sua disposizione del livello appropriato.",
+   "La caratteristica da incantatore del personaggio può essere Intelligenza, Saggezza o Carisma per",
+   {
+    "caption": "Lignaggi elfici",
+    "colLabels": [
+     "Lignaggio",
+     "Livello 1",
+     "Livello 3",
+     "Livello 5"
+    ],
+    "rows": [
+     [
+      "Drow",
+      "La portata di {@sense Darkvision|XPHB|scurovisione} aumenta fino a 36 metri. Inoltre, il personaggio conosce il trucchetto luci danzanti.",
+      "Luminescenza",
+      "Oscurità"
+     ],
+     [
+      "Elfo alto",
+      "Il personaggio impara il trucchetto prestidigitazione. Ogni volta che completa un {@variantrule Long Rest|XPHB|riposo lungo}, può sostituirlo con un altro trucchetto dalla lista degli incantesimi del mago.",
+      "Individuazione del magico",
+      "Passo velato"
+     ],
+     [
+      "Elfo dei boschi",
+      "La {@variantrule Speed|XPHB|velocità} del personaggio aumenta a 10,5 metri. Inoltre, conosce il trucchetto artificio druidico.",
+      "Passo veloce",
+      "Passare senza tracce"
+     ]
+    ]
+   }
+  ]
+ },
+ "species:elf:fey-ancestry": {
+  "name": "Retaggio fatato",
+  "entries": [
+   "Dispone di {@variantrule Advantage|XPHB|vantaggio} ai tiri salvezza eseguiti per evitare o terminare la condizione {@condition Charmed|XPHB|affascinato} su se stesso."
+  ]
+ },
+ "species:elf:keen-senses": {
+  "name": "Sensi acuti",
+  "entries": [
+   "Ha competenza nelle abilità {@skill Insight|XPHB|Intuizione}, {@skill Perception|XPHB|Percezione} o {@skill Survival|XPHB|Sopravvivenza}."
+  ]
+ },
+ "species:elf:trance": {
+  "name": "Trance",
+  "entries": [
+   "Non ha bisogno di dormire e la magia non può farlo addormentare. Può completare un {@variantrule Long Rest|XPHB|riposo lungo} in 4 ore rimanendo in uno stato di trance meditativa, durante il quale resta cosciente."
+  ]
+ },
+ "species:gnome:darkvision": {
+  "name": "Scurovisione",
+  "entries": [
+   "Il personaggio ha {@sense Darkvision|XPHB|scurovisione} fino a un raggio di 18 metri."
+  ]
+ },
+ "species:gnome:gnomish-cunning": {
+  "name": "Astuzia gnomesca",
+  "entries": [
+   "Dispone di {@variantrule Advantage|XPHB|vantaggio} a i tiri salvezza su Intelligenza, Saggezza e Carisma."
+  ]
+ },
+ "species:gnome:gnomish-lineage": {
+  "name": "Lignaggio gnomesco",
+  "entries": [
+   "Come parte di un lignaggio, è dotato di abilità soprannaturali. Scegli una delle opzioni seguenti. A prescindere da quella selezionata, la caratteristica da incantatore del personaggio può essere Intelligenza, Saggezza o Carisma per gli incantesimi lanciati con questo tratto (decidi l'abilità quando scegli il lignaggio):",
+   {
+    "items": [
+     {
+      "name": "Gnomo delle foreste",
+      "entries": [
+       "Il personaggio conosce il trucchetto illusione minore. Inoltre, l'incantesimo parlare con gli animali è sempre considerato come preparato. Può lanciarlo senza consumare uno slot incantesimo un numero di volte pari al suo bonus di {@variantrule Proficiency|XPHB|competenza} e riacquista tutti gli usi spesi al termine di un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciare l'incantesimo usando uno qualsiasi degli slot incantesimo a sua disposizione."
+      ]
+     },
+     {
+      "name": "Gnomo delle rocce",
+      "entries": [
+       "Conosce i trucchetti riparare e prestidigitazione. Inoltre, può impiegare 10 minuti di lancio di prestidigitazione per creare un piccolo dispositivo meccanico (CA 5, 1 PF), come un giocattolo, un accendifuoco o un carillon. Una volta creato, puoi determinare il"
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "species:goliath:large-form": {
+  "name": "Forma Grande",
+  "entries": [
+   "A partire dal 5º livello, come {@variantrule Bonus Action|XPHB|azione bonus} può diventare di taglia Grande se si trova in uno spazio abbastanza ampio. La trasformazione dura per 10 minuti o finché non la interrompe (nessuna azione richiesta). Per tutta la sua durata, ottiene {@variantrule Advantage|XPHB|vantaggio} alle prove di Forza e la sua {@variantrule Speed|XPHB|velocità} aumenta di 3 metri. Dopo aver usato questo tratto, il personaggio non può riutilizzarlo prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}."
+  ]
+ },
+ "species:goliath:powerful-build": {
+  "name": "Costituzione robusta",
+  "entries": [
+   "Ha {@variantrule Advantage|XPHB|vantaggio} a qualsiasi prova di caratteristica effettuata per non essere {@condition Grappled|XPHB|afferrato}. Inoltre, la capacità di trasporto del personaggio è quella di una taglia superiore."
+  ]
+ },
+ "species:halfling:brave": {
+  "name": "Coraggioso",
+  "entries": [
+   "Dispone di {@variantrule Advantage|XPHB|vantaggio} ai tiri salvezza eseguiti per evitare o terminare la condizione {@condition Frightened|XPHB|spaventato} su se stesso."
+  ]
+ },
+ "species:halfling:halfling-nimbleness": {
+  "name": "Agilità halfling",
+  "entries": [
+   "Può attraversare lo spazio occupato da qualsiasi creatura più grande di lui, ma non può soffermarcisi."
+  ]
+ },
+ "species:halfling:luck": {
+  "name": "Fortuna",
+  "entries": [
+   "Quando effettui una prova con {@dice d20} e ottieni 1, puoi ritirare il dado e devi utilizzare il nuovo risultato."
+  ]
+ },
+ "species:halfling:naturally-stealthy": {
+  "name": "Furtività innata",
+  "entries": [
+   "Può effettuare l'azione di {@action Hide|XPHB|Nascondersi} anche se è oscurato solo da una singola creatura, purché questa sia più grande di lui di almeno una taglia."
+  ]
+ },
+ "species:human:resourceful": {
+  "name": "Intraprendente",
+  "entries": [
+   "Ottiene {@variantrule Heroic Inspiration|XPHB|Ispirazione eroica} ogni volta che completa un {@variantrule Long Rest|XPHB|riposo lungo}."
+  ]
+ },
+ "species:human:skillful": {
+  "name": "Pluriabilità",
+  "entries": [
+   "Acquisisce competenza in un'abilità a sua scelta."
+  ]
+ },
+ "species:human:versatile": {
+  "name": "Versatile",
+  "entries": [
+   "Ottiene un talento Origini a sua scelta (vedi capitolo \"Talenti\"). È consigliato il talento Abile."
+  ]
+ },
+ "species:orc:adrenaline-rush": {
+  "name": "Scarica di adrenalina",
+  "entries": [
+   "L'orco può utilizzare l'azione di {@action Dash|XPHB|Scatto} come {@variantrule Bonus Action|XPHB|azione bonus}. Ogni volta che lo fa, ottiene un numero di {@variantrule Temporary Hit Points|XPHB|punti ferita temporanei} pari al suo bonus di {@variantrule Proficiency|XPHB|competenza}.",
+   "Il personaggio può usare questo tratto un numero di volte pari al valore del suo bonus di {@variantrule Proficiency|XPHB|competenza} e recupera tutti gli utilizzi spesi quando completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}."
+  ]
+ },
+ "species:orc:darkvision": {
+  "name": "Scurovisione",
+  "entries": [
+   "Ha {@sense Darkvision|XPHB|scurovisione} fino a un raggio di 36 metri."
+  ]
+ },
+ "species:orc:relentless-endurance": {
+  "name": "Resistenza implacabile",
+  "entries": [
+   "Quando scende a 0 {@variantrule Hit Points|XPHB|punti ferita} ma non viene ucciso sul colpo, può decidere di rimanere a 1 punto ferita. Dopo averlo usato, non può riutilizzare questo tratto prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}."
+  ]
+ },
+ "species:tiefling:darkvision": {
+  "name": "Scurovisione",
+  "entries": [
+   "Ha {@sense Darkvision|XPHB|scurovisione} fino a un raggio di 18 metri."
+  ]
+ },
+ "species:tiefling:fiendish-legacy": {
+  "name": "Retaggio immondo",
+  "entries": [
+   "Grazie alla sua discendenza è dotato di abilità soprannaturali. Scegli un retaggio dalla tabella Retaggi immondi. Dopodiché, il personaggio otterrà il beneficio di 1º livello del retaggio selezionato.",
+   "Quando raggiunge i livelli 3 e 5, apprenderà un incantesimo di livello superiore, come mostrato nella tabella. Tale incantesimo è sempre considerato come preparato. Può lanciarlo una volta senza consumare uno slot incantesimo e ne recupera l'utilizzo in questo modo dopo aver completato un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciarlo usando gli slot incantesimo a sua disposizione del livello appropriato. La caratteristica da incantatore del personaggio può essere Intelligenza, Saggezza o Carisma per gli incantesimi lanciati con questo tratto (decidi l'abilità quando scegli il retaggio).",
+   {
+    "caption": "Retaggi immondi",
+    "colLabels": [
+     "Retaggio",
+     "Livello 1",
+     "Livello 3",
+     "Livello 5"
+    ],
+    "rows": [
+     [
+      "Abissale",
+      "Possiede {@variantrule Resistance|XPHB|resistenza} ai danni da veleno. Inoltre, conosce il trucchetto spruzzo velenoso.",
+      "Raggio di infermità",
+      "Blocca persone"
+     ],
+     [
+      "Ctonio",
+      "Possiede {@variantrule Resistance|XPHB|resistenza} ai danni necrotici. Inoltre, conosce il trucchetto tocco gelido.",
+      "Vita falsata",
+      "Raggio di affaticamento"
+     ],
+     [
+      "Infernale",
+      "Possiede {@variantrule Resistance|XPHB|resistenza} ai danni da fuoco. Inoltre, conosce il trucchetto dardo di fuoco.",
+      "Intimorire infernale",
+      "Oscurità"
+     ]
+    ]
+   }
+  ]
+ },
+ "species:tiefling:otherworldly-presence": {
+  "name": "Presenza ultraterrena",
+  "entries": [
+   "Conosce il trucchetto taumaturgia. Quando lo lancia sfruttando questo tratto, l'incantesimo utilizza la stessa caratteristica da incantatore del tratto Retaggio immondo."
+  ]
+ },
+ "subclass:barbarian:path-of-the-berserker:10:retaliation": {
+  "name": "Ritorsione",
+  "entries": [
+   "Quando il barbaro subisce danni da una creatura che si trova entro 1,5 metri da sé, può usare la sua {@variantrule Reaction|XPHB|reazione} per effettuare un attacco in mischia contro quella creatura, utilizzando un'arma o un {@variantrule Unarmed Strike|XPHB|colpo senz'armi}."
+  ]
+ },
+ "subclass:barbarian:path-of-the-berserker:14:intimidating-presence": {
+  "name": "Presenza intimidatoria",
+  "entries": [
+   "Come {@variantrule Bonus Action|XPHB|azione bonus}, il barbaro può incutere terrore con la sua presenza minacciosa e il suo potere primordiale. Quando lo fa, ogni creatura a scelta del personaggio in un'{@variantrule Emanation [Area of Effect]|XPHB|emanazione} del raggio di 9 metri di cui il personaggio è il punto di origine deve effettuare un tiro salvezza su Saggezza (CD pari a 8 + il modificatore di Forza del barbaro + il bonus di {@variantrule Proficiency|XPHB|competenza}). Se lo fallisce, la creatura è {@condition Frightened|XPHB|spaventata} per 1 minuto. Alla fine del turno di ogni creatura {@condition Frightened|XPHB|spaventata}, la creatura ripete il tiro salvezza e, se lo supera, l'effetto svanisce.",
+   "Dopo aver usato questo privilegio, il personaggio non può riutilizzarlo prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}; può ignorare questo limite spendendo un utilizzo dell'ira (nessuna azione richiesta)."
+  ]
+ },
+ "subclass:barbarian:path-of-the-berserker:3:frenzy": {
+  "name": "Frenesia",
+  "entries": [
+   "Se il personaggio usa Attacco irruento mentre è in preda all'ira, infligge danni extra al primo bersaglio che colpisce nel suo turno con un attacco basato sulla Forza. Per determinare i danni extra, il personaggio tira un numero di d6 pari al suo bonus Danni dell'ira e li somma. I danni sono dello stesso tipo dell'arma o del {@variantrule Unarmed Strike|XPHB|colpo senz'armi} che il personaggio ha utilizzato per l'attacco."
+  ]
+ },
+ "subclass:barbarian:path-of-the-berserker:6:mindless-rage": {
+  "name": "Ira incontenibile",
+  "entries": [
+   "Il barbaro non può essere {@condition Charmed|XPHB|affascinato} o {@condition Frightened|XPHB|spaventato} mentre è in ira. Se è {@condition Charmed|XPHB|affascinato} o {@condition Frightened|XPHB|spaventato} quando entra in ira, quella condizione ha fine."
+  ]
+ },
+ "subclass:bard:college-of-lore:14:peerless-skill": {
+  "name": "Abilità impareggiabile",
+  "entries": [
+   "Quando un bardo effettua una prova di caratteristica o un tiro per colpire e fallisce, può spendere un utilizzo di Ispirazione bardica; se lo fa, tira un dado di Ispirazione bardica e aggiunge il risultato ottenuto al {@dice d20}, trasformando potenzialmente il fallimento in un successo. In caso di fallimento, l'Ispirazione bardica non viene consumata."
+  ]
+ },
+ "subclass:bard:college-of-lore:3:bonus-proficiencies": {
+  "name": "Competenze bonus",
+  "entries": [
+   "Il bardo acquisisce competenza in tre abilità a scelta."
+  ]
+ },
+ "subclass:bard:college-of-lore:6:magical-discoveries": {
+  "name": "Scoperte magiche",
+  "entries": [
+   "Il bardo apprende due incantesimi a scelta che possono far parte della lista degli incantesimi del chierico, del druido o del mago o di una loro combinazione (vedi la sezione di ciascuna classe per i rispettivi incantesimi). L'incantesimo scelto deve essere un trucchetto o un incantesimo per il quale il personaggio dispone di slot incantesimo, come indicato nella tabella Privilegi del bardo.",
+   "Gli incantesimi scelti sono sempre considerati preparati e ogni volta che il personaggio ottiene un livello da bardo può sostituire uno degli incantesimi con un altro che soddisfi questi requisiti."
+  ]
+ },
+ "subclass:cleric:life-domain:17:supreme-healing": {
+  "name": "Guarigione suprema",
+  "entries": [
+   "Quando il chierico sta per lanciare normalmente uno o più dadi per ripristinare i {@variantrule Hit Points|XPHB|punti ferita} di una creatura con un incantesimo o con Incanalare divinità, anziché tirare quei dadi per la guarigione, usa il numero più alto possibile per ogni dado. Ad esempio, invece di ripristinare {@dice 2d6} {@variantrule Hit Points|XPHB|punti ferita} di una creatura con un incantesimo, un chierico ne ripristina 12."
+  ]
+ },
+ "subclass:cleric:life-domain:3:disciple-of-life": {
+  "name": "Discepolo della vita",
+  "entries": [
+   "Quando un incantesimo lanciato dal chierico con uno slot incantesimo ripristina i {@variantrule Hit Points|XPHB|punti ferita} di una creatura, quella creatura recupera un ammontare di {@variantrule Hit Points|XPHB|punti ferita} aggiuntivi nel turno in cui l'incantesimo viene lanciato. I {@variantrule Hit Points|XPHB|punti ferita} aggiuntivi sono pari a 2 più il livello dello slot incantesimo."
+  ]
+ },
+ "subclass:cleric:life-domain:3:life-domain-spells": {
+  "name": "Incantesimi del Dominio della Vita",
+  "entries": [
+   "La connessione con questo dominio divino permette al chierico di avere sempre pronti alcuni incantesimi. Quando il chierico raggiunge un livello specificato nella tabella Incantesimi del Dominio della Vita, gli incantesimi lì elencati sono considerati come preparati.",
+   {
+    "caption": "Incantesimi del Dominio della Vita",
+    "colLabels": [
+     "Livello da chierico",
+     "Incantesimi preparati"
+    ],
+    "rows": [
+     [
+      "3",
+      "{@spell Aid|XPHB|Aiuto}, {@spell Bless|XPHB|benedizione}, {@spell Cure Wounds|XPHB|cura ferite} e {@spell Lesser Restoration|XPHB|ristorare inferiore}"
+     ],
+     [
+      "5",
+      "{@spell Mass Healing Word|XPHB|Parola guaritrice di massa} e {@spell Revivify|XPHB|rinascita}"
+     ],
+     [
+      "7",
+      "{@spell Aura of Life|XPHB|Aura di vita} e {@spell Death Ward|XPHB|interdizione alla morte}"
+     ],
+     [
+      "9",
+      "{@spell Greater Restoration|XPHB|Ristorare superiore} e {@spell Mass Cure Wounds|XPHB|cura ferite di massa}"
+     ]
+    ]
+   }
+  ]
+ },
+ "subclass:cleric:life-domain:6:blessed-healer": {
+  "name": "Guaritore benedetto",
+  "entries": [
+   "Gli incantesimi curativi che il chierico lancia sugli altri guariscono anche il chierico stesso. Subito dopo aver lanciato un incantesimo con uno slot incantesimo che ripristina i {@variantrule Hit Points|XPHB|punti ferita} di una o più creature diverse da se stesso, il chierico recupera {@variantrule Hit Points|XPHB|punti ferita} pari a 2 più il livello dello slot incantesimo."
+  ]
+ },
+ "subclass:druid:circle-of-the-land:14:natures-sanctuary": {
+  "name": "Rifugio della Natura",
+  "entries": [
+   "Come azione di {@action Magic|XPHB|Magia}, il druido può spendere un utilizzo della sua Forma selvatica per far apparire alberi e viticci spettrali in un {@variantrule Cube [Area of Effect]|XPHB|cubo} con spigolo di 4,5 metri in un punto del terreno entro 36 metri da sé. La vegetazione permane per 1 minuto, o finché il druido non è {@condition Incapacitated|XPHB|incapacitato} o morto. Mentre si trovano in quell'area, il druido e i suoi alleati ottengono {@variantrule Cover|XPHB|mezza copertura}, e gli alleati ottengono la {@variantrule Resistance|XPHB|resistenza} conferita da Interdizione della Natura.",
+   "Come {@variantrule Bonus Action|XPHB|azione bonus}, il druido può muovere il {@variantrule Cube [Area of Effect]|XPHB|cubo} fino a 18 metri sul terreno entro 36 metri da sé."
+  ]
+ },
+ "subclass:druid:circle-of-the-land:3:lands-aid": {
+  "name": "Ausilio dalla terra",
+  "entries": [
+   "Come azione di {@action Magic|XPHB|Magia}, può spendere un utilizzo di Forma selvatica e scegliere un punto entro 18 metri da sé. Per un istante, in una {@variantrule Sphere [Area of Effect]|XPHB|sfera} del raggio di 3 metri centrata su quel punto appaiono fiori che donano vitalità e spine che risucchiano la vita. Ogni creatura nella {@variantrule Sphere [Area of Effect]|XPHB|sfera} a scelta del druido deve effettuare un tiro salvezza su Costituzione contro la CD del tiro salvezza sul suo incantesimo. La creatura subisce {@damage 2d6} danni necrotici in caso di fallimento, o la metà in caso di successo. Una creatura a scelta del druido in quell'area recupera {@dice 2d6} {@variantrule Hit Points|XPHB|punti ferita}.",
+   "I danni e la guarigione del personaggio aumentano di {@dice 1d6} quando raggiunge il 10º ({@dice 3d6}) e il 14º ({@dice 4d6}) livello da druido."
+  ]
+ },
+ "subclass:druid:circle-of-the-land:6:natural-recovery": {
+  "name": "Recupero naturale",
+  "entries": [
+   "Il druido può lanciare uno degli incantesimi di 1º livello o superiore che ha preparato con il privilegio Incantesimi del Circolo senza spendere uno slot incantesimo; deve completare un {@variantrule Long Rest|XPHB|riposo lungo} prima di poterlo fare di nuovo.",
+   "Inoltre, quando completa un {@variantrule Short Rest|XPHB|riposo breve}, sceglie quali slot incantesimo spesi desidera recuperare. Questi slot incantesimo possono avere un livello totale pari o inferiore alla metà del livello da druido (arrotondato per eccesso) e nessuno slot può essere di livello superiore al 6º. Per esempio, se il personaggio è un druido di 6º livello, può recuperare slot incantesimo per un valore totale di tre livelli. Il druido può recuperare uno slot incantesimo di 3º livello, uno slot incantesimo di 2º livello e uno di 1º livello, o tre slot incantesimo di 1º livello. Dopo aver recuperato gli slot incantesimo con questo privilegio, il druido non può farlo di nuovo prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}."
+  ]
+ },
+ "subclass:fighter:champion:3:improved-critical": {
+  "name": "Critico migliorato",
+  "entries": [
+   "I tiri per colpire con armi e con colpi senz'armi possono mettere a segno un {@variantrule Critical Hit|XPHB|colpo critico} con un risultato di 19 o 20 al tiro del {@dice d20}."
+  ]
+ },
+ "subclass:fighter:champion:3:remarkable-athlete": {
+  "name": "Atleta straordinario",
+  "entries": [
+   "Grazie alle sue doti atletiche, il guerriero dispone di {@variantrule Advantage|XPHB|vantaggio} ai tiri per l'{@variantrule Initiative|XPHB|iniziativa} e alle prove di Forza ({@skill Athletics|XPHB|Atletica}).",
+   "Inoltre, subito dopo aver messo a segno un {@variantrule Critical Hit|XPHB|colpo critico}, può muoversi fino a metà della propria {@variantrule Speed|XPHB|velocità} senza provocare {@action Opportunity Attack|XPHB|attacchi di opportunità}."
+  ]
+ },
+ "subclass:fighter:champion:7:additional-fighting-style": {
+  "name": "Stile di combattimento aggiuntivo",
+  "entries": [
+   "Il guerriero può scegliere un altro talento Stile di combattimento."
+  ]
+ },
+ "subclass:monk:warrior-of-the-open-hand:11:fleet-step": {
+  "name": "Passo lesto",
+  "entries": [
+   "Quando il monaco effettua un'{@variantrule Bonus Action|XPHB|azione bonus} diversa da Passo del vento, può usare anche Passo del vento subito dopo l'{@variantrule Bonus Action|XPHB|azione bonus}."
+  ]
+ },
+ "subclass:monk:warrior-of-the-open-hand:17:quivering-palm": {
+  "name": "Palmo tremante",
+  "entries": [
+   "Il monaco ottiene la capacità di scatenare vibrazioni letali nel corpo di un altro. Quando il monaco colpisce una creatura con un {@variantrule Unarmed Strike|XPHB|colpo senz'armi}, può spendere 4 punti concentrazione per dare il via a queste vibrazioni impercettibili, che durano un numero di giorni pari al suo livello da monaco. Le vibrazioni sono innocue, a meno che il monaco non effettui un'azione per interromperle. In alternativa, quando effettua l'azione di {@action Attack|XPHB|Attacco} nel proprio turno, può rinunciare a uno degli attacchi per porre fine alle vibrazioni. Per farlo, il monaco e il bersaglio devono trovarsi sullo stesso piano di esistenza. Quando il monaco pone fine alle vibrazioni, il bersaglio deve effettuare un tiro salvezza su Costituzione; subisce {@damage 10d12} danni da forza in caso di fallimento, o la metà dei danni in caso di successo.",
+   "Il monaco può tenere soltanto una creatura alla volta sotto l'effetto di questo privilegio. Le vibrazioni possono essere interrotte senza provocare danni (nessuna azione richiesta)."
+  ]
+ },
+ "subclass:monk:warrior-of-the-open-hand:3:open-hand-technique": {
+  "name": "Tecnica della mano aperta",
+  "entries": [
+   "Ogni volta che il monaco colpisce una creatura con un attacco concessogli dalla sua Raffica di colpi, può imporre a quel bersaglio uno degli effetti seguenti:",
+   {
+    "name": "Disorientamento",
+    "entries": [
+     "Il bersaglio non può effettuare {@action Opportunity Attack|XPHB|attacchi di opportunità} fino all'inizio del suo turno successivo."
+    ]
+   },
+   {
+    "name": "Spinta",
+    "entries": [
+     "Il bersaglio deve effettuare un tiro salvezza su Forza. Se lo fallisce, il monaco spinge il bersaglio via da sé fino a un massimo di 4,5 metri."
+    ]
+   },
+   {
+    "name": "Rovesciamento",
+    "entries": [
+     "Il bersaglio deve superare un tiro salvezza su Destrezza, altrimenti cade a terra {@condition Prone|XPHB|prono}."
+    ]
+   }
+  ]
+ },
+ "subclass:monk:warrior-of-the-open-hand:6:wholeness-of-body": {
+  "name": "Integrità del corpo",
+  "entries": [
+   "Il monaco ottiene la capacità di curarsi. Come {@variantrule Bonus Action|XPHB|azione bonus}, può tirare il dado di Arti marziali. In questo modo, recupera un numero di {@variantrule Hit Points|XPHB|punti ferita} pari al risultato ottenuto più il suo modificatore di Saggezza (minimo di 1 punto ferita recuperato).",
+   "Il personaggio può utilizzare questo privilegio un numero di volte pari al valore del suo modificatore di Saggezza (minimo una volta) e recupera tutti gli utilizzi consumati quando completa un {@variantrule Long Rest|XPHB|riposo lungo}."
+  ]
+ },
+ "subclass:paladin:oath-of-devotion:15:smite-of-protection": {
+  "name": "Punizione protettiva",
+  "entries": [
+   "La punizione magica del paladino ora emana energia protettiva. Ogni volta che utilizza {@spell Divine Smite|XPHB|punizione divina}, il paladino e i suoi alleati ottengono {@variantrule Cover|XPHB|mezza copertura} finché sono nell'Aura di protezione. Questo beneficio rimane attivo fino all'inizio del suo turno successivo."
+  ]
+ },
+ "subclass:paladin:oath-of-devotion:20:holy-nimbus": {
+  "name": "Nube sacra",
+  "entries": [
+   "Come {@variantrule Bonus Action|XPHB|azione bonus}, il paladino può infondere la sua Aura di protezione con del potere sacro, conferendo i benefici sottostanti per 10 minuti o finché non vengono interrotti (nessuna azione richiesta). Dopo aver utilizzato questo privilegio, il personaggio non può riutilizzarlo prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}. Tuttavia, è possibile ripristinarne l'uso consumando uno slot incantesimo di 5º livello (nessuna azione richiesta).",
+   {
+    "name": "Danni radiosi",
+    "entries": [
+     "Se un nemico comincia il suo turno all'interno dell'aura, subisce danni radiosi pari al modificatore di Carisma più il bonus di competenza del paladino."
+    ]
+   },
+   {
+    "name": "Luce del sole",
+    "entries": [
+     "L'aura rifulge di luce intensa, ovvero la luce solare."
+    ]
+   },
+   {
+    "name": "Sentinella sacra",
+    "entries": [
+     "Se costretto a effettuare dei tiri salvezza da un immondo o un non morto, il paladino dispone di vantaggio."
+    ]
+   }
+  ]
+ },
+ "subclass:paladin:oath-of-devotion:3:sacred-weapon": {
+  "name": "Arma consacrata",
+  "entries": [
+   "Quando il paladino effettua l'azione di {@action Attack|XPHB|Attacco}, può consumare uno degli usi di Incanalare divinità per infondere energia positiva nell'arma da mischia che impugna. Per 10 minuti o fino al prossimo utilizzo del privilegio, il paladino aggiunge il suo modificatore di Carisma ai tiri per colpire eseguiti con quell'arma (fino a un bonus minimo di +1) e, ogni volta che colpisce, può infliggere danni normali o radiosi.",
+   "Inoltre, l'arma emette {@variantrule Bright Light|XPHB|luce intensa} in un raggio di 6 metri e {@variantrule Dim Light|XPHB|luce fioca} per ulteriori 6 metri.",
+   "Questo effetto può essere interrotto in anticipo (nessuna azione richiesta). L'effetto termina se il paladino non ha più con sé l'arma interessata."
+  ]
+ },
+ "subclass:paladin:oath-of-devotion:7:aura-of-devotion": {
+  "name": "Aura di devozione",
+  "entries": [
+   "Il paladino e i suoi alleati non possono essere {@condition Charmed|XPHB|affascinati} finché si trovano all'interno dell'Aura"
+  ]
+ },
+ "subclass:ranger:hunter:11:superior-hunters-prey": {
+  "name": "Preda del cacciatore superiore",
+  "entries": [
+   "Una volta per turno, quando il ranger infligge danni a una creatura su cui è posto il suo marchio del cacciatore, può infliggere i danni aggiuntivi dell'incantesimo anche a una creatura nel suo campo visivo che si trovi entro 9 metri dal primo bersaglio."
+  ]
+ },
+ "subclass:ranger:hunter:15:superior-hunters-defense": {
+  "name": "Difesa del cacciatore superiore",
+  "entries": [
+   "Quando il ranger subisce danni, può utilizzare una {@variantrule Reaction|XPHB|reazione} per ottenere {@variantrule Resistance|XPHB|resistenza} a quel danno e ad altri dello stesso tipo fino al termine del turno in corso."
+  ]
+ },
+ "subclass:ranger:hunter:3:hunters-prey": {
+  "name": "Preda del cacciatore",
+  "entries": [
+   "Il ranger ottiene una delle seguenti opzioni di privilegio a scelta. Ogni volta che completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}, può sostituire l'opzione selezionata con l'altra.",
+   {
+    "entries": [
+     {
+      "name": "Devastatore dell'orda",
+      "entries": [
+       "Una volta per turno quando il ranger effettua un attacco con un'arma, può sferrare un altro attacco con la stessa arma contro una creatura diversa che sia entro 1,5 metri dal bersaglio originale e a portata dell'arma, e che non abbia già attaccato nel corso del turno corrente."
+      ]
+     },
+     {
+      "name": "Sterminatore di colossi",
+      "entries": [
+       "La tenacia del ranger scoraggia anche i nemici più resilienti. Quando colpisce una creatura con un'arma, questa infligge 1d8 danni aggiuntivi al bersaglio se gli mancano dei punti ferita. Può infliggere questi danni extra solo una volta per turno."
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "subclass:ranger:hunter:7:defensive-tactics": {
+  "name": "Tattiche difensive",
+  "entries": [
+   "Il ranger ottiene una delle seguenti opzioni di privilegio a scelta. Ogni volta che completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}, può sostituire l'opzione selezionata con l'altra.",
+   {
+    "entries": [
+     {
+      "name": "Difesa dal multiattacco",
+      "entries": [
+       "Se una creatura colpisce il ranger con un tiro per colpire subirà {@variantrule Disadvantage|XPHB|svantaggio} a tutti gli altri tiri per colpire effettuati contro il ranger durante il turno."
+      ]
+     },
+     {
+      "name": "Sfuggire all'orda",
+      "entries": [
+       "Gli attacchi di opportunità effettuati contro il personaggio subiscono {@variantrule Disadvantage|XPHB|svantaggio}."
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "subclass:rogue:thief:13:use-magic-device": {
+  "name": "Usare oggetto magico",
+  "entries": [
+   "Il ladro ha imparato a trarre il massimo dall'utilizzo degli oggetti magici, ottenendo i seguenti benefici.",
+   {
+    "name": "Cariche",
+    "entries": [
+     "Quando il ladro usa la proprietà di un oggetto magico che ne consuma delle cariche, tira 1d6. Se il risultato è 6, la proprietà viene utilizzata senza consumare cariche."
+    ]
+   },
+   {
+    "name": "Pergamene",
+    "entries": [
+     "Il ladro può utilizzare qualunque pergamena magica sfruttando Intelligenza come caratteristica da incantatore. Se l'incantesimo è un trucchetto o un incantesimo di 1º livello, può lanciarlo senza effettuare alcuna prova. Invece, se la pergamena contiene un incantesimo di livello superiore, deve prima superare una prova di Intelligenza (Arcano) (CD 10 più il livello dell'incantesimo). Se la prova viene superata, lancerà l'incantesimo. In caso di fallimento, la pergamena si disintegra."
+    ]
+   },
+   {
+    "name": "Sintonia",
+    "entries": [
+     "Il ladro può entrare in sintonia con un massimo di quattro oggetti magici contemporaneamente."
+    ]
+   }
+  ]
+ },
+ "subclass:rogue:thief:17:thiefs-reflexes": {
+  "name": "Riflessi da furfante",
+  "entries": [
+   "Il ladro è diventato abile nel tendere imboscate e sfuggire rapidamente alle situazioni di pericolo. Per questo, può effettuare due turni durante il primo round di ogni combattimento. Effettua il suo primo turno alla sua normale {@variantrule Initiative|XPHB|iniziativa} e il secondo turno alla sua {@variantrule Initiative|XPHB|iniziativa} meno 10."
+  ]
+ },
+ "subclass:rogue:thief:9:supreme-sneak": {
+  "name": "Furtività suprema",
+  "entries": [
+   "Il ladro ottiene la seguente opzione per il Colpo astuto.",
+   {
+    "entries": [
+     {
+      "name": "Attacco nascosto (costo: 1d6)",
+      "entries": [
+       "Se il ladro è {@condition Invisible|XPHB|invisibile} per via dell'azione {@action Hide|XPHB|Nascondersi}, l'attacco non interrompe tale condizione se termina il turno dietro a {@variantrule Cover|XPHB|tre quarti di copertura} o a una {@variantrule Cover|XPHB|copertura} totale."
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "subclass:warlock:fiend-patron:10:fiendish-resilience": {
+  "name": "Resilienza immonda",
+  "entries": [
+   "Ogni volta che il personaggio completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}, è possibile scegliere un tipo di danno (tranne forza). Così facendo, ottiene {@variantrule Resistance|XPHB|resistenza} a quel tipo di danno finché non ne sceglie uno diverso tramite questo privilegio."
+  ]
+ },
+ "subclass:warlock:fiend-patron:3:dark-ones-blessing": {
+  "name": "Benedizione dell'oscuro",
+  "entries": [
+   "Quando il personaggio fa scendere un nemico a 0 {@variantrule Hit Points|XPHB|punti ferita}, ottiene una quantità di {@variantrule Temporary Hit Points|XPHB|punti ferita temporanei} pari al modificatore di Carisma più il proprio livello da warlock (minimo 1 punto ferita temporaneo). Questo beneficio viene ottenuto anche nel caso in cui un nemico entro 3 metri dal warlock sia ridotto a 0 {@variantrule Hit Points|XPHB|punti ferita} da qualcun altro."
+  ]
+ },
+ "subclass:warlock:fiend-patron:6:dark-ones-own-luck": {
+  "name": "Fortuna dell'Oscuro",
+  "entries": [
+   "Il warlock può appellarsi al proprio patrono immondo per alterare il fato in suo favore. Quando effettua una prova di caratteristica o un tiro salvezza, può utilizzare questo privilegio per aggiungere {@dice 1d10} al suo tiro. Può farlo dopo avere visto il tiro, ma prima che qualsiasi effetto del tiro sia applicato.",
+   "(minimo una volta), ma non più di una volta per ogni tiro. Tutti gli utilizzi spesi vengono recuperati quando il personaggio completa un {@variantrule Long Rest|XPHB|riposo lungo}."
+  ]
+ },
+ "subclass:wizard:evoker:10:empowered-evocation": {
+  "name": "Invocazione potente",
+  "entries": [
+   "Quando il mago lancio un incantesimo della scuola di Invocazione, può aggiungere a un tiro per i danni il suo modificatore di Intelligenza."
+  ]
+ },
+ "subclass:wizard:evoker:14:overchannel": {
+  "name": "Saturazione magica",
+  "entries": [
+   "Il mago può aumentare il potere dei suoi incantesimi. Quando lancia un incantesimo con uno slot di livello da 1 a 5 che infligge danni, con quell'incantesimo può infliggere il massimo dei danni nel turno in cui lo lancia.",
+   "La prima volta che lo fa, il mago non subisce alcun effetto avverso. Se però utilizza questo privilegio di nuovo prima di avere completato un {@variantrule Long Rest|XPHB|riposo lungo}, subisce {@damage 2d12} danni necrotici per ogni livello dell'incantesimo in questione, subito dopo averlo lanciato. Questi danni ignorano le varie forme di {@variantrule Resistance|XPHB|resistenza} e {@variantrule Immunity|XPHB|immunità}.",
+   "Ogni volta che utilizza di nuovo questo privilegio prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}, i danni necrotici per livello dell'incantesimo aumentano di {@damage 1d12}."
+  ]
+ },
+ "subclass:wizard:evoker:3:evocation-savant": {
+  "name": "Invocatore sapiente",
+  "entries": [
+   "Scegli due incantesimi da mago della scuola di Invocazione che non siano di livello superiore al 2º, e aggiungili gratuitamente al libro degli incantesimi del mago.",
+   "Inoltre, ogni volta che il personaggio ottiene accesso a un nuovo livello di slot incantesimo in questa classe, puoi aggiungere gratuitamente al libro un ulteriore incantesimo da mago della scuola di Invocazione. L'incantesimo scelto deve essere di un livello di cui possiede degli slot incantesimo."
+  ]
+ },
+ "subclass:wizard:evoker:3:potent-cantrip": {
+  "name": "Trucchetto potente",
+  "entries": [
+   "I trucchetti del mago che infliggono danni possono influenzare perfino le creature che altrimenti eviterebbero il grosso dell'effetto. Quando il personaggio lancia un trucchetto contro una creatura e la manca con il tiro per colpire o questa supera il tiro salvezza contro il trucchetto, il bersaglio subisce metà dei danni (se applicabile), ma non gli vengono inflitti eventuali effetti aggiuntivi."
+  ]
+ }
+}

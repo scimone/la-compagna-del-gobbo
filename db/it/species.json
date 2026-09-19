@@ -1,0 +1,384 @@
+{
+ "aasimar": {
+  "short_description": "Mortali toccati dal celeste, con una luce interiore."
+ },
+ "dragonborn": {
+  "short_description": "Fieri esseri draconici dal soffio elementale.",
+  "name": "Dragonide",
+  "entries": [
+   {
+    "name": "Discendenza draconica",
+    "entries": [
+     "Il personaggio discende da un progenitore draconico. Scegli la tipologia dalla tabella Antenati draconici. La tua decisione definisce il tipo soffio e il tratto di {@variantrule Resistance|XPHB|resistenza} ai {@variantrule Damage|XPHB|danni}, ma anche l'aspetto del personaggio.",
+     {
+      "caption": "Antenati draconici",
+      "colLabels": [
+       "Drago",
+       "Tipo di danni"
+      ],
+      "rows": [
+       [
+        "Nero",
+        "Acido"
+       ],
+       [
+        "Blu",
+        "Fulmine"
+       ],
+       [
+        "Ottone",
+        "Fuoco"
+       ],
+       [
+        "Bronzo",
+        "Fulmine"
+       ],
+       [
+        "Rame",
+        "Acido"
+       ],
+       [
+        "Oro",
+        "Fuoco"
+       ],
+       [
+        "Verde",
+        "Veleno"
+       ],
+       [
+        "Rosso",
+        "Fuoco"
+       ],
+       [
+        "Argento",
+        "Freddo"
+       ],
+       [
+        "Bianco",
+        "Freddo"
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "Soffio",
+    "entries": [
+     "Quando il personaggio esegue l'azione di {@action Attack|XPHB|Attacco} durante il turno, può sostituire uno dei suoi attacchi con un'esalazione di energia magica in un {@variantrule Cone [Area of Effect]|XPHB|cono} di 4,5 metri o in una {@variantrule Line [Area of Effect]|XPHB|linea} lunga 9 metri e larga 1,5 (puoi scegliere la forma a ogni utilizzo). Ogni creatura nell'area deve effettuare un tiro salvezza su Destrezza ({@dc 8} più il modificatore di Costituzione e il bonus di {@variantrule Proficiency|XPHB|competenza} del personaggio). In caso di fallimento, vengono inflitti {@damage 1d10} danni del tipo determinato dal tratto Discendenza draconica. In caso di successo, subisce soltanto la metà di quei danni. I danni aumentano di {@damage 1d10} quando il personaggio raggiunge il 5º livello ({@damage 2d10}), l'11º livello ({@damage 3d10}) e il 17º livello ({@damage 4d10}).",
+     "Il personaggio può utilizzare il Soffio un numero di volte pari al valore del suo bonus di {@variantrule Proficiency|XPHB|competenza} e recuperare tutti gli utilizzi spesi quando completa un {@variantrule Long Rest|XPHB|riposo lungo}."
+    ]
+   },
+   {
+    "name": "Resistenza ai danni",
+    "entries": [
+     "Il personaggio dispone di {@variantrule Resistance|XPHB|resistenza} ai danni del tipo determinato dal tratto Discendenza draconica."
+    ]
+   },
+   {
+    "name": "Scurovisione",
+    "entries": [
+     "Il personaggio ha {@sense Darkvision|XPHB|scurovisione} fino a un raggio di 18 metri."
+    ]
+   },
+   {
+    "name": "Volo draconico",
+    "entries": [
+     "Quando il personaggio raggiunge il 5º livello, può incanalare dell'energia draconica per volare temporaneamente. Come {@variantrule Bonus Action|XPHB|azione bonus}, può far spuntare delle ali spettrali dalla sua schiena che durano per 10 minuti, fino al momento in cui decide di farle scomparire (nessuna azione richiesta) o finché non diventa {@condition Incapacitated|XPHB|incapacitato}. Durante quel periodo, è dotato di una {@variantrule Fly Speed|XPHB|velocità di volo} pari alla sua {@variantrule Speed|XPHB|velocità}. L'aspetto delle ali varia in base al tipo di energia del Soffio. Dopo aver usato questo tratto, il personaggio non può riutilizzarlo prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}."
+    ]
+   }
+  ]
+ },
+ "dwarf": {
+  "short_description": "Popolo robusto di montagne e pietra.",
+  "name": "Nano",
+  "entries": [
+   {
+    "name": "Scurovisione",
+    "entries": [
+     "Ha {@sense Darkvision|XPHB|scurovisione} fino a un raggio di 36 metri."
+    ]
+   },
+   {
+    "name": "Resilienza nanica",
+    "entries": [
+     "Ha {@variantrule Resistance|XPHB|resistenza} ai danni da veleno. Dispone di {@variantrule Advantage|XPHB|vantaggio} sui tiri salvezza eseguiti per evitare o terminare la condizione {@condition Poisoned|XPHB|avvelenato} su se stesso."
+    ]
+   },
+   {
+    "name": "Robustezza nanica",
+    "entries": [
+     "I {@variantrule Hit Points|XPHB|punti ferita} massimi di un nano aumentano di 1 e aumentano di nuovo di 1 ogni volta che acquisisce un livello."
+    ]
+   },
+   {
+    "name": "Esperto minatore",
+    "entries": [
+     "Come {@variantrule Bonus Action|XPHB|azione bonus}, il personaggio ottiene {@sense Tremorsense|XPHB|percezione tellurica} con un raggio di 18 metri per 10 minuti. Per poterla utilizzare, deve trovarsi su una superficie di pietra o toccarla. La pietra deve essere naturale o lavorata.",
+     "Il personaggio può utilizzare questa {@variantrule Bonus Action|XPHB|azione bonus} un numero di volte pari al valore del suo bonus di {@variantrule Proficiency|XPHB|competenza}, recuperando tutti gli utilizzi spesi quando completa un {@variantrule Long Rest|XPHB|riposo lungo}."
+    ]
+   }
+  ]
+ },
+ "elf": {
+  "short_description": "Aggraziati, longevi e in sintonia con la magia.",
+  "name": "Elfo",
+  "entries": [
+   {
+    "name": "Scurovisione",
+    "entries": [
+     "Il personaggio ha {@sense Darkvision|XPHB|scurovisione} fino a un raggio di 18 metri."
+    ]
+   },
+   {
+    "name": "Lignaggio elfico",
+    "entries": [
+     "Come parte di un lignaggio, è dotato di abilità soprannaturali. Scegli un lignaggio dalla tabella Lignaggi elfici. Il personaggio otterrà il beneficio di 1º livello di quel determinato lignaggio.",
+     "Quando raggiunge i livelli 3 e 5, apprenderà un incantesimo di livello superiore, come mostrato nella tabella. Tale incantesimo è sempre considerato come preparato. Può lanciarlo una volta senza consumare uno slot incantesimo e ne recupera l'utilizzo in questo modo dopo aver completato un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciarlo usando gli slot incantesimo a sua disposizione del livello appropriato.",
+     "La caratteristica da incantatore del personaggio può essere Intelligenza, Saggezza o Carisma per",
+     {
+      "caption": "Lignaggi elfici",
+      "colLabels": [
+       "Lignaggio",
+       "Livello 1",
+       "Livello 3",
+       "Livello 5"
+      ],
+      "rows": [
+       [
+        "Drow",
+        "La portata di {@sense Darkvision|XPHB|scurovisione} aumenta fino a 36 metri. Inoltre, il personaggio conosce il trucchetto luci danzanti.",
+        "Luminescenza",
+        "Oscurità"
+       ],
+       [
+        "Elfo alto",
+        "Il personaggio impara il trucchetto prestidigitazione. Ogni volta che completa un {@variantrule Long Rest|XPHB|riposo lungo}, può sostituirlo con un altro trucchetto dalla lista degli incantesimi del mago.",
+        "Individuazione del magico",
+        "Passo velato"
+       ],
+       [
+        "Elfo dei boschi",
+        "La {@variantrule Speed|XPHB|velocità} del personaggio aumenta a 10,5 metri. Inoltre, conosce il trucchetto artificio druidico.",
+        "Passo veloce",
+        "Passare senza tracce"
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "Retaggio fatato",
+    "entries": [
+     "Dispone di {@variantrule Advantage|XPHB|vantaggio} ai tiri salvezza eseguiti per evitare o terminare la condizione {@condition Charmed|XPHB|affascinato} su se stesso."
+    ]
+   },
+   {
+    "name": "Sensi acuti",
+    "entries": [
+     "Ha competenza nelle abilità {@skill Insight|XPHB|Intuizione}, {@skill Perception|XPHB|Percezione} o {@skill Survival|XPHB|Sopravvivenza}."
+    ]
+   },
+   {
+    "name": "Trance",
+    "entries": [
+     "Non ha bisogno di dormire e la magia non può farlo addormentare. Può completare un {@variantrule Long Rest|XPHB|riposo lungo} in 4 ore rimanendo in uno stato di trance meditativa, durante il quale resta cosciente."
+    ]
+   }
+  ]
+ },
+ "gnome": {
+  "short_description": "Piccoli e ingegnosi, pieni di curiosità.",
+  "name": "Gnomo",
+  "entries": [
+   {
+    "name": "Scurovisione",
+    "entries": [
+     "Il personaggio ha {@sense Darkvision|XPHB|scurovisione} fino a un raggio di 18 metri."
+    ]
+   },
+   {
+    "name": "Astuzia gnomesca",
+    "entries": [
+     "Dispone di {@variantrule Advantage|XPHB|vantaggio} a i tiri salvezza su Intelligenza, Saggezza e Carisma."
+    ]
+   },
+   {
+    "name": "Lignaggio gnomesco",
+    "entries": [
+     "Come parte di un lignaggio, è dotato di abilità soprannaturali. Scegli una delle opzioni seguenti. A prescindere da quella selezionata, la caratteristica da incantatore del personaggio può essere Intelligenza, Saggezza o Carisma per gli incantesimi lanciati con questo tratto (decidi l'abilità quando scegli il lignaggio):",
+     {
+      "items": [
+       {
+        "name": "Gnomo delle foreste",
+        "entries": [
+         "Il personaggio conosce il trucchetto illusione minore. Inoltre, l'incantesimo parlare con gli animali è sempre considerato come preparato. Può lanciarlo senza consumare uno slot incantesimo un numero di volte pari al suo bonus di {@variantrule Proficiency|XPHB|competenza} e riacquista tutti gli usi spesi al termine di un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciare l'incantesimo usando uno qualsiasi degli slot incantesimo a sua disposizione."
+        ]
+       },
+       {
+        "name": "Gnomo delle rocce",
+        "entries": [
+         "Conosce i trucchetti riparare e prestidigitazione. Inoltre, può impiegare 10 minuti di lancio di prestidigitazione per creare un piccolo dispositivo meccanico (CA 5, 1 PF), come un giocattolo, un accendifuoco o un carillon. Una volta creato, puoi determinare il"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "goliath": {
+  "short_description": "Giganteschi abitanti di aspre vette montane.",
+  "name": "Goliath",
+  "entries": [
+   null,
+   {
+    "name": "Forma Grande",
+    "entries": [
+     "A partire dal 5º livello, come {@variantrule Bonus Action|XPHB|azione bonus} può diventare di taglia Grande se si trova in uno spazio abbastanza ampio. La trasformazione dura per 10 minuti o finché non la interrompe (nessuna azione richiesta). Per tutta la sua durata, ottiene {@variantrule Advantage|XPHB|vantaggio} alle prove di Forza e la sua {@variantrule Speed|XPHB|velocità} aumenta di 3 metri. Dopo aver usato questo tratto, il personaggio non può riutilizzarlo prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}."
+    ]
+   },
+   {
+    "name": "Costituzione robusta",
+    "entries": [
+     "Ha {@variantrule Advantage|XPHB|vantaggio} a qualsiasi prova di caratteristica effettuata per non essere {@condition Grappled|XPHB|afferrato}. Inoltre, la capacità di trasporto del personaggio è quella di una taglia superiore."
+    ]
+   }
+  ]
+ },
+ "grung": {
+  "short_description": "Allegri uomini-rana a proprio agio in acqua e nella giungla."
+ },
+ "halfling": {
+  "short_description": "Piccoli e agili, noti per fortuna e allegria.",
+  "name": "Halfling",
+  "entries": [
+   {
+    "name": "Coraggioso",
+    "entries": [
+     "Dispone di {@variantrule Advantage|XPHB|vantaggio} ai tiri salvezza eseguiti per evitare o terminare la condizione {@condition Frightened|XPHB|spaventato} su se stesso."
+    ]
+   },
+   {
+    "name": "Agilità halfling",
+    "entries": [
+     "Può attraversare lo spazio occupato da qualsiasi creatura più grande di lui, ma non può soffermarcisi."
+    ]
+   },
+   {
+    "name": "Fortuna",
+    "entries": [
+     "Quando effettui una prova con {@dice d20} e ottieni 1, puoi ritirare il dado e devi utilizzare il nuovo risultato."
+    ]
+   },
+   {
+    "name": "Furtività innata",
+    "entries": [
+     "Può effettuare l'azione di {@action Hide|XPHB|Nascondersi} anche se è oscurato solo da una singola creatura, purché questa sia più grande di lui di almeno una taglia."
+    ]
+   }
+  ]
+ },
+ "human": {
+  "short_description": "Adattabili, ambiziosi e infinitamente vari.",
+  "name": "Umano",
+  "entries": [
+   {
+    "name": "Intraprendente",
+    "entries": [
+     "Ottiene {@variantrule Heroic Inspiration|XPHB|Ispirazione eroica} ogni volta che completa un {@variantrule Long Rest|XPHB|riposo lungo}."
+    ]
+   },
+   {
+    "name": "Pluriabilità",
+    "entries": [
+     "Acquisisce competenza in un'abilità a sua scelta."
+    ]
+   },
+   {
+    "name": "Versatile",
+    "entries": [
+     "Ottiene un talento Origini a sua scelta (vedi capitolo \"Talenti\"). È consigliato il talento Abile."
+    ]
+   }
+  ]
+ },
+ "orc": {
+  "short_description": "Popolo forte e tenace, di feroce resistenza.",
+  "name": "Orco",
+  "entries": [
+   {
+    "name": "Scarica di adrenalina",
+    "entries": [
+     "L'orco può utilizzare l'azione di {@action Dash|XPHB|Scatto} come {@variantrule Bonus Action|XPHB|azione bonus}. Ogni volta che lo fa, ottiene un numero di {@variantrule Temporary Hit Points|XPHB|punti ferita temporanei} pari al suo bonus di {@variantrule Proficiency|XPHB|competenza}.",
+     "Il personaggio può usare questo tratto un numero di volte pari al valore del suo bonus di {@variantrule Proficiency|XPHB|competenza} e recupera tutti gli utilizzi spesi quando completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}."
+    ]
+   },
+   {
+    "name": "Scurovisione",
+    "entries": [
+     "Ha {@sense Darkvision|XPHB|scurovisione} fino a un raggio di 36 metri."
+    ]
+   },
+   {
+    "name": "Resistenza implacabile",
+    "entries": [
+     "Quando scende a 0 {@variantrule Hit Points|XPHB|punti ferita} ma non viene ucciso sul colpo, può decidere di rimanere a 1 punto ferita. Dopo averlo usato, non può riutilizzare questo tratto prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}."
+    ]
+   }
+  ]
+ },
+ "tiefling": {
+  "short_description": "Mortali segnati da un retaggio infernale.",
+  "name": "Tiefling",
+  "entries": [
+   {
+    "name": "Scurovisione",
+    "entries": [
+     "Ha {@sense Darkvision|XPHB|scurovisione} fino a un raggio di 18 metri."
+    ]
+   },
+   {
+    "name": "Retaggio immondo",
+    "entries": [
+     "Grazie alla sua discendenza è dotato di abilità soprannaturali. Scegli un retaggio dalla tabella Retaggi immondi. Dopodiché, il personaggio otterrà il beneficio di 1º livello del retaggio selezionato.",
+     "Quando raggiunge i livelli 3 e 5, apprenderà un incantesimo di livello superiore, come mostrato nella tabella. Tale incantesimo è sempre considerato come preparato. Può lanciarlo una volta senza consumare uno slot incantesimo e ne recupera l'utilizzo in questo modo dopo aver completato un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciarlo usando gli slot incantesimo a sua disposizione del livello appropriato. La caratteristica da incantatore del personaggio può essere Intelligenza, Saggezza o Carisma per gli incantesimi lanciati con questo tratto (decidi l'abilità quando scegli il retaggio).",
+     {
+      "caption": "Retaggi immondi",
+      "colLabels": [
+       "Retaggio",
+       "Livello 1",
+       "Livello 3",
+       "Livello 5"
+      ],
+      "rows": [
+       [
+        "Abissale",
+        "Possiede {@variantrule Resistance|XPHB|resistenza} ai danni da veleno. Inoltre, conosce il trucchetto spruzzo velenoso.",
+        "Raggio di infermità",
+        "Blocca persone"
+       ],
+       [
+        "Ctonio",
+        "Possiede {@variantrule Resistance|XPHB|resistenza} ai danni necrotici. Inoltre, conosce il trucchetto tocco gelido.",
+        "Vita falsata",
+        "Raggio di affaticamento"
+       ],
+       [
+        "Infernale",
+        "Possiede {@variantrule Resistance|XPHB|resistenza} ai danni da fuoco. Inoltre, conosce il trucchetto dardo di fuoco.",
+        "Intimorire infernale",
+        "Oscurità"
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "Presenza ultraterrena",
+    "entries": [
+     "Conosce il trucchetto taumaturgia. Quando lo lancia sfruttando questo tratto, l'incantesimo utilizza la stessa caratteristica da incantatore del tratto Retaggio immondo."
+    ]
+   }
+  ]
+ }
+}

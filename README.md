@@ -728,13 +728,21 @@ translation keeps showing its English, so these pages can be partly Italian. Eac
 `apps/rules/translation_sync.py` (`TRANSLATED_CATALOGS` maps model -> file -> fields) at the end of
 `import_rules_data` and by `import_translations`. Search matches either language's name, and
 `{@tag}` lookups use each row's English name (`name_en`), so links still resolve when the display
-text is Italian. **Filled so far** (from `IT_SRD_CC_v5.2.1.md`): all 17 SRD feats, 335 of the 339
-SRD spells (their names; 288 with full text - the rest differ structurally from the English text or
-lost their body in the SRD extraction, so they show an Italian name over English text) and 101 of
-the 114 rules. **Not yet filled**: species, backgrounds, classes/subclasses/features, equipment,
-skills, senses, languages, masteries, abilities (their columns exist and fall back to English), and
-the UI-side rendering of spell/equipment *measurements* (feet, "1 action", ...), which is still
-English.
+**Filled so far** (from `IT_SRD_CC_v5.2.1.md`): all 17 SRD feats; 335 of the 339 SRD spells
+(their names; 288 with full text - the rest differ structurally from the English text or lost their
+body in the SRD extraction, so they show an Italian name over English text); 101 of the 114 rules;
+all 12 classes (name, blurb, "subclass" title), their 12 SRD subclasses, and about 230 class,
+subclass, species-trait and feat features; the 9 SRD species (plus Italian blurbs for all 11); the
+4 SRD backgrounds; and 207 of the 217 equipment items (name for all; full text for about 85 - the
+tools and gear whose description block aligned). Class and subclass *features* that the SRD lists
+differently from the English data (option rows, repeated "Ability Score Improvement" levels,
+features with big embedded tables) keep their English text. **Not yet filled** (their columns exist
+and fall back to English): skills, senses, languages, masteries, abilities, weapon properties,
+optional features, the non-SRD rows, and the UI-side rendering of *measurements* and structured
+values (feet, "1 action", size/creature-type codes, class-table column headers), which is still
+English. The extraction was done with throwaway scripts (paragraph-by-paragraph alignment of the
+Italian markdown to the English `entries` tree, tags mirrored by an English-to-Italian term
+dictionary); rows that didn't align cleanly were left in English rather than guessed. English.
 
 **How it's wired**: `LANGUAGES = [("en", ...), ("it", ...)]` + `LocaleMiddleware` (in
 `config/settings.py`) + `path("i18n/", include("django.conf.urls.i18n"))` (in `config/urls.py`)

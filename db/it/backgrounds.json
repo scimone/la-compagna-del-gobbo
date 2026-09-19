@@ -1,0 +1,118 @@
+{
+ "acolyte": {
+  "name": "Accolito",
+  "entries": [
+   {
+    "items": [
+     {
+      "name": "Punteggi di caratteristica:",
+      "entry": "Intelligenza, Saggezza, Carisma"
+     },
+     {
+      "name": "Talento:",
+      "entry": "{@feat Magic Initiate|XPHB|Iniziato alla magia} (chierico) (vedi capitolo \"Talenti\")"
+     },
+     {
+      "name": "Competenze nelle abilità:",
+      "entry": "{@skill Insight|XPHB|Intuizione} e {@skill Religion|XPHB|Religione}"
+     },
+     {
+      "name": "Competenza negli strumenti:",
+      "entry": "{@item Calligrapher's Supplies|XPHB|scorte da calligrafo}"
+     },
+     {
+      "name": "Equipaggiamento:",
+      "entry": "a scelta tra A e B: (A) {@item Calligrapher's Supplies|XPHB|scorte da calligrafo}, {@item Book|XPHB|libro} (preghiere), {@item Holy Symbol|XPHB|simbolo sacro}, {@item Parchment|XPHB|pergamena} (10 fogli), {@item Robe|xphb|tunica}, 8 mo; o (B) 50 mo"
+     }
+    ]
+   }
+  ]
+ },
+ "criminal": {
+  "name": "Criminale",
+  "entries": [
+   {
+    "items": [
+     {
+      "name": "Punteggi di caratteristica:",
+      "entry": "Destrezza, Costituzione, Intelligenza"
+     },
+     {
+      "name": "Talento:",
+      "entry": "{@feat Alert|XPHB|Allerta} (vedi \"Talenti\")"
+     },
+     {
+      "name": "Competenze nelle abilità:",
+      "entry": "{@skill Sleight of Hand|XPHB|Rapidità di mano} e {@skill Stealth|XPHB|Furtività}"
+     },
+     {
+      "name": "Competenza negli strumenti:",
+      "entry": "{@item Thieves' Tools|XPHB|arnesi da scasso}"
+     },
+     {
+      "name": "Equipaggiamento:",
+      "entry": "a scelta tra A e B: (A) 2 {@item Dagger|XPHB|pugnali}, {@item Thieves' Tools|XPHB|arnesi da scasso}, {@item Crowbar|XPHB|piede di porco}, 2 {@item Pouch|XPHB|borse}, {@item Traveler's Clothes|XPHB|abiti da viaggiatore}, 16 mo; o (B) 50 mo"
+     }
+    ]
+   }
+  ]
+ },
+ "sage": {
+  "name": "Sapiente",
+  "entries": [
+   {
+    "items": [
+     {
+      "name": "Punteggi di caratteristica:",
+      "entry": "Costituzione, Intelligenza, Saggezza"
+     },
+     {
+      "name": "Talento:",
+      "entry": "{@feat Magic Initiate|XPHB|Iniziato alla magia} (mago) (vedi capitolo \"Talenti\")"
+     },
+     {
+      "name": "Competenze nelle abilità:",
+      "entry": "{@skill Arcana|XPHB|Arcano} e {@skill History|XPHB|Storia}"
+     },
+     {
+      "name": "Competenza negli strumenti:",
+      "entry": "{@item Calligrapher's Supplies|XPHB|scorte da calligrafo}"
+     },
+     {
+      "name": "Equipaggiamento:",
+      "entry": "a scelta tra A e B: (A) {@item Quarterstaff|XPHB|bastone ferrato}, {@item Calligrapher's Supplies|XPHB|scorte da calligrafo}, {@item Book|XPHB|libro} (storia) {@item Parchment|XPHB|pergamena} (8 fogli), {@item Robe|XPHB|tunica}, 8 mo; o (B) 50 mo"
+     }
+    ]
+   }
+  ]
+ },
+ "soldier": {
+  "name": "Soldato",
+  "entries": [
+   {
+    "items": [
+     {
+      "name": "Punteggi di caratteristica:",
+      "entry": "Forza, Destrezza, Costituzione"
+     },
+     {
+      "name": "Talento:",
+      "entry": "{@feat Savage Attacker|XPHB|Aggressore selvaggio} (vedi capitolo \"Talenti\")"
+     },
+     {
+      "name": "Competenze nelle abilità:",
+      "entry": "{@skill Athletics|XPHB|Atletica} e {@skill Intimidation|XPHB|Intimidire}"
+     },
+     {
+      "name": "Competenza negli strumenti:",
+      "entry": "Un tipo di gioco a scelta (vedi \"Equipaggiamento\")"
+     },
+     {
+      "name": "Equipaggiamento:",
+      "entry": "a scelta tra A e B: (A) {@item Spear|XPHB|lancia}, {@item Shortbow|XPHB|arco corto}, 20 frecce, gioco (lo stesso scelto sopra), {@item Healer's Kit|XPHB|borsa del guaritore}, {@item Quiver|XPHB|faretra}, {@item Traveler's Clothes|XPHB|abiti da viaggiatore}, 14 mo; o (B) 50 mo"
+     }
+    ]
+   }
+  ]
+ }
+}

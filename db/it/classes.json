@@ -1,0 +1,62 @@
+{
+ "barbarian": {
+  "name": "Barbaro",
+  "short_description": "Un feroce guerriero alimentato dalla furia primordiale.",
+  "subclass_title": "Sottoclasse del barbaro"
+ },
+ "bard": {
+  "name": "Bardo",
+  "short_description": "Un ispirato artista di magia e musica.",
+  "subclass_title": "Sottoclasse del bardo"
+ },
+ "cleric": {
+  "name": "Chierico",
+  "short_description": "Un intermediario divino che maneggia magia sacra.",
+  "subclass_title": "Sottoclasse del chierico"
+ },
+ "druid": {
+  "name": "Druido",
+  "short_description": "Un sacerdote della natura che governa la magia primordiale.",
+  "subclass_title": "Sottoclasse del druido"
+ },
+ "fighter": {
+  "name": "Guerriero",
+  "short_description": "Un maestro di armi e armature.",
+  "subclass_title": "Sottoclasse del guerriero"
+ },
+ "monk": {
+  "name": "Monaco",
+  "short_description": "Un maestro di arti marziali che incanala l'energia interiore.",
+  "subclass_title": "Sottoclasse del monaco"
+ },
+ "paladin": {
+  "name": "Paladino",
+  "short_description": "Un guerriero sacro legato a un giuramento.",
+  "subclass_title": "Sottoclasse del paladino"
+ },
+ "ranger": {
+  "name": "Ranger",
+  "short_description": "Un cacciatore e esploratore delle terre selvagge.",
+  "subclass_title": "Sottoclasse del ranger"
+ },
+ "rogue": {
+  "name": "Ladro",
+  "short_description": "Un furfante di astuzia, furtività e precisione.",
+  "subclass_title": "Sottoclasse del ladro"
+ },
+ "sorcerer": {
+  "name": "Stregone",
+  "short_description": "Un incantatore dal potere magico innato.",
+  "subclass_title": "Sottoclasse dello stregone"
+ },
+ "warlock": {
+  "name": "Warlock",
+  "short_description": "Un incantatore che ottiene magia da un patto.",
+  "subclass_title": "Sottoclasse del warlock"
+ },
+ "wizard": {
+  "name": "Mago",
+  "short_description": "Un studioso di magia arcana.",
+  "subclass_title": "Sottoclasse del mago"
+ }
+}
