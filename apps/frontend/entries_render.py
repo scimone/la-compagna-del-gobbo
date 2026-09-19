@@ -179,15 +179,15 @@ def render_trait_cards(entries: list) -> SafeString:
 def _render_level_groups(by_level: dict[int, list[dict]], linker: _ReferenceLinker) -> str:
     """Render a {level: [{name, entries}, ...]} mapping as one collapsible group per level, each
     holding one card per block gained at that level - shared by `render_class_features()` and
-    `render_subclasses()` below. The lowest level starts expanded since it's what a new reader
-    most likely wants first.
+    `render_subclasses()` below. All groups start collapsed - see `_render_entry_cards()`'s
+    docstring for why no JS is needed to expand the right one when a fragment link points inside
+    it.
     """
     groups = []
-    for i, level in enumerate(sorted(by_level)):
-        open_attr = " open" if i == 0 else ""
+    for level in sorted(by_level):
         cards_html = _render_entry_cards(by_level[level], linker)
         groups.append(
-            f'<details class="level-group"{open_attr}>'
+            f'<details class="level-group">'
             f"<summary>{escape(gettext('Level'))} {level}</summary>"
             f"{cards_html}"
             f"</details>"
