@@ -151,3 +151,77 @@ def test_english_fallback_text_shows_metric_measurements_on_the_italian_site(cli
 
     html = _get(client, "/world/spells/thorn-whip/", "en")
     assert "10 feet" in html
+
+
+def test_class_ability_and_proficiency_facts_are_translated_in_italian(client, catalogs):
+    html = _get(client, "/world/classes/fighter/", "it")
+    assert "Destrezza o Forza" in html  # Primary Ability - an "or" pair
+    assert "Costituzione, Forza" in html  # Saving Throws
+    assert "Pesante, Leggera, Media, Scudo" in html  # Armor Proficiencies
+    assert "Strength" not in html
+    assert "Heavy" not in html
+
+    html = _get(client, "/world/classes/paladin/", "it")
+    assert "Carisma e Forza" in html  # Primary Ability - an "and" pair
+
+
+def test_class_ability_and_proficiency_facts_stay_english(client, catalogs):
+    html = _get(client, "/world/classes/fighter/", "en")
+    assert "Dexterity or Strength" in html
+    assert "Constitution, Strength" in html
+    assert "Heavy, Light, Medium, Shield" in html
+
+
+def test_class_weapon_proficiency_categories_are_translated_in_italian(client, catalogs):
+    html = _get(client, "/world/classes/monk/", "it")
+    assert "Tutte, Semplici" in html
+    assert "Simple" not in html
+
+    html = _get(client, "/world/classes/monk/", "en")
+    assert "All, Simple" in html
+
+
+def test_background_ability_scores_use_translated_ability_names(client, catalogs):
+    html = _get(client, "/world/backgrounds/acolyte/", "it")
+    assert "Intelligenza +2, Saggezza +1 o Intelligenza +1, Saggezza +1, Carisma +1" in html
+    assert "Intelligence" not in html
+
+    html = _get(client, "/world/backgrounds/acolyte/", "en")
+    assert "Intelligence +2, Wisdom +1 or Intelligence +1, Wisdom +1, Charisma +1" in html
+
+
+def test_background_named_tool_proficiency_resolves_through_equipment_translation(client, catalogs):
+    # Wayfarer's tool proficiency is Thieves' Tools - a real, already-translated Equipment row,
+    # not a bare category code.
+    html = _get(client, "/world/backgrounds/wayfarer/", "it")
+    assert "Arnesi da scasso" in html
+
+    html = _get(client, "/world/backgrounds/wayfarer/", "en")
+    assert "Thieves" in html
+
+
+def test_background_tool_choice_placeholders_read_as_words_in_both_languages(client, catalogs):
+    # These previously showed the source's bare camelCase key ("anyArtisansTool") verbatim -
+    # fixed for English too, not just Italian.
+    html = _get(client, "/world/backgrounds/artisan/", "it")
+    assert "uno strumento da artigiano" in html
+    assert "anyArtisansTool" not in html
+
+    html = _get(client, "/world/backgrounds/artisan/", "en")
+    assert "an artisan" in html  # ...&#x27;s tool - escaped apostrophe
+    assert "anyArtisansTool" not in html
+
+    assert "uno strumento musicale" in _get(client, "/world/backgrounds/entertainer/", "it")
+    assert "un gioco" in _get(client, "/world/backgrounds/guard/", "it")
+
+
+def test_species_size_and_creature_type_are_translated_in_italian(client, catalogs):
+    html = _get(client, "/world/species/human/", "it")
+    assert "Piccola/Media" in html
+    assert "Umanoide" in html
+    assert "Small" not in html
+    assert "Humanoid" not in html
+
+    html = _get(client, "/world/species/human/", "en")
+    assert "Small/Medium" in html
+    assert "Humanoid" in html

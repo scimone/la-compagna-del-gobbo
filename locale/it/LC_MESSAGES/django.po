@@ -365,3 +365,11 @@ msgstr "Livello di slot"
 #: apps/frontend/views.py
 msgid "Invocations"
 msgstr "Suppliche occulte"
+
+#: apps/rules/models/class_.py
+msgid "and"
+msgstr "e"
+
+#: apps/rules/models/class_.py apps/frontend/views.py
+msgid "or"
+msgstr "o"

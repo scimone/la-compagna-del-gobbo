@@ -765,6 +765,27 @@ read worse in an English sentence. Class table column headers sourced straight f
 the paragraph-level game content, these are effectively a small fixed vocabulary, one column
 header per class.
 
+**The About-tab facts are translated too** - `Ability` and `Skill` now have full `db/it/*.json`
+data (all 6 abilities, all 18 skills, straight from the handbook's own tables), so `Class`'s
+`primary_ability_display`/`saving_throws_display` (`Ability.name` via FK) and a Background's
+Skills fact (`Skill.name` via M2M) read Italian automatically - no view code needed, since those
+are ordinary translated-model fields. The `and`/`or` joining multiple primary abilities is the
+one piece of that display string that isn't a model field (`Class.primary_ability_conjunction`
+stores the bare source word) - translated with plain `gettext()` inside the model property
+itself, not `apps.frontend.units`, since `rules` must not depend on `frontend` (see
+"Architecture" above). Everything else on those facts is a raw *code*, not a name a catalog model
+already carries: a Species' size letter and creature-type word, and an armor/weapon proficiency
+category or tool-choice placeholder
+(`Class.armor_proficiencies`/`weapon_proficiencies`/`tool_proficiencies`, `Background.tools` -
+see those models' docstrings for the shape). These go through dedicated `(english, italian)`
+dicts in `views.py` (`_SIZE_LABELS`, `_CREATURE_TYPE_LABELS`, `_ARMOR_CATEGORY_LABELS`,
+`_WEAPON_CATEGORY_LABELS`, `_TOOL_CHOICE_LABELS`) rather than `gettext()` - confirmed collision
+risk for some of these words (e.g. the existing generic "All" filter pill is already "Tutti", but
+a weapon category's "All" needs the grammatically different "Tutte"), so a shared flat `.po`
+catalog isn't safe for this particular vocabulary. A *named* tool proficiency (e.g. "thieves'
+tools") is the source's own lowercase `Equipment` name, so it's resolved through that row's own
+translation instead of a separate mapping.
+
 **How it's wired**: `LANGUAGES = [("en", ...), ("it", ...)]` + `LocaleMiddleware` (in
 `config/settings.py`) + `path("i18n/", include("django.conf.urls.i18n"))` (in `config/urls.py`)
 gives a `POST /i18n/setlang/` endpoint for free - that's the "change language with a button"

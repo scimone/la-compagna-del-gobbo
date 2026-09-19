@@ -4,6 +4,7 @@ from django.shortcuts import redirect, render
 from django.templatetags.static import static
 from django.urls import reverse
 from django.utils.html import format_html
+from django.utils.translation import get_language
 from django.utils.translation import gettext as _
 
 from apps.frontend import units
@@ -16,7 +17,7 @@ from apps.frontend.entries_render import (
     render_subclasses,
     render_trait_cards,
 )
-from apps.rules.models import Ability, Feature, Subclass
+from apps.rules.models import Ability, Equipment, Feature, Subclass
 from apps.rules.services import background as background_service
 from apps.rules.services import class_ as class_service
 from apps.rules.services import feat as feat_service
@@ -35,22 +36,98 @@ _SPECIES_IMAGE_SLUGS: dict[str, str] = {}
 # (e.g. "scribe" -> "scriber.jpeg").
 _BACKGROUND_IMAGE_SLUGS = {"scribe": "scriber"}
 
-_ABILITY_NAMES = {
-    "str": "Strength",
-    "dex": "Dexterity",
-    "con": "Constitution",
-    "int": "Intelligence",
-    "wis": "Wisdom",
-    "cha": "Charisma",
+# Small closed vocabularies that label raw source *codes* (not free text) on the About-tab facts
+# - a size letter, a creature-type word, an armor/weapon proficiency category, a tool-choice
+# placeholder. These aren't `gettext()` calls: several of the plain English words involved
+# ("All", "Light", "Simple", ...) are common enough that reusing the shared `.po` catalog for them
+# risks colliding with an unrelated, differently-cased UI string that happens to need the same
+# English spelling (confirmed for "All" - the existing generic "show everything" filter pill
+# translates it as "Tutti", not the "Tutte" a weapon category needs) - so each gets its own
+# (English, Italian) pair here instead, picked by `_pick_translation()` per request.
+_SIZE_LABELS = {
+    "T": ("Tiny", "Minuscola"),
+    "S": ("Small", "Piccola"),
+    "M": ("Medium", "Media"),
+    "L": ("Large", "Grande"),
+    "H": ("Huge", "Enorme"),
+    "G": ("Gargantuan", "Mastodontica"),
 }
-_SIZE_CODES = {
-    "T": "Tiny",
-    "S": "Small",
-    "M": "Medium",
-    "L": "Large",
-    "H": "Huge",
-    "G": "Gargantuan",
+# Only "humanoid" is verified to occur in `db/species.json` today (every current Species is one) -
+# the rest of the D&D creature-type taxonomy is included so a future data refresh that adds e.g. a
+# Giant or Fiend species doesn't silently show an untranslated code.
+_CREATURE_TYPE_LABELS = {
+    "aberration": ("Aberration", "Aberrazione"),
+    "beast": ("Beast", "Bestia"),
+    "celestial": ("Celestial", "Celestiale"),
+    "construct": ("Construct", "Costrutto"),
+    "dragon": ("Dragon", "Drago"),
+    "elemental": ("Elemental", "Elementale"),
+    "fey": ("Fey", "Folletto"),
+    "fiend": ("Fiend", "Immondo"),
+    "giant": ("Giant", "Gigante"),
+    "humanoid": ("Humanoid", "Umanoide"),
+    "monstrosity": ("Monstrosity", "Mostruosità"),
+    "ooze": ("Ooze", "Melma"),
+    "plant": ("Plant", "Pianta"),
+    "undead": ("Undead", "Non Morto"),
 }
+_ARMOR_CATEGORY_LABELS = {
+    "light": ("Light", "Leggera"),
+    "medium": ("Medium", "Media"),
+    "heavy": ("Heavy", "Pesante"),
+    "shield": ("Shield", "Scudo"),
+}
+# Only "simple" and "all" are verified to occur in `db/classes.json` (Monk/Rogue; every other
+# class's `weapon_proficiencies` is empty, so its fact row doesn't render at all) - "martial" is
+# included for the same forward-compatibility reason as the creature types above. `Class`'s own
+# docstring notes "all" here can carry a `fromFilter` restriction (e.g. Monk's is actually "martial
+# weapons with the Light property", not literally every weapon) that this label doesn't unpack -
+# unchanged from the English behavior, which shows the same bare "All".
+_WEAPON_CATEGORY_LABELS = {
+    "simple": ("Simple", "Semplici"),
+    "martial": ("Martial", "Da Guerra"),
+    "all": ("All", "Tutte"),
+}
+# `Class.tool_proficiencies`/`Background.tools`' own ad hoc "choose N of this category" shape
+# (e.g. `{"anyMusicalInstrument": 3}`, see those models' docstrings) rendered its bare camelCase
+# key verbatim before this - not translated wrong, just never turned into words in either
+# language; these are the only three such keys currently in the data.
+_TOOL_CHOICE_LABELS = {
+    "anyMusicalInstrument": ("a musical instrument", "uno strumento musicale"),
+    "anyArtisansTool": ("an artisan's tool", "uno strumento da artigiano"),
+    "anyGamingSet": ("a gaming set", "un gioco"),
+}
+
+
+def _pick_translation(table: dict[str, tuple[str, str]], code: str) -> str:
+    """The Italian half of `table[code]` on the Italian site, the English half otherwise, or
+    `code` unchanged if it's not in `table` at all.
+    """
+    english, italian = table.get(code, (code, code))
+    return italian if (get_language() or "en").startswith("it") else english
+
+
+def _ability_names() -> dict[str, str]:
+    """`{short code: full name}` for every `Ability` (e.g. "str" -> "Strength"/"Forza") - one
+    query per call, reading `Ability.name` so it already follows the active language once
+    `db/it/abilities.json` covers it (see `apps/rules/translation.py`), rather than a hardcoded
+    English dict.
+    """
+    return dict(Ability.objects.values_list("pk", "name"))
+
+
+def _proficiency_label(code: str) -> str:
+    """One key from an armor/weapon proficiency flag grant: a category code (looked up in
+    `_ARMOR_CATEGORY_LABELS`/`_WEAPON_CATEGORY_LABELS`) if it's one of those, else an `Equipment`
+    row's own (already-translated) name if `code` matches one case-insensitively - covers
+    `Class.tool_proficiencies`/`Background.tools`' named-tool keys (e.g. "thieves' tools"), which
+    are just the source's own lowercase Equipment names - else `code.capitalize()` as before.
+    """
+    for table in (_ARMOR_CATEGORY_LABELS, _WEAPON_CATEGORY_LABELS):
+        if code in table:
+            return _pick_translation(table, code)
+    equipment = Equipment.objects.filter(name_en__iexact=code).first()
+    return equipment.name if equipment else code.capitalize()
 
 
 def _format_ability_choice(raw_list):
@@ -58,15 +135,16 @@ def _format_ability_choice(raw_list):
     docstring) - e.g. "Constitution +2, Intelligence +1 or Constitution +1, Intelligence +1,
     Wisdom +1".
     """
+    ability_names = _ability_names()
     alternatives = []
     for alt in raw_list or []:
         weighted = ((alt.get("choose") or {}).get("weighted")) or {}
-        names = [_ABILITY_NAMES.get(c, c) for c in weighted.get("from", [])]
+        names = [ability_names.get(c, c) for c in weighted.get("from", [])]
         weights = weighted.get("weights", [])
         pieces = [f"{n} +{w}" for n, w in zip(names, weights, strict=False)]
         if pieces:
             alternatives.append(", ".join(pieces))
-    return " or ".join(alternatives)
+    return f" {_('or')} ".join(alternatives)
 
 
 def _format_flag_grant(raw_list):
@@ -78,11 +156,12 @@ def _format_flag_grant(raw_list):
     for entry in raw_list or []:
         for key, value in entry.items():
             if value is True:
-                parts.append(key.capitalize())
+                parts.append(_proficiency_label(key))
             elif isinstance(value, int):
-                parts.append(f"{_('Choose')} {value}: {key}")
+                choice = _pick_translation(_TOOL_CHOICE_LABELS, key)
+                parts.append(f"{_('Choose')} {value}: {choice}")
             elif isinstance(value, dict):
-                parts.append(key.capitalize())
+                parts.append(_proficiency_label(key))
     return ", ".join(parts)
 
 
@@ -90,6 +169,7 @@ def _format_prerequisite(raw_list):
     """`Feat.prerequisite`/`OptionalFeature.prerequisite`: a structured list of `{level, ability,
     feature, proficiency, otherSummary}` entries - see `Feat`'s docstring.
     """
+    ability_names = _ability_names()
     alternatives = []
     for entry in raw_list or []:
         bits = []
@@ -98,7 +178,7 @@ def _format_prerequisite(raw_list):
         if "ability" in entry:
             bits.append(
                 ", ".join(
-                    f"{_ABILITY_NAMES.get(code, code)} {score}+"
+                    f"{ability_names.get(code, code)} {score}+"
                     for a in entry["ability"]
                     for code, score in a.items()
                 )
@@ -108,22 +188,25 @@ def _format_prerequisite(raw_list):
         if "proficiency" in entry:
             bits.append(
                 ", ".join(
-                    key.capitalize() for p in entry["proficiency"] for key, val in p.items() if val
+                    _proficiency_label(key)
+                    for p in entry["proficiency"]
+                    for key, val in p.items()
+                    if val
                 )
             )
         if "otherSummary" in entry:
             summary = entry["otherSummary"]
             bits.append(summary.get("entrySummary") or summary.get("entry", ""))
         alternatives.append(", ".join(b for b in bits if b))
-    return " or ".join(a for a in alternatives if a)
+    return f" {_('or')} ".join(a for a in alternatives if a)
 
 
 def _format_size(codes: list[str] | None) -> str:
-    return "/".join(_SIZE_CODES.get(c, c) for c in codes or [])
+    return "/".join(_pick_translation(_SIZE_LABELS, c) for c in codes or [])
 
 
 def _format_creature_types(codes: list[str] | None) -> str:
-    return ", ".join(c.capitalize() for c in codes or [])
+    return ", ".join(_pick_translation(_CREATURE_TYPE_LABELS, c) for c in codes or [])
 
 
 def _format_casting_time(raw_list):

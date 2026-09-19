@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import gettext
 
 
 class Class(models.Model):
@@ -79,7 +80,11 @@ class Class(models.Model):
         names = [a.name for a in self.primary_abilities.all()]
         if len(names) < 2:
             return names[0] if names else ""
-        return f" {self.primary_ability_conjunction} ".join(names)
+        # `primary_ability_conjunction` is the bare source word ("and"/"or", see `_CONJUNCTIONS`
+        # above) - translated here with plain `gettext` (not `apps.frontend.units`, which this
+        # app must not depend on - see the README's app-boundary rule) so it still reads "e"/"o"
+        # once `Ability.name` itself is Italian.
+        return f" {gettext(self.primary_ability_conjunction)} ".join(names)
 
     @property
     def saving_throws_display(self) -> str:

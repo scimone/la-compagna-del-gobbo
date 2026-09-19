@@ -1,0 +1,26 @@
+{
+ "cha": {
+  "name": "Carisma",
+  "description": "Disinvoltura, padronanza di sé e fascino."
+ },
+ "con": {
+  "name": "Costituzione",
+  "description": "Salute e resistenza fisica."
+ },
+ "dex": {
+  "name": "Destrezza",
+  "description": "Agilità, riflessi ed equilibrio."
+ },
+ "int": {
+  "name": "Intelligenza",
+  "description": "Ragionamento e memoria."
+ },
+ "str": {
+  "name": "Forza",
+  "description": "Potenza fisica."
+ },
+ "wis": {
+  "name": "Saggezza",
+  "description": "Percezione e fortezza mentale."
+ }
+}

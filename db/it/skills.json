@@ -1,0 +1,74 @@
+{
+ "acrobatics": {
+  "name": "Acrobazia",
+  "entries": ["Rimani in piedi in una situazione difficile o esegui un'acrobazia."]
+ },
+ "animal-handling": {
+  "name": "Addestrare animali",
+  "entries": ["Calma o addestra un animale, o fallo comportare in una certa maniera."]
+ },
+ "arcana": {
+  "name": "Arcano",
+  "entries": ["Richiama la conoscenza su incantesimi, oggetti magici e piani di esistenza."]
+ },
+ "athletics": {
+  "name": "Atletica",
+  "entries": ["Salta più lontano del normale, resta a galla in acque agitate o rompi qualcosa."]
+ },
+ "deception": {
+  "name": "Inganno",
+  "entries": ["Racconta una bugia convincente o indossa un travestimento credibile."]
+ },
+ "history": {
+  "name": "Storia",
+  "entries": ["Ricorda dati e leggende su eventi storici, persone, nazioni e culture."]
+ },
+ "insight": {
+  "name": "Intuizione",
+  "entries": ["Discerni l'umore e le intenzioni di una persona."]
+ },
+ "intimidation": {
+  "name": "Intimidire",
+  "entries": ["Impressiona o minaccia qualcuno facendogli fare quello che vuoi."]
+ },
+ "investigation": {
+  "name": "Indagare",
+  "entries": ["Trova informazioni sepolte nei libri o deduci il funzionamento degli oggetti più disparati."]
+ },
+ "medicine": {
+  "name": "Medicina",
+  "entries": ["Diagnostica una malattia o determina cosa abbia recentemente ucciso qualcuno."]
+ },
+ "nature": {
+  "name": "Natura",
+  "entries": ["Richiama la conoscenza su terreno, piante, animali e tempo."]
+ },
+ "perception": {
+  "name": "Percezione",
+  "entries": ["Usando una combinazione di sensi, nota qualcosa che è facile trascurare."]
+ },
+ "performance": {
+  "name": "Intrattenere",
+  "entries": ["Recita, narra una storia, suona o danza."]
+ },
+ "persuasion": {
+  "name": "Persuasione",
+  "entries": ["Convinci qualcuno di qualcosa con onestà e buone maniere."]
+ },
+ "religion": {
+  "name": "Religione",
+  "entries": ["Richiama la conoscenza su divinità, rituali religiosi e simboli sacri."]
+ },
+ "sleight-of-hand": {
+  "name": "Rapidità di mano",
+  "entries": ["Svuota le tasche, nascondi un oggetto tenuto in mano o esegui un gioco di prestigio."]
+ },
+ "stealth": {
+  "name": "Furtività",
+  "entries": ["Sfuggi all'attenzione altrui muovendoti silenziosamente e nascondendoti dietro le cose."]
+ },
+ "survival": {
+  "name": "Sopravvivenza",
+  "entries": ["Segui le tracce, va' alla ricerca di cibo, trova una pista o evita i pericoli naturali."]
+ }
+}
