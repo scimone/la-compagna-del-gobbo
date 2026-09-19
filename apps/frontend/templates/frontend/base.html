@@ -220,13 +220,25 @@
     }
 
     /* Search box shown under the world-tabs nav (only on the category list pages, see
-       `search_query` in views.py) - a plain GET form, not JS-filtered, matching this app's
-       full-reload navigation elsewhere. */
+       `search_query` in views.py). Plain GET form so it still works with JS disabled/slow to
+       load; `world-search.js` below progressively enhances it into a live, no-reload search. */
     .world-search {
+      position: relative;
       flex-shrink: 0;
       padding: 0.6rem 1rem;
       background: var(--surface);
       border-bottom: 1px solid var(--border);
+    }
+
+    .world-search-icon {
+      position: absolute;
+      left: 1.65rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1rem;
+      height: 1rem;
+      color: var(--muted);
+      pointer-events: none;
     }
 
     .world-search input {
@@ -236,7 +248,7 @@
       background: var(--bg);
       color: var(--text);
       border-radius: 0.6rem;
-      padding: 0.5rem 0.8rem;
+      padding: 0.5rem 0.8rem 0.5rem 2.4rem;
       font-size: 0.95rem;
     }
 
@@ -294,6 +306,19 @@
       >{% translate "Spells" %}</a>
     </nav>
     <form class="world-search" method="get" action="{{ request.path }}">
+      <svg
+        class="world-search-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="m20 20-3.5-3.5"></path>
+      </svg>
       <input
         type="search"
         name="q"
@@ -356,5 +381,57 @@
       <span>{% translate "World" %}</span>
     </a>
   </nav>
+
+  {% if world_tabs %}
+    <script>
+      // Progressive enhancement over the plain GET form above: once the query is at least
+      // `MIN_LENGTH` chars, re-fetch this same list page in the background on every keystroke
+      // (debounced) and swap in just its `#search-results` node, instead of waiting for Enter/a
+      // full navigation. Below that length (including empty, i.e. the query just got cleared)
+      // no fetch fires and whatever's already rendered (the unfiltered list, server-side) stays
+      // put - matches the plain-form page load a JS-disabled/slow-to-load browser would see.
+      (function () {
+        var form = document.querySelector(".world-search");
+        var input = form && form.querySelector("input[name=q]");
+        var results = document.getElementById("search-results");
+        if (!form || !input || !results) return;
+
+        var MIN_LENGTH = 3;
+        var DEBOUNCE_MS = 250;
+        var debounceTimer = null;
+        var latestRequestId = 0;
+
+        function runSearch(query) {
+          var requestId = ++latestRequestId;
+          var url = new URL(form.action, window.location.href);
+          if (query) {
+            url.searchParams.set("q", query);
+          }
+          fetch(url)
+            .then(function (response) { return response.text(); })
+            .then(function (html) {
+              // A newer keystroke already fired another request - drop this now-stale response
+              // rather than let a slow reply for an earlier query overwrite a later one.
+              if (requestId !== latestRequestId) return;
+              var next = new DOMParser()
+                .parseFromString(html, "text/html")
+                .getElementById("search-results");
+              if (!next) return;
+              results.replaceWith(next);
+              results = next;
+              window.history.replaceState(null, "", url);
+            });
+        }
+
+        input.addEventListener("input", function () {
+          var query = input.value.trim();
+          clearTimeout(debounceTimer);
+          if (query.length === 0 || query.length >= MIN_LENGTH) {
+            debounceTimer = setTimeout(function () { runSearch(query); }, DEBOUNCE_MS);
+          }
+        });
+      })();
+    </script>
+  {% endif %}
 </body>
 </html>

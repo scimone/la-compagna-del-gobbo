@@ -2,6 +2,16 @@
 {% load i18n %}
 
 {% block extra_style %}
+  /* Wraps whichever of `.item-list`/`.empty-state` below is showing - the unit the live-search
+     script (base.html) fetches and swaps wholesale, so it needs to be the flex item filling
+     `main` itself (each of its two possible children already assumes that role for itself). */
+  #search-results {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
   .item-list {
     flex: 1;
     min-height: 0;
@@ -77,33 +87,35 @@
 {% endblock %}
 
 {% block content %}
-  {% if items %}
-    <ul class="item-list">
-      {% for item in items %}
-        <li>
-          <a href="{{ item.url }}"{% if item.image %} class="menu-thumb"{% endif %}>
-            {% if item.image %}
-              <img
-                class="item-thumb{% if image_vignette %} vignette{% endif %}"
-                src="{{ item.image }}"
-                alt=""
-              >
-            {% endif %}
-            <div class="item-text">
-              <span class="item-name">{{ item.name }}</span>
-              {% if item.detail %}<div class="item-detail">{{ item.detail }}</div>{% endif %}
-            </div>
-          </a>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <div class="empty-state">
-      {% if search_query %}
-        <p class="subtitle">{% blocktranslate %}No results for "{{ search_query }}".{% endblocktranslate %}</p>
-      {% else %}
-        <p class="subtitle">{% translate "No entries in the current dataset." %}</p>
-      {% endif %}
-    </div>
-  {% endif %}
+  <div id="search-results">
+    {% if items %}
+      <ul class="item-list">
+        {% for item in items %}
+          <li>
+            <a href="{{ item.url }}"{% if item.image %} class="menu-thumb"{% endif %}>
+              {% if item.image %}
+                <img
+                  class="item-thumb{% if image_vignette %} vignette{% endif %}"
+                  src="{{ item.image }}"
+                  alt=""
+                >
+              {% endif %}
+              <div class="item-text">
+                <span class="item-name">{{ item.name }}</span>
+                {% if item.detail %}<div class="item-detail">{{ item.detail }}</div>{% endif %}
+              </div>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="empty-state">
+        {% if search_query %}
+          <p class="subtitle">{% blocktranslate %}No results for "{{ search_query }}".{% endblocktranslate %}</p>
+        {% else %}
+          <p class="subtitle">{% translate "No entries in the current dataset." %}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
 {% endblock %}
