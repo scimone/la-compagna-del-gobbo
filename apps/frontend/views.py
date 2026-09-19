@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 from django.shortcuts import redirect, render
 from django.templatetags.static import static
 from django.urls import reverse
@@ -239,26 +239,12 @@ def _search_query(request) -> str:
     return request.GET.get("q", "").strip()
 
 
-def _filter(request, name, label, options):
-    """One `{kind, name, label, value, options}` entry for `_list_page`'s `filters` - a
-    `<select>` in the world-search form (see base.html), `options` a `[(value, label), ...]`
-    list. `value` is read straight from `?<name>=...` here so callers only have to build the
-    options and apply the filter to their queryset, not thread the selected value through
-    separately.
-    """
-    return {
-        "kind": "select",
-        "name": name,
-        "label": label,
-        "value": request.GET.get(name, "").strip(),
-        "options": options,
-    }
-
-
-def _pill_filter(request, name, label, options):
-    """Single-select sibling of `_filter()`: a row of clickable pills (radio inputs under the
-    hood, one implicit "any" pill first) instead of a `<select>` - for a short-enough option
-    list that tapping through is faster than opening a dropdown (e.g. Feat category).
+def _pill_filter(request, name, label, options, *, all_label=None):
+    """One `{kind, name, label, value, options, all_label}` entry for `_list_page`'s `filters` -
+    a single-select row of clickable pills (radio inputs under the hood, one implicit "any" pill
+    first, labeled `all_label`) in the world-search form (see base.html). `value` is read
+    straight from `?<name>=...` here so callers only have to build the options and apply the
+    filter to their queryset, not thread the selected value through separately.
     """
     return {
         "kind": "radio",
@@ -266,12 +252,14 @@ def _pill_filter(request, name, label, options):
         "label": label,
         "value": request.GET.get(name, "").strip(),
         "options": options,
+        "all_label": all_label or _("All"),
     }
 
 
 def _checklist_filter(request, name, label, options):
-    """Multi-select sibling of `_filter()`: a row of checkbox pills, `?<name>=` read with
-    `getlist` so more than one value can be selected at once (e.g. Spell level/school).
+    """Multi-select sibling of `_pill_filter()`: a filter button that opens a popover of
+    checkboxes, `?<name>=` read with `getlist` so more than one value can be selected at once
+    (e.g. Spell level/school).
     """
     return {
         "kind": "checkbox",
@@ -578,7 +566,11 @@ def world_class_detail(request, pk):
 def world_feats(request):
     q = _search_query(request)
     category_filter = _pill_filter(
-        request, "category", _("Category"), [(c, c) for c in feat_service.list_categories()]
+        request,
+        "category",
+        _("Category"),
+        [(c, c) for c in feat_service.list_categories()],
+        all_label=_("All categories"),
     )
     feats = feat_service.list_feats()
     if q:
@@ -706,7 +698,7 @@ def world_spells(request):
         _("Level"),
         [("0", _("Cantrip"))] + [(str(n), f"{_('Level')} {n}") for n in range(1, 10)],
     )
-    class_filter = _filter(
+    class_filter = _checklist_filter(
         request, "class", _("Class"), [(c, c) for c in spell_service.list_classes()]
     )
     school_filter = _checklist_filter(
@@ -722,11 +714,16 @@ def world_spells(request):
         request, "save", _("Saving Throw"), [(a.id, a.name) for a in Ability.objects.all()]
     )
 
-    spells = spell_service.list_spells(klass=class_filter["value"] or None)
+    spells = spell_service.list_spells()
     if q:
         spells = spells.filter(name__icontains=q)
     if level_filter["values"]:
         spells = spells.filter(level__in=[int(v) for v in level_filter["values"]])
+    if class_filter["values"]:
+        class_match = Q()
+        for klass in class_filter["values"]:
+            class_match |= Q(classes__contains=[klass])
+        spells = spells.filter(class_match)
     if school_filter["values"]:
         spells = spells.filter(school__in=school_filter["values"])
     if save_filter["values"]:

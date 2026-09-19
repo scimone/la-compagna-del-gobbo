@@ -259,56 +259,39 @@
       font-size: 0.95rem;
     }
 
-    /* Per-tab filter groups under the search box (see `filters` in views.py) - live inside the
-       same `.world-search` form, so a plain (no-JS) submit applies search text + filters
-       together; `world-search.js` below re-fetches immediately on any change too. */
-    .world-filter-group {
-      border: 0;
-      margin: 0.5rem 0 0;
-      padding: 0;
-    }
-
-    .world-filter-group legend {
-      padding: 0 0 0.3rem;
-      color: var(--muted);
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.02em;
-    }
-
-    .world-filter-group select {
-      appearance: none;
-      width: 100%;
-      border: 1px solid var(--border);
-      background: var(--bg);
-      color: var(--text);
-      border-radius: 0.6rem;
-      padding: 0.35rem 1.6rem 0.35rem 0.7rem;
-      font-size: 0.85rem;
-      /* Plain chevron, drawn instead of relying on the (very inconsistent) native arrow. */
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b6058' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 0.5rem center;
-      background-size: 0.9rem;
-    }
-
-    /* Quick-click filter option, backed by a visually-hidden radio/checkbox so it works with
-       CSS alone (`:has()`) - no JS required to reflect the selected state, only to re-fetch. */
+    /* Single-select pill row (radio inputs under the hood - see `_pill_filter()` in views.py,
+       e.g. Feat category) - one scrollable line rather than wrapping, so a long option list
+       doesn't push the item list further down the page. Same horizontal-scroll treatment as
+       `.world-tabs` above. */
     .world-pills {
       display: flex;
       flex-wrap: wrap;
       gap: 0.4rem;
     }
 
+    .world-pills.world-pills-scroll {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-top: 0.5rem;
+    }
+
+    .world-pills-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Quick-click filter option, backed by a visually-hidden radio input so it works with CSS
+       alone (`:has()`) - no JS required to reflect the selected state, only to re-fetch. */
     .pill {
       position: relative;
+      flex-shrink: 0;
       border: 1px solid var(--border);
       background: var(--bg);
       color: var(--text);
       border-radius: 999px;
       padding: 0.3rem 0.75rem;
       font-size: 0.8rem;
+      white-space: nowrap;
       touch-action: manipulation;
     }
 
@@ -323,6 +306,86 @@
       background: var(--accent);
       border-color: var(--accent);
       color: var(--accent-text);
+    }
+
+    /* Multi-select filter (checkboxes under the hood - see `_checklist_filter()` in views.py,
+       e.g. Spell school): a row of buttons, one per filter, each a `<details>` whose `<summary>`
+       is the button and whose body is a checkbox popover - keeps every option out of sight until
+       its own button is tapped, instead of listing every filter's every option at once. Shared
+       `name` (see the markup below) makes them an exclusive group - opening one auto-closes any
+       other already-open popover, native `<details>` behavior, no JS needed for that part. */
+    .world-filter-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+    }
+
+    .filter-popover {
+      position: relative;
+    }
+
+    .filter-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 0.3rem 0.75rem;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      touch-action: manipulation;
+    }
+
+    .filter-button::after {
+      content: "";
+      width: 0.5rem;
+      height: 0.5rem;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: rotate(45deg) translateY(-15%);
+    }
+
+    .filter-button.active {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Sits below its trigger button - the popover only ever holds one filter's own checkboxes,
+       so it doesn't need to be wider than a short dropdown regardless of how many buttons sit
+       next to it in the (wrapping) row above. */
+    .filter-popover-panel {
+      position: absolute;
+      z-index: 5;
+      top: calc(100% + 0.4rem);
+      left: 0;
+      min-width: 11rem;
+      max-width: 80vw;
+      max-height: 60vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.6rem;
+      padding: 0.5rem;
+      box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2);
+    }
+
+    .filter-option {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0.3rem;
+      font-size: 0.85rem;
+      border-radius: 0.4rem;
+    }
+
+    .filter-option:active {
+      background: var(--bg);
     }
 
     .world-filters-apply {
@@ -414,53 +477,55 @@
         >
       </div>
       {% for filter in filters %}
-        <fieldset class="world-filter-group">
-          <legend>{{ filter.label }}</legend>
-          {% if filter.kind == "select" %}
-            <select name="{{ filter.name }}" aria-label="{{ filter.label }}">
-              <option value="">{{ filter.label }}</option>
-              {% for value, label in filter.options %}
-                <option value="{{ value }}"{% if value == filter.value %} selected{% endif %}>
-                  {{ label }}
-                </option>
-              {% endfor %}
-            </select>
-          {% elif filter.kind == "radio" %}
-            <div class="world-pills">
+        {% if filter.kind == "radio" %}
+          <div class="world-pills world-pills-scroll" role="radiogroup" aria-label="{{ filter.label }}">
+            <label class="pill">
+              <input type="radio" name="{{ filter.name }}" value=""{% if not filter.value %} checked{% endif %}>
+              {{ filter.all_label }}
+            </label>
+            {% for value, label in filter.options %}
               <label class="pill">
-                <input type="radio" name="{{ filter.name }}" value=""{% if not filter.value %} checked{% endif %}>
-                {% translate "All" %}
+                <input
+                  type="radio"
+                  name="{{ filter.name }}"
+                  value="{{ value }}"
+                  {% if value == filter.value %}checked{% endif %}
+                >
+                {{ label }}
               </label>
-              {% for value, label in filter.options %}
-                <label class="pill">
-                  <input
-                    type="radio"
-                    name="{{ filter.name }}"
-                    value="{{ value }}"
-                    {% if value == filter.value %}checked{% endif %}
-                  >
-                  {{ label }}
-                </label>
-              {% endfor %}
-            </div>
-          {% else %}
-            <div class="world-pills">
-              {% for value, label in filter.options %}
-                <label class="pill">
-                  <input
-                    type="checkbox"
-                    name="{{ filter.name }}"
-                    value="{{ value }}"
-                    {% if value in filter.values %}checked{% endif %}
-                  >
-                  {{ label }}
-                </label>
-              {% endfor %}
-            </div>
-          {% endif %}
-        </fieldset>
+            {% endfor %}
+          </div>
+        {% endif %}
       {% endfor %}
       {% if filters %}
+        <div class="world-filter-buttons">
+          {% for filter in filters %}
+            {% if filter.kind == "checkbox" %}
+              {# `name="world-filter-popover"` groups every filter's `<details>` into one       #}
+              {# exclusive set - opening one closes whichever other was open, native behavior,  #}
+              {# no JS. The panel stays open across checkbox clicks (each just re-fetches live,  #}
+              {# see the script below) so several options can be picked in one visit.           #}
+              <details class="filter-popover" name="world-filter-popover">
+                <summary class="filter-button{% if filter.values %} active{% endif %}">
+                  {{ filter.label }}{% if filter.values %} ({{ filter.values|length }}){% endif %}
+                </summary>
+                <div class="filter-popover-panel">
+                  {% for value, label in filter.options %}
+                    <label class="filter-option">
+                      <input
+                        type="checkbox"
+                        name="{{ filter.name }}"
+                        value="{{ value }}"
+                        {% if value in filter.values %}checked{% endif %}
+                      >
+                      {{ label }}
+                    </label>
+                  {% endfor %}
+                </div>
+              </details>
+            {% endif %}
+          {% endfor %}
+        </div>
         {# JS intercepts every filter change into a live re-fetch (see the script at the        #}
         {# bottom of this file) - this stays as the fallback submit control for a browser that   #}
         {# never runs it, same spirit as the plain GET form search relies on above.              #}
@@ -584,6 +649,15 @@
               runSearch();
             });
           });
+
+        // A checkbox filter's `<details>` (see `.filter-popover` above) only closes natively on
+        // its own `<summary>` being tapped again, or another one in its exclusive group opening
+        // - also close it on any tap outside the popover, the behavior a "dropdown" implies.
+        document.addEventListener("click", function (event) {
+          Array.from(document.querySelectorAll(".filter-popover[open]")).forEach(function (popover) {
+            if (!popover.contains(event.target)) popover.open = false;
+          });
+        });
       })();
     </script>
   {% endif %}

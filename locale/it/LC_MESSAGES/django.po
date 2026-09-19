@@ -242,9 +242,13 @@ msgstr "Scuola"
 msgid "Saving Throw"
 msgstr "Tiro Salvezza"
 
-#: apps/frontend/templates/frontend/base.html
+#: apps/frontend/views.py
 msgid "All"
 msgstr "Tutti"
+
+#: apps/frontend/views.py
+msgid "All categories"
+msgstr "Tutte le categorie"
 
 #: apps/frontend/templates/frontend/base.html
 msgid "Apply"
