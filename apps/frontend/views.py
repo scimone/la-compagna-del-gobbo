@@ -14,7 +14,7 @@ from apps.frontend.entries_render import (
     render_subclasses,
     render_trait_cards,
 )
-from apps.rules.models import Ability, Feature, Skill, Subclass
+from apps.rules.models import Ability, Feature, Subclass
 from apps.rules.services import background as background_service
 from apps.rules.services import class_ as class_service
 from apps.rules.services import feat as feat_service
@@ -240,15 +240,44 @@ def _search_query(request) -> str:
 
 
 def _filter(request, name, label, options):
-    """One `{name, label, value, options}` entry for `_list_page`'s `filters` - a `<select>` in
-    the world-search form (see base.html), `options` a `[(value, label), ...]` list. `value` is
-    read straight from `?<name>=...` here so callers only have to build the options and apply the
-    filter to their queryset, not thread the selected value through separately.
+    """One `{kind, name, label, value, options}` entry for `_list_page`'s `filters` - a
+    `<select>` in the world-search form (see base.html), `options` a `[(value, label), ...]`
+    list. `value` is read straight from `?<name>=...` here so callers only have to build the
+    options and apply the filter to their queryset, not thread the selected value through
+    separately.
     """
     return {
+        "kind": "select",
         "name": name,
         "label": label,
         "value": request.GET.get(name, "").strip(),
+        "options": options,
+    }
+
+
+def _pill_filter(request, name, label, options):
+    """Single-select sibling of `_filter()`: a row of clickable pills (radio inputs under the
+    hood, one implicit "any" pill first) instead of a `<select>` - for a short-enough option
+    list that tapping through is faster than opening a dropdown (e.g. Feat category).
+    """
+    return {
+        "kind": "radio",
+        "name": name,
+        "label": label,
+        "value": request.GET.get(name, "").strip(),
+        "options": options,
+    }
+
+
+def _checklist_filter(request, name, label, options):
+    """Multi-select sibling of `_filter()`: a row of checkbox pills, `?<name>=` read with
+    `getlist` so more than one value can be selected at once (e.g. Spell level/school).
+    """
+    return {
+        "kind": "checkbox",
+        "name": name,
+        "label": label,
+        "values": set(request.GET.getlist(name)),
         "options": options,
     }
 
@@ -326,14 +355,9 @@ def handbook_section_detail(request, pk):
 
 def world_backgrounds(request):
     q = _search_query(request)
-    skill_filter = _filter(
-        request, "skill", _("Skill"), [(s.id, s.name) for s in Skill.objects.all()]
-    )
     backgrounds = background_service.list_backgrounds()
     if q:
         backgrounds = backgrounds.filter(name__icontains=q)
-    if skill_filter["value"]:
-        backgrounds = backgrounds.filter(skills__id=skill_filter["value"])
     items = [
         {
             "name": b.name,
@@ -355,7 +379,6 @@ def world_backgrounds(request):
         image_vignette=True,
         search_query=q,
         search_placeholder=_("Search backgrounds"),
-        filters=[skill_filter],
     )
 
 
@@ -389,30 +412,7 @@ def world_background_detail(request, pk):
 
 def world_classes(request):
     q = _search_query(request)
-    ability_filter = _filter(
-        request, "ability", _("Primary Ability"), [(a.id, a.name) for a in Ability.objects.all()]
-    )
-    caster_filter = _filter(
-        request,
-        "caster",
-        _("Spellcasting"),
-        [("yes", _("Casters only")), ("no", _("Non-casters only"))],
-    )
-
-    # Filters (ability/caster) narrow which classes count at all, independently of `q` - reused
-    # below to also narrow the subclass/feature results to classes that match the filters, even
-    # though `q` itself is matched against each sub-object's own name, not its parent class's.
-    classes_matching_filters = class_service.list_classes()
-    if ability_filter["value"]:
-        classes_matching_filters = classes_matching_filters.filter(
-            primary_abilities__id=ability_filter["value"]
-        )
-    if caster_filter["value"] == "yes":
-        classes_matching_filters = classes_matching_filters.exclude(caster_progression="")
-    elif caster_filter["value"] == "no":
-        classes_matching_filters = classes_matching_filters.filter(caster_progression="")
-
-    classes = classes_matching_filters
+    classes = class_service.list_classes()
     if q:
         classes = classes.filter(name__icontains=q)
     items = [
@@ -428,9 +428,7 @@ def world_classes(request):
         # A class's own name isn't repeated in these two sub-object results (unlike the
         # `detail` above) - the class itself already appears as its own top-level `items` entry
         # when it matches, so its name lives in `item-name`, not `item-detail`, either way.
-        subclasses = Subclass.objects.filter(
-            name__icontains=q, klass__in=classes_matching_filters
-        ).select_related("klass")
+        subclasses = Subclass.objects.filter(name__icontains=q).select_related("klass")
         items += [
             {
                 "name": sc.name,
@@ -440,9 +438,7 @@ def world_classes(request):
             for sc in subclasses
         ]
         features = Feature.objects.filter(
-            class_level__isnull=False,
-            name__icontains=q,
-            class_level__klass__in=classes_matching_filters,
+            class_level__isnull=False, name__icontains=q
         ).select_related("class_level__klass")
         items += [
             {
@@ -466,7 +462,6 @@ def world_classes(request):
         world_tabs=True,
         search_query=q,
         search_placeholder=_("Search classes, subclasses and features"),
-        filters=[ability_filter, caster_filter],
     )
 
 
@@ -582,7 +577,7 @@ def world_class_detail(request, pk):
 
 def world_feats(request):
     q = _search_query(request)
-    category_filter = _filter(
+    category_filter = _pill_filter(
         request, "category", _("Category"), [(c, c) for c in feat_service.list_categories()]
     )
     feats = feat_service.list_feats()
@@ -627,29 +622,7 @@ def world_feat_detail(request, pk):
 
 def world_species(request):
     q = _search_query(request)
-    all_species = species_service.list_species()
-    size_codes = sorted({code for s in all_species for code in s.size})
-    size_filter = _filter(
-        request, "size", _("Size"), [(code, _SIZE_CODES.get(code, code)) for code in size_codes]
-    )
-    darkvision_filter = _filter(
-        request, "darkvision", _("Darkvision"), [("yes", _("Yes")), ("no", _("No"))]
-    )
-
-    # Filters narrow which species count at all, independently of `q` - reused below to also
-    # narrow the trait results to species that match the filters, even though `q` itself is
-    # matched against each trait's own name, not its parent species's.
-    species_matching_filters = all_species
-    if size_filter["value"]:
-        species_matching_filters = species_matching_filters.filter(
-            size__contains=[size_filter["value"]]
-        )
-    if darkvision_filter["value"] == "yes":
-        species_matching_filters = species_matching_filters.exclude(darkvision=0)
-    elif darkvision_filter["value"] == "no":
-        species_matching_filters = species_matching_filters.filter(darkvision=0)
-
-    species_qs = species_matching_filters
+    species_qs = species_service.list_species()
     if q:
         species_qs = species_qs.filter(name__icontains=q)
     items = [
@@ -662,9 +635,9 @@ def world_species(request):
         for s in species_qs
     ]
     if q:
-        traits = Feature.objects.filter(
-            species__isnull=False, name__icontains=q, species__in=species_matching_filters
-        ).select_related("species")
+        traits = Feature.objects.filter(species__isnull=False, name__icontains=q).select_related(
+            "species"
+        )
         items += [
             {
                 "name": trait.name,
@@ -679,7 +652,6 @@ def world_species(request):
         items,
         world_tabs=True,
         search_query=q,
-        filters=[size_filter, darkvision_filter],
         search_placeholder=_("Search species and traits"),
     )
 
@@ -728,7 +700,7 @@ def world_species_detail(request, pk):
 
 def world_spells(request):
     q = _search_query(request)
-    level_filter = _filter(
+    level_filter = _checklist_filter(
         request,
         "level",
         _("Level"),
@@ -737,10 +709,43 @@ def world_spells(request):
     class_filter = _filter(
         request, "class", _("Class"), [(c, c) for c in spell_service.list_classes()]
     )
-    level_value = int(level_filter["value"]) if level_filter["value"] else None
-    spells = spell_service.list_spells(klass=class_filter["value"] or None, level=level_value)
+    school_filter = _checklist_filter(
+        request, "school", _("School"), [(s, s) for s in spell_service.list_schools()]
+    )
+    range_filter = _checklist_filter(
+        request, "range", _("Range"), [(k, k) for k in spell_service.list_range_kinds()]
+    )
+    casting_time_filter = _checklist_filter(
+        request, "casting_time", _("Casting Time"), spell_service.list_casting_times()
+    )
+    save_filter = _checklist_filter(
+        request, "save", _("Saving Throw"), [(a.id, a.name) for a in Ability.objects.all()]
+    )
+
+    spells = spell_service.list_spells(klass=class_filter["value"] or None)
     if q:
         spells = spells.filter(name__icontains=q)
+    if level_filter["values"]:
+        spells = spells.filter(level__in=[int(v) for v in level_filter["values"]])
+    if school_filter["values"]:
+        spells = spells.filter(school__in=school_filter["values"])
+    if save_filter["values"]:
+        spells = spells.filter(saving_throw_abilities__id__in=save_filter["values"]).distinct()
+
+    # `range`/`casting_time` are unindexed JSON shapes (see `Spell`'s docstring), not plain
+    # columns a queryset filter can match against directly - `spell_service.range_kind()`/
+    # `casting_time_keys()` derive the checklist-facet value per spell instead, cheap enough in
+    # Python over the ~400-row catalog once the DB-level filters above have already narrowed it.
+    spells = list(spells)
+    if range_filter["values"]:
+        spells = [s for s in spells if spell_service.range_kind(s) in range_filter["values"]]
+    if casting_time_filter["values"]:
+        spells = [
+            s
+            for s in spells
+            if casting_time_filter["values"] & set(spell_service.casting_time_keys(s))
+        ]
+
     items = []
     for s in spells:
         level_text = _("Cantrip") if s.level == 0 else f"{_('Level')} {s.level}"
@@ -758,7 +763,14 @@ def world_spells(request):
         world_tabs=True,
         search_query=q,
         search_placeholder=_("Search spells"),
-        filters=[level_filter, class_filter],
+        filters=[
+            level_filter,
+            class_filter,
+            school_filter,
+            range_filter,
+            casting_time_filter,
+            save_filter,
+        ],
     )
 
 

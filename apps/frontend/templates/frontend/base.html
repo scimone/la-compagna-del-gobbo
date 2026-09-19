@@ -223,16 +223,23 @@
        `search_query` in views.py). Plain GET form so it still works with JS disabled/slow to
        load; `world-search.js` below progressively enhances it into a live, no-reload search. */
     .world-search {
-      position: relative;
       flex-shrink: 0;
       padding: 0.6rem 1rem;
       background: var(--surface);
       border-bottom: 1px solid var(--border);
     }
 
+    /* Positions `.world-search-icon` relative to just the input row, not the whole form - it
+       used to be positioned off `.world-search` itself, which (once a filters row was added
+       below the input) grew taller than just that row, throwing the icon's vertical centering
+       off. */
+    .world-search-field {
+      position: relative;
+    }
+
     .world-search-icon {
       position: absolute;
-      left: 1.65rem;
+      left: 0.7rem;
       top: 50%;
       transform: translateY(-50%);
       width: 1rem;
@@ -241,7 +248,7 @@
       pointer-events: none;
     }
 
-    .world-search input {
+    .world-search-field input {
       width: 100%;
       appearance: none;
       border: 1px solid var(--border);
@@ -252,18 +259,27 @@
       font-size: 0.95rem;
     }
 
-    /* Per-tab filter row under the search box (see `filters` in views.py) - lives inside the
+    /* Per-tab filter groups under the search box (see `filters` in views.py) - live inside the
        same `.world-search` form, so a plain (no-JS) submit applies search text + filters
-       together; `world-search.js` below re-fetches immediately on any select's `change` too. */
-    .world-filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
+       together; `world-search.js` below re-fetches immediately on any change too. */
+    .world-filter-group {
+      border: 0;
+      margin: 0.5rem 0 0;
+      padding: 0;
     }
 
-    .world-filters select {
+    .world-filter-group legend {
+      padding: 0 0 0.3rem;
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .world-filter-group select {
       appearance: none;
+      width: 100%;
       border: 1px solid var(--border);
       background: var(--bg);
       color: var(--text);
@@ -277,6 +293,38 @@
       background-size: 0.9rem;
     }
 
+    /* Quick-click filter option, backed by a visually-hidden radio/checkbox so it works with
+       CSS alone (`:has()`) - no JS required to reflect the selected state, only to re-fetch. */
+    .world-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .pill {
+      position: relative;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 0.3rem 0.75rem;
+      font-size: 0.8rem;
+      touch-action: manipulation;
+    }
+
+    .pill input {
+      position: absolute;
+      inset: 0;
+      margin: 0;
+      opacity: 0;
+    }
+
+    .pill:has(input:checked) {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--accent-text);
+    }
+
     .world-filters-apply {
       appearance: none;
       border: 1px solid var(--border);
@@ -286,6 +334,7 @@
       padding: 0.35rem 0.9rem;
       font-size: 0.85rem;
       font-weight: 600;
+      margin-top: 0.5rem;
     }
 
     {% block extra_style %}{% endblock %}
@@ -342,29 +391,32 @@
       >{% translate "Spells" %}</a>
     </nav>
     <form class="world-search" method="get" action="{{ request.path }}">
-      <svg
-        class="world-search-icon"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
-      >
-        <circle cx="11" cy="11" r="7"></circle>
-        <path d="m20 20-3.5-3.5"></path>
-      </svg>
-      <input
-        type="search"
-        name="q"
-        value="{{ search_query }}"
-        placeholder="{{ search_placeholder }}"
-        aria-label="{{ search_placeholder }}"
-      >
-      {% if filters %}
-        <div class="world-filters">
-          {% for filter in filters %}
+      <div class="world-search-field">
+        <svg
+          class="world-search-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.5-3.5"></path>
+        </svg>
+        <input
+          type="search"
+          name="q"
+          value="{{ search_query }}"
+          placeholder="{{ search_placeholder }}"
+          aria-label="{{ search_placeholder }}"
+        >
+      </div>
+      {% for filter in filters %}
+        <fieldset class="world-filter-group">
+          <legend>{{ filter.label }}</legend>
+          {% if filter.kind == "select" %}
             <select name="{{ filter.name }}" aria-label="{{ filter.label }}">
               <option value="">{{ filter.label }}</option>
               {% for value, label in filter.options %}
@@ -373,14 +425,48 @@
                 </option>
               {% endfor %}
             </select>
-          {% endfor %}
-          {# JS intercepts every filter change into a live re-fetch (see the script at the      #}
-          {# bottom of this file) - this stays as the fallback submit control for a browser      #}
-          {# that never runs it, same spirit as the plain GET form search relies on above.       #}
-          <noscript>
-            <button type="submit" class="world-filters-apply">{% translate "Apply" %}</button>
-          </noscript>
-        </div>
+          {% elif filter.kind == "radio" %}
+            <div class="world-pills">
+              <label class="pill">
+                <input type="radio" name="{{ filter.name }}" value=""{% if not filter.value %} checked{% endif %}>
+                {% translate "All" %}
+              </label>
+              {% for value, label in filter.options %}
+                <label class="pill">
+                  <input
+                    type="radio"
+                    name="{{ filter.name }}"
+                    value="{{ value }}"
+                    {% if value == filter.value %}checked{% endif %}
+                  >
+                  {{ label }}
+                </label>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="world-pills">
+              {% for value, label in filter.options %}
+                <label class="pill">
+                  <input
+                    type="checkbox"
+                    name="{{ filter.name }}"
+                    value="{{ value }}"
+                    {% if value in filter.values %}checked{% endif %}
+                  >
+                  {{ label }}
+                </label>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </fieldset>
+      {% endfor %}
+      {% if filters %}
+        {# JS intercepts every filter change into a live re-fetch (see the script at the        #}
+        {# bottom of this file) - this stays as the fallback submit control for a browser that   #}
+        {# never runs it, same spirit as the plain GET form search relies on above.              #}
+        <noscript>
+          <button type="submit" class="world-filters-apply">{% translate "Apply" %}</button>
+        </noscript>
       {% endif %}
     </form>
   {% elif tabs %}
@@ -491,12 +577,13 @@
           }
         });
 
-        Array.from(form.querySelectorAll("select")).forEach(function (select) {
-          select.addEventListener("change", function () {
-            clearTimeout(debounceTimer);
-            runSearch();
+        Array.from(form.querySelectorAll("select, input[type=radio], input[type=checkbox]"))
+          .forEach(function (field) {
+            field.addEventListener("change", function () {
+              clearTimeout(debounceTimer);
+              runSearch();
+            });
           });
-        });
       })();
     </script>
   {% endif %}

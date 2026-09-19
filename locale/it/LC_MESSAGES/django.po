@@ -231,28 +231,20 @@ msgid "No results for \"%(search_query)s\"."
 msgstr "Nessun risultato per \"%(search_query)s\"."
 
 #: apps/frontend/views.py
-msgid "Skill"
-msgstr "Abilità"
-
-#: apps/frontend/views.py
-msgid "Spellcasting"
-msgstr "Lanciare Incantesimi"
-
-#: apps/frontend/views.py
-msgid "Casters only"
-msgstr "Solo lanciatori di incantesimi"
-
-#: apps/frontend/views.py
-msgid "Non-casters only"
-msgstr "Solo non lanciatori di incantesimi"
-
-#: apps/frontend/views.py
-msgid "No"
-msgstr "No"
-
-#: apps/frontend/views.py
 msgid "Class"
 msgstr "Classe"
+
+#: apps/frontend/views.py
+msgid "School"
+msgstr "Scuola"
+
+#: apps/frontend/views.py
+msgid "Saving Throw"
+msgstr "Tiro Salvezza"
+
+#: apps/frontend/templates/frontend/base.html
+msgid "All"
+msgstr "Tutti"
 
 #: apps/frontend/templates/frontend/base.html
 msgid "Apply"
