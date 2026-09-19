@@ -14,6 +14,17 @@ def get_feat(feat_id: str) -> Feat:
     return get_object_or_404(Feat, pk=feat_id)
 
 
+# The order the World > Feats category pills are offered in - roughly by when a character gets
+# them, not alphabetically. A category missing from here (none today) sorts after these, by name.
+_CATEGORY_ORDER = ["Origin", "General", "Fighting Style", "Epic Boon"]
+
+
+def _category_sort_key(category: str) -> tuple:
+    if category in _CATEGORY_ORDER:
+        return (_CATEGORY_ORDER.index(category), category)
+    return (len(_CATEGORY_ORDER), category)
+
+
 def list_categories() -> list[str]:
     """Every distinct `Feat.category` *group* - a parenthesized sub-variant (`_decode_code()`'s
     `"FS:R"`/`"FS:P"` handling in `import_rules_data.py`, currently only ever "Fighting Style
@@ -25,7 +36,8 @@ def list_categories() -> list[str]:
     de-facto `DISTINCT (category, name)` that doesn't dedupe at all.
     """
     return sorted(
-        {category.split(" (")[0] for category in Feat.objects.values_list("category", flat=True)}
+        {category.split(" (")[0] for category in Feat.objects.values_list("category", flat=True)},
+        key=_category_sort_key,
     )
 
 

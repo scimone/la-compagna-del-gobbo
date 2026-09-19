@@ -8,6 +8,7 @@ from apps.rules.models import (
     Effect,
     Equipment,
     EquipmentType,
+    Feat,
     Rule,
     Spell,
     Subclass,
@@ -16,6 +17,7 @@ from apps.rules.models import (
 from apps.rules.services import background as background_service
 from apps.rules.services import class_ as class_service
 from apps.rules.services import equipment as equipment_service
+from apps.rules.services import feat as feat_service
 from apps.rules.services import feature as feature_service
 from apps.rules.services import rule as rule_service
 from apps.rules.services import spell as spell_service
@@ -190,6 +192,20 @@ def test_list_range_kinds_orders_by_distance(spell):
         "1 mile",
         "Unlimited",
     ]
+
+
+@pytest.mark.django_db
+def test_list_feat_categories_in_display_order():
+    for feat_id, category in [
+        ("a", "Epic Boon"),
+        ("b", "Fighting Style (P)"),
+        ("c", "General"),
+        ("d", "Origin"),
+        ("e", "Fighting Style"),
+    ]:
+        Feat.objects.create(id=feat_id, name=feat_id, page=1, srd=True, category=category)
+
+    assert feat_service.list_categories() == ["Origin", "General", "Fighting Style", "Epic Boon"]
 
 
 @pytest.mark.django_db
