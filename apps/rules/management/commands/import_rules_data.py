@@ -110,8 +110,11 @@ CLASS_SHORT_DESCRIPTIONS = {
     "wizard": "A scholar who masters magic through study.",
 }
 
-#: `Grung` (source VGM) no longer appears in `db/species.json` at all (see
-#: `docs/data_migration_2025.md` §3.5) - only the 10 XPHB species remain, all listed here.
+#: `Grung` (source VGM) is absent from `db/species.json` as shipped (see
+#: `docs/data_migration_2025.md` §3.5 - dropped there because it isn't XPHB content) - added
+#: back by hand afterward, at the project owner's request, from `db_old/species.json`'s row
+#: converted into the new format (see that entry's own `"source": "VGM"`, kept as-is rather than
+#: relabeled XPHB, and its `page` is `0` since the old data never carried a real one either).
 SPECIES_SHORT_DESCRIPTIONS = {
     "aasimar": "Mortals touched by celestial power.",
     "dragonborn": "Proud, draconic folk with elemental breath.",
@@ -119,6 +122,7 @@ SPECIES_SHORT_DESCRIPTIONS = {
     "elf": "Graceful, long-lived, attuned to magic.",
     "gnome": "Small, inventive folk full of curiosity.",
     "goliath": "Towering folk from harsh mountain peaks.",
+    "grung": "Cheerful frog-folk at home in water and jungle.",
     "halfling": "Small, nimble folk known for luck and cheer.",
     "human": "Adaptable, ambitious, and endlessly diverse.",
     "orc": "Strong, resilient folk of fierce endurance.",

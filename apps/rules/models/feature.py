@@ -15,7 +15,8 @@ class Feature(models.Model):
     - A `Subclass`'s per-level features (same source, `db/classes.json` subclass `features`
       grouped by level - only the 48 XPHB-sourced subclasses, matching `Subclass`/
       `SubclassLevel`) - FK'd to the matching `SubclassLevel` the same way, for the same reason.
-    - `Species.entries` (db/species.json, the 10 XPHB species only, matching `Species`).
+    - `Species.entries` (db/species.json - the 10 XPHB species plus `Grung`, matching `Species`;
+      see that model's docstring for why `Grung` is there despite not being XPHB).
     - `Feat.entries` (db/feats.json) - here the source lists mix bare prose strings with named
       dicts (e.g. Alert's entries are one prose paragraph plus two named benefits, "Initiative
       Proficiency" and "Initiative Swap"); only the named dicts become `Feature` rows, the prose

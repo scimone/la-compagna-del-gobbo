@@ -1268,6 +1268,41 @@
             ]
         },
         {
+            "name": "Grung",
+            "source": "VGM",
+            "page": 0,
+            "creatureTypes": [
+                "humanoid"
+            ],
+            "size": [
+                "S"
+            ],
+            "speed": 25,
+            "entries": [
+                {
+                    "type": "entries",
+                    "name": "Amphibious",
+                    "entries": [
+                        "You can breathe both air and water. Your body is naturally adapted to life in and around water."
+                    ]
+                },
+                {
+                    "type": "entries",
+                    "name": "Swimming Instinct",
+                    "entries": [
+                        "While swimming, you can move at your normal walking speed. Your powerful legs and webbed feet allow you to move through water with ease."
+                    ]
+                },
+                {
+                    "type": "entries",
+                    "name": "Spring-Frog Leap",
+                    "entries": [
+                        "Your natural jumping ability is exceptional. Your long jump, whether standing or with a running start, can cover a number of meters equal to your Strength score. Your high jump can also reach a height in meters equal to your Strength score."
+                    ]
+                }
+            ]
+        },
+        {
             "name": "Halfling",
             "source": "XPHB",
             "page": 193,

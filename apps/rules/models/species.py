@@ -9,11 +9,14 @@ class Species(models.Model):
     enums), so they're kept as `JSONField` lists rather than invented FK targets.
 
     `fly_speed`/`swim_speed`/`climb_speed` are dropped: the new source has no such fields at all
-    (only a flat `speed`), and this is verified to lose no real data - every one of the 10
-    surviving XPHB species already had all three at 0 in the old dump (only `Grung`, itself
-    dropped from the new source entirely as non-XPHB, had a nonzero swim speed). `speed` becomes
-    a plain int (was `"30 ft."` display text; also collapses what used to be a second, fully
-    redundant field - the old `speed`/`walk_speed` pair always held the same value two ways).
+    (only a flat `speed`), and this is verified to lose no real data - every one of the 10 XPHB
+    species already had all three at 0 in the old dump. `Grung` (added back by hand afterward -
+    see `SPECIES_SHORT_DESCRIPTIONS` in `import_rules_data.py` - it isn't XPHB, so wasn't in the
+    new source drop this project otherwise imports verbatim) is the one exception: its old
+    `swimSpeed` equaled its `walkSpeed` exactly, so dropping it is still lossless - "Swimming
+    Instinct" already says as much in its own `entries` prose. `speed` becomes a plain int (was
+    `"30 ft."` display text; also collapses what used to be a second, fully redundant field - the
+    old `speed`/`walk_speed` pair always held the same value two ways).
 
     `darkvision` is new - the old format only expressed this as unparsed prose inside `entries`.
 

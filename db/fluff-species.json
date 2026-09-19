@@ -216,6 +216,25 @@
             ]
         },
         {
+            "name": "Grung",
+            "source": "VGM",
+            "entries": [
+                {
+                    "type": "entries",
+                    "entries": [
+                        {
+                            "type": "entries",
+                            "entries": [
+                                "Grungs are cheerful, curious frog-like humanoids who dwell among the rivers, ponds, and rainforests of the tropics. Unlike the territorial and warlike grungs of old, these grungs are known for their hospitality, playfulness, and strong sense of community. They often build their homes around pools and waterways, where they gather to trade stories, share food, and celebrate with music and colorful festivals.",
+                                "Grung society values cooperation rather than hierarchy. Individuals are encouraged to pursue the roles that suit their talents, whether as hunters, artisans, explorers, storytellers, or guardians of their communities. Their colorful skin is a source of pride and self-expression rather than a mark of social status.",
+                                "Grungs are naturally fascinated by the wider world and often become enthusiastic travelers. They have a particular fondness for other peoples, whom they regard as potential friends and sources of new stories, customs, and games. Though small in stature, grungs are energetic and remarkably athletic, equally comfortable climbing through dense jungle or swimming through rushing rivers."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "name": "Halfling",
             "source": "XPHB",
             "entries": [
