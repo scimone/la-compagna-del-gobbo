@@ -252,6 +252,42 @@
       font-size: 0.95rem;
     }
 
+    /* Per-tab filter row under the search box (see `filters` in views.py) - lives inside the
+       same `.world-search` form, so a plain (no-JS) submit applies search text + filters
+       together; `world-search.js` below re-fetches immediately on any select's `change` too. */
+    .world-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .world-filters select {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      border-radius: 0.6rem;
+      padding: 0.35rem 1.6rem 0.35rem 0.7rem;
+      font-size: 0.85rem;
+      /* Plain chevron, drawn instead of relying on the (very inconsistent) native arrow. */
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b6058' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.5rem center;
+      background-size: 0.9rem;
+    }
+
+    .world-filters-apply {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--accent);
+      color: var(--accent-text);
+      border-radius: 0.6rem;
+      padding: 0.35rem 0.9rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
     {% block extra_style %}{% endblock %}
   </style>
 </head>
@@ -326,6 +362,26 @@
         placeholder="{{ search_placeholder }}"
         aria-label="{{ search_placeholder }}"
       >
+      {% if filters %}
+        <div class="world-filters">
+          {% for filter in filters %}
+            <select name="{{ filter.name }}" aria-label="{{ filter.label }}">
+              <option value="">{{ filter.label }}</option>
+              {% for value, label in filter.options %}
+                <option value="{{ value }}"{% if value == filter.value %} selected{% endif %}>
+                  {{ label }}
+                </option>
+              {% endfor %}
+            </select>
+          {% endfor %}
+          {# JS intercepts every filter change into a live re-fetch (see the script at the      #}
+          {# bottom of this file) - this stays as the fallback submit control for a browser      #}
+          {# that never runs it, same spirit as the plain GET form search relies on above.       #}
+          <noscript>
+            <button type="submit" class="world-filters-apply">{% translate "Apply" %}</button>
+          </noscript>
+        </div>
+      {% endif %}
     </form>
   {% elif tabs %}
     {# A detail page split into its own sub-tabs (e.g. a Class's About/Levels/Subclasses) -     #}
@@ -384,12 +440,12 @@
 
   {% if world_tabs %}
     <script>
-      // Progressive enhancement over the plain GET form above: once the query is at least
-      // `MIN_LENGTH` chars, re-fetch this same list page in the background on every keystroke
-      // (debounced) and swap in just its `#search-results` node, instead of waiting for Enter/a
-      // full navigation. Below that length (including empty, i.e. the query just got cleared)
-      // no fetch fires and whatever's already rendered (the unfiltered list, server-side) stays
-      // put - matches the plain-form page load a JS-disabled/slow-to-load browser would see.
+      // Progressive enhancement over the plain GET form above: once the search text is at least
+      // `MIN_LENGTH` chars (or empty, i.e. just cleared), or any filter `<select>` changes,
+      // re-fetch this same list page in the background and swap in just its `#search-results`
+      // node, instead of waiting for Enter/a full navigation. Below `MIN_LENGTH` (but not empty)
+      // no fetch fires and whatever's already rendered stays put - matches the plain-form page
+      // load a JS-disabled/slow-to-load browser would see.
       (function () {
         var form = document.querySelector(".world-search");
         var input = form && form.querySelector("input[name=q]");
@@ -401,17 +457,21 @@
         var debounceTimer = null;
         var latestRequestId = 0;
 
-        function runSearch(query) {
+        function runSearch() {
           var requestId = ++latestRequestId;
           var url = new URL(form.action, window.location.href);
-          if (query) {
-            url.searchParams.set("q", query);
-          }
+          var params = new URLSearchParams(new FormData(form));
+          // Drop empty fields (unset filter / cleared search text) instead of sending them as
+          // `name=` with no value - keeps the URL (and the history entry below) clean.
+          Array.from(params.keys()).forEach(function (key) {
+            if (!params.get(key)) params.delete(key);
+          });
+          url.search = params.toString();
           fetch(url)
             .then(function (response) { return response.text(); })
             .then(function (html) {
-              // A newer keystroke already fired another request - drop this now-stale response
-              // rather than let a slow reply for an earlier query overwrite a later one.
+              // A newer change already fired another request - drop this now-stale response
+              // rather than let a slow reply for an earlier query/filter overwrite a later one.
               if (requestId !== latestRequestId) return;
               var next = new DOMParser()
                 .parseFromString(html, "text/html")
@@ -427,8 +487,15 @@
           var query = input.value.trim();
           clearTimeout(debounceTimer);
           if (query.length === 0 || query.length >= MIN_LENGTH) {
-            debounceTimer = setTimeout(function () { runSearch(query); }, DEBOUNCE_MS);
+            debounceTimer = setTimeout(runSearch, DEBOUNCE_MS);
           }
+        });
+
+        Array.from(form.querySelectorAll("select")).forEach(function (select) {
+          select.addEventListener("change", function () {
+            clearTimeout(debounceTimer);
+            runSearch();
+          });
         });
       })();
     </script>
