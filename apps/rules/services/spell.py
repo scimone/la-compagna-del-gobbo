@@ -33,32 +33,55 @@ def list_schools() -> list[str]:
     return sorted({school for school in Spell.objects.values_list("school", flat=True)})
 
 
-def range_kind(spell: Spell) -> str:
-    """Buckets a spell's `range` JSON (see `Spell`'s docstring for the source shape) into a
-    short, filterable label: `Self`/`Touch`/`Sight`/`Unlimited` for a `type: "point"` entry whose
-    `distance.type` names one of those (no numeric amount to speak of), `Ranged` for any other
-    point distance (a `feet`/`miles` amount - the exact number is too granular a checklist
-    facet), and the raw area-effect shape (`Cone`/`Cube`/`Emanation`/`Line`/`Sphere`) for every
-    non-`point` type.
+def range_label(range_data: dict | None) -> str:
+    """Formats a `Spell.range` JSON (see `Spell`'s docstring for the source shape) the way a
+    spell's detail page shows it - `Self`/`Touch`/`Sight`/`Unlimited` for a distance with no
+    numeric amount, `<amount> <unit>` (`120 feet`, `1 mile`) for one with, and the capitalized
+    `type` when there's no distance at all. An area-effect shape (`emanation`, `cone`, ...) is
+    labeled by its size alone, same as a plain `point` range of that size.
     """
-    range_data = spell.range or {}
-    range_type = range_data.get("type")
-    if range_type == "point":
-        distance_type = (range_data.get("distance") or {}).get("type")
-        return {
-            "self": "Self",
-            "touch": "Touch",
-            "sight": "Sight",
-            "unlimited": "Unlimited",
-        }.get(distance_type, "Ranged")
-    return (range_type or "").capitalize()
+    if not range_data:
+        return ""
+    distance = range_data.get("distance") or {}
+    amount = distance.get("amount")
+    if amount is not None:
+        unit = distance.get("type", "")
+        if amount == 1 and unit.endswith("s"):
+            unit = unit[:-1]
+        return f"{amount} {unit}".strip()
+    if distance.get("type"):
+        return distance["type"].capitalize()
+    return (range_data.get("type") or "").capitalize()
+
+
+def range_kind(spell: Spell) -> str:
+    """A spell's range checklist-facet value - just its `range_label()`, so the filter options
+    read exactly like the range shown on the spell itself.
+    """
+    return range_label(spell.range)
+
+
+# Non-numeric range labels, then numeric ones by unit (feet before miles), then `Unlimited`.
+_RANGE_LABEL_ORDER = ["Self", "Touch", "Sight"]
+_RANGE_UNIT_ORDER = ["feet", "foot", "mile", "miles"]
+
+
+def _range_sort_key(label: str) -> tuple:
+    amount, _, unit = label.partition(" ")
+    if amount.isdigit() and unit in _RANGE_UNIT_ORDER:
+        return (1, _RANGE_UNIT_ORDER.index(unit) // 2, int(amount), label)
+    if label in _RANGE_LABEL_ORDER:
+        return (0, _RANGE_LABEL_ORDER.index(label), 0, label)
+    return (2, 0, 0, label)
 
 
 def list_range_kinds() -> list[str]:
-    """Every distinct `range_kind()` bucket actually present, for the World > Spells range
-    checklist filter.
+    """Every distinct `range_kind()` label actually present, for the World > Spells range
+    checklist filter, ordered by actual distance (`Self`, `Touch`, `5 feet`, ..., `1 mile`, ...,
+    `Unlimited`) rather than alphabetically.
     """
-    return sorted({range_kind(spell) for spell in Spell.objects.all()})
+    kinds = {range_kind(spell) for spell in Spell.objects.all()}
+    return sorted(kinds - {""}, key=_range_sort_key)
 
 
 # Every `(number, unit)` pair `Spell.casting_time` entries actually use, in the order they

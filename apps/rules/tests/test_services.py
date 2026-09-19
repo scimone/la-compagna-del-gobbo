@@ -144,6 +144,54 @@ def test_list_spells_filters_by_class_and_level(spell):
     assert [s.id for s in by_level] == ["mage-armor"]
 
 
+@pytest.mark.parametrize(
+    ("range_data", "label"),
+    [
+        ({"type": "point", "distance": {"type": "feet", "amount": 120}}, "120 feet"),
+        ({"type": "point", "distance": {"type": "miles", "amount": 1}}, "1 mile"),
+        ({"type": "point", "distance": {"type": "touch"}}, "Touch"),
+        ({"type": "point", "distance": {"type": "self"}}, "Self"),
+        ({"type": "emanation", "distance": {"type": "feet", "amount": 30}}, "30 feet"),
+        (None, ""),
+    ],
+)
+def test_range_label(range_data, label):
+    assert spell_service.range_label(range_data) == label
+
+
+@pytest.mark.django_db
+def test_list_range_kinds_orders_by_distance(spell):
+    for spell_id, distance in [
+        ("a", {"type": "unlimited"}),
+        ("b", {"type": "feet", "amount": 30}),
+        ("c", {"type": "miles", "amount": 1}),
+        ("d", {"type": "touch"}),
+        ("e", {"type": "feet", "amount": 5}),
+    ]:
+        Spell.objects.create(
+            id=spell_id,
+            name=spell_id,
+            page=1,
+            srd=True,
+            level=1,
+            school="Evocation",
+            casting_time=[{"number": 1, "unit": "action"}],
+            range={"type": "point", "distance": distance},
+            components={"v": True},
+            duration=[{"type": "instant"}],
+            classes=["Wizard"],
+        )
+
+    assert spell_service.list_range_kinds() == [
+        "Touch",
+        "5 feet",
+        "30 feet",
+        "150 feet",
+        "1 mile",
+        "Unlimited",
+    ]
+
+
 @pytest.mark.django_db
 def test_list_feature_effects(feature):
     Effect.objects.create(feature=feature, tag="dc", raw="{@dc 8}")

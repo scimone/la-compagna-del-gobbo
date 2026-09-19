@@ -425,7 +425,8 @@ def render_key_value_table(rows, headers) -> SafeString:
         for row in rows
     )
     return mark_safe(
-        f"<table><thead><tr>{header_html}</tr></thead><tbody>{body_html}</tbody></table>"
+        f'<div class="table-scroll"><table><thead><tr>{header_html}</tr></thead>'
+        f"<tbody>{body_html}</tbody></table></div>"
     )
 
 

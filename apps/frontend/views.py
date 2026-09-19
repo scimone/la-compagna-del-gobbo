@@ -136,12 +136,7 @@ def _format_casting_time(raw_list):
 
 
 def _format_range(range_data):
-    if not range_data:
-        return ""
-    distance = range_data.get("distance") or {}
-    if distance.get("amount") is not None:
-        return f"{distance['amount']} {distance.get('type', '')}".strip()
-    return (range_data.get("type") or "").capitalize()
+    return spell_service.range_label(range_data)
 
 
 def _format_components(components):
