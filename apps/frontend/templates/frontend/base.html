@@ -219,6 +219,27 @@
       background: var(--bg);
     }
 
+    /* Search box shown under the world-tabs nav (only on the category list pages, see
+       `search_query` in views.py) - a plain GET form, not JS-filtered, matching this app's
+       full-reload navigation elsewhere. */
+    .world-search {
+      flex-shrink: 0;
+      padding: 0.6rem 1rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .world-search input {
+      width: 100%;
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      border-radius: 0.6rem;
+      padding: 0.5rem 0.8rem;
+      font-size: 0.95rem;
+    }
+
     {% block extra_style %}{% endblock %}
   </style>
 </head>
@@ -272,6 +293,15 @@
         class="{% if '/world/spells/' in request.path %}active{% endif %}"
       >{% translate "Spells" %}</a>
     </nav>
+    <form class="world-search" method="get" action="{{ request.path }}">
+      <input
+        type="search"
+        name="q"
+        value="{{ search_query }}"
+        placeholder="{{ search_placeholder }}"
+        aria-label="{{ search_placeholder }}"
+      >
+    </form>
   {% elif tabs %}
     {# A detail page split into its own sub-tabs (e.g. a Class's About/Levels/Subclasses) -     #}
     {# same `.world-tabs` look and the same spot in the layout (flush under the header, outside #}

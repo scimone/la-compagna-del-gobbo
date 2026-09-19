@@ -14,7 +14,7 @@ from apps.frontend.entries_render import (
     render_subclasses,
     render_trait_cards,
 )
-from apps.rules.models import Feature
+from apps.rules.models import Feature, Subclass
 from apps.rules.services import background as background_service
 from apps.rules.services import class_ as class_service
 from apps.rules.services import feat as feat_service
@@ -214,6 +214,8 @@ def _list_page(
     back_url_name: str | None = "world-overview",
     world_tabs=False,
     image_vignette=False,
+    search_query: str | None = None,
+    search_placeholder: str | None = None,
 ):
     context = {
         "page_title": _(title),
@@ -221,9 +223,18 @@ def _list_page(
         "world_tabs": world_tabs,
         "image_vignette": image_vignette,
     }
+    # The search box only ever appears alongside the world-tabs nav (see base.html) - no point
+    # threading it through pages that don't render there.
+    if world_tabs:
+        context["search_query"] = search_query or ""
+        context["search_placeholder"] = search_placeholder
     if back_url_name:
         context["back_url"] = reverse(back_url_name)
     return render(request, "frontend/list.html", context)
+
+
+def _search_query(request) -> str:
+    return request.GET.get("q", "").strip()
 
 
 def _section(heading, html, *, open=True):
@@ -298,6 +309,10 @@ def handbook_section_detail(request, pk):
 
 
 def world_backgrounds(request):
+    q = _search_query(request)
+    backgrounds = background_service.list_backgrounds()
+    if q:
+        backgrounds = backgrounds.filter(name__icontains=q)
     items = [
         {
             "name": b.name,
@@ -306,12 +321,19 @@ def world_backgrounds(request):
                 "backgrounds", f"{_BACKGROUND_IMAGE_SLUGS.get(b.id, b.id)}.jpeg"
             ),
         }
-        for b in background_service.list_backgrounds()
+        for b in backgrounds
     ]
     # No back button: `world-overview` (the default) now redirects straight back here (the
     # leftmost World tab), which would otherwise just bounce back to this same page.
     return _list_page(
-        request, "Backgrounds", items, back_url_name=None, world_tabs=True, image_vignette=True
+        request,
+        "Backgrounds",
+        items,
+        back_url_name=None,
+        world_tabs=True,
+        image_vignette=True,
+        search_query=q,
+        search_placeholder=_("Search backgrounds"),
     )
 
 
@@ -344,6 +366,10 @@ def world_background_detail(request, pk):
 
 
 def world_classes(request):
+    q = _search_query(request)
+    classes = class_service.list_classes()
+    if q:
+        classes = classes.filter(name__icontains=q)
     items = [
         {
             "name": c.name,
@@ -351,9 +377,47 @@ def world_classes(request):
             "url": reverse("world-class-detail", args=[c.pk]),
             "image": _menu_image_url("classes", f"{c.id}-grey.png"),
         }
-        for c in class_service.list_classes()
+        for c in classes
     ]
-    return _list_page(request, "Classes", items, world_tabs=True)
+    if q:
+        # A class's own name isn't repeated in these two sub-object results (unlike the
+        # `detail` above) - the class itself already appears as its own top-level `items` entry
+        # when it matches, so its name lives in `item-name`, not `item-detail`, either way.
+        subclasses = Subclass.objects.filter(name__icontains=q).select_related("klass")
+        items += [
+            {
+                "name": sc.name,
+                "detail": _("Subclass of %(klass)s") % {"klass": sc.klass.name},
+                "url": f"{reverse('world-class-detail', args=[sc.klass_id])}?tab=subclasses",
+            }
+            for sc in subclasses
+        ]
+        features = Feature.objects.filter(
+            class_level__isnull=False, name__icontains=q
+        ).select_related("class_level__klass")
+        items += [
+            {
+                "name": feature.name,
+                "detail": _("Feature of %(klass)s (Level %(level)s)")
+                % {
+                    "klass": feature.class_level.klass.name,
+                    "level": feature.class_level.level,
+                },
+                "url": (
+                    f"{reverse('world-class-detail', args=[feature.class_level.klass_id])}"
+                    f"?tab=levels#feature-{feature.pk}"
+                ),
+            }
+            for feature in features
+        ]
+    return _list_page(
+        request,
+        "Classes",
+        items,
+        world_tabs=True,
+        search_query=q,
+        search_placeholder=_("Search classes, subclasses and features"),
+    )
 
 
 def world_class_detail(request, pk):
@@ -467,15 +531,26 @@ def world_class_detail(request, pk):
 
 
 def world_feats(request):
+    q = _search_query(request)
+    feats = feat_service.list_feats()
+    if q:
+        feats = feats.filter(name__icontains=q)
     items = [
         {
             "name": f.name,
             "detail": f.category,
             "url": reverse("world-feat-detail", args=[f.pk]),
         }
-        for f in feat_service.list_feats()
+        for f in feats
     ]
-    return _list_page(request, "Feats", items, world_tabs=True)
+    return _list_page(
+        request,
+        "Feats",
+        items,
+        world_tabs=True,
+        search_query=q,
+        search_placeholder=_("Search feats"),
+    )
 
 
 def world_feat_detail(request, pk):
@@ -495,6 +570,10 @@ def world_feat_detail(request, pk):
 
 
 def world_species(request):
+    q = _search_query(request)
+    species_qs = species_service.list_species()
+    if q:
+        species_qs = species_qs.filter(name__icontains=q)
     items = [
         {
             "name": s.name,
@@ -502,9 +581,28 @@ def world_species(request):
             "url": reverse("world-species-detail", args=[s.pk]),
             "image": _menu_image_url("species", f"{_SPECIES_IMAGE_SLUGS.get(s.id, s.id)}-grey.png"),
         }
-        for s in species_service.list_species()
+        for s in species_qs
     ]
-    return _list_page(request, "Species", items, world_tabs=True)
+    if q:
+        traits = Feature.objects.filter(species__isnull=False, name__icontains=q).select_related(
+            "species"
+        )
+        items += [
+            {
+                "name": trait.name,
+                "detail": _("Trait of %(species)s") % {"species": trait.species.name},
+                "url": f"{reverse('world-species-detail', args=[trait.species_id])}?tab=traits",
+            }
+            for trait in traits
+        ]
+    return _list_page(
+        request,
+        "Species",
+        items,
+        world_tabs=True,
+        search_query=q,
+        search_placeholder=_("Search species and traits"),
+    )
 
 
 def world_species_detail(request, pk):
@@ -550,8 +648,12 @@ def world_species_detail(request, pk):
 
 
 def world_spells(request):
+    q = _search_query(request)
+    spells = spell_service.list_spells()
+    if q:
+        spells = spells.filter(name__icontains=q)
     items = []
-    for s in spell_service.list_spells():
+    for s in spells:
         level_text = _("Cantrip") if s.level == 0 else f"{_('Level')} {s.level}"
         items.append(
             {
@@ -560,7 +662,14 @@ def world_spells(request):
                 "url": reverse("world-spell-detail", args=[s.pk]),
             }
         )
-    return _list_page(request, "Spells", items, world_tabs=True)
+    return _list_page(
+        request,
+        "Spells",
+        items,
+        world_tabs=True,
+        search_query=q,
+        search_placeholder=_("Search spells"),
+    )
 
 
 def world_spell_detail(request, pk):

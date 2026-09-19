@@ -193,3 +193,39 @@ msgstr "Sì"
 #: apps/frontend/views.py
 msgid "At Higher Levels"
 msgstr "Ai Livelli Superiori"
+
+#: apps/frontend/views.py
+msgid "Search backgrounds"
+msgstr "Cerca background"
+
+#: apps/frontend/views.py
+msgid "Search classes, subclasses and features"
+msgstr "Cerca classi, sottoclassi e caratteristiche"
+
+#: apps/frontend/views.py
+msgid "Search feats"
+msgstr "Cerca talenti"
+
+#: apps/frontend/views.py
+msgid "Search species and traits"
+msgstr "Cerca specie e tratti"
+
+#: apps/frontend/views.py
+msgid "Search spells"
+msgstr "Cerca incantesimi"
+
+#: apps/frontend/views.py
+msgid "Subclass of %(klass)s"
+msgstr "Sottoclasse di %(klass)s"
+
+#: apps/frontend/views.py
+msgid "Feature of %(klass)s (Level %(level)s)"
+msgstr "Caratteristica di %(klass)s (Livello %(level)s)"
+
+#: apps/frontend/views.py
+msgid "Trait of %(species)s"
+msgstr "Tratto di %(species)s"
+
+#: apps/frontend/templates/frontend/list.html
+msgid "No results for \"%(search_query)s\"."
+msgstr "Nessun risultato per \"%(search_query)s\"."

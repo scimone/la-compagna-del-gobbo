@@ -99,7 +99,11 @@
     </ul>
   {% else %}
     <div class="empty-state">
-      <p class="subtitle">{% translate "No entries in the current dataset." %}</p>
+      {% if search_query %}
+        <p class="subtitle">{% blocktranslate %}No results for "{{ search_query }}".{% endblocktranslate %}</p>
+      {% else %}
+        <p class="subtitle">{% translate "No entries in the current dataset." %}</p>
+      {% endif %}
     </div>
   {% endif %}
 {% endblock %}
