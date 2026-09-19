@@ -210,6 +210,7 @@ def _list_page(
     back_url_name: str | None = "world-overview",
     world_tabs=False,
     image_vignette=False,
+    compact_thumbs=False,
     search_query: str | None = None,
     search_placeholder: str | None = None,
     filters=(),
@@ -219,6 +220,7 @@ def _list_page(
         "items": items,
         "world_tabs": world_tabs,
         "image_vignette": image_vignette,
+        "compact_thumbs": compact_thumbs,
     }
     # The search box (and the filters row under it) only ever appears alongside the world-tabs
     # nav (see base.html) - no point threading them through pages that don't render there.
@@ -748,6 +750,7 @@ def world_spells(request):
                 "name": s.name,
                 "detail": f"{level_text} · {s.school}",
                 "url": reverse("world-spell-detail", args=[s.pk]),
+                "image": _menu_image_url("spells", f"{s.school.lower()}.jpeg"),
             }
         )
     return _list_page(
@@ -755,6 +758,7 @@ def world_spells(request):
         "Spells",
         items,
         world_tabs=True,
+        compact_thumbs=True,
         search_query=q,
         search_placeholder=_("Search spells"),
         filters=[
