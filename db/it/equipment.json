@@ -6,7 +6,10 @@
   ]
  },
  "alchemists-fire": {
-  "name": "Fuoco dell'alchimista"
+  "name": "Fuoco dell'alchimista",
+  "entries": [
+   "Quando il personaggio effettua un'azione di {@action Attack|XPHB|Attacco}, puoi sostituire uno dei suoi attacchi con il lancio di una ampolla di fuoco dell'alchimista. Può prendere di mira una creatura o un oggetto che egli è in grado di vedere entro 6 metri da sé. Il bersaglio deve superare un tiro salvezza su Destrezza ({@dc 8} più il modificatore di Destrezza e il bonus di {@variantrule Proficiency|XPHB|competenza} del"
+  ]
  },
  "alchemists-supplies": {
   "name": "Scorte da alchimista",
@@ -54,7 +57,10 @@
   "name": "Frecce (20)"
  },
  "backpack": {
-  "name": "Zaino"
+  "name": "Zaino",
+  "entries": [
+   "Uno zaino può contenere fino a 15 chilogrammi all'interno di un cubo con spigolo di 30 centimetri. Può fungere anche da bisaccia."
+  ]
  },
  "bagpipes": {
   "name": "Cornamusa"
@@ -72,7 +78,10 @@
   ]
  },
  "basic-poison": {
-  "name": "Veleno base"
+  "name": "Veleno base",
+  "entries": [
+   "Come {@variantrule Bonus Action|XPHB|azione bonus}, il personaggio può cospargere un'arma o fino a tre munizioni col contenuto di una fiala di veleno base. Una creatura che subisce danni perforanti o taglienti da armi o munizioni avvelenate subisce {@damage 1d4} danni da veleno extra. Una volta applicato, il veleno preserva le sue proprietà per 1 minuto o finché non vengono inflitti dei danni, a seconda dell'opzione che si verifica per prima."
+  ]
  },
  "basket": {
   "name": "Cesto",
@@ -198,7 +207,10 @@
   ]
  },
  "caltrops": {
-  "name": "Triboli"
+  "name": "Triboli",
+  "entries": [
+   "Come azione di {@action Utilize|XPHB|Utilizzo}, il personaggio può spargere triboli dalla sua borsa per coprire una superficie di 1,5 metri quadrati entro 1,5 metri da sé. Chiunque entri in quest'area per la prima volta in un turno deve superare un tiro salvezza su Destrezza con {@dc 15}, altrimenti subirà 1 danno perforante e la sua {@variantrule Speed|XPHB|velocità} sarà ridotta a 0 fino all'inizio del proprio turno successivo. Per recuperare i triboli sono necessari 10 minuti."
+  ]
  },
  "camel": {
   "name": "Cammello"
@@ -210,7 +222,30 @@
   ]
  },
  "carpenters-tools": {
-  "name": "Strumenti da falegname"
+  "name": "Strumenti da falegname",
+  "entries": [
+   {
+    "items": [
+     {
+      "entries": [
+       "Forza"
+      ]
+     },
+     {
+      "name": "Utilizzo:",
+      "entries": [
+       "sigillare o forzare l'apertura di una porta o un contenitore ({@dc 20})"
+      ]
+     },
+     {
+      "name": "Creazione:",
+      "entries": [
+       "{@item Club|XPHB|randello}, {@item Greatclub|XPHB|randello pesante}, {@item Quarterstaff|XPHB|bastone ferrato}, {@item Barrel|XPHB|barile}, {@item Chest|XPHB|forziere}, {@item Ladder|XPHB|scala a pioli}, {@item Pole|XPHB|asta}, {@item Portable Ram|XPHB|ariete portatile}, {@item Torch|XPHB|torcia}"
+      ]
+     }
+    ]
+   }
+  ]
  },
  "carriage": {
   "name": "Carrozza"
@@ -339,7 +374,10 @@
   ]
  },
  "costume": {
-  "name": "Costume"
+  "name": "Costume",
+  "entries": [
+   "Quando il personaggio indossa un costume, dispone di {@variantrule Advantage|XPHB|vantaggio} a qualsiasi prova di caratteristica effettuata per impersonare qualcuno o una specifica tipologia di persona."
+  ]
  },
  "crossbow-bolt-case": {
   "name": "Custodia per quadrelli da balestra",
@@ -787,7 +825,24 @@
   "name": "Moschetto"
  },
  "navigators-tools": {
-  "name": "Strumenti da navigatore"
+  "name": "Strumenti da navigatore",
+  "entries": [
+   {
+    "items": [
+     {
+      "entries": [
+       "Saggezza"
+      ]
+     },
+     {
+      "name": "Utilizzo:",
+      "entries": [
+       "pianificare una rotta ({@dc 10}) o determinare la propria posizione scrutando le stelle ({@dc 15})"
+      ]
+     }
+    ]
+   }
+  ]
  },
  "needle": {
   "name": "Ago"
@@ -1035,7 +1090,10 @@
   "name": "Corazza a scaglie"
  },
  "scholars-pack": {
-  "name": "Dotazione da studioso"
+  "name": "Dotazione da studioso",
+  "entries": [
+   "10 ampolle di {@item Oil|XPHB|olio}, 10 fogli di {@item Parchment|XPHB|pergamena} e {@item Tinderbox|XPHB|acciarino con pietra focaia}."
+  ]
  },
  "scimitar": {
   "name": "Scimitarra"

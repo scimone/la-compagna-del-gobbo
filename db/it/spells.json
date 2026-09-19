@@ -14,7 +14,18 @@
   ]
  },
  "aid": {
-  "name": "Aiuto"
+  "name": "Aiuto",
+  "entries": [
+   "L'incantatore sceglie fino a tre creature entro gittata. I {@variantrule Hit Points|XPHB|punti ferita} massimi e i {@variantrule Hit Points|XPHB|punti ferita} attuali di ogni bersaglio aumentano di 5 per la durata dell'incantesimo."
+  ],
+  "entries_higher_level": [
+   {
+    "name": "Utilizzo di uno slot incantesimo di livello superiore",
+    "entries": [
+     "I {@variantrule Hit Points|XPHB|punti ferita} di ciascun bersaglio aumentano di 5 per ogni slot incantesimo di livello superiore al 2º."
+    ]
+   }
+  ]
  },
  "alarm": {
   "name": "Allarme",
@@ -116,7 +127,20 @@
   ]
  },
  "animate-objects": {
-  "name": "Animare oggetti"
+  "name": "Animare oggetti",
+  "entries": [
+   "Gli oggetti si animano su ordine dell'incantatore. L'incantatore sceglie un numero di oggetti non magici entro gittata che non siano indossati o trasportati, fissati su una superficie o di dimensioni Mastodontiche. Il numero massimo di oggetti è uguale al suo modificatore di caratteristica da incantatore; per questo numero, un bersaglio di taglia Media o inferiore conta come un oggetto, un bersaglio di taglia Grande conta come due e un bersaglio Enorme conta come tre.",
+   "Ogni bersaglio si anima e diventa un costrutto provvisto di gambe che utilizza la scheda delle statistiche dell' oggetto animato; questa creatura è sotto il controllo dell'incantatore fino al termine dell'incantesimo o finché non viene ridotta a 0 {@variantrule Hit Points|XPHB|punti ferita}. Ogni creatura creata con questo incantesimo diventa un alleato per l'incantatore e i suoi alleati. In combattimento, la creatura ha lo stesso punteggio di {@variantrule Initiative|XPHB|iniziativa} dell'incantatore, ma inizia il turno immediatamente dopo il suo.",
+   "Fino al termine dell'incantesimo, come {@variantrule Bonus Action|XPHB|azione bonus}, l'incantatore può comandare mentalmente qualsiasi creatura creata con questo incantesimo, a patto che si trovi entro 150 metri da sé (se controlla varie creature, l'incantatore può comandarne più di una allo stesso momento, impartendo lo stesso comando a ciascuna di loro). Se invece non impartisce alcun comando, la creatura effettua l'azione {@action Dodge|XPHB|Schivata} e si sposta solo per evitare di subire danni. Quando la creatura scende a 0 {@variantrule Hit Points|XPHB|punti ferita}, riassume la sua forma di oggetto, a cui vengono trasferiti eventuali danni rimanenti."
+  ],
+  "entries_higher_level": [
+   {
+    "name": "Utilizzo di uno slot incantesimo di livello superiore",
+    "entries": [
+     "I danni da Schianto della creatura aumentano di {@damage 1d4} (taglia Media o inferiore), {@damage 1d6} (taglia Grande) o {@damage 1d12} (taglia Enorme) per ogni slot di livello superiore al 5º."
+    ]
+   }
+  ]
  },
  "antilife-shell": {
   "name": "Guscio anti-vita",
@@ -481,7 +505,11 @@
   ]
  },
  "chromatic-orb": {
-  "name": "Globo cromatico"
+  "name": "Globo cromatico",
+  "entries": [
+   "L'incantatore scaglia un globo di energia contro un bersaglio entro gittata. Può scegliere che tipo di globo creare tra acido, freddo, fulmine, fuoco, tuono o veleno, e poi effettuare un attacco a distanza con incantesimo contro il bersaglio. Se il colpo va a segno, il bersaglio subisce {@damage 3d8} danni del tipo scelto.",
+   "Se l'incantatore ottiene lo stesso risultato su due o più d8, il globo schizza verso un altro bersaglio a scelta dell'incantatore che si trovi entro 9 metri dal primo bersaglio. L'incantatore effettua un tiro per colpire contro il secondo bersaglio e anche un altro tiro per i danni. Il globo non può più schizzare verso un altro bersaglio, a meno che l'incantatore non lanci l'incantesimo usando uno slot incantesimo di 2º livello o superiore. un altro bersaglio un numero massimo di volte pari al livello dello slot incantesimo consumato, ed è possibile bersagliare una creatura soltanto una volta per ogni lancio di questo incantesimo."
+  ]
  },
  "circle-of-death": {
   "name": "Cerchio di morte",
@@ -535,7 +563,48 @@
   ]
  },
  "command": {
-  "name": "Comando"
+  "name": "Comando",
+  "entries": [
+   null,
+   {
+    "items": [
+     {
+      "name": "Avvicinati",
+      "entries": [
+       "Il bersaglio si muove verso l'incantatore seguendo il percorso più breve e diretto, terminando il suo turno se giunge entro 1,5 metri da lui."
+      ]
+     },
+     {
+      "name": "Fermo",
+      "entries": [
+       "Nel suo turno, il bersaglio non si muove e non effettua alcuna azione o azione bonus."
+      ]
+     },
+     {
+      "name": "Fuggi",
+      "entries": [
+       "Il bersaglio usa il suo turno per allontanarsi dall'incantatore nel modo più rapido possibile. Lascia. Il bersaglio lascia cadere ciò che stava impugnando, poi termina il suo turno."
+      ]
+     },
+     {
+      "name": "Prostrati",
+      "entries": [
+       "Il bersaglio cade a terra {@condition Prone|XPHB|prono} e termina il suo turno."
+      ]
+     },
+     {
+      "name": "Utilizzo di uno slot incantesimo di livello superiore"
+     }
+    ]
+   }
+  ],
+  "entries_higher_level": [
+   {
+    "entries": [
+     "L'incantatore può influenzare una creatura aggiuntiva per ogni slot di livello superiore al 1º."
+    ]
+   }
+  ]
  },
  "commune": {
   "name": "Comunione",
@@ -569,7 +638,11 @@
   ]
  },
  "compulsion": {
-  "name": "Compulsione"
+  "name": "Compulsione",
+  "entries": [
+   null,
+   "Per la durata dell'incantesimo, l'incantatore può effettuare un'{@variantrule Bonus Action|XPHB|azione bonus} per scegliere una direzione orizzontale rispetto a lui. Ogni bersaglio {@condition Charmed|XPHB|affascinato} deve usare la maggior parte possibile del suo movimento per muoversi in quella direzione nel suo turno successivo, percorrendo la via più sicura. Dopo essersi mosso in questo modo, un bersaglio ripete il tiro salvezza e, se lo supera, termina l'incantesimo su di sé."
+  ]
  },
  "cone-of-cold": {
   "name": "Cono di freddo",
@@ -586,7 +659,17 @@
   ]
  },
  "confusion": {
-  "name": "Confusione"
+  "name": "Confusione",
+  "entries": [
+   "Ogni creatura all'interno di una {@variantrule Sphere [Area of Effect]|XPHB|sfera} del raggio di 3 metri centrata su un punto entro gittata a scelta dell'incantatore deve superare un tiro salvezza su Saggezza, altrimenti non può effettuare azioni bonus o reazioni e deve tirare {@dice 1d10} all'inizio di ogni suo turno per determinare il suo comportamento durante quel turno, consultando la tabella sottostante."
+  ],
+  "entries_higher_level": [
+   {
+    "entries": [
+     "Il raggio della {@variantrule Sphere [Area of Effect]|XPHB|sfera} aumenta di 1,5 metri per ogni slot di livello superiore al 4º."
+    ]
+   }
+  ]
  },
  "conjure-animals": {
   "name": "Evoca animali",
@@ -726,10 +809,85 @@
   ]
  },
  "control-water": {
-  "name": "Controllare acqua"
+  "name": "Controllare acqua",
+  "entries": [
+   "Fino al termine dell'incantesimo, l'incantatore controlla una massa d'acqua all'interno di un'area a sua scelta, con un volume massimo pari a un {@variantrule Cube [Area of Effect]|XPHB|cubo} con spigolo di 30 metri, usando uno dei seguenti effetti. Come azione di {@action Magic|XPHB|Magia} durante i suoi turni successivi, può ripetere il medesimo effetto o sceglierne uno differente.",
+   {
+    "name": "Deviare la corrente"
+   },
+   null,
+   {
+    "name": "Inondazione",
+    "entries": [
+     "L'incantatore fa in modo che il livello di tutta l'acqua ferma dell'area si alzi di un massimo di 6 metri. Se l'incantatore sceglie un'area all'interno di un grande specchio d'acqua, genera invece un'onda alta 6 metri che da una parte dell'area si infrange sull'altra. Qualsiasi veicolo di taglia Enorme o inferiore sul percorso dell'onda viene trascinato dall'altra parte dell'area e ha una probabilità del 25% di capovolgersi."
+    ]
+   },
+   {
+    "name": "Separare le acque"
+   }
+  ]
  },
  "control-weather": {
-  "name": "Controllare tempo atmosferico"
+  "name": "Controllare tempo atmosferico",
+  "entries": [
+   "L'incantatore assume il controllo del tempo atmosferico entro 7,5 chilometri per la durata dell'incantesimo, che dev'essere lanciato in un luogo all'aperto. L'incantesimo termina anticipatamente se l'incantatore si sposta in un luogo chiuso.",
+   "Quando lancia un incantesimo, l'incantatore cambia le condizioni atmosferiche attuali determinate dal GM. L'incantatore può modificare le precipitazioni, la temperatura e il vento. Occorrono {@dice 1d4 × 10} minuti perché le nuove condizioni abbiano effetto. Quando questo accade, l'incantatore le può cambiare di nuovo. Al termine dell'incantesimo, il tempo atmosferico torna alla normalità.",
+   "Quando l'incantatore modifica le condizioni atmosferiche, trova la condizione attuale nelle tabelle seguenti e la modifica di un grado, verso l'alto o verso il basso. Quando l'incantatore cambia il vento, può modificarne anche la direzione.",
+   {
+    "caption": "Precipitazioni",
+    "colLabels": [
+     "Grado",
+     "Condizione"
+    ],
+    "rows": [
+     [
+      "1",
+      "Sereno"
+     ],
+     [
+      "2",
+      "Poco nuvoloso"
+     ],
+     [
+      "3",
+      "Nuvoloso o nebbia"
+     ],
+     [
+      "4",
+      "Pioggia, grandine o neve"
+     ],
+     [
+      "5",
+      "Pioggia torrenziale, grandinata violenta o tormenta"
+     ]
+    ]
+   },
+   null,
+   {
+    "rows": [
+     [
+      "1",
+      "Calmo"
+     ],
+     [
+      "2",
+      "Vento moderato"
+     ],
+     [
+      "3",
+      "Vento forte"
+     ],
+     [
+      "4",
+      "Fresco"
+     ],
+     [
+      "5",
+      "Freddo"
+     ]
+    ]
+   }
+  ]
  },
  "counterspell": {
   "name": "Controincantesimo",
@@ -744,7 +902,34 @@
   ]
  },
  "create-or-destroy-water": {
-  "name": "Creare o distruggere acqua"
+  "name": "Creare o distruggere acqua",
+  "entries": [
+   null,
+   {
+    "items": [
+     {
+      "name": "Creare acqua",
+      "entries": [
+       "L'incantatore crea fino a 40 litri d'acqua pulita in un contenitore aperto entro gittata. In alternativa, l'acqua cade sotto forma di pioggia in un {@variantrule Cube [Area of Effect]|XPHB|cubo} con spigolo di 9 metri entro gittata, estinguendo le fiamme presenti nell'area."
+      ]
+     },
+     {
+      "name": "Distruggere acqua",
+      "entries": [
+       "L'incantatore distrugge fino a 40 litri d'acqua in un contenitore aperto entro gittata. In alternativa, distrugge la nebbia presente in un {@variantrule Cube [Area of Effect]|XPHB|cubo} con spigolo di 9 metri entro gittata."
+      ]
+     }
+    ]
+   }
+  ],
+  "entries_higher_level": [
+   {
+    "name": "superiore",
+    "entries": [
+     "L'incantatore crea o distrugge 40 litri aggiuntivi d'acqua, oppure la grandezza del {@variantrule Cube [Area of Effect]|XPHB|cubo} aumenta di 1,5 metri per spigolo, per ogni slot di livello superiore al 1º."
+    ]
+   }
+  ]
  },
  "create-undead": {
   "name": "Creare non morti",
@@ -828,10 +1013,18 @@
   ]
  },
  "darkness": {
-  "name": "Oscurità"
+  "name": "Oscurità",
+  "entries": [
+   "Per la durata dell'incantesimo, un'{@variantrule Darkness|XPHB|oscurità} magica si estende da un punto entro gittata e riempie una {@variantrule Sphere [Area of Effect]|XPHB|sfera} del raggio di 4,5 metri. Una creatura dotata di {@sense Darkvision|XPHB|scurovisione} non è in grado di vedere attraverso di essa e la luce non magica non può illuminarla.",
+   "In alternativa, l'incantatore lancia l'incantesimo su un oggetto che non sia indossato o trasportato, facendo sì che l'{@variantrule Darkness|XPHB|oscurità} riempia un'{@variantrule Emanation [Area of Effect]|XPHB|emanazione} di 4,5 metri di cui l'oggetto è il punto di origine. Coprire l'oggetto con qualcosa di opaco, come una ciotola o un elmo, blocca l'{@variantrule Darkness|XPHB|oscurità}.",
+   "Se una parte dell'area di questo incantesimo si sovrappone a un'area di {@variantrule Bright Light|XPHB|luce intensa} o {@variantrule Dim Light|XPHB|luce fioca} creata da un incantesimo di 2º livello o inferiore, l'incantesimo che ha creato la luce viene dissolto."
+  ]
  },
  "darkvision": {
-  "name": "Scurovisione"
+  "name": "Scurovisione",
+  "entries": [
+   "Per la durata dell'incantesimo, una creatura consenziente toccata dall'incantatore è dotata di {@sense Darkvision|XPHB|scurovisione} fino a 45 metri."
+  ]
  },
  "daylight": {
   "name": "Luce diurna",
@@ -874,7 +1067,10 @@
   ]
  },
  "detect-evil-and-good": {
-  "name": "Individuazione del bene e del male"
+  "name": "Individuazione del bene e del male",
+  "entries": [
+   "L'incantesimo viene bloccato da 30 cm di pietra, terriccio o legno, 2,5 centimetri di metallo o una sottile lamina di piombo."
+  ]
  },
  "detect-magic": {
   "name": "Individuazione del magico",
@@ -911,7 +1107,12 @@
   ]
  },
  "dimension-door": {
-  "name": "Porta dimensionale"
+  "name": "Porta dimensionale",
+  "entries": [
+   "L'incantatore si teletrasporta in un punto entro gittata arrivando precisamente nel luogo desiderato, che può essere un punto che è in grado di vedere, che riesce a visualizzare o che è in grado di descrivere dichiarandone la distanza e la direzione, come per esempio \"60 metri in linea retta verso il basso\" o \"90 metri verso nord-ovest, a un'angolazione ascendente di 45 gradi\".",
+   "L'incantatore può anche teletrasportare una creatura consenziente. Prima che si teletrasporti, la creatura deve trovarsi entro 1,5 metri dall'incantatore, per poi teletrasportarsi in uno spazio entro 1,5 metri dalla destinazione dell'incantatore.",
+   "Se l'incantatore, l'altra creatura o entrambi arrivano in uno spazio occupato da una creatura o riempito completamente da uno o più oggetti, l'incantatore e qualsiasi creatura che viaggia con lui subiscono {@damage 4d6} danni da forza e il teletrasporto fallisce."
+  ]
  },
  "disguise-self": {
   "name": "Camuffare se stesso",
@@ -956,7 +1157,10 @@
   ]
  },
  "dispel-magic": {
-  "name": "Dissolvi magie"
+  "name": "Dissolvi magie",
+  "entries": [
+   "L'incantatore sceglie una creatura, un oggetto o un effetto magico situato entro gittata. Ogni incantesimo di 3º livello o inferiore presente sul bersaglio termina. Per ogni incantesimo di 4º livello o superiore presente sul bersaglio, l'incantatore effettua una prova di caratteristica usando la propria caratteristica da incantatore ({@dc 10} più il livello di quell'incantesimo). Se la prova viene superata, l'incantesimo termina."
+  ]
  },
  "dissonant-whispers": {
   "name": "Sussurri dissonanti",
@@ -1000,13 +1204,66 @@
   ]
  },
  "divine-word": {
-  "name": "Parola divina"
+  "name": "Parola divina",
+  "entries": [
+   "L'incantatore pronuncia una parola pervasa di potere dei Piani Superiori. Ogni creatura a sua scelta situata entro gittata effettua una tiro salvezza su Carisma. In caso di fallimento, un bersaglio che ha 50 {@variantrule Hit Points|XPHB|punti ferita} o meno subisce un effetto basato sui suoi {@variantrule Hit Points|XPHB|punti ferita} attuali, come indicato nella tabella Effetti della parola divina. Indipendentemente dai suoi {@variantrule Hit Points|XPHB|punti ferita}, un bersaglio celestiale, elementale, folletto o immondo che fallisce il suo tiro salvezza viene respinto sul suo piano d'origine (se non vi si trova già) e non può ritornare sul piano attuale per 24 ore in alcun modo se non tramite un incantesimo {@spell Wish|XPHB|desiderio}.",
+   {
+    "caption": "Effetti della parola divina",
+    "colLabels": [
+     "Punti ferita",
+     "Effetto"
+    ],
+    "rows": [
+     [
+      "0–20",
+      "Il bersaglio muore."
+     ],
+     [
+      "21–30",
+      "Il bersaglio è {@condition Blinded|XPHB|accecato}, {@condition Deafened|XPHB|assordato} e stor-"
+     ],
+     [
+      "31–40",
+      "Il bersaglio è {@condition Blinded|XPHB|accecato} e {@condition Deafened|XPHB|assordato} per"
+     ],
+     [
+      "41–50",
+      "Il bersaglio è {@condition Deafened|XPHB|assordato} per 1 minuto."
+     ]
+    ]
+   }
+  ]
  },
  "dominate-beast": {
-  "name": "Dominare bestie"
+  "name": "Dominare bestie",
+  "entries": [
+   "Una bestia entro gittata e che l'incantatore è in grado di vedere deve superare un tiro salvezza su Saggezza, altrimenti diventa {@condition Charmed|XPHB|affascinata} per la durata dell'incantesimo. Il bersaglio dispone di {@variantrule Advantage|XPHB|vantaggio} al tiro salvezza se l'incantatore o i suoi alleati stanno combattendo contro di essa. Ogni volta che il bersaglio subisce danni, ripete il tiro salvezza; se lo supera, l'effetto svanisce.",
+   "L'incantatore ha un legame telepatico con il bersaglio {@condition Charmed|XPHB|affascinato} mentre i due si trovano sullo stesso piano di esistenza. Nel proprio turno, l'incantatore può utilizzare questo legame per impartire comandi al bersaglio (nessuna azione richiesta), come ad esempio \"{@action Attack|XPHB|attacca} quella creatura\", \"spostati lì\", o \"recupera quell'oggetto\". Il bersaglio fa del suo meglio per obbedire nel suo turno. Se porta a termine un ordine e non riceve ulteriori istruzioni dall'incantatore, agisce e si muove a suo piacimento, concentrandosi sulla propria incolumità.",
+   "L'incantatore può comandare al bersaglio di effettuare una {@variantrule Reaction|XPHB|reazione}, ma per farlo dovrà utilizzare la propria {@variantrule Reaction|XPHB|reazione}."
+  ],
+  "entries_higher_level": [
+   {
+    "name": "superiore",
+    "entries": [
+     "La {@status Concentration|XPHB|concentrazione} dell'incantatore può durare più a lungo usando uno slot incantesimo di 9º livello (fino a 8 ore)."
+    ]
+   }
+  ]
  },
  "dominate-person": {
-  "name": "Dominare persone"
+  "name": "Dominare persone",
+  "entries": [
+   "Un umanoide entro gittata e che l'incantatore è in grado di vedere deve superare un tiro salvezza su Saggezza, altrimenti diventa {@condition Charmed|XPHB|affascinato} per la durata dell'incantesimo. Il bersaglio dispone di {@variantrule Advantage|XPHB|vantaggio} al tiro salvezza se l'incantatore o i suoi alleati stanno combattendo contro di essa. Ogni volta che il bersaglio subisce danni, ripete il tiro salvezza; se lo supera, l'effetto svanisce.",
+   "L'incantatore ha un legame telepatico con il bersaglio {@condition Charmed|XPHB|affascinato} mentre i due si trovano sullo stesso piano di esistenza. Nel proprio turno, l'incantatore può utilizzare questo legame per impartire comandi al bersaglio (nessuna azione richiesta), come ad esempio \"{@action Attack|XPHB|attacca} quella creatura\", \"spostati lì\", o \"recupera quell'oggetto\". Il bersaglio fa del suo meglio per obbedire nel suo turno. Se porta a termine un ordine e non riceve ulteriori istruzioni dall'incantatore, agisce e si muove a suo piacimento, concentrandosi sulla propria incolumità.",
+   "L'incantatore può comandare al bersaglio di effettuare una {@variantrule Reaction|XPHB|reazione}, ma per farlo dovrà utilizzare la propria {@variantrule Reaction|XPHB|reazione}."
+  ],
+  "entries_higher_level": [
+   {
+    "entries": [
+     "La {@status Concentration|XPHB|concentrazione} dell'incantatore può durare più a lungo utilizzando uno slot incantesimo di 6º livello (fino a 10 minuti), di 7º livello (fino a 1 ora) o di 8º livello o superiore (fino a 8 ore)."
+    ]
+   }
+  ]
  },
  "dragons-breath": {
   "name": "Soffio del drago",
@@ -1070,7 +1327,23 @@
   ]
  },
  "earthquake": {
-  "name": "Terremoto"
+  "name": "Terremoto",
+  "entries": [
+   "L'incantatore sceglie un punto del terreno entro gittata che egli è in grado di vedere. Per la durata dell'incantesimo, una scossa intensa sconquassa il terreno in un raggio di 30 metri centrato su quel punto, rendendolo {@variantrule Difficult Terrain|XPHB|terreno difficile}.",
+   null,
+   null,
+   {
+    "entries": [
+     "L'incantatore può anche causare i seguenti effetti. Crepe. Un totale di {@dice 1d6} crepe si apre nell'area dell'incantesimo alla fine del turno in cui viene lanciato. L'incantatore sceglie i punti in cui si aprono le crepe, che non possono trovarsi al di sotto di strutture. Ognuna di esse è profonda 1d10 × 3 metri, ampia 3 metri e si estende da un lato all'altro dell'area dell'incantesimo. Se una creatura si trova nel punto i cui si apre una crepa, deve superare un tiro salvezza su Destrezza o vi cade dentro. Una creatura che supera il tiro salvezza riesce a spostarsi insieme al bordo della crepa mentre si apre."
+    ]
+   },
+   {
+    "name": "Strutture",
+    "entries": [
+     "La scossa infligge 50 danni contundenti a una qualsiasi struttura a contatto con il terreno nell'area in cui è stato lanciato l'incantesimo e alla fine di ogni turno dell'incantatore fino al termine dell'incantesimo. Se la struttura scende a 0 {@variantrule Hit Points|XPHB|punti ferita}, crolla."
+    ]
+   }
+  ]
  },
  "eldritch-blast": {
   "name": "Deflagrazione occulta"
@@ -1204,7 +1477,23 @@
   ]
  },
  "eyebite": {
-  "name": "Sguardo penetrante"
+  "name": "Sguardo penetrante",
+  "entries": [
+   "Per la durata dell'incantesimo, gli occhi dell'incantatore diventano neri e vacui. Una creatura a scelta dell'incantatore entro 18 metri da lui e che l'incantatore è in grado di vedere deve superare un tiro salvezza su Saggezza o essere influenzata da uno dei seguenti effetti a sua scelta per la durata dell'incantesimo.",
+   "In ogni suo turno fino al termine dell'incantesimo, l'incantatore può usare un'azione di {@action Magic|XPHB|Magia} per bersagliare un'altra creatura, non potendo tuttavia bersagliare di nuovo una creatura che abbia superato un tiro salvezza contro questo lancio dell'incantesimo.",
+   {
+    "name": "Addormentato",
+    "entries": [
+     "Il bersaglio cade {@condition Unconscious|XPHB|privo di sensi} e si risveglia se subisce danni o se un'altra creatura usa un'azione per svegliarla scuotendola."
+    ]
+   },
+   {
+    "name": "In preda al panico",
+    "entries": [
+     "Il bersaglio è {@condition Frightened|XPHB|spaventato}. In ogni suo turno, il bersaglio {@condition Frightened|XPHB|spaventato} deve effettuare l'azione {@action Dash|XPHB|Scatto} e muoversi per allontanarsi dall'incantatore lungo il percorso più sicuro e rapido possibile. Se il bersaglio si muove in un punto a più di 18 metri dall'incantatore dove non è più in grado di vederlo, l'effetto termina. Nauseato. Il bersaglio viene avvelenato."
+    ]
+   }
+  ]
  },
  "fabricate": {
   "name": "Fabbricare",
@@ -1280,7 +1569,28 @@
   ]
  },
  "find-steed": {
-  "name": "Trova cavalcatura"
+  "name": "Trova cavalcatura",
+  "entries": [
+   null,
+   "La cavalcatura ha l'aspetto di un animale di taglia Grande a scelta dell'incantatore, per esempio un cavallo, un cammello, un lupo feroce o un alce. Ogni volta che l'incantatore lancia l'incantesimo, sceglie il tipo di creatura della cavalcatura (celestiale, folletto o immondo) e questa scelta determina i tratti e la scheda delle statistiche della creatura.",
+   {
+    "name": "Combattimento",
+    "entries": [
+     "La cavalcatura diventa un alleato per l'incantatore e i suoi alleati. In combattimento, ha lo stesso punteggio di {@variantrule Initiative|XPHB|iniziativa} dell'incantatore, il quale può salirci in sella e guidarla come se fosse una cavalcatura controllata (come descritto nelle regole riguardanti il combattimento in sella). Se l'incantatore è {@condition Incapacitated|XPHB|incapacitato}, la cavalcatura inizia il suo turno subito dopo quello dell'incantatore: la creatura è indipendente e si concentra sul proteggere l'incantatore."
+    ]
+   },
+   {
+    "name": "Scomparsa della cavalcatura",
+    "entries": [
+     "La cavalcatura scompare quando scende a 0 {@variantrule Hit Points|XPHB|punti ferita} o se l'incantatore muore. Quando scompare, nello spazio che occupava in precedenza lascia qualsiasi oggetto stesse indossando o trasportando. Lanciando nuovamente l'incantesimo, l'incantatore può scegliere se evocare la cavalcatura scomparsa o una diversa."
+    ]
+   }
+  ],
+  "entries_higher_level": [
+   {
+    "name": "Utilizzo di uno slot incantesimo di livello superiore"
+   }
+  ]
  },
  "find-the-path": {
   "name": "Scopri il percorso",
@@ -1297,7 +1607,10 @@
   ]
  },
  "finger-of-death": {
-  "name": "Dito della morte"
+  "name": "Dito della morte",
+  "entries": [
+   "L'incantatore scatena un'ondata di energia negativa contro una creatura entro gittata che egli è in grado di vedere. Il bersaglio effettua un tiro salvezza su Costituzione, subendo {@damage 7d8 + 30} danni necrotici in caso di fallimento, o la metà dei danni in caso di successo."
+  ]
  },
  "fire-bolt": {
   "name": "Dardo di fuoco",
@@ -1398,7 +1711,18 @@
   ]
  },
  "fly": {
-  "name": "Volare"
+  "name": "Volare",
+  "entries": [
+   "L'incantatore tocca una creatura consenziente. Per la durata dell'incantesimo, il bersaglio ottiene una {@variantrule Fly Speed|XPHB|velocità di volo} di 18 metri e può fluttuare. Al termine dell'incantesimo, il bersaglio ancora sospeso in aria cade, sempre che non abbia modo di impedire la caduta."
+  ],
+  "entries_higher_level": [
+   {
+    "name": "Utilizzo di uno slot incantesimo di livello supe-",
+    "entries": [
+     "L'incantatore può bersagliare una creatura aggiuntiva per ogni slot di livello superiore al 3º."
+    ]
+   }
+  ]
  },
  "fog-cloud": {
   "name": "Nube di nebbia",
@@ -1498,7 +1822,10 @@
   ]
  },
  "giant-insect": {
-  "name": "Insetto gigante"
+  "name": "Insetto gigante",
+  "entries": [
+   "L'incantatore evoca un millepiedi gigante, un ragno gigante o una vespa gigante (a sua scelta al momento del lancio). L'insetto si manifesta in uno spazio libero entro gittata che l'incantatore è in grado di vedere e utilizza la scheda delle statistiche dell' insetto gigante. La forma scelta dall'incantatore determina alcuni dettagli della sua scheda delle statistiche. La creatura scompare quando scende a 0 {@variantrule Hit Points|XPHB|punti ferita} o quando l'incantesimo termina. ed è un alleato per il personaggio e i suoi alleati. In combattimento, la creatura ha lo stesso punteggio di iniziativa dell'incantatore, ma inizia il turno immediatamente dopo il suo, obbedendo ai suoi comandi verbali (nessuna azione richiesta da parte dell'incantatore). Se l'incantatore non pronuncia comandi verbali, la creatura compie l'azione di Schivata e usa il suo movimento per sottrarsi al pericolo."
+  ]
  },
  "glibness": {
   "name": "Loquacità",
@@ -1768,7 +2095,19 @@
   ]
  },
  "hex": {
-  "name": "Sortilegio"
+  "name": "Sortilegio",
+  "entries": [
+   "L'incantatore scaglia una maledizione su una creatura entro gittata che egli è in grado di vedere. Fino al termine dell'incantesimo, l'incantatore infligge {@damage 1d6} danni necrotici extra al bersaglio ogni volta che lo colpisce con un tiro per colpire. Inoltre, quando l'incantatore lancia l'incantesimo, sceglie una caratteristica. Il bersaglio subisce {@variantrule Disadvantage|XPHB|svantaggio} alle prove di caratteristica effettuate con la caratteristica scelta.",
+   "Se il bersaglio scende a 0 {@variantrule Hit Points|XPHB|punti ferita} prima del termine dell'incantesimo, l'incantatore può effettuare un'{@variantrule Bonus Action|XPHB|azione bonus} in un suo turno successivo per maledire un'altra creatura."
+  ],
+  "entries_higher_level": [
+   {
+    "name": "Utilizzo di uno slot incantesimo di livello",
+    "entries": [
+     "La {@status Concentration|XPHB|concentrazione} dell'incantatore può durare di più utilizzando uno slot incantesimo di 2º livello (fino a 4 ore), di 3º o 4º livello (fino a 8 ore) o di 5º livello o superiore (24 ore)."
+    ]
+   }
+  ]
  },
  "hold-monster": {
   "name": "Blocca mostri",
@@ -1805,7 +2144,19 @@
   ]
  },
  "hunters-mark": {
-  "name": "Marchio del cacciatore"
+  "name": "Marchio del cacciatore",
+  "entries": [
+   "L'incantatore marchia magicamente come sua preda una creatura entro gittata che egli è in grado di vedere. Fino al termine dell'incantesimo, l'incantatore infligge {@damage 1d6} danni da forza extra al bersaglio ogni volta che lo colpisce con un tiro per colpire. Inoltre, l'incantatore dispone di {@variantrule Advantage|XPHB|vantaggio} a qualsiasi prova di Saggezza ({@skill Perception|XPHB|Percezione} o {@skill Survival|XPHB|Sopravvivenza}) che effettua per trovare il bersaglio.",
+   "Se il bersaglio scende a 0 {@variantrule Hit Points|XPHB|punti ferita} prima del termine dell'incantesimo, l'incantatore può effettuare un'{@variantrule Bonus Action|XPHB|azione bonus} per spostare il marchio su un'altra creatura entro gittata che egli è in grado di vedere."
+  ],
+  "entries_higher_level": [
+   {
+    "name": "Utilizzo di uno slot incantesimo di livello",
+    "entries": [
+     "3º o 4º livello (fino a 8 ore) o di 5º livello o superiore (fino a 24 ore)."
+    ]
+   }
+  ]
  },
  "hypnotic-pattern": {
   "name": "Trama ipnotica",
@@ -1815,7 +2166,18 @@
   ]
  },
  "ice-knife": {
-  "name": "Coltello di ghiaccio"
+  "name": "Coltello di ghiaccio",
+  "entries": [
+   "L'incantatore crea un frammento di ghiaccio e lo scaglia contro una creatura entro gittata, effettuando un attacco a distanza con incantesimo contro il bersaglio. Se il colpo va a segno, il bersaglio subisce {@damage 1d10} danni perforanti. Che colpisca o manchi il bersaglio, il frammento poi esplode."
+  ],
+  "entries_higher_level": [
+   {
+    "name": "Utilizzo di uno slot incantesimo di livello superiore",
+    "entries": [
+     "I danni da freddo aumentano di {@scaledamage 2d6|1-9|1d6} per ogni slot di livello superiore al 1º."
+    ]
+   }
+  ]
  },
  "ice-storm": {
   "name": "Tempesta di ghiaccio",
@@ -1848,7 +2210,41 @@
   ]
  },
  "imprisonment": {
-  "name": "Imprigionare"
+  "name": "Imprigionare",
+  "entries": [
+   "L'incantatore crea una costrizione magica per trattenere una creatura entro gittata che egli è in grado di vedere. Il bersaglio deve effettuare un tiro salvezza su Saggezza. In caso di successo, il bersaglio non viene influenzato ed è immune a questo incantesimo per le 24 ore successive. In caso di fallimento, il bersaglio è imprigionato. Mentre è imprigionato, il bersaglio non ha bisogno di respirare, mangiare o bere, e non invecchia. Gli incantesimi di divinazione non possono localizzare il bersaglio imprigionato e questo non può teletrasportarsi.",
+   "Inoltre, fino al termine dell'incantesimo, il bersaglio subisce uno dei seguenti effetti a scelta dell'incantatore:",
+   {
+    "items": [
+     null,
+     {
+      "name": "Ceppi",
+      "entries": [
+       "Il bersaglio è bloccato da una serie di catene saldamente ancorate al terreno. Il bersaglio è {@condition Restrained|XPHB|trattenuto} e non può essere spostato in alcun modo."
+      ]
+     },
+     {
+      "name": "Prigione protetta",
+      "entries": [
+       "Il bersaglio è intrappolato in un semipiano protetto da teletrasporto e viaggi planari. Il semipiano può essere un labirinto, una gabbia, una torre o una struttura simile, a scelta dell'incantatore."
+      ]
+     },
+     null,
+     {
+      "entries": [
+       "Il bersaglio è {@condition Unconscious|XPHB|privo di sensi} e non può essere risvegliato."
+      ]
+     }
+    ]
+   },
+   {
+    "name": "Porre fine all'incantesimo",
+    "entries": [
+     "Quando lancia l'incantesimo, l'incantatore specifica un innesco che porrà fine all'incantesimo. L'innesco può essere tanto semplice quanto complesso, in base alla scelta dell'incantatore, ma il GM deve ritenere che abbia una certa probabilità di verificarsi entro i dieci anni successivi. L'innesco deve essere un'azione osservabile, ad esempio: una persona che fa un'offerta particolare al tempio della divinità dell'incantatore, il salvataggio del vero amore dell'incantatore, o la sconfitta di un mostro specifico.",
+     "{@spell Dispel Magic|XPHB|Dissolvi magie} può porre fine a questo incantesimo solo se viene lanciato con uno slot incantesimo di 9º livello, bersagliando la prigione o la componente usata per crearla."
+    ]
+   }
+  ]
  },
  "incendiary-cloud": {
   "name": "Nube incendiaria",
@@ -2093,7 +2489,18 @@
   ]
  },
  "magic-weapon": {
-  "name": "Arma magica"
+  "name": "Arma magica",
+  "entries": [
+   "L'incantatore tocca un'arma non magica, e, fino al termine dell'incantesimo, quell'arma diventa un'arma magica con un bonus di +1 ai tiri per colpire e ai tiri per i danni. L'incantesimo termina in anticipo se l'incantatore lo lancia di nuovo."
+  ],
+  "entries_higher_level": [
+   {
+    "name": "superiore",
+    "entries": [
+     "Il bonus aumenta a +2 con uno slot incantesimo compreso tra il 3º e 5º livello. Il bonus aumenta a +3 con uno slot incantesimo di 6º livello o superiore."
+    ]
+   }
+  ]
  },
  "major-image": {
   "name": "Immagine maggiore",
@@ -2232,7 +2639,23 @@
   ]
  },
  "minor-illusion": {
-  "name": "Illusione minore"
+  "name": "Illusione minore",
+  "entries": [
+   null,
+   "Se una creatura effettua l'azione di {@action Study|XPHB|Studio} per esaminare il suono o l'immagine, può determinare che si tratta di un'illusione superando una prova di Intelligenza ({@skill Investigation|XPHB|Indagare}) contro la CD del tiro salvezza sull'incantesimo. Se una creatura riconosce l'illusione per ciò che è, l'illusione risulta attenuata per quella creatura.",
+   {
+    "name": "Suono",
+    "entries": [
+     "Se l'incantatore crea un suono, la sua intensità può variare da quella di un sussurro a quella di un urlo. Può trattarsi della voce dell'incantatore o di altri, del ruggito di un leone, di un rullo di tamburi o di un qualsiasi altro suono a sua scelta. Il suono può echeggiare ininterrottamente per tutta la durata dell'incantesimo, oppure l'incantatore può emettere dei suoni separati in momenti diversi prima che l'incantesimo termini."
+    ]
+   },
+   {
+    "name": "Immagine",
+    "entries": [
+     "Se l'incantatore crea l'immagine di un oggetto (come per esempio una sedia, una serie di impronte nel fango o uno scrigno), quell'oggetto non deve essere più grande di un {@variantrule Cube [Area of Effect]|XPHB|cubo} con spigolo di 1,5 metri. L'illusione non può emettere suoni, luci, odori o qualsiasi altro effetto sensoriale L'illusione può essere rivelata da un'interazione fisica, poiché gli oggetti possono attraversarla."
+    ]
+   }
+  ]
  },
  "mirage-arcane": {
   "name": "Miraggio arcano",
@@ -2410,7 +2833,11 @@
   ]
  },
  "ottos-irresistible-dance": {
-  "name": "Danza irresistibile"
+  "name": "Danza irresistibile",
+  "entries": [
+   "Una creatura entro gittata che l'incantatore è in grado di vedere deve effettuare un tiro salvezza su Saggezza. In caso di successo, il bersaglio danza comicamente fino al termine del proprio turno successivo, durante il quale deve spendere tutto il suo movimento danzando sul posto.",
+   "Se il bersaglio fallisce il tiro, diventa {@condition Charmed|XPHB|affascinato} per la durata dell'incantesimo. Mentre è {@condition Charmed|XPHB|affascinato}, il bersaglio danza comicamente, deve spendere tutto il suo movimento danzando sul posto, subisce {@variantrule Disadvantage|XPHB|svantaggio} ai tiri salvezza su Destrezza e ai tiri per colpire, e le altre creature dispongono di {@variantrule Advantage|XPHB|vantaggio} ai tiri per colpire contro di esso. In ognuno dei suoi turni, il bersaglio può effettuare un'azione per riprendere il controllo di sé e ripetere il tiro salvezza. Se lo supera, l'incantesimo termina."
+  ]
  },
  "pass-without-trace": {
   "name": "Passare senza tracce",
@@ -2563,13 +2990,42 @@
   ]
  },
  "prestidigitation": {
-  "name": "Prestidigitazione"
+  "name": "Prestidigitazione",
+  "entries": [
+   null,
+   {
+    "name": "Effetto sensoriale"
+   },
+   null,
+   null,
+   null,
+   {
+    "entries": [
+     "Tempo di lancio: 1 minuto Gittata: contatto Componenti: V, S, M (una piuma di colibrì) Durata: 8 ore"
+    ]
+   }
+  ]
  },
  "prismatic-spray": {
-  "name": "Spruzzo prismatico"
+  "name": "Spruzzo prismatico",
+  "entries": [
+   "Otto raggi di luce si sprigionano dall'incantatore in un {@variantrule Cone [Area of Effect]|XPHB|cono} di 18 metri. Ogni creatura presente nel {@variantrule Cone [Area of Effect]|XPHB|cono} effettua un tiro salvezza su Destrezza. Per ogni bersaglio, si tira {@dice 1d8} per determinare da quale raggio viene influenzato, consultando la tabella Raggi prismatici.",
+   {
+    "caption": "Raggi prismatici"
+   }
+  ]
  },
  "prismatic-wall": {
-  "name": "Muro prismatico"
+  "name": "Muro prismatico",
+  "entries": [
+   "Un piano scintillante di luce multicolore forma un muro opaco verticale (che può misurare fino a 27 metri di lunghezza, 9 metri di altezza e 2,5 centimetri di spessore), centrato su un punto entro gittata. In alternativa, l'incantatore modella il muro in un globo del diametro massimo di 9 metri centrato su un punto entro gittata. Il muro permane per tutta la durata dell'incantesimo. Se l'incantatore posiziona il muro in uno spazio occupato da una creatura, l'incantesimo termina immediatamente, senza alcun effetto.",
+   "Il muro emana {@variantrule Bright Light|XPHB|luce intensa} entro 30 metri e {@variantrule Dim Light|XPHB|luce fioca} per ulteriori 30 metri. L'incantatore e le creature da lui scelte al momento del lancio dell'incantesimo possono passare attraverso il muro o rimanervi accanto senza subire danni. Se un'altra creatura in grado di vedere il muro giunge entro 6 metri da esso o comincia lì il proprio turno, deve superare un tiro salvezza su Costituzione, altrimenti è {@condition Blinded|XPHB|accecata} per 1 minuto.",
+   "Il muro è composto da sette strati, ognuno di un colore diverso. Quando una creatura si protende oltre il muro o ci passa attraverso, lo fa attraversando uno strato alla volta. Ogni strato costringe la creatura a effettuare un tiro salvezza su Destrezza, altrimenti viene influenzata dalle proprietà di quello strato, come descritto nella tabella degli strati prismatici.",
+   "Il muro, che ha una CA pari a 10, può essere distrutto uno strato alla volta e in ordine dal rosso al viola, in un modo specifico per ogni strato. Se uno strato viene distrutto, resta distrutto per la durata dell'incantesimo. L'incantesimo {@spell Antimagic Field|XPHB|campo anti-magia} non ha alcun effetto sul muro e l'incantesimo {@spell Dispel Magic|XPHB|dissolvi magie} può influenzare solo lo strato viola.",
+   {
+    "caption": "Strati prismatici"
+   }
+  ]
  },
  "produce-flame": {
   "name": "Produrre fiamma",
@@ -2685,7 +3141,43 @@
   ]
  },
  "reincarnate": {
-  "name": "Reincarnazione"
+  "name": "Reincarnazione",
+  "entries": [
+   "L'incantatore tocca un umanoide defunto o una parte di umanoide defunto. Se la creatura non è morta da più di 10 giorni, l'incantesimo le forma un nuovo corpo e richiama la sua anima all'interno di quel corpo. Si tira {@dice 1d10} e si consulta la tabella di seguito per determinare la specie del nuovo corpo, oppure il GM sceglie un'altra specie giocabile.",
+   {
+    "colLabels": [
+     "1d10",
+     "Specie"
+    ],
+    "rows": [
+     [
+      "1",
+      "Halfling"
+     ],
+     [
+      "2",
+      "Nano"
+     ],
+     [
+      "3",
+      "Elfo"
+     ],
+     [
+      "4",
+      "Gnomo"
+     ],
+     null,
+     null,
+     null,
+     null,
+     null,
+     [
+      "10",
+      "Umano"
+     ]
+    ]
+   }
+  ]
  },
  "remove-curse": {
   "name": "Rimuovi maledizione",
@@ -2760,7 +3252,49 @@
   ]
  },
  "scrying": {
-  "name": "Scrutare"
+  "name": "Scrutare",
+  "entries": [
+   null,
+   {
+    "colLabels": [
+     "L'incantatore conosce il bersaglio in maniera...",
+     "Modificatore al tiro salvezza"
+    ],
+    "rows": [
+     [
+      "Indiretta (ha sentito parlare del",
+      "+5"
+     ],
+     [
+      "Diretta (ha incontrato il bersaglio)",
+      "+0"
+     ],
+     [
+      "Approfondita (conosce bene",
+      "−5"
+     ]
+    ]
+   },
+   {
+    "rows": [
+     [
+      null,
+      "−2"
+     ],
+     [
+      "Abito o altro oggetto personale",
+      "−4"
+     ],
+     [
+      "Parte del corpo, ciocca di capelli o pezzo di unghia",
+      "−10"
+     ]
+    ]
+   },
+   "In caso di tiro salvezza superato, il bersaglio non viene influenzato dall'incantesimo, che l'incantatore non può lanciare su di esso per 24 ore.",
+   "In caso di fallimento, l'incantesimo crea un sensore {@condition Invisible|XPHB|invisibile} e intangibile entro 3 metri dal bersaglio, attraverso cui l'incantatore può vedere e sentire come se si trovasse sul posto. Il sensore si muove insieme al bersaglio, rimanendo entro 3 metri da esso per la durata dell'incantesimo. Se qualcosa è in grado di vedere il sensore, esso appare come un globo luminoso grande all'incirca quanto un pugno umano.",
+   "Invece di bersagliare una creatura, l'incantatore può bersagliare un luogo che ha già visto. Quando lo fa, il sensore appare in quel luogo e non si muove."
+  ]
  },
  "searing-smite": {
   "name": "Punizione incandescente",
@@ -2808,7 +3342,11 @@
   ]
  },
  "shapechange": {
-  "name": "Trasformazione"
+  "name": "Trasformazione",
+  "entries": [
+   "L'incantatore assume la forma di una creatura diversa per la durata dell'incantesimo o finché non effettua un'azione di {@action Magic|XPHB|Magia} per mutare in un'altra forma possibile. La nuova forma deve essere quella di una creatura con un {@variantrule Challenge Rating|XPHB|grado di sfida} pari o inferiore al livello o al {@variantrule Challenge Rating|XPHB|grado di sfida} dell'incantatore. La creatura non può essere un costrutto o un non morto e deve essere un tipo di creatura che l'incantatore abbia già visto.",
+   "Quando l'incantatore lancia l'incantesimo, ottiene un numero di {@variantrule Temporary Hit Points|XPHB|punti ferita temporanei} pari ai {@variantrule Hit Points|XPHB|punti ferita} della prima forma in cui si trasforma."
+  ]
  },
  "shatter": {
   "name": "Frantumare",
@@ -2993,7 +3531,19 @@
   ]
  },
  "spirit-guardians": {
-  "name": "Guardiani spirituali"
+  "name": "Guardiani spirituali",
+  "entries": [
+   "Degli spiriti protettori fluttuano attorno al personaggio in un'{@variantrule Emanation [Area of Effect]|XPHB|emanazione} di 4,5 metri per la durata dell'incantesimo. Se l'incantatore è buono o neutrale, la loro forma spettrale appare angelica o fatata (a scelta dell'incantatore). Se è malvagio, appaiono con sembianze demoniache.",
+   "Quando l'incantatore lancia questo incantesimo, può indicare le creature che non ne saranno influenzate. All'interno dell'{@variantrule Emanation [Area of Effect]|XPHB|emanazione}, la {@variantrule Speed|XPHB|velocità} di ogni altra creatura è dimezzata e, ogni volta che una creatura entra nel suo spazio e viceversa, o ogni volta che vi termina lì il turno, dovrà effettuare un tiro salvezza su Saggezza. Se lo fallisce, subisce {@damage 3d8} danni radiosi (se l'incantatore è buono o neutrale) o {@damage 3d8} danni necrotici (se è malvagio), mentre se lo supera subisce soltanto la metà di quei danni. Una creatura effettua questo tiro salvezza solo una volta per turno."
+  ],
+  "entries_higher_level": [
+   {
+    "name": "Utilizzo di uno slot incantesimo di livello superiore",
+    "entries": [
+     "I danni aumentano di {@scaledamage 3d8|3-9|1d8} per ogni slot di livello superiore al 3º."
+    ]
+   }
+  ]
  },
  "spiritual-weapon": {
   "name": "Arma spirituale",
@@ -3082,7 +3632,11 @@
   ]
  },
  "summon-dragon": {
-  "name": "Richiama drago"
+  "name": "Richiama drago",
+  "entries": [
+   null,
+   "L'incantatore invoca uno spirito di drago, che si manifesta in uno spazio libero entro gittata che egli sia in grado di vedere e utilizza la scheda delle statistiche dello spirito draconico. La creatura scompare quando scende a 0 punti ferita o quando l'incantesimo termina ed è un alleato per il personaggio e i suoi alleati. In combattimento, la creatura ha lo stesso punteggio di {@variantrule Initiative|XPHB|iniziativa} dell'incantatore, ma inizia il turno immediatamente dopo il suo, obbedendo ai suoi comandi verbali (nessuna azione richiesta da parte dell'incantatore). Se l'incantatore non pronuncia comandi verbali, la creatura compie l'azione di {@action Dodge|XPHB|Schivata} e usa il suo movimento per sottrarsi al pericolo."
+  ]
  },
  "sunbeam": {
   "name": "Bagliore solare",
@@ -3101,7 +3655,46 @@
   ]
  },
  "symbol": {
-  "name": "Simbolo"
+  "name": "Simbolo",
+  "entries": [
+   "L'incantatore traccia un glifo nocivo su una superficie (come una sezione di pavimento o una parete) o all'interno di un oggetto che può essere chiuso (come un libro o un forziere). Il glifo può coprire un'area massima del diametro di 3 metri. Se l'incantatore sceglie un oggetto, questo non deve essere spostato; se ciò avviene, una volta che l'oggetto si allontana di più di 3 metri dal luogo in cui è stato lanciato l'incantesimo, il glifo si infrange e l'incantesimo termina senza essere innescato.",
+   "Il glifo è quasi impercettibile e, per notarlo, è necessario superare una prova di Saggezza ({@skill Perception|XPHB|Percezione}) contro la CD del tiro salvezza sull'incantesimo.",
+   "Quando viene tracciato, l'incantatore sceglie l'innesco, oltre all'effetto che scatenerà: morte, discordia, paura, dolore, sonno o stordimento. Ciascuno di essi è spiegato di seguito.",
+   {
+    "name": "Programmare l'innesco",
+    "entries": [
+     "Quando questo incantesimo viene lanciato, l'incantatore decide cosa innesca il glifo. Nel caso di glifi tracciati su una superficie, gli inneschi più comuni includono: toccare o camminare su di essi, rimuovere un altro oggetto che li copre o avvicinarsi a una certa distanza da loro. Nel caso di glifi tracciati all'interno di un oggetto, gli inneschi più comuni includono aprire quell'oggetto o vedere il glifo.",
+     "L'incantatore può perfezionare l'innesco in modo che venga attivato solo da un certo tipo di creature (ad esempio, il glifo potrebbe essere programmato per influenzare le aberrazioni). Può inoltre impostare delle condizioni per evitare di innescare il glifo, come pronunciare una specifica parola d'ordine.",
+     "Una volta attivato, il glifo brilla, proiettando {@variantrule Dim Light|XPHB|luce fioca} in una {@variantrule Sphere [Area of Effect]|XPHB|sfera} del raggio di 18 metri per 10 minuti, dopodiché l'incantesimo termina. Ogni creatura all'interno della {@variantrule Sphere [Area of Effect]|XPHB|sfera} quando il glifo si attiva, oppure che entra nella {@variantrule Sphere [Area of Effect]|XPHB|sfera} per la prima volta in un turno o termina il suo turno qui, ne subisce l'effetto."
+    ]
+   },
+   null,
+   {
+    "entries": [
+     "Ogni bersaglio effettua un tiro salvezza su Saggezza. Se lo fallisce, inizia a litigare con le altre creature per 1 minuto, durante il quale non è in grado di comunicare in modo significativo e subisce {@variantrule Disadvantage|XPHB|svantaggio} ai tiri per colpire e alle prove di caratteristica."
+    ]
+   },
+   {
+    "name": "Dolore",
+    "entries": [
+     "Ogni bersaglio deve superare un tiro salvezza su Saggezza, altrimenti sarà {@condition Frightened|XPHB|spaventato} per 1 minuto. Mentre è {@condition Frightened|XPHB|spaventato}, il bersaglio deve allontanarsi di almeno 9 metri dal glifo in ogni suo turno, se ne è in grado."
+    ]
+   },
+   {
+    "name": "Sonno"
+   },
+   {
+    "entries": [
+     "Ogni bersaglio deve superare un tiro salvezza su Saggezza, altrimenti cade {@condition Unconscious|XPHB|privo di sensi} per 10 minuti. Una creatura si risveglia se subisce danni o se qualcuno usa un'azione per scuoterla."
+    ]
+   },
+   {
+    "name": "Stordimento",
+    "entries": [
+     "Ogni bersaglio deve superare un tiro salvezza su Saggezza, altrimenti sarà {@condition Stunned|XPHB|stordito} per 1 minuto."
+    ]
+   }
+  ]
  },
  "tashas-hideous-laughter": {
   "name": "Risata incontenibile",
@@ -3139,7 +3732,102 @@
   ]
  },
  "teleport": {
-  "name": "Teletrasporto"
+  "name": "Teletrasporto",
+  "entries": [
+   "Questo incantesimo teletrasporta immediatamente l'incantatore e un solo oggetto o un massimo di otto creature consenzienti, che si trovano entro gittata e che egli è in grado di vedere, fino a una destinazione a sua scelta. Se il bersaglio è un oggetto, deve essere di taglia Grande o inferiore e non può essere impugnato o trasportato da una creatura non consenziente.",
+   "La destinazione scelta deve essere nota all'incantatore e deve trovarsi sul suo stesso piano di esistenza. La sua familiarità con la destinazione determina il successo del teletrasporto. Il GM tira {@dice 1d100} e consulta la tabella Risultato del teletrasporto e le spiegazioni successive.",
+   {
+    "caption": "Risultato del teletrasporto",
+    "colLabels": [
+     "Familiarità",
+     "Errore",
+     "Area simile",
+     "Fuori bersaglio",
+     "Sul bersaglio"
+    ],
+    "rows": [
+     [
+      "Cerchio permanente",
+      "—",
+      "—",
+      "—",
+      "01–00"
+     ],
+     [
+      "Oggetto collegato",
+      "—",
+      "—",
+      "—",
+      "01–00"
+     ],
+     [
+      "Molto",
+      "01–05",
+      "06–13",
+      "14–24",
+      "25–00"
+     ],
+     [
+      "Visto occasionalmente",
+      "01–33",
+      "34–43",
+      "44–53",
+      "54–00"
+     ],
+     [
+      "Visto una volta o descritto",
+      "01–43",
+      "44–53",
+      "54–73",
+      "74–00"
+     ],
+     [
+      "Falsa destinazione",
+      "01–50",
+      "51–00",
+      "—",
+      "—"
+     ]
+    ]
+   },
+   {
+    "name": "Familiarità",
+    "entries": [
+     "Di seguito vengono spiegati i significati dei termini presenti nella colonna Familiarità:",
+     {
+      "items": [
+       "\"Cerchio permanente\" indica un cerchio di teletrasporto permanente di cui l'incantatore conosce la sequenza di sigilli.",
+       "\"Oggetto collegato\" indica un oggetto in possesso dell'incantatore prelevato dalla destinazione desiderata negli ultimi sei mesi, come un libro della biblioteca di un mago.",
+       "\"Molto familiare\" indica un luogo che l'incantatore ha visitato spesso, un luogo che ha studiato con attenzione o un luogo che è in grado di vedere quando lancia l'incantesimo.",
+       "\"Visto occasionalmente\" indica un luogo che l'incantatore ha visto più di una volta, ma che non gli è troppo familiare.",
+       "\"Visto una volta o descritto\" indica un luogo che l'incantatore ha visto una volta, magari usando la magia, o un luogo noto attraverso la descrizione di un'altra persona o una mappa.",
+       "\"Falsa destinazione\" è un luogo inesistente. Per esempio, l'incantatore ha cercato di scrutare il rifugio segreto di un nemico ma ha visto invece un'illusione, oppure tenta di teletrasportarsi in un luogo che non esiste più."
+      ]
+     }
+    ]
+   },
+   {
+    "name": "Errore",
+    "entries": [
+     "La magia imprevedibile dell'incantesimo rende difficile il viaggio. Ogni creatura che si teletrasporta (o l'oggetto bersaglio) subisce {@damage 3d10} danni da forza e il GM lancia di nuovo sulla tabella per determinare dove arriverà (potrebbero verificarsi vari errori, nel qual caso i danni verranno inflitti ogni volta)."
+    ]
+   },
+   {
+    "name": "Area simile",
+    "entries": [
+     "L'incantatore e il suo gruppo (o l'oggetto bersaglio) arrivano in un'area diversa che è visivamente o tematicamente simile all'area bersaglio, oltre a essere nelle sue immediate vicinanze. Per esempio, se l'incantatore vuole dirigersi al suo laboratorio personale, potrebbe comparire in quello di un'altra persona nella stessa città."
+    ]
+   },
+   {
+    "name": "Fuori bersaglio",
+    "entries": [
+     "L'incantatore e il suo gruppo (o l'oggetto bersaglio) compaiono a una distanza di {@dice 2d12} chilometri dalla destinazione in una direzione casuale. Tira {@dice 1d8} per la direzione: 1, est; 2, sud-est; 3, sud; 4, sud-ovest; 5, ovest; 6, nord-ovest; 7, nord; oppure 8, nord-est."
+    ]
+   },
+   {
+    "name": "Sul bersaglio"
+   }
+  ]
  },
  "teleportation-circle": {
   "name": "Cerchio di teletrasporto",
@@ -3216,7 +3904,10 @@
   ]
  },
  "time-stop": {
-  "name": "Fermare il tempo"
+  "name": "Fermare il tempo",
+  "entries": [
+   "Per le altre creature il tempo non passa, mentre l'incantatore effettua {@dice 1d4 + 1} turni consecutivamente, nel corso dei quali può usare azioni e muoversi normalmente."
+  ]
  },
  "tongues": {
   "name": "Linguaggi",
@@ -3238,7 +3929,30 @@
   ]
  },
  "true-polymorph": {
-  "name": "Metamorfosi pura"
+  "name": "Metamorfosi pura",
+  "entries": [
+   "L'incantatore sceglie una creatura o un oggetto non magico entro gittata che egli è in grado di vedere La prima si trasforma in un'altra creatura o un oggetto non magico, mentre il secondo diventa una creatura (l'oggetto non deve essere né indossato né trasportato). La trasformazione permane per la durata dell'incantesimo, o finché il bersaglio non muore o viene distrutto. Tuttavia, se l'incantatore mantiene la {@status Concentration|XPHB|concentrazione} per l'intera durata, l'incantesimo ha efficacia finché non viene dissolto o una creatura non consenziente supera un tiro salvezza su Saggezza.",
+   null,
+   {
+    "name": "Creatura in creatura",
+    "entries": [
+     "Se l'incantatore trasforma una creatura in un altro tipo di creatura, la nuova forma può essere di qualsiasi tipo, purché il suo {@variantrule Challenge Rating|XPHB|grado di sfida} sia pari o inferiore a quello del bersaglio (o al suo livello). Le sue statistiche di gioco sono sostituite dalla scheda delle statistiche della nuova forma, mantenendo {@variantrule Hit Points|XPHB|punti ferita}, {@variantrule Hit Point Dice|XPHB|Dadi Vita}, allineamento e personalità.",
+     "Il bersaglio guadagna un numero di {@variantrule Temporary Hit Points|XPHB|punti ferita temporanei} pari ai {@variantrule Hit Points|XPHB|punti ferita} della nuova forma. Al termine dell'incantesimo, il bersaglio perde tutti i {@variantrule Temporary Hit Points|XPHB|punti ferita temporanei} rimasti.",
+     "Il bersaglio è limitato alle azioni che può effettuare in base alla anatomia della sua nuova forma e non può parlare o lanciare incantesimi.",
+     "L'attrezzatura del bersaglio si fonde nella sua nuova forma e la creatura non può utilizzare il suo equipaggiamento o beneficiarne in alcun modo."
+    ]
+   },
+   {
+    "name": "Oggetto in creatura",
+    "entries": [
+     "L'incantatore può trasformare un oggetto in un qualsiasi tipo di creatura, purché la sua taglia non sia superiore a quella dell'oggetto e il suo {@variantrule Challenge Rating|XPHB|grado di sfida} sia pari o inferiore a 9. La creatura è {@variantrule Friendly [Attitude]|XPHB|amichevole} nei confronti dell'incantatore e dei suoi compagni e, in combattimento, obbedisce ai suoi comandi e svolge il suo turno subito dopo di lui.",
+     "Tuttavia, se l'incantesimo dura per più di un'ora, l'incantatore perde il controllo su di essa. Potrebbe rimanere {@variantrule Friendly [Attitude]|XPHB|amichevole} o meno nei suoi confronti, in base a come è stata trattata."
+    ]
+   },
+   {
+    "name": "Creatura in oggetto"
+   }
+  ]
  },
  "true-resurrection": {
   "name": "Resurrezione pura",
@@ -3440,10 +4154,67 @@
   ]
  },
  "wind-wall": {
-  "name": "Muro di vento"
+  "name": "Muro di vento",
+  "entries": [
+   "Il muro può essere lungo fino a 15 metri, alto 4,5 metri e spesso 30 cm. L'incantatore può modellarlo nel modo che preferisce, purché formi un percorso continuo lungo il terreno. Il muro permane per tutta la durata dell'incantesimo.",
+   "Quando appare, ogni creatura nell'area effettua un tiro salvezza su Forza, subendo {@damage 4d8} danni contundenti in caso di fallimento o la metà dei danni in caso di successo.",
+   "Il vento forte tiene lontani fumo, nebbia e altri gas. Le creature o gli oggetti volanti di taglia Piccola o inferiore non possono passare attraverso il muro e i materiali leggeri, non fissati in qualche modo, volano verso l'alto una volta portati al suo interno. Frecce, quadrelli e altri proiettili ordinari lanciati contro bersagli dietro il muro vengono deviati verso l'alto e mancano automaticamente il bersaglio (i macigni scagliati dai giganti o dalle macchine d'assedio e altri proiettili simili non sono influenzati dal muro). Inoltre, le creature in {@spell gaseous form|XPHB|forma gassosa} non possono attraversarlo."
+  ]
  },
  "wish": {
-  "name": "Desiderio"
+  "name": "Desiderio",
+  "entries": [
+   "Desiderio è l'incantesimo più potente che un mortale sia in grado di lanciare. Gli basta parlare a voce alta per alterare l'essenza stessa della realtà.",
+   "L'uso base di questo incantesimo è riprodurre un qualsiasi altro incantesimo di livello pari o inferiore all'8º. Utilizzandolo in questo modo, non è necessario soddisfare particolari requisiti per lanciarlo e non servono costose componenti: l'incantesimo ha semplicemente effetto.",
+   "In alternativa, l'incantatore può creare uno dei seguenti effetti a sua scelta:",
+   {
+    "items": [
+     {
+      "name": "Creazione di un oggetto",
+      "entries": [
+       "L'incantatore crea un oggetto del valore massimo di 25.000 mo che non sia un oggetto magico e che non misuri più di 90 metri in ogni dimensione. L'oggetto si materializza a terra in uno spazio libero che l'incantatore è in grado di vedere."
+      ]
+     },
+     {
+      "name": "Salute istantanea",
+      "entries": [
+       "140 fine a tutti gli effetti su di loro come descritto nell'incantesimo {@spell Greater Restoration|XPHB|ristorare superiore}."
+      ]
+     },
+     {
+      "name": "Resistenza",
+      "entries": [
+       "L'incantatore conferisce a un massimo di dieci creature che egli è in grado di vedere {@variantrule Resistance|XPHB|resistenza} a un tipo di danno a sua scelta. La {@variantrule Resistance|XPHB|resistenza} conferita è permanente."
+      ]
+     },
+     {
+      "name": "Immunità a un incantesimo",
+      "entries": [
+       "L'incantatore conferisce a un massimo di dieci creature che egli è in grado di vedere immunità a un singolo incantesimo o un altro effetto magico per 8 ore."
+      ]
+     },
+     {
+      "name": "Apprendimento improvviso",
+      "entries": [
+       "L'incantatore sostituisce uno dei suoi talenti con un altro di cui soddisfa i requisiti, perdendo tutti i benefici di quello precedente e ottenendo quelli del nuovo talento. Non è possibile sostituirne uno che è un prerequisito per altri talenti o caratteristiche del personaggio."
+      ]
+     },
+     {
+      "name": "Ripetizione del tiro",
+      "entries": [
+       "L'incantatore annulla un singolo evento recente imponendo la ripetizione di un qualsiasi tiro effettuato entro l'ultimo round (incluso il suo ultimo turno). La realtà viene rimodellata e si adatta al nuovo risultato. Per esempio, un incantesimo desiderio potrebbe annullare un tiro salvezza fallito da un alleato o il {@variantrule Critical Hit|XPHB|colpo critico} inferto da un avversario. L'incantatore può imporre che il tiro ripetuto sia effettuato con {@variantrule Advantage|XPHB|vantaggio} o {@variantrule Disadvantage|XPHB|svantaggio} e poi può scegliere se usare il tiro ripetuto o il tiro originale."
+      ]
+     },
+     {
+      "name": "Riplasmazione della realtà",
+      "entries": [
+       "L'incantatore potrebbe desiderare qualcosa che non è incluso negli altri effetti elencati. Per farlo, deve dichiarare il suo desiderio al GM nel modo più preciso possibile. Il GM ha la massima libertà di decidere cosa accade in questi casi: più potente è il desiderio, maggiori sono le probabilità che qualcosa vada storto. L'incantesimo potrebbe semplicemente fallire, l'effetto desiderato potrebbe avverarsi solo in parte o l'incantatore potrebbe subire conseguenze inaspettate come risultato della formulazione del desiderio. Per esempio, se desidera che un suo nemico sia morto, potrebbe essere trascinato nel futuro fino al momento in cui quel nemico non è più in vita, venendo a tutti gli effetti rimosso dal gioco. Analogamente, se desidera un manufatto o un oggetto magico leggendario, potrebbe essere trasportato istantaneamente in presenza del suo attuale proprietario. Se il desiderio viene esaudito e i suoi effetti hanno conseguenze per un'intera comunità, regione o per tutto il mondo, l'incantatore potrebbe attirare l'attenzione di potenti nemici. Se invece potrebbe avere effetti su una divinità, i suoi servi divini potrebbero intervenire all'istante per impedirlo o incoraggiare l'incantatore a formularlo in un modo preciso. Se dovesse disfare il multiverso stesso, il desiderio fallisce."
+      ]
+     }
+    ]
+   },
+   "La tensione provocata dal lancio di {@spell Wish|XPHB|desiderio} per produrre un qualsiasi effetto diverso dalla duplicazione di un altro incantesimo debilita l'incantatore. Dopo aver sopportato quella tensione, ogni volta che l'incantatore lancia un incantesimo prima di avere completato un {@variantrule Long Rest|XPHB|riposo lungo}, subisce {@damage 1d10} danni necrotici per livello di quell'incantesimo. Questi danni non possono essere ridotti o prevenuti in alcun modo. Inoltre, il punteggio di Forza dell'incantatore scende a 3 per {@dice 2d4} giorni. Per ognuno di quei giorni trascorso a riposare e a non fare nulla fuorché attività poco impegnative, il tempo di recupero rimanente diminuisce di 2 giorni. Esiste infine una probabilità del 33% che l'incantatore non sia più in grado di lanciare desiderio, se non riesce a reggere la tensione."
+  ]
  },
  "word-of-recall": {
   "name": "Parola del ritiro",

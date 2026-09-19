@@ -742,7 +742,10 @@ optional features, the non-SRD rows, and the UI-side rendering of *measurements*
 values (feet, "1 action", size/creature-type codes, class-table column headers), which is still
 English. The extraction was done with throwaway scripts (paragraph-by-paragraph alignment of the
 Italian markdown to the English `entries` tree, tags mirrored by an English-to-Italian term
-dictionary); rows that didn't align cleanly were left in English rather than guessed. English.
+dictionary); a first pass accepts a row only when the Italian and English structure line up exactly; a second
+pass (paragraph-level alignment on numbers, dice, damage types, abilities, conditions and mirrored
+terms) then fills what that pass rejected, translating the paragraphs it can pair and leaving the
+rest English rather than guessing. English.
 
 **How it's wired**: `LANGUAGES = [("en", ...), ("it", ...)]` + `LocaleMiddleware` (in
 `config/settings.py`) + `path("i18n/", include("django.conf.urls.i18n"))` (in `config/urls.py`)

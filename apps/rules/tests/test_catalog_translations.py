@@ -65,7 +65,7 @@ def test_every_catalog_file_merges_onto_the_english_rows(catalogs):
     # `import_rules_data` already raised if any tree was misaligned; also spot-check coverage
     assert Spell.objects.filter(name_it__isnull=False).count() == 335
     assert Feat.objects.filter(name_it__isnull=False).count() == 17
-    assert Rule.objects.filter(name_it__isnull=False).count() == 101
+    assert Rule.objects.filter(name_it__isnull=False).count() == 108
 
 
 def test_classes_species_backgrounds_and_equipment_read_in_italian(catalogs):
@@ -106,3 +106,29 @@ def test_feature_translations_survive_a_reimport(catalogs):
 
     with translation.override("it"):
         assert Feature.objects.get(class_level__klass_id="barbarian", name_en="Rage").name == "Ira"
+
+
+def test_paragraph_level_matches_fill_features_the_exact_matcher_rejected(catalogs):
+    # Spellcasting/Fighting Style/Paladin's Smite differ from the book by a leaf or two
+    # (English splits and nests features differently), so they come from the paragraph-level pass
+    with translation.override("it"):
+        for name in ("Spellcasting", "Fighting Style", "Paladin's Smite", "Channel Divinity"):
+            feature = Feature.objects.get(class_level__klass_id="paladin", name_en=name)
+            assert feature.entries != feature.entries_en, name
+
+        # repeated Ability Score Improvement rows reuse the level-4 text
+        asi = Feature.objects.get(
+            class_level__klass_id="paladin",
+            class_level__level=8,
+            name_en="Ability Score Improvement",
+        )
+        assert asi.name == "Aumento dei punteggi di caratteristica"
+
+
+def test_a_spell_option_is_not_matched_to_a_different_option(catalogs):
+    # Symbol lists several effects that all say "1 minute"; the paragraph matcher must not pair
+    # an English "Constitution ... Incapacitated" option with the Italian "Wisdom ... frightened"
+    symbol = Spell.objects.get(pk="symbol")
+    for english, italian in zip(symbol.entries_en, symbol.entries_it or [], strict=False):
+        if isinstance(english, str) and isinstance(italian, str) and "Incapacitated" in english:
+            assert "spaventat" not in italian.lower() or "Constitution" not in english

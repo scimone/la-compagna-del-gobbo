@@ -11,6 +11,26 @@
    "Una creatura ha sei punteggi di caratteristica (Forza, Destrezza, Costituzione, Intelligenza, Saggezza e Carisma), ognuno dei quali ha un modificatore corrispondente. Quando effettui una {@variantrule D20 Test|XPHB|prova con d20} relativa a una caratteristica, o quando una regola lo richiede, aggiungi il modificatore corrispondente. Vedi anche \"Come si gioca\" (\"Le sei caratteristiche\")."
   ]
  },
+ "action": {
+  "name": "Azione",
+  "entries": [
+   null,
+   {
+    "items": [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     "Aiuto Influenza Prepararsi Schivata Attacco Magia {@action Search|XPHB|Ricerca} Studio Disimpegno Nascondersi Scatto Utilizzo"
+    ]
+   }
+  ]
+ },
  "advantage": {
   "name": "Vantaggio",
   "entries": [
@@ -33,6 +53,15 @@
   "name": "Alleato",
   "entries": [
    "Una creatura si definisce \"alleata\" se fa parte del gruppo di avventurieri del tuo personaggio, se gli è amica, se si schiera al suo fianco in combattimento o se si tratta di una creatura indicata come alleata dalle regole del gioco o dal GM."
+  ]
+ },
+ "area-of-effect": {
+  "name": "Area di effetto",
+  "entries": [
+   null,
+   null,
+   "Ogni area di effetto ha un punto di origine da cui scaturisce l'energia dell'effetto. Le regole relative a ogni forma specificano dove posizionare il punto di origine. Se tutte le linee rette che si estendono dal punto di origine fino a un punto nell'area di effetto sono bloccate, tale punto non è incluso nell'area di effetto. Per bloccare una linea, un'ostruzione deve fornire {@variantrule Cover|XPHB|copertura} totale. Vedi anche \"Copertura\".",
+   "Se il creatore di un'area di effetto posiziona l'area in un punto che non può vedere ed è presente un'ostruzione (come ad esempio un muro) tra il creatore e quel punto, il punto di origine si forma sul lato più vicino dell'ostruzione."
   ]
  },
  "armor-class": {
@@ -70,6 +99,94 @@
   "name": "Azione bonus",
   "entries": [
    "Un'azione bonus è un'azione speciale che il personaggio può effettuare nello stesso turno in cui effettua un'azione. Il personaggio non può effettuare più di un'azione bonus per turno, e ne ha una a disposizione solo se una regola lo indica esplicitamente. Vedi anche \"Come si gioca\" (\"Azioni\")."
+  ]
+ },
+ "breaking-objects": {
+  "name": "Rompere gli oggetti",
+  "entries": [
+   "È possibile danneggiare gli oggetti usando attacchi o alcuni incantesimi, facendo riferimento alle regole di seguito. Se un oggetto è estremamente fragile, il GM può consentire a una creatura di romperlo automaticamente con l'azione di {@action Attack|XPHB|Attacco} o di {@action Utilize|XPHB|Utilizzo}. Classe Armatura. La tabella \"Classe Armatura degli oggetti\" indica le CA di materiali diversi.",
+   {
+    "entries": [
+     {
+      "name": "Classe Armatura degli oggetti"
+     }
+    ]
+   },
+   {
+    "rows": [
+     [
+      "11",
+      "Stoffa, carta, corda"
+     ],
+     [
+      "13",
+      "Cristallo, vetro, ghiaccio"
+     ],
+     [
+      "15",
+      "Legno"
+     ]
+    ]
+   },
+   {
+    "entries": [
+     {
+      "name": "Punti ferita",
+      "entries": [
+       "Un oggetto viene distrutto quando scende a 0 {@variantrule Hit Points|XPHB|punti ferita}. Nella tabella \"{@variantrule Hit Points|XPHB|Punti ferita} degli oggetti\" sono elencati i punti ferita suggeriti per gli oggetti fragili e resilienti di taglia Grande o inferiore. Per tenere conto dei punti ferita di un oggetto Enorme o Mastodontico, suddividilo in sezioni di taglia Grande o inferiore e annota i punti ferita di ciascuna sezione separatamente. Il GM determina se la distruzione di una parte di un oggetto lo fa crollare interamente."
+      ]
+     }
+    ]
+   },
+   {
+    "caption": "Punti ferita degli oggetti",
+    "colLabels": [
+     "Taglia",
+     "Fragile",
+     "Resiliente"
+    ],
+    "rows": [
+     [
+      "Minuscola (bottiglia, serratura)",
+      "2 ({@dice 1d4})",
+      "5 ({@dice 2d4})"
+     ],
+     [
+      "Piccola (forziere, liuto)",
+      "3 ({@dice 1d6})",
+      "10 ({@dice 3d6})"
+     ],
+     [
+      "Media (barile, lampadario)",
+      "4 ({@dice 1d8})",
+      "18 ({@dice 4d8})"
+     ],
+     [
+      "Grande (carro, tavolo da pranzo)",
+      "5 ({@dice 1d10})",
+      "27 ({@dice 5d10})"
+     ]
+    ]
+   },
+   {
+    "entries": [
+     {
+      "name": "Tipi di danno e oggetti",
+      "entries": [
+       "Gli oggetti sono immuni ai danni psichici e da veleno. Il GM può stabilire che, contro un determinato oggetto, certi {@variantrule Damage Types|XPHB|tipi di danno} siano più o meno efficaci. Per esempio, i danni contundenti sono efficaci nel caso si voglia spaccare qualcosa, ma non per tagliare. Gli oggetti di carta o di tessuto possono essere vulnerabili ai danni da fuoco."
+      ]
+     },
+     {
+      "name": "Soglia di danno",
+      "entries": [
+       "Certi oggetti molto grossi, come le mura di un castello, sono sovente più resistenti e per questo possiedono una soglia di danno. Vedi anche \"Soglia di danno\"."
+      ]
+     },
+     {
+      "name": "Nessun punteggio di caratteristica"
+     }
+    ]
+   }
   ]
  },
  "burrow-speed": {
@@ -148,6 +265,20 @@
   "name": "Velocità di scalata",
   "entries": [
    "La {@variantrule Speed|XPHB|velocità} di scalata può essere usata al posto della velocità per arrampicarsi su una superficie verticale, senza spendere movimento extra normalmente associato alla scalata. Vedi anche \"Scalare\" e \"Velocità\"."
+  ]
+ },
+ "climbing": {
+  "name": "Scalare",
+  "entries": [
+   "A discrezione del GM, per scalare una superficie scivolosa o una che offra pochi appigli potrebbe essere necessario superare una prova di Forza ({@skill Athletics|XPHB|Atletica}) con {@dc 15}."
+  ]
+ },
+ "condition": {
+  "name": "Condizione",
+  "entries": [
+   null,
+   null,
+   "Non è possibile accumulare più istanze di una condizione: chi ne è affetto o ce l'ha o non ce l'ha. La condizione \"{@condition Exhaustion|XPHB|indebolimento}\" costituisce l'eccezione alla regola."
   ]
  },
  "cone-area-of-effect": {
@@ -384,6 +515,28 @@
    "Una creatura amichevole ha un'opinione positiva del personaggio, il quale dispone di {@variantrule Advantage|XPHB|vantaggio} a una prova di caratteristica per influenzare una creatura amichevole. Vedi anche \"Influenza\"."
   ]
  },
+ "grappling": {
+  "name": "Afferrare",
+  "entries": [
+   "Una creatura può afferrare un'altra creatura. I personaggi tipicamente possono afferrare una creatura utilizzando un {@variantrule Unarmed Strike|XPHB|colpo senz'armi}. Molti {@variantrule Monster|XPHB|mostri} dispongono di attacchi speciali che permettono loro di afferrare rapidamente la preda. A prescindere dal tipo di presa, bisogna fare riferimento alle seguenti regole. Vedi anche \"Colpo senz'armi\" e \"Afferrato\".",
+   {
+    "entries": [
+     {
+      "name": "Condizione afferrato",
+      "entries": [
+       "Se un personaggio riesce ad afferrare una creatura, questa subisce la condizione \"{@condition Grappled|XPHB|afferrato}\"."
+      ]
+     },
+     {
+      "name": "Una presa per ogni mano"
+     },
+     {
+      "name": "Sfuggire a una presa"
+     }
+    ]
+   }
+  ]
+ },
  "hazard": {
   "name": "Pericolo",
   "entries": [
@@ -532,6 +685,70 @@
    "Quando un personaggio compie un salto in lungo, copre una distanza pari al suo punteggio di Forza moltiplicato per 30 centimetri, purché si sia mosso di almeno 3 metri immediatamente prima di saltare. Se compie un salto in lungo da fermo, copre solo metà di quella distanza. In entrambi i casi, ogni 30 centimetri percorsi con il salto costano 30 centimetri di movimento.",
    "Se il personaggio atterra su {@variantrule Difficult Terrain|XPHB|terreno difficile}, deve superare una prova di Destrezza ({@skill Acrobatics|XPHB|Acrobazia}) con {@dc 10}, altrimenti cade a terra {@condition Prone|XPHB|prono}.",
    "Questa regola riguardo al salto in lungo presume che l'altezza del salto sia irrilevante, come per esempio nel caso di un salto oltre un corso d'acqua o un baratro. A discrezione del GM, un personaggio potrebbe dover superare una prova di Forza ({@skill Athletics|XPHB|Atletica}) con {@dc 10} per superare un ostacolo basso (che non superi in altezza un quarto della distanza coperta dal salto), come una siepe o un muretto. Se fallisce, il personaggio colpisce l'ostacolo."
+  ]
+ },
+ "long-rest": {
+  "name": "Riposo lungo",
+  "entries": [
+   "Un riposo lungo è un periodo di inattività esteso (almeno 8 ore) disponibile per tutte le creature. Durante un riposo lungo, il personaggio dorme per almeno 6 ore e svolge non più di 2 ore di attività poco impegnative come leggere, parlare, mangiare o montare la guardia.",
+   "Durante il sonno, il personaggio ha la condizione \"{@condition Unconscious|XPHB|privo di sensi}\". Dopo aver terminato un riposo lungo, il personaggio deve aspettare almeno 16 ore prima di poterne iniziare un altro.",
+   {
+    "entries": [
+     {
+      "name": "Benefici del riposo",
+      "entries": [
+       "Per iniziare un riposo lungo, il personaggio deve avere almeno 1 punto ferita. Una volta terminato il riposo, ottiene i seguenti benefici:"
+      ]
+     },
+     {
+      "items": [
+       {
+        "name": "Recupero di tutti i PF",
+        "entries": [
+         "Il personaggio recupera tutti i {@variantrule Hit Points|XPHB|punti ferita} perduti e tutti i {@variantrule Hit Point Dice|XPHB|Dadi Vita} spesi. Se i suoi punti ferita massimi erano ridotti, ritornano alla normalità."
+        ]
+       },
+       {
+        "name": "Ripristino dei punteggi di caratteristica",
+        "entries": [
+         "Se uno o più punteggi di caratteristica del personaggio erano ridotti, ritornano alla normalità."
+        ]
+       },
+       {
+        "name": "Riduzione dell'indebolimento",
+        "entries": [
+         "Se il personaggio ha la condizione \"{@condition Exhaustion|XPHB|indebolimento}\", questa diminuisce di 1 livello."
+        ]
+       },
+       {
+        "name": "Capacità speciali",
+        "entries": [
+         "Alcune capacità si ricaricano con un riposo lungo. Se il personaggio possiede una capacità del genere, essa si ricarica nella modalità indicata nella sua descrizione."
+        ]
+       }
+      ]
+     },
+     {
+      "entries": [
+       {
+        "entries": [
+         "interrotto dai seguenti eventi:"
+        ]
+       }
+      ]
+     },
+     {
+      "items": [
+       "Tirare per l'{@variantrule Initiative|XPHB|iniziativa}",
+       "Lanciare un incantesimo diverso da un trucchetto",
+       "Subire danni",
+       "1 ora di camminata o di un altro tipo di sforzo fisico"
+      ]
+     },
+     "Se il personaggio si è riposato per almeno 1 ora prima dell'interruzione, riceve i benefici di un {@variantrule Short Rest|XPHB|riposo breve}. Vedi anche \"Riposo breve\".",
+     "Il personaggio può riprendere un riposo lungo subito dopo un'interruzione. In questo caso, per essere completato, il riposo richiede 1 ora in più per ogni interruzione."
+    ]
+   }
   ]
  },
  "magical-effect": {

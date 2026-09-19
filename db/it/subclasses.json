@@ -43,7 +43,12 @@
   ]
  },
  "paladin:oath-of-devotion": {
-  "name": "Giuramento di devozione"
+  "name": "Giuramento di devozione",
+  "description": [
+   null,
+   "Il Giuramento di devozione vincola i paladini agli ideali di giustizia e ordine, avvicinandoli all'archetipo del \"cavaliere senza macchia e senza paura\". Si considerano modelli esemplari di condotta e alcuni di loro, nel bene e nel male, applicano gli stessi parametri al resto del mondo.",
+   "Molti di coloro che prestano questo giuramento sono devoti agli dèi della legalità e del bene, e usano i dettami delle loro divinità come misura della propria devozione. Altri, invece, prendono gli angeli come esempi dei propri ideali e integrano immagini di ali angeliche nei propri elmi o stemmi. Condividono i seguenti dettami:"
+  ]
  },
  "ranger:hunter": {
   "name": "Cacciatore",
