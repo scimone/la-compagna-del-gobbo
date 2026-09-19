@@ -578,7 +578,7 @@ def world_feats(request):
     if q:
         feats = feats.filter(name__icontains=q)
     if category_filter["value"]:
-        feats = feats.filter(category=category_filter["value"])
+        feats = feat_service.matching_category(feats, category_filter["value"])
     items = [
         {
             "name": f.name,
