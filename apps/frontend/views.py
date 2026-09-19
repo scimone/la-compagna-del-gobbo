@@ -3,6 +3,7 @@ from django.db.models import Prefetch, Q
 from django.shortcuts import redirect, render
 from django.templatetags.static import static
 from django.urls import reverse
+from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
 from apps.frontend.entries_render import (
@@ -383,7 +384,8 @@ def world_background_detail(request, pk):
     if bg.tools:
         facts.append((_("Tools"), _format_flag_grant(bg.tools)))
     if bg.feat:
-        facts.append((_("Feat"), bg.feat.name))
+        feat_url = reverse("world-feat-detail", args=[bg.feat.pk])
+        facts.append((_("Feat"), format_html('<a href="{}">{}</a>', feat_url, bg.feat.name)))
     if starting_equipment:
         facts.append((_("Starting Equipment"), render_starting_equipment(starting_equipment)))
     facts.append((_("Page"), bg.page))
