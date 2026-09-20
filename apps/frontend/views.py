@@ -1,14 +1,21 @@
+import unicodedata
+
 from django.conf import settings
 from django.db.models import Prefetch, Q
+from django.http import Http404, JsonResponse
 from django.shortcuts import redirect, render
 from django.templatetags.static import static
 from django.urls import reverse
+from django.utils.cache import add_never_cache_headers
 from django.utils.html import escape, format_html, format_html_join
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
 from django.utils.translation import gettext as _
+from django.views.decorators.http import require_POST
 
 from apps.frontend import units
+from apps.frontend.bookmarks import BOOKMARK_MODELS, bookmarked_ids, is_bookmarked
 from apps.frontend.entries_render import (
     render_class_features,
     render_entries,
@@ -20,6 +27,7 @@ from apps.frontend.entries_render import (
     render_trait_cards,
     self_translated_badge,
 )
+from apps.frontend.models import Bookmark
 from apps.rules.models import Ability, Class, Equipment, Feature, Subclass
 from apps.rules.services import background as background_service
 from apps.rules.services import class_ as class_service
@@ -433,6 +441,16 @@ def characters_overview(request):
     return _placeholder(request, "Characters")
 
 
+def _index_letter(name: str) -> str:
+    """The alphabet-index letter a list item files under: its first letter, accents stripped and
+    uppercased ("Àmbito" -> "A"), or "#" for a name that doesn't start with a letter/digit.
+    """
+    for char in unicodedata.normalize("NFKD", str(name)):
+        if char.isalnum():
+            return char.upper() if char.isalpha() else "#"
+    return "#"
+
+
 def _list_page(
     request,
     title,
@@ -444,23 +462,48 @@ def _list_page(
     search_query: str | None = None,
     search_placeholder: str | None = None,
     filters=(),
+    searchable=False,
+    alphabet=False,
+    bookmark_kind: str | None = None,
 ):
+    """`searchable` shows the search box (and `filters` under it) without the World category tabs
+    that `world_tabs` also brings with it. `alphabet` adds the right-hand A-Z jump strip (each
+    item then needs a `letter`, see `_index_letter()`). `bookmark_kind` (a `BOOKMARK_MODELS` key)
+    gives every item with a `pk` a bookmark button, and moves the bookmarked ones out of `items`
+    into `bookmarked_items`, shown as a highlighted block at the top of the list.
+    """
+    # Letters (and their jump targets) come from every entry, bookmarked or not.
+    alphabet_letters = list(dict.fromkeys(item["letter"] for item in items)) if alphabet else []
+    bookmarked_items = []
+    if bookmark_kind:
+        ids = bookmarked_ids(bookmark_kind)
+        for item in items:
+            item["bookmarked"] = item.get("pk") in ids
+        bookmarked_items = [item for item in items if item["bookmarked"]]
+        items = [item for item in items if not item["bookmarked"]]
+
     context = {
         "page_title": _(title),
         "items": items,
+        "bookmarked_items": bookmarked_items,
+        "bookmark_kind": bookmark_kind,
         "world_tabs": world_tabs,
+        "searchable": searchable,
         "image_vignette": image_vignette,
         "compact_thumbs": compact_thumbs,
+        "alphabet": alphabet,
+        "alphabet_letters": alphabet_letters,
     }
-    # The search box (and the filters row under it) only ever appears alongside the world-tabs
-    # nav (see base.html) - no point threading them through pages that don't render there.
-    if world_tabs:
+    if world_tabs or searchable:
         context["search_query"] = search_query or ""
         context["search_placeholder"] = search_placeholder
         context["filters"] = filters
     if back_url_name:
         context["back_url"] = reverse(back_url_name)
-    return render(request, "frontend/list.html", context)
+    response = render(request, "frontend/list.html", context)
+    # Bookmarks change from other pages - never let back/forward navigation show a stale list.
+    add_never_cache_headers(response)
+    return response
 
 
 def _search_query(request) -> str:
@@ -537,24 +580,32 @@ def _detail_page(
     plain_sections=(),
     tabs=None,
     active_tab=None,
+    bookmark: tuple[str, str] | None = None,
 ):
+    # `bookmark` is `(kind, pk)` for a page with the header's bookmark button (see `Bookmark`).
     # `title` may already be a `_badged_heading()` result (safe HTML with an inline "Traduzione"
     # badge) - passed straight through as `page_title` rather than a separate flag, so the badge
     # sits on the specific thing that's hand-translated (the row's own `name`) instead of a
     # page-wide flag that would show even while looking at an unrelated, officially-translated tab.
-    return render(
-        request,
-        "frontend/detail.html",
-        {
-            "page_title": title,
-            "back_url": reverse(back_url_name),
-            "facts": facts,
-            "body": body,
-            "plain_sections": plain_sections,
-            "tabs": tabs,
-            "active_tab": active_tab,
-        },
-    )
+    context = {
+        "page_title": title,
+        "back_url": reverse(back_url_name),
+        "facts": facts,
+        "body": body,
+        "plain_sections": plain_sections,
+        "tabs": tabs,
+        "active_tab": active_tab,
+    }
+    if bookmark:
+        kind, object_id = bookmark
+        context["bookmark"] = {
+            "kind": kind,
+            "id": object_id,
+            "active": is_bookmarked(kind, object_id),
+        }
+    response = render(request, "frontend/detail.html", context)
+    add_never_cache_headers(response)
+    return response
 
 
 def _active_tab(request, tabs, default: str) -> str:
@@ -565,6 +616,29 @@ def _active_tab(request, tabs, default: str) -> str:
     requested = request.GET.get("tab")
     valid_keys = {key for key, _label in tabs}
     return requested if requested in valid_keys else default
+
+
+@require_POST
+def bookmark_toggle(request):
+    kind = request.POST.get("kind", "")
+    object_id = request.POST.get("object_id", "")
+    model = BOOKMARK_MODELS.get(kind)
+    if model is None or not model.objects.filter(pk=object_id).exists():
+        raise Http404
+    _bookmark, created = Bookmark.objects.get_or_create(kind=kind, object_id=object_id)
+    if not created:
+        _bookmark.delete()
+
+    # The header button's script posts in the background and just flips its own icon; a plain
+    # form post (JS off/slow) falls back to redirecting back to the page it came from.
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return JsonResponse({"bookmarked": created})
+    next_url = request.POST.get("next", "")
+    if not url_has_allowed_host_and_scheme(
+        next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        next_url = reverse("world-overview")
+    return redirect(next_url)
 
 
 # --- Handbook ----------------------------------------------------------------------------
@@ -582,6 +656,7 @@ def handbook_overview(request):
             "name": _("Rules Glossary"),
             "detail": _("%(count)d named rules and keywords") % {"count": rule_count},
             "url": reverse("handbook-rules-glossary"),
+            "featured": True,
         },
     ] + [
         {
@@ -595,15 +670,31 @@ def handbook_overview(request):
 
 
 def handbook_rules_glossary(request):
+    q = _search_query(request)
+    rules = rule_service.list_rules()
+    if q:
+        rules = _by_name(rules, q)
     items = [
         {
+            "pk": rule.pk,
             "name": _badged_heading(rule.name, _self_translated(rule, "name")),
             "detail": f"{_('Page')} {rule.page}",
             "url": reverse("world-rule-detail", args=[rule.pk]),
+            "letter": _index_letter(rule.name),
         }
-        for rule in rule_service.list_rules()
+        for rule in rules
     ]
-    return _list_page(request, "Rules Glossary", items, back_url_name="handbook-overview")
+    return _list_page(
+        request,
+        "Rules Glossary",
+        items,
+        back_url_name="handbook-overview",
+        searchable=True,
+        search_query=q,
+        search_placeholder=_("Search rules"),
+        alphabet=True,
+        bookmark_kind="rule",
+    )
 
 
 def handbook_section_detail(request, pk):
@@ -623,6 +714,7 @@ def world_backgrounds(request):
         backgrounds = _by_name(backgrounds, q)
     items = [
         {
+            "pk": b.pk,
             "name": _badged_heading(b.name, _self_translated(b, "name")),
             "detail": b.short_description,
             "url": reverse("world-background-detail", args=[b.pk]),
@@ -643,6 +735,7 @@ def world_backgrounds(request):
         image_vignette=True,
         search_query=q,
         search_placeholder=_("Search backgrounds"),
+        bookmark_kind="background",
     )
 
 
@@ -676,6 +769,7 @@ def world_background_detail(request, pk):
         "world-backgrounds",
         facts,
         plain_sections=plain_sections,
+        bookmark=("background", bg.pk),
     )
 
 
@@ -689,6 +783,7 @@ def world_classes(request):
         classes = _by_name(classes, q)
     items = [
         {
+            "pk": c.pk,
             "name": _badged_heading(c.name, _self_translated(c, "name")),
             "detail": c.short_description,
             "url": reverse("world-class-detail", args=[c.pk]),
@@ -734,6 +829,7 @@ def world_classes(request):
         world_tabs=True,
         search_query=q,
         search_placeholder=_("Search classes, subclasses and features"),
+        bookmark_kind="class",
     )
 
 
@@ -855,6 +951,7 @@ def world_class_detail(request, pk):
         plain_sections=plain_sections,
         tabs=tabs,
         active_tab=active_tab,
+        bookmark=("class", klass.pk),
     )
 
 
@@ -877,6 +974,7 @@ def world_feats(request):
         feats = feat_service.matching_category(feats, category_filter["value"])
     items = [
         {
+            "pk": f.pk,
             "name": _badged_heading(f.name, _self_translated(f, "name")),
             "detail": _format_feat_category(f.category),
             "url": reverse("world-feat-detail", args=[f.pk]),
@@ -896,6 +994,7 @@ def world_feats(request):
         search_query=q,
         search_placeholder=_("Search feats"),
         filters=[category_filter],
+        bookmark_kind="feat",
     )
 
 
@@ -916,6 +1015,7 @@ def world_feat_detail(request, pk):
         "world-feats",
         facts,
         plain_sections=plain_sections,
+        bookmark=("feat", feat.pk),
     )
 
 
@@ -929,6 +1029,7 @@ def world_species(request):
         species_qs = _by_name(species_qs, q)
     items = [
         {
+            "pk": s.pk,
             "name": _badged_heading(s.name, _self_translated(s, "name")),
             "detail": s.short_description,
             "url": reverse("world-species-detail", args=[s.pk]),
@@ -955,6 +1056,7 @@ def world_species(request):
         world_tabs=True,
         search_query=q,
         search_placeholder=_("Search species and traits"),
+        bookmark_kind="species",
     )
 
 
@@ -997,6 +1099,7 @@ def world_species_detail(request, pk):
         plain_sections=plain_sections,
         tabs=tabs,
         active_tab=active_tab,
+        bookmark=("species", species.pk),
     )
 
 
@@ -1075,6 +1178,7 @@ def world_spells(request):
         level_text = _("Cantrip") if s.level == 0 else f"{_('Level')} {s.level}"
         items.append(
             {
+                "pk": s.pk,
                 "name": _badged_heading(s.name, _self_translated(s, "name")),
                 "detail": f"{level_text} · {_pick_translation(_SCHOOL_LABELS, s.school)}",
                 "url": reverse("world-spell-detail", args=[s.pk]),
@@ -1099,6 +1203,7 @@ def world_spells(request):
             casting_time_filter,
             save_filter,
         ],
+        bookmark_kind="spell",
     )
 
 
@@ -1139,6 +1244,7 @@ def world_spell_detail(request, pk):
         "world-spells",
         facts,
         plain_sections=plain_sections,
+        bookmark=("spell", spell.pk),
     )
 
 
@@ -1160,4 +1266,5 @@ def world_rule_detail(request, pk):
         "world-overview",
         facts,
         plain_sections=plain_sections,
+        bookmark=("rule", rule.pk),
     )

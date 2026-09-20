@@ -129,9 +129,62 @@
       cursor: help;
     }
 
-    .lang-switcher {
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .lang-switcher,
+    .bookmark-toggle {
       margin: 0;
       flex-shrink: 0;
+    }
+
+    /* Bookmark button, left of the language switch on a World element's page (see `Bookmark`):
+       an outlined bookmark-plus icon while it isn't bookmarked, a filled bookmark-check once it is. */
+    .bookmark-btn {
+      appearance: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.05rem;
+      height: 2.05rem;
+      padding: 0;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      border-radius: 0.5rem;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .bookmark-btn svg {
+      width: 1.1rem;
+      height: 1.1rem;
+    }
+
+    .bookmark-btn .icon-on,
+    .bookmark-btn.active .icon-add {
+      display: none;
+    }
+
+    .bookmark-btn.active .icon-on {
+      display: block;
+    }
+
+    .bookmark-btn.active {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .bookmark-btn.active .icon-on path:first-child {
+      fill: currentColor;
+    }
+
+    .bookmark-btn.active .icon-on path:last-child {
+      stroke: var(--surface);
     }
 
     .lang-switcher button {
@@ -462,21 +515,58 @@
       <h1 class="brand">{% firstof page_title "La Compagna del Gobbo" %}</h1>
     </div>
 
-    {% get_current_language as CURRENT_LANGUAGE %}
-    <form action="{% url 'set_language' %}" method="post" class="lang-switcher">
-      {% csrf_token %}
-      <input type="hidden" name="next" value="{{ request.path }}">
-      {# One button that switches TO the other language - always labelled with that other #}
-      {# language's own name (autonym), e.g. showing "Italiano" while browsing in English. #}
-      {% if CURRENT_LANGUAGE == "it" %}
-        <button type="submit" name="language" value="en">English</button>
-      {% else %}
-        <button type="submit" name="language" value="it">Italiano</button>
+    <div class="header-actions">
+      {% if bookmark %}
+        {# Plain form post (redirects back) so it works without JS; the script at the bottom of #}
+        {# this file posts it in the background instead and just flips the icon.              #}
+        <form
+          action="{% url 'bookmark-toggle' %}"
+          method="post"
+          class="bookmark-toggle"
+          id="bookmark-form"
+          data-label-add="{% translate 'Add bookmark' %}"
+          data-label-remove="{% translate 'Remove bookmark' %}"
+        >
+          {% csrf_token %}
+          <input type="hidden" name="kind" value="{{ bookmark.kind }}">
+          <input type="hidden" name="object_id" value="{{ bookmark.id }}">
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+          <button
+            type="submit"
+            class="bookmark-btn{% if bookmark.active %} active{% endif %}"
+            aria-pressed="{% if bookmark.active %}true{% else %}false{% endif %}"
+            aria-label="{% if bookmark.active %}{% translate 'Remove bookmark' %}{% else %}{% translate 'Add bookmark' %}{% endif %}"
+          >
+            <svg class="icon-add" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
+              <line x1="12" y1="7" x2="12" y2="13"></line>
+              <line x1="9" y1="10" x2="15" y2="10"></line>
+            </svg>
+            <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
+              <path d="m9 10 2 2 4-4"></path>
+            </svg>
+          </button>
+        </form>
       {% endif %}
-    </form>
+
+      {% get_current_language as CURRENT_LANGUAGE %}
+      <form action="{% url 'set_language' %}" method="post" class="lang-switcher">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path }}">
+        {# One button that switches TO the other language - always labelled with that other #}
+        {# language's own name (autonym), e.g. showing "Italiano" while browsing in English. #}
+        {% if CURRENT_LANGUAGE == "it" %}
+          <button type="submit" name="language" value="en">English</button>
+        {% else %}
+          <button type="submit" name="language" value="it">Italiano</button>
+        {% endif %}
+      </form>
+    </div>
   </header>
 
-  {% if world_tabs %}
+  {% if world_tabs or searchable %}
+    {% if world_tabs %}
     <nav class="world-tabs">
       <a
         href="{% url 'world-backgrounds' %}"
@@ -499,6 +589,7 @@
         class="{% if '/world/spells/' in request.path %}active{% endif %}"
       >{% translate "Spells" %}</a>
     </nav>
+    {% endif %}
     <form class="world-search" method="get" action="{{ request.path }}">
       <div class="world-search-field">
         <svg
@@ -638,22 +729,18 @@
     </a>
   </nav>
 
-  {% if world_tabs %}
+  {% if world_tabs or searchable %}
     <script>
-      // Progressive enhancement over the plain GET form above: once the search text is at least
-      // `MIN_LENGTH` chars (or empty, i.e. just cleared), or any filter `<select>` changes,
-      // re-fetch this same list page in the background and swap in just its `#search-results`
-      // node, instead of waiting for Enter/a full navigation. Below `MIN_LENGTH` (but not empty)
-      // no fetch fires and whatever's already rendered stays put - matches the plain-form page
-      // load a JS-disabled/slow-to-load browser would see.
+      // Progressive enhancement over the plain GET form above: on every keystroke in the search
+      // box (from the very first letter), or whenever a filter changes, re-fetch this same list
+      // page in the background and swap in just its `#search-results` node, instead of waiting
+      // for Enter/a full navigation.
       (function () {
         var form = document.querySelector(".world-search");
         var input = form && form.querySelector("input[name=q]");
-        var results = document.getElementById("search-results");
-        if (!form || !input || !results) return;
+        if (!form || !input || !document.getElementById("search-results")) return;
 
-        var MIN_LENGTH = 3;
-        var DEBOUNCE_MS = 250;
+        var DEBOUNCE_MS = 150;
         var debounceTimer = null;
         var latestRequestId = 0;
 
@@ -676,19 +763,17 @@
               var next = new DOMParser()
                 .parseFromString(html, "text/html")
                 .getElementById("search-results");
-              if (!next) return;
-              results.replaceWith(next);
-              results = next;
+              // Looked up fresh: a bookmark toggle (list.html) swaps this node too.
+              var current = document.getElementById("search-results");
+              if (!next || !current) return;
+              current.replaceWith(next);
               window.history.replaceState(null, "", url);
             });
         }
 
         input.addEventListener("input", function () {
-          var query = input.value.trim();
           clearTimeout(debounceTimer);
-          if (query.length === 0 || query.length >= MIN_LENGTH) {
-            debounceTimer = setTimeout(runSearch, DEBOUNCE_MS);
-          }
+          debounceTimer = setTimeout(runSearch, DEBOUNCE_MS);
         });
 
         Array.from(form.querySelectorAll("select, input[type=radio], input[type=checkbox]"))
@@ -736,6 +821,42 @@
           Array.from(document.querySelectorAll(".filter-popover[open]")).forEach(function (popover) {
             if (!popover.contains(event.target)) popover.open = false;
           });
+        });
+      })();
+    </script>
+  {% endif %}
+
+  {% if bookmark %}
+    <script>
+      // Progressive enhancement over the plain bookmark form post (which redirects back to this
+      // page): post it in the background and just flip the button's own state from the reply.
+      (function () {
+        var form = document.getElementById("bookmark-form");
+        var button = form && form.querySelector(".bookmark-btn");
+        if (!form || !button || !window.fetch) return;
+
+        form.addEventListener("submit", function (event) {
+          event.preventDefault();
+          fetch(form.action, {
+            method: "POST",
+            body: new FormData(form),
+            headers: { "X-Requested-With": "XMLHttpRequest" },
+          })
+            .then(function (response) {
+              if (!response.ok) throw new Error("bookmark failed");
+              return response.json();
+            })
+            .then(function (data) {
+              button.classList.toggle("active", data.bookmarked);
+              button.setAttribute("aria-pressed", data.bookmarked ? "true" : "false");
+              button.setAttribute(
+                "aria-label",
+                data.bookmarked ? form.dataset.labelRemove : form.dataset.labelAdd
+              );
+            })
+            .catch(function () {
+              form.submit();
+            });
         });
       })();
     </script>

@@ -1,0 +1,50 @@
+{% load i18n %}
+<li{% if item.featured %} class="featured"{% endif %}{% if item.letter %} data-letter="{{ item.letter }}"{% endif %}>
+  <a href="{{ item.url }}"{% if item.image %} class="menu-thumb"{% endif %}>
+    {% if item.featured %}
+      {# Marks an entry that isn't one of its list's regular items (the Handbook's Rules Glossary) #}
+      <svg class="featured-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"></path>
+        <path d="M8 11h8"></path>
+        <path d="M8 7h6"></path>
+      </svg>
+    {% endif %}
+    {% if item.image %}
+      <img
+        class="item-thumb{% if image_vignette %} vignette{% endif %}"
+        src="{{ item.image }}"
+        alt=""
+      >
+    {% endif %}
+    <div class="item-text">
+      <span class="item-name">{{ item.name }}</span>
+      {% if item.detail %}<div class="item-detail">{{ item.detail }}</div>{% endif %}
+    </div>
+  </a>
+  {% if bookmark_kind and item.pk %}
+    {# Submits the list's one shared form (`#bookmark-list-form` in list.html) with this #}
+    {# entry's pk as `object_id` - the `form` attribute ties the button to it from here.    #}
+    <button
+      type="submit"
+      form="bookmark-list-form"
+      name="object_id"
+      value="{{ item.pk }}"
+      class="item-bookmark{% if item.bookmarked %} active{% endif %}"
+      aria-pressed="{% if item.bookmarked %}true{% else %}false{% endif %}"
+      aria-label="{% if item.bookmarked %}{% translate 'Remove bookmark' %}{% else %}{% translate 'Add bookmark' %}{% endif %}"
+    >
+      {% if item.bookmarked %}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" fill="currentColor"></path>
+          <path d="m9 10 2 2 4-4" stroke="var(--surface)"></path>
+        </svg>
+      {% else %}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
+          <line x1="12" y1="7" x2="12" y2="13"></line>
+          <line x1="9" y1="10" x2="15" y2="10"></line>
+        </svg>
+      {% endif %}
+    </button>
+  {% endif %}
+</li>

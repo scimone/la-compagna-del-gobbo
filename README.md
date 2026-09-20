@@ -688,6 +688,29 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     hand-written blurb - there's no such field in `db/*.json`, so these were authored directly in
     `apps/rules/management/commands/import_rules_data.py` rather than sourced) overlaid on the
     art. Rows without artwork (e.g. Aasimar) fall back to a plain text row like every other list.
+  - **Search** (World tabs and the Rules Glossary) is live from the first typed letter: the
+    plain GET form is enhanced by a script in `base.html` that re-fetches the page and swaps
+    just `#search-results`. `_list_page(searchable=True)` shows the search box without World's
+    category tabs (`world_tabs=True` shows both) - the Handbook's **Rules Glossary**
+    (`GET /handbook/rules-glossary/`, every `Rule`, each linking to `world-rule-detail`) uses it.
+  - **Alphabet index** (`_list_page(alphabet=True)`, Rules Glossary only): a right-edge A-Z strip -
+    press or drag along it and a big letter popup names the letter under the finger, every entry
+    not filed under it (`_index_letter()`: first letter, accents stripped) fades out, and the list
+    scrolls to the first match. Pure client-side (script in `list.html`, bound on `document` so it
+    survives live search swapping the strip).
+  - **Bookmarks**: every World element page (Background/Class/Feat/Species/Spell/Rule) has a
+    bookmark button in the header, left of the language switch, and every list row (World tabs,
+    Rules Glossary) has one at its right end (`frontend.Bookmark`, toggled by
+    `POST /bookmarks/toggle/`; the scripts post in the background - on a list, then re-fetch and
+    swap `#search-results` keeping the scroll position - and a plain form post redirects back).
+    Bookmarked rows of the current (searched/filtered) list are moved out of the list into a
+    highlighted block at its top (`_list_page(bookmark_kind=...)`), not shown twice. Stored as
+    `(kind, object_id)` in its own table, **not** a flag on each `rules` model - `import_rules_data`
+    wipes every `rules` table, which would have erased the bookmarks; there's no auth, so they
+    are global, not per user. List/detail responses are `never_cache`d so back-navigation never
+    shows a stale bookmark state.
+  - The Handbook's **Rules Glossary** row is `featured` (solid accent block with an icon) - it's
+    a catalog index, not a chapter like the rows below it.
   - `apps/frontend/entries_render.py` turns the raw 5etools `entries` JSON blobs (used by
     `Background`/`Species`/`Class`/`Feat`/`Spell`/`Rule`) into safe HTML: nested
     headings/lists/tables/insets/"choose N" groups, and - via `_ReferenceLinker` - turns any

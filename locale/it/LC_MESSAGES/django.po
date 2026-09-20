@@ -381,3 +381,19 @@ msgstr "e"
 #: apps/rules/models/class_.py apps/frontend/views.py
 msgid "or"
 msgstr "o"
+
+#: apps/frontend/templates/frontend/list.html
+msgid "Bookmarks"
+msgstr "Segnalibri"
+
+#: apps/frontend/templates/frontend/base.html
+msgid "Add bookmark"
+msgstr "Aggiungi segnalibro"
+
+#: apps/frontend/templates/frontend/base.html
+msgid "Remove bookmark"
+msgstr "Rimuovi segnalibro"
+
+#: apps/frontend/views.py
+msgid "Search rules"
+msgstr "Cerca regole"
