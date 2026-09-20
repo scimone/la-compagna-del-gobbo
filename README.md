@@ -714,7 +714,7 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     otherwise empty stack falls back to the page's static parent (the arrow's `href`). Scroll
     position is restored on the way back.
   - **The active menu changes only through the bottom nav** (which resumes another menu on the page
-    it was left on), not by URL: the Rules Glossary (Handbook) links into `/world/rules/...`, and
+    it was left on), not by URL: the Glossary (Handbook) links into `/world/rules/...`, and
     back from there returns to the Glossary. The bottom nav highlights the active menu, not the
     URL prefix.
   - **Tapping the bottom-nav item of the menu you are already in** returns to that menu's root
@@ -789,19 +789,19 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     hand-written blurb - there's no such field in `db/*.json`, so these were authored directly in
     `apps/rules/management/commands/import_rules_data.py` rather than sourced) overlaid on the
     art. Rows without artwork (e.g. Aasimar) fall back to a plain text row like every other list.
-  - **Search** (World tabs and the Rules Glossary) is live from the first typed letter: the
+  - **Search** (World tabs and the Glossary) is live from the first typed letter: the
     plain GET form is enhanced by a script in `base.html` that re-fetches the page and swaps
     just `#search-results`. `_list_page(searchable=True)` shows the search box without World's
-    category tabs (`world_tabs=True` shows both) - the Handbook's **Rules Glossary**
+    category tabs (`world_tabs=True` shows both) - the Handbook's **Glossary**
     (`GET /handbook/rules-glossary/`, every `Rule`, each linking to `world-rule-detail`) uses it.
-  - **Alphabet index** (`_list_page(alphabet=True)`, Rules Glossary only): a right-edge A-Z strip -
+  - **Alphabet index** (`_list_page(alphabet=True)`, Glossary only): a right-edge A-Z strip -
     press or drag along it and a big letter popup names the letter under the finger, every entry
     not filed under it (`_index_letter()`: first letter, accents stripped) fades out, and the list
     scrolls to the first match. Pure client-side (script in `list.html`, bound on `document` so it
     survives live search swapping the strip).
   - **Bookmarks**: every World element page (Background/Class/Feat/Species/Spell/Rule) has a
     bookmark button in the header, left of the account and language switches, and every list row
-    (World tabs, Rules Glossary) has one at its right end (`frontend.Bookmark`, toggled by
+    (World tabs, Glossary) has one at its right end (`frontend.Bookmark`, toggled by
     `POST /bookmarks/toggle/`; the scripts post in the background - on a list, then re-fetch and
     swap `#search-results` keeping the scroll position - and a plain form post redirects back).
     Bookmarked rows of the current (searched/filtered) list are moved out of the list into a
@@ -822,8 +822,13 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     first letter of the name (accent-coloured); signed out it reads "Login" and is shaped exactly
     like the language button. Nothing else is per-account yet:
     `characters` still has no ownership.
-  - The Handbook's **Rules Glossary** row is `featured` (solid accent block with an icon) - it's
-    a catalog index, not a chapter like the rows below it.
+  - The Handbook's **Glossary** row (the `Rule` catalog index - its label is just "Glossary", not
+    the source book's "Rules Glossary" section, which stays dropped) is `featured`: a solid accent
+    block with an open-book A-Z icon. `_list_page()` lifts every `featured` item out of `items`
+    into its own `featured_items` list, drawn above everything else and set off by the same dashed
+    accent divider as the bookmarked block. The chapters below it have no detail line: an item
+    with a `page` gets a page icon (a sheet of paper, the number on top in the icon's colour,
+    bold) instead.
   - `apps/frontend/entries_render.py` turns the raw 5etools `entries` JSON blobs (used by
     `Background`/`Species`/`Class`/`Feat`/`Spell`/`Rule`) into safe HTML: nested
     headings/lists/tables/insets/"choose N" groups, and - via `_ReferenceLinker` - turns any
@@ -938,6 +943,13 @@ page that mixes official and hand-translated content (like that species: officia
 traits, hand-translated lore) only marks the part that actually is. `_self_translated()` and
 `_badged_heading()` in `views.py`, and `self_translated_badge()` in `entries_render.py`, are the
 three pieces that wire this up.
+
+The one exception is a **homebrew** row: a species in `HOMEBREW_SPECIES` (`views.py` - only
+`Grung`, Volo's Guide converted by hand; the `species` table doesn't store a source, so it's a
+constant rather than a field) shows an outlined "Homebrew" badge (`homebrew_badge()` in
+`entries_render.py`, same in both languages) on its title in the list and on its page, and *no*
+"Traduzione" badge anywhere - its text is unofficial by definition, so flagging the translation
+as well would add nothing.
 
 The two gaps this still leaves **on purpose**: `Equipment.entries` (never rendered by any page
 today - only `Equipment.name` shows up, via `{@item}` tags and equipment lists, so translating a
