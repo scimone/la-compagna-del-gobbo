@@ -1,12 +1,31 @@
 {% load i18n %}
-{# One fieldset per `Picker` (see apps/builder/services/store.py): a <select> for a single pick, #}
-{# a limited checkbox group for "choose N". Same names the view reads with `read_values`.       #}
+{# One fieldset per `Picker` (apps/builder/services/store.py); the names are what the view reads with #}
+{# `read_values`. A picker of catalog rows (spells, tools, feats, ...) is a card list in the World's  #}
+{# list design with a "Read" button; any other is a <select> (pick one) or a checkbox group.          #}
 {% for p in pickers %}
-  <fieldset class="picker"{% if not p.single %} data-count="{{ p.count }}"{% endif %}>
+  <fieldset class="picker"{% if not p.single %} data-count="{{ p.count }}"{% endif %}{% if p.refresh %} data-refresh{% endif %}>
     <legend>{{ p.label }}
       <span class="count">{% if p.single %}{% translate "choose 1" %}{% else %}{% blocktranslate with n=p.count %}choose {{ n }}{% endblocktranslate %} · <span class="chosen"></span>{% endif %}</span>
     </legend>
-    {% if p.single %}
+    {% if p.hint %}<p class="hint">{{ p.hint }}</p>{% endif %}
+    {% if p.cards %}
+      <ul class="item-list compact-thumbs picks">
+        {% for c in p.cards %}
+          <li>
+            <label class="pick">
+              <input type="{% if p.single %}radio{% else %}checkbox{% endif %}" name="{{ p.key }}" value="{{ c.id }}"{% if c.checked %} checked{% endif %}>
+              {% if c.image %}<img class="item-thumb" src="{{ c.image }}" alt="">{% endif %}
+              <div class="item-text">
+                <span class="item-name">{{ c.name }}</span>
+                {% if c.detail %}<div class="item-detail">{{ c.detail }}</div>{% endif %}
+              </div>
+            </label>
+            <button type="button" class="pick-read" data-describe="{{ c.describe }}" aria-expanded="false">{% translate "Read" %}</button>
+            <div class="desc" hidden></div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% elif p.single %}
       <select name="{{ p.key }}">
         <option value="">—</option>
         {% for id, name in p.candidates %}

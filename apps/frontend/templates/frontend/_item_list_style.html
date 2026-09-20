@@ -1,0 +1,99 @@
+{# Card list styles shared by the World lists (`list.html`) and the character wizard's pickers: #}
+{# a row with an optional thumbnail, a name and a detail line. Rules for bookmarks, the featured  #}
+{# row and the A-Z strip stay in `list.html`. #}
+  .item-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .item-list li {
+    flex-shrink: 0;
+    display: flex;
+    align-items: stretch;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.6rem;
+    overflow: hidden;
+  }
+
+  .item-list a {
+    display: block;
+    flex: 1;
+    min-width: 0;
+    padding: 0.6rem 0.9rem;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .item-list a:active {
+    background: var(--bg);
+  }
+
+  .item-list .item-name {
+    font-weight: 600;
+  }
+
+  .item-list .item-detail {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  /* Square artwork shown as a small rounded thumbnail on the left of the button, for any list
+     item that has one (Classes, Species - see `_menu_image_url` in views.py). */
+  .item-list a.menu-thumb {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.35rem 0.9rem 0.35rem 0.5rem;
+  }
+
+  .item-list .item-thumb {
+    flex-shrink: 0;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 0.75rem;
+    object-fit: cover;
+    background: var(--bg);
+  }
+
+  /* Smaller thumbnail and tighter row, opt-in per list (see `compact_thumbs` in views.py) - for
+     long lists (Spells, Feats) where full-size thumbnails make every row much taller than its text. */
+  .item-list.compact-thumbs a.menu-thumb {
+    padding: 0.25rem 0.9rem 0.25rem 0.4rem;
+  }
+
+  .item-list.compact-thumbs .item-thumb {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.6rem;
+  }
+
+  /* Soft inward-fading edge, opt-in per list (see `image_vignette` in views.py) - the source
+     art for some categories (Backgrounds) already looks better with one than others. Drawn as
+     an overlay on a wrapper: an inset box-shadow on the <img> itself is painted underneath the
+     image and never shows. */
+  .item-list .thumb-vignette {
+    position: relative;
+    flex-shrink: 0;
+    display: block;
+    line-height: 0;
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+
+  .item-list .thumb-vignette::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 1rem 0.2rem rgba(0, 0, 0, 0.75);
+    pointer-events: none;
+  }
+
+  .item-list.compact-thumbs .thumb-vignette {
+    border-radius: 0.6rem;
+  }

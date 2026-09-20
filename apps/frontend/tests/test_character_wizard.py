@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 from apps.builder.services import creation
+from apps.builder.services.store import Draft
 from apps.builder.tests.conftest import build_character
 from apps.characters.models import Character
 
@@ -95,8 +96,10 @@ def test_a_step_that_needs_an_earlier_one_redirects_to_it(signed_in, alice):
     response = signed_in.get(step(draft.pk, "abilities"))
 
     assert response.status_code == 302 and response.url == step(draft.pk, "background")
-    assert signed_in.get(step(draft.pk, "choices")).url == step(draft.pk, "class")
+    assert signed_in.get(step(draft.pk, "equipment")).url == step(draft.pk, "class")
     assert signed_in.get(step(draft.pk, "nonsense")).status_code == 404
+    # The class's own choices are part of the class step now, not a step of their own.
+    assert signed_in.get(step(draft.pk, "choices")).status_code == 404
 
 
 # --- the whole wizard over HTTP -------------------------------------------
@@ -119,14 +122,23 @@ def test_a_fighter_created_entirely_through_the_forms(signed_in, alice):
             "languages",
             "equipment",
             "abilities",
-            "choices",
             "alignment",
-            "details",
+            "story",
             "review",
         ]
         return order[order.index(name) + 1]
 
-    submit("class", {"class": "fighter"})
+    # Picking the class saves it and opens its level 1 choices right there (no step of their own).
+    picked = signed_in.post(step(pk, "class"), {"class": "fighter", "action": "select"})
+    assert picked.status_code == 200
+    assert "Weapon Mastery" in picked.content.decode()
+    from apps.builder.services import class_choices
+
+    picks = {"class": "fighter"}
+    for picker in class_choices.pickers(Draft(Character.objects.get(pk=pk))):
+        chosen = [c[0] for c in picker.candidates][: picker.count]
+        picks[picker.key] = chosen[0] if picker.single else chosen
+    submit("class", picks)
     # Choosing a background re-renders (its sub-choices depend on it) instead of moving on.
     assert signed_in.post(step(pk, "background"), {"background": "soldier"}).status_code == 200
     submit("background", {"background": "soldier", "background.tool": "dice-set"})
@@ -149,18 +161,8 @@ def test_a_fighter_created_entirely_through_the_forms(signed_in, alice):
             "bonus.dex": 1,
         },
     )
-    page = signed_in.get(step(pk, "choices")).content.decode()
-    assert "Weapon Mastery" in page and "Fighting Style" in page
-    from apps.builder.services import class_choices
-    from apps.builder.services.store import Draft
-
-    picks = {}
-    for picker in class_choices.pickers(Draft(Character.objects.get(pk=pk))):
-        chosen = [c[0] for c in picker.candidates][: picker.count]
-        picks[picker.key] = chosen[0] if picker.single else chosen
-    submit("choices", picks)
     submit("alignment", {"alignment": "LG"})
-    submit("details", {"appearance": "Tall", "backstory.0": "A large family", "notes": ""})
+    submit("story", {"backstory": "Raised on a farm, she left to serve the crown."})
 
     review = signed_in.get(step(pk, "review"))
     assert review.status_code == 200 and "Armor Class" in review.content.decode()
@@ -169,7 +171,7 @@ def test_a_fighter_created_entirely_through_the_forms(signed_in, alice):
 
     character = Character.objects.get(pk=pk)
     assert character.status == Character.STATUS_COMPLETE and character.owner == alice
-    assert character.alignment == "LG" and character.appearance == "Tall"
+    assert character.alignment == "LG" and character.backstory.startswith("Raised on a farm")
     page = signed_in.get(f"/characters/{pk}/").content.decode()
     assert "Brienne" in page and "Dungeoneer" in page  # the pack shows as one expandable line
 
@@ -215,9 +217,8 @@ def test_every_step_renders_for_a_finished_draft(signed_in, alice, class_id):
         "languages",
         "equipment",
         "abilities",
-        "choices",
         "alignment",
-        "details",
+        "story",
         "review",
     ]:
         response = signed_in.get(step(character.pk, name))
@@ -240,7 +241,6 @@ def test_ability_step_methods_and_roll(signed_in, alice):
     signed_in.post(step(draft.pk, "abilities"), {"action": "method", "method": "pointbuy"})
     assert "27 points" in signed_in.get(step(draft.pk, "abilities")).content.decode()
     signed_in.post(step(draft.pk, "abilities"), {"action": "roll"})
-    from apps.builder.services.store import Draft
 
     rolled = Draft(draft).get("abilities")["rolled"]
     assert len(rolled) == 6
@@ -303,7 +303,8 @@ def test_the_wizard_and_character_page_are_in_italian_and_metric(signed_in, alic
     assert "Personaggi" in listing and "Nuovo personaggio" in listing
     draft = creation.start_draft(alice, "x")
     step_page = signed_in.get(step(draft.pk, "class")).content.decode()
-    assert "Ogni avventuriero è membro di una classe" in step_page and "Fasi" in step_page
+    assert "Le sue scelte di 1º livello si aprono subito sotto" in step_page
+    assert "Fasi" in step_page and "Storia del personaggio" in step_page
     assert "Salva e continua" in step_page
 
 
@@ -324,3 +325,170 @@ def test_every_new_string_has_an_italian_translation():
     ]:
         assert catalog.get(msgid), msgid
     assert Path("locale/it/LC_MESSAGES/django.po").read_text().count("msgid") > 260
+
+
+# --- live choices under the picked row, cards, descriptions, story -----------------
+
+AJAX = {"HTTP_X_REQUESTED_WITH": "XMLHttpRequest"}
+
+
+def test_background_options_have_the_icon_vignette_like_the_world_list(signed_in, alice):
+    draft = creation.start_draft(alice, "x")
+    from apps.builder.services import origins
+
+    origins.select_class(draft, "fighter")
+
+    background = signed_in.get(step(draft.pk, "background")).content.decode()
+    assert 'class="thumb-vignette"' in background  # backgrounds get the soft edge...
+    class_page = signed_in.get(step(draft.pk, "class")).content.decode()
+    assert 'class="thumb-vignette"' not in class_page  # ...class art does not (as in the World)
+
+
+def test_picking_a_row_opens_its_choices_right_under_it_without_pressing_next(signed_in, alice):
+    draft = creation.start_draft(alice, "x")
+    from apps.builder.services import origins
+
+    origins.select_class(draft, "fighter")
+
+    response = signed_in.post(
+        step(draft.pk, "background"), {"background": "guide", "action": "select"}, **AJAX
+    )
+
+    assert response.status_code == 200  # swapped in place, never a redirect to the next step
+    html = response.content.decode()
+    row = html[html.index('value="guide"') : html.index('class="actions"')]
+    assert 'class="sub"' in row and "Magic Initiate (Druid): Cantrips" in row
+    # Only the picked row has choices; the others are plain rows.
+    assert html.count('class="sub"') == 1
+    draft.refresh_from_db()
+    assert Draft(draft).background.id == "guide"
+
+
+def test_class_choices_live_under_the_class_not_in_a_later_step(signed_in, alice):
+    draft = creation.start_draft(alice, "x")
+
+    html = signed_in.post(
+        step(draft.pk, "class"), {"class": "wizard", "action": "select"}, **AJAX
+    ).content.decode()
+
+    row = html[html.index('value="wizard"') : html.index('class="actions"')]
+    assert 'class="sub"' in row
+    for label in ("Skills", "Cantrips", "Spellbook", "Prepared spells"):
+        assert label in row
+    # Progress: there is no "Class features" step any more.
+    assert "Class features" not in html and ">Background story<" in html
+
+
+def test_a_refresh_saves_what_is_filled_in_and_shows_dependent_choices(signed_in, alice):
+    draft = creation.start_draft(alice, "x")
+    from apps.builder.services import origins
+
+    origins.select_class(draft, "wizard")
+    picker = next(p for p in class_choices_pickers(draft) if p.key == "class.spellbook")
+    book = [c[0] for c in picker.candidates][:6]
+
+    html = signed_in.post(
+        step(draft.pk, "class"),
+        {"class": "wizard", "class.spellbook": book, "action": "refresh"},
+        **AJAX,
+    ).content.decode()
+
+    assert Draft(draft).get("class.spellbook") == book
+    # The prepared-spells picker now offers exactly the book's six spells.
+    prepared = html[html.index('name="class.spells"') - 200 :]
+    assert all(f'value="{spell}"' in prepared for spell in book)
+    assert "still" not in html.lower() or "choose" in html.lower()  # no nagging mid-answer
+
+
+def class_choices_pickers(character):
+    from apps.builder.services import class_choices
+
+    return class_choices.pickers(Draft(character))
+
+
+def test_spells_are_cards_with_an_icon_properties_and_a_read_button(signed_in, alice):
+    draft = creation.start_draft(alice, "x")
+    from apps.builder.services import origins
+
+    origins.select_class(draft, "wizard")
+    html = signed_in.get(step(draft.pk, "class")).content.decode()
+
+    assert 'class="item-list compact-thumbs picks"' in html
+    assert "/characters/describe/spell/fire-bolt/" in html
+    assert "Cantrip · Evocation" in html  # the same properties line as the World's spell list
+    assert "/static/images/spells/evocation.jpeg" in html
+    assert html.count('class="pick-read"') > 20  # every candidate can be read
+
+
+@pytest.mark.parametrize(
+    ("kind", "pk", "expected"),
+    [
+        ("spell", "fire-bolt", ["Casting Time", "1d10", "Range"]),
+        ("equipment", "thieves-tools", ["Cost", "Type", "Pick a lock"]),
+        ("equipment", "greatsword", ["2d6", "Graze", "Mastery"]),
+        ("feat", "defense", ["Fighting Style"]),
+        ("invocation", "pact-of-the-blade", ["pact weapon"]),
+        ("skill", "arcana", ["Intelligence"]),
+    ],
+)
+def test_descriptions_can_be_read_for_every_kind_of_card(client, db, kind, pk, expected):
+    response = client.get(f"/characters/describe/{kind}/{pk}/")
+
+    assert response.status_code == 200
+    html = response.content.decode()
+    for text in expected:
+        assert text in html, (kind, pk, text)
+
+
+def test_describe_rejects_unknown_kinds_and_rows(client, db):
+    assert client.get("/characters/describe/wizardry/x/").status_code == 404
+    assert client.get("/characters/describe/spell/not-a-spell/").status_code == 404
+
+
+def test_tools_are_cards_too(signed_in, alice):
+    character = build_character(alice, "monk", "soldier", "human")
+    html = signed_in.get(step(character.pk, "class")).content.decode()
+
+    assert "/characters/describe/equipment/" in html  # Monk's artisan tool / instrument
+
+
+def test_magic_initiate_names_its_list_and_only_offers_that_lists_spells(signed_in, alice):
+    draft = creation.start_draft(alice, "x")
+    from apps.builder.services import origins
+
+    origins.select_class(draft, "fighter")
+    origins.select_background(draft, "guide")
+    html = signed_in.get(step(draft.pk, "background")).content.decode()
+
+    assert "Magic Initiate (Druid): Cantrips" in html
+    assert "The spells come from the Druid spell list." in html
+    assert "/describe/spell/druidcraft/" in html
+    assert "/describe/spell/blade-ward/" not in html  # a Wizard/Bard/Sorcerer/Warlock cantrip
+
+
+def test_the_story_step_is_one_field_with_the_questions_as_a_guide(signed_in, alice):
+    character = build_character(alice, "fighter")
+
+    html = signed_in.get(step(character.pk, "story")).content.decode()
+
+    assert html.count("<textarea") == 1 and 'name="backstory"' in html
+    assert "Who is your family?" in html and "What in your past inspired you" in html
+    assert "Background story" in html and "Appearance" not in html
+    signed_in.post(step(character.pk, "story"), {"backstory": "Long ago, in a village..."})
+    character.refresh_from_db()
+    assert character.backstory == "Long ago, in a village..."
+
+
+def test_a_later_background_removes_a_now_duplicate_class_skill_and_says_so(signed_in, alice):
+    character = build_character(alice, "fighter", "soldier")
+    from apps.rules.models import Background
+
+    picked = set(Draft(character).get("class.skills"))
+    other = next(b for b in Background.objects.all() if picked & {s.id for s in b.skills.all()})
+    signed_in.post(
+        step(character.pk, "background"), {"background": other.id, "action": "select"}, **AJAX
+    )
+
+    state = creation.get_state(character)
+    assert {s["key"]: s["status"] for s in state["steps"]}["class"] == "incomplete"
+    assert any(i["path"] == "class.skills" for s in state["steps"] for i in s["issues"])

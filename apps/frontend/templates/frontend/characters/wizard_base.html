@@ -59,6 +59,26 @@
   .checks input { accent-color: var(--accent); }
   .checks label.off { opacity: 0.4; }
 
+  /* The World's card list design (shared partial), with selectable rows. */
+  {% include "frontend/_item_list_style.html" %}
+  .item-list label.pick { display: flex; align-items: center; gap: 0.6rem; flex: 1; min-width: 0; padding: 0.35rem 0.4rem 0.35rem 0.6rem; cursor: pointer; }
+  .item-list label.pick input { flex-shrink: 0; accent-color: var(--accent); }
+  .item-list .item-text { flex: 1; min-width: 0; }
+  .item-list li:has(> label.pick input:checked) { border-color: var(--accent); border-left-width: 0.3rem; background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+  .item-list a.pick-read, .item-list button.pick-read { flex: 0 0 auto; display: inline-block; width: auto; align-self: center; margin: 0 0.7rem 0 0; padding: 0.25rem 0.55rem; font: inherit; font-size: 0.8rem; color: var(--accent); background: none; border: 1px solid var(--border); border-radius: 1rem; cursor: pointer; text-decoration: none; }
+  .item-list button.pick-read[aria-expanded="true"] { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+  /* An option's own choices, and a card's unfolded description, sit inside its row. */
+  .item-list li { flex-wrap: wrap; }
+  .item-list .sub { flex: 0 0 100%; padding: 0.2rem 0.7rem 0.8rem; display: flex; flex-direction: column; gap: 0.7rem; border-top: 1px solid var(--border); }
+  .item-list .sub fieldset.picker { background: var(--bg); }
+  .item-list .desc { flex: 0 0 100%; padding: 0.6rem 0.9rem; border-top: 1px solid var(--border); font-size: 0.9rem; line-height: 1.45; background: var(--bg); }
+  .item-list .desc p { margin: 0.4rem 0; }
+  .item-list .desc .facts dl { display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 0.75rem; margin: 0 0 0.4rem; }
+  .item-list .desc .facts dt { color: var(--muted); font-size: 0.8rem; }
+  .item-list .desc .facts dd { margin: 0; }
+  .picks { max-height: none; }
+  .wiz.loading { opacity: 0.6; pointer-events: none; }
+
   .discard { margin-top: 0.5rem; text-align: center; }
   .discard button { appearance: none; background: none; border: 0; color: var(--muted); font: inherit; font-size: 0.8rem; text-decoration: underline; cursor: pointer; }
   {% block step_style %}{% endblock %}
@@ -97,23 +117,84 @@
   </div>
 
   <script>
-    // "Choose N": once N boxes of a group are ticked, the rest are disabled (and re-enabled when
-    // one is unticked); the counter shows how many are left. Purely a convenience - the server
-    // validates the same limit.
-    document.querySelectorAll("fieldset.picker[data-count]").forEach(function (group) {
-      var max = parseInt(group.dataset.count, 10);
-      var boxes = group.querySelectorAll("input[type=checkbox]");
-      var counter = group.querySelector(".chosen");
-      function update() {
-        var n = group.querySelectorAll("input[type=checkbox]:checked").length;
-        boxes.forEach(function (b) {
-          b.disabled = !b.checked && n >= max;
-          b.closest("label").classList.toggle("off", b.disabled);
+    (function () {
+      var wiz = document.querySelector(".wiz");
+
+      // "Choose N": once N boxes of a group are ticked the rest are disabled; the counter shows
+      // how many are left. Only a convenience - the server checks the same limit.
+      function initLimits() {
+        wiz.querySelectorAll("fieldset.picker[data-count]").forEach(function (group) {
+          var max = parseInt(group.dataset.count, 10);
+          var boxes = group.querySelectorAll("input[type=checkbox]");
+          var counter = group.querySelector(".chosen");
+          function update() {
+            var n = group.querySelectorAll("input[type=checkbox]:checked").length;
+            boxes.forEach(function (b) {
+              b.disabled = !b.checked && n >= max;
+              b.closest("label").classList.toggle("off", b.disabled);
+            });
+            if (counter) counter.textContent = n + "/" + max;
+          }
+          boxes.forEach(function (b) { b.addEventListener("change", update); });
+          update();
         });
-        if (counter) counter.textContent = n + "/" + max;
       }
-      boxes.forEach(function (b) { b.addEventListener("change", update); });
-      update();
-    });
+      initLimits();
+
+      // Live steps (class / background / species): picking a row, or changing an answer other
+      // answers depend on, saves the page's state and swaps the step in place - so the row's own
+      // choices open right under it without pressing "Save and continue". The server answers with
+      // the whole page, and only what is inside `.wiz` is swapped (the scroll position stays).
+      var form = wiz.querySelector("form[data-live]");
+      var busy = false;
+      function live(action, scrollToSelected) {
+        if (busy) return;
+        busy = true;
+        wiz.classList.add("loading");
+        var data = new FormData(form);
+        data.set("action", action);
+        fetch(location.href, {
+          method: "POST",
+          body: data,
+          credentials: "same-origin",
+          headers: { "X-Requested-With": "XMLHttpRequest" },
+        })
+          .then(function (response) { return response.text(); })
+          .then(function (html) {
+            var fresh = new DOMParser().parseFromString(html, "text/html").querySelector(".wiz");
+            if (!fresh) { form.submit(); return; }
+            wiz.innerHTML = fresh.innerHTML;
+            form = wiz.querySelector("form[data-live]");
+            initLimits();
+            var picked = wiz.querySelector(".opts-list li.selected");
+            if (scrollToSelected && picked) picked.scrollIntoView({ block: "nearest" });
+          })
+          .catch(function () { if (form) form.submit(); })
+          .then(function () { busy = false; wiz.classList.remove("loading"); });
+      }
+      if (form) {
+        wiz.addEventListener("change", function (event) {
+          var target = event.target;
+          if (target.matches("input[data-select]")) live("select", true);
+          else if (target.closest("fieldset[data-refresh]")) live("refresh", false);
+        });
+      }
+
+      // "Read" on a card unfolds its description (fetched once, then just shown/hidden).
+      wiz.addEventListener("click", function (event) {
+        var button = event.target.closest("button.pick-read");
+        if (!button) return;
+        var panel = button.closest("li").querySelector(".desc");
+        var open = panel.hidden;
+        if (open && !panel.dataset.loaded) {
+          panel.textContent = "…";
+          fetch(button.dataset.describe, { credentials: "same-origin" })
+            .then(function (response) { return response.text(); })
+            .then(function (html) { panel.innerHTML = html; panel.dataset.loaded = "1"; });
+        }
+        panel.hidden = !open;
+        button.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+    })();
   </script>
 {% endblock %}

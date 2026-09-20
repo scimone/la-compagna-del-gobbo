@@ -19,7 +19,7 @@ from ..resolvers.spell import max_spell_level
 from . import effects
 from .store import Draft, Issue, Picker, picker_issues, set_choice
 
-STEP = "choices"
+STEP = "class"
 
 
 def _selected(draft: Draft, key: str, single: bool) -> list[str]:
@@ -85,12 +85,15 @@ def pickers(draft: Draft) -> list[Picker]:
     spec = spec_for(klass.id)
     found: list[Picker] = []
 
-    def add(key, label, count, candidates, single=False):
-        found.append(Picker(key, label, count, candidates, _selected(draft, key, single), single))
+    def add(key, label, count, candidates, single=False, **extra):
+        found.append(
+            Picker(key, label, count, candidates, _selected(draft, key, single), single, **extra)
+        )
 
     count, candidates = _skill_candidates(draft)
     if count:
-        add("class.skills", _("Skills"), count, candidates)
+        # A skill picked here decides who can take Expertise, so the screen re-reads on change.
+        add("class.skills", _("Skills"), count, candidates, kind="skill", refresh=True)
     if spec.tool_pick:
         blocked = held_resolver.held(draft, exclude=("class",))["tools"]
         add(
@@ -102,6 +105,7 @@ def pickers(draft: Draft) -> list[Picker]:
                 for e in tool_options(list(spec.tool_pick.kinds))
                 if e.id not in blocked
             ],
+            kind="equipment",
         )
     if spec.orders:
         add(
@@ -110,6 +114,7 @@ def pickers(draft: Draft) -> list[Picker]:
             1,
             [(_slug(o.feature), o.feature) for o in spec.orders],
             single=True,
+            refresh=True,  # changes the cantrip count, the weapons/armor you are trained with
         )
     if spec.weapon_mastery:
         add(
@@ -117,6 +122,7 @@ def pickers(draft: Draft) -> list[Picker]:
             _("Weapon Mastery"),
             spec.weapon_mastery.count,
             _mastery_candidates(draft, spec),
+            kind="equipment",
         )
     if spec.fighting_style:
         add(
@@ -125,6 +131,7 @@ def pickers(draft: Draft) -> list[Picker]:
             1,
             [(f.id, f.name) for f in feat_resolver.fighting_style_feats()],
             single=True,
+            kind="feat",
         )
     if spec.invocations:
         add(
@@ -132,6 +139,7 @@ def pickers(draft: Draft) -> list[Picker]:
             _("Eldritch Invocation"),
             spec.invocations,
             _eligible_invocations(draft),
+            kind="invocation",
         )
     if spec.extra_languages:
         add(
@@ -149,6 +157,7 @@ def pickers(draft: Draft) -> list[Picker]:
             _("Cantrips"),
             cantrips,
             [(s.id, s.name) for s in class_resolver.spell_pool(draft, 0)],
+            kind="spell",
         )
     highest = max_spell_level(klass, draft.level)
     always = set(spec.always_prepared)
@@ -159,16 +168,30 @@ def pickers(draft: Draft) -> list[Picker]:
         if s.id not in always
     ]
     if spec.spellbook:
-        add("class.spellbook", _("Spellbook"), spec.spellbook, [c for c in leveled])
+        add(
+            "class.spellbook",
+            _("Spellbook"),
+            spec.spellbook,
+            list(leveled),
+            kind="spell",
+            refresh=True,  # the prepared spells below are chosen from the book
+        )
         book = set(draft.get("class.spellbook", []))
         add(
             "class.spells",
             _("Prepared spells"),
             class_resolver.prepared_count(draft),
             [c for c in leveled if c[0] in book],
+            kind="spell",
         )
     elif class_resolver.prepared_count(draft):
-        add("class.spells", _("Prepared spells"), class_resolver.prepared_count(draft), leveled)
+        add(
+            "class.spells",
+            _("Prepared spells"),
+            class_resolver.prepared_count(draft),
+            leveled,
+            kind="spell",
+        )
 
     if spec.expertise:
         skills = held_resolver.held(draft)["skills"]
@@ -179,6 +202,13 @@ def pickers(draft: Draft) -> list[Picker]:
             _("Expertise"),
             spec.expertise,
             [(s.id, s.name) for s in Skill.objects.filter(id__in=skills).order_by("name")],
+            kind="skill",
+            hint=""
+            if draft.background and draft.species
+            else _(
+                "Only skills you are proficient in. Choose your background and species first to "
+                "include the skills they give you."
+            ),
         )
     return found
 

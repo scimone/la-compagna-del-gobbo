@@ -1,11 +1,10 @@
 {% extends "frontend/characters/wizard_base.html" %}
 {% load i18n %}
 {% block step %}
-  <p class="hint">{% translate "Pick one, then answer whatever it asks below and save. Changing your pick forgets the answers that depended on it." %}</p>
-  <form method="post">
+  <p class="hint">{% translate "Pick a species. Its choices (size, lineage, cantrip, ...) open right under it." %}</p>
+  <form method="post" data-live>
     {% csrf_token %}
     {% include "frontend/characters/_options.html" %}
-    {% include "frontend/characters/_pickers.html" %}
-    <div class="actions"><button type="submit" class="btn">{% translate "Save and continue" %}</button></div>
+    <div class="actions"><button type="submit" name="action" value="continue" class="btn">{% translate "Save and continue" %}</button></div>
   </form>
 {% endblock %}

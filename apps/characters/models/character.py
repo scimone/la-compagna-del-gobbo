@@ -51,6 +51,9 @@ class Character(models.Model):
     )
     alignment = models.CharField(max_length=30, blank=True, default="")
     size = models.CharField(max_length=20, blank=True, default="")
+    #: One free-form text. The creation wizard shows the SRD's "past and present" questions above
+    #: the field as a writing guide; the answers are not stored separately.
+    backstory = models.TextField(blank=True, default="")
     appearance = models.TextField(blank=True, default="")
     notes = models.TextField(blank=True, default="")
 

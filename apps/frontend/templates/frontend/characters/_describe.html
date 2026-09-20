@@ -1,0 +1,13 @@
+{# A catalog row's description, unfolded under its card in the wizard: the same facts block and #}
+{# rendered entries the World's detail pages show.                                            #}
+{% if facts %}
+  <div class="facts">
+    <dl>
+      {% for label, value in facts %}
+        <dt>{{ label }}</dt>
+        <dd>{{ value }}</dd>
+      {% endfor %}
+    </dl>
+  </div>
+{% endif %}
+{% for html in sections %}<div class="entries">{{ html }}</div>{% endfor %}

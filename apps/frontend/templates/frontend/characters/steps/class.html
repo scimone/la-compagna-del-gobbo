@@ -1,10 +1,10 @@
 {% extends "frontend/characters/wizard_base.html" %}
 {% load i18n %}
 {% block step %}
-  <p class="hint">{% translate "Every adventurer belongs to a class. It sets your hit die, saving throws, armor and weapon training, and the features you start with. The ability shown is the class's primary ability." %}</p>
-  <form method="post">
+  <p class="hint">{% translate "Pick a class. It sets your hit die, saving throws, armor and weapon training and the features you start with. Its level 1 choices open right under it." %}</p>
+  <form method="post" data-live>
     {% csrf_token %}
     {% include "frontend/characters/_options.html" %}
-    <div class="actions"><button type="submit" class="btn">{% translate "Save and continue" %}</button></div>
+    <div class="actions"><button type="submit" name="action" value="continue" class="btn">{% translate "Save and continue" %}</button></div>
   </form>
 {% endblock %}

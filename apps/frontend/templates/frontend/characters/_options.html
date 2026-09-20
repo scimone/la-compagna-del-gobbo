@@ -1,18 +1,28 @@
 {% load i18n %}
-{# A pick-one list of catalog rows (class / background / species): radio card + link to the World page. #}
-<ul class="opts">
+{# A pick-one list of catalog rows (class / background / species) in the World's list design. The #}
+{# picked row's own choices open right underneath it, not at the bottom of the page.               #}
+<ul class="item-list opts-list">
   {% for o in options %}
-    <li>
-      <label class="opt">
-        <input type="radio" name="{{ field }}" value="{{ o.id }}"{% if o.selected %} checked{% endif %}>
-        {% if o.image %}<img src="{{ o.image }}" alt="">{% endif %}
-        <span class="text">
-          <span class="name">{{ o.name }}</span>
-          {% if o.detail %}<span class="detail">{{ o.detail }}</span>{% endif %}
-          {% if o.facts %}<span class="detail">{{ o.facts }}</span>{% endif %}
-        </span>
-        <a class="more" href="{{ o.url }}">{% translate "Read" %}</a>
+    <li{% if o.selected %} class="selected"{% endif %}>
+      <label class="pick menu-thumb">
+        <input type="radio" name="{{ field }}" value="{{ o.id }}" data-select{% if o.selected %} checked{% endif %}>
+        {% if o.image %}
+          {% if o.vignette %}<span class="thumb-vignette">{% endif %}
+          <img class="item-thumb" src="{{ o.image }}" alt="">
+          {% if o.vignette %}</span>{% endif %}
+        {% endif %}
+        <div class="item-text">
+          <span class="item-name">{{ o.name }}</span>
+          {% if o.detail %}<div class="item-detail">{{ o.detail }}</div>{% endif %}
+          {% if o.facts %}<div class="item-detail">{{ o.facts }}</div>{% endif %}
+        </div>
       </label>
+      <a class="pick-read" href="{{ o.url }}">{% translate "Read" %}</a>
+      {% if o.selected and pickers %}
+        <div class="sub">
+          {% include "frontend/characters/_pickers.html" %}
+        </div>
+      {% endif %}
     </li>
   {% endfor %}
 </ul>

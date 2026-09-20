@@ -92,6 +92,7 @@ def background_pickers(draft: Draft) -> list[Picker]:
                 [(e.id, e.name) for e in tool_options(pick[0]) if e.id not in blocked],
                 stored(draft, "background.tool", True),
                 single=True,
+                kind="equipment",
             )
         )
     if draft.background.feat:
@@ -132,6 +133,15 @@ def feat_pickers(draft: Draft, feat: Feat, path: str, *, fixed_variant: str = ""
     variant = fixed_variant or chosen.get("variant", "")
     held = held_resolver.held(draft, exclude=(path,))
     pickers: list[Picker] = []
+    # "Magic Initiate (Druid)": say which list the spells come from - it is fixed by the background
+    # (Guide -> Druid), so a spell that isn't on that list (Blade Ward) is rightly not offered.
+    spell_list = Class.objects.filter(id=variant).first() if variant else None
+    feat_title = f"{feat.name} ({spell_list.name})" if spell_list else feat.name
+    list_hint = (
+        _("The spells come from the %(list)s spell list.") % {"list": spell_list.name}
+        if spell_list
+        else ""
+    )
     for pick in feat_resolver.picks(feat, variant):
         if pick.key == "variant" and fixed_variant:
             continue
@@ -168,11 +178,14 @@ def feat_pickers(draft: Draft, feat: Feat, path: str, *, fixed_variant: str = ""
         pickers.append(
             Picker(
                 key,
-                f"{feat.name}: {_PICK_LABELS.get(pick.key, pick.key)}",
+                f"{feat_title}: {_PICK_LABELS.get(pick.key, pick.key)}",
                 pick.count,
                 candidates,
                 stored(draft, key, single),
                 single,
+                kind={"spell": "spell", "tool": "equipment"}.get(pick.kind, "plain"),
+                refresh=pick.kind == "variant",  # the list decides which spells are offered
+                hint=list_hint if pick.kind == "spell" else "",
             )
         )
     return pickers
@@ -211,8 +224,10 @@ def species_pickers(draft: Draft) -> list[Picker]:
         return []
     pickers: list[Picker] = []
 
-    def add(key, label, count, candidates, single=False):
-        pickers.append(Picker(key, label, count, candidates, stored(draft, key, single), single))
+    def add(key, label, count, candidates, single=False, **extra):
+        pickers.append(
+            Picker(key, label, count, candidates, stored(draft, key, single), single, **extra)
+        )
 
     if len(species.size) > 1:
         labels = {"S": _("Small"), "M": _("Medium")}
@@ -224,6 +239,7 @@ def species_pickers(draft: Draft) -> list[Picker]:
             1,
             [(lin["key"], lin["label"]) for lin in species.lineages],
             True,
+            refresh=True,  # the lineage decides the cantrip, speed and darkvision
         )
     if options := species_resolver.spell_ability_options(draft):
         names = _ability_names()
@@ -243,6 +259,7 @@ def species_pickers(draft: Draft) -> list[Picker]:
             _("Cantrip"),
             sum(p.count for p in spell_picks),
             sorted(pool, key=lambda c: c[1]),
+            kind="spell",
         )
     for choice in species.choice_definitions.filter(kind__in=["skills", "feats"]):
         if choice.kind == "skills":
@@ -255,6 +272,8 @@ def species_pickers(draft: Draft) -> list[Picker]:
                 choice.count or 1,
                 [(s.id, s.name) for s in skills],
                 True,
+                kind="skill",
+                refresh=True,  # the skill decides who can take Expertise, and what else is offered
             )
         else:
             taken = draft.background.feat if draft.background else None
@@ -263,7 +282,7 @@ def species_pickers(draft: Draft) -> list[Picker]:
                 for f in feat_resolver.origin_feats()
                 if taken is None or f.id != taken.id or feat_resolver.is_repeatable(f)
             ]
-            add("species.feat.feat", _("Origin feat"), 1, feats, True)
+            add("species.feat.feat", _("Origin feat"), 1, feats, True, kind="feat", refresh=True)
             extra = dict(draft.get("species.feat") or {})
             if feat := Feat.objects.filter(id=extra.get("feat"), category="Origin").first():
                 pickers += feat_pickers(draft, feat, "species.feat")

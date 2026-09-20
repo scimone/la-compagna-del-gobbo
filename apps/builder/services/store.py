@@ -18,7 +18,7 @@ Choice keys (value shapes) used across the builder:
     languages [language id]          equipment.class / equipment.background "A"|"B"|"C"
     equipment.groups {"class:holy-symbol": equipment id, ...}
     abilities {method, base{ab:n}, rolled[n], rolls[[n]], bonus{ab:n}}
-    details {backstory{...}, trinket}                        manual.abilities {ab: score}
+    manual.abilities {ab: score}     (the backstory is `Character.backstory`, not a choice)
     manual.skills {skill id: "none"|"proficient"|"expertise"}
 """
 
@@ -26,6 +26,8 @@ from dataclasses import dataclass, field
 
 from apps.characters.models import Character, CharacterChoice, CharacterClass
 
+#: The class's own level-1 choices (skills, weapon mastery, spells, ...) are part of the "class"
+#: step, shown right under the picked class - not a separate step later on.
 STEPS = (
     "class",
     "background",
@@ -33,9 +35,8 @@ STEPS = (
     "languages",
     "equipment",
     "abilities",
-    "choices",
     "alignment",
-    "details",
+    "story",
     "review",
 )
 
@@ -106,6 +107,14 @@ class Picker:
     candidates: list[tuple[str, str]]  # (id, display name)
     selected: list[str] = field(default_factory=list)
     single: bool = False  # stored as a bare value instead of a list
+    #: What the candidates are, so a screen can render them as catalog cards (icon, properties,
+    #: readable description) instead of a bare list: `plain` | `spell` | `equipment` | `feat` |
+    #: `invocation` | `skill`.
+    kind: str = "plain"
+    #: A change here changes what *other* pickers offer (a lineage changes the cantrip list, a
+    #: skill changes who can take Expertise), so the screen re-reads the step when it changes.
+    refresh: bool = False
+    hint: str = ""
 
     @property
     def candidate_ids(self) -> set[str]:
@@ -169,3 +178,15 @@ def read_values(pickers: list[Picker], getlist) -> dict:
         else:
             values.setdefault(choice_key, {})[sub] = value
     return values
+
+
+def store_picker(character: Character, key: str, value) -> None:
+    """Write one picker's value, folding a feat's own picks into that feat's dict."""
+    choice_key, sub = split_key(key)
+    if sub is None:
+        set_choice(character, choice_key, value)
+        return
+    row = CharacterChoice.objects.filter(character=character, key=choice_key).first()
+    current = dict(row.value or {}) if row else {}
+    current[sub] = value
+    set_choice(character, choice_key, current)

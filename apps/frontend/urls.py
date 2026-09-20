@@ -6,6 +6,11 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("characters/", character_views.characters_list, name="characters-overview"),
     path("characters/new/", character_views.character_new, name="character-new"),
+    path(
+        "characters/describe/<slug:kind>/<slug:pk>/",
+        character_views.describe,
+        name="character-describe",
+    ),
     path("characters/<int:pk>/", character_views.character_detail, name="character-detail"),
     path(
         "characters/<int:pk>/create/finish/",

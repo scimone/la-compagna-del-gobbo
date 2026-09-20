@@ -28,12 +28,32 @@ from apps.builder.services.store import STEPS, Draft, read_values
 from apps.characters.models import Character
 from apps.characters.services import access
 from apps.frontend import units
+from apps.frontend.entries_render import render_entries
 from apps.frontend.views import (
     _BACKGROUND_IMAGE_SLUGS,
+    _SCHOOL_LABELS,
     _SPECIES_IMAGE_SLUGS,
+    _WEAPON_CATEGORY_LABELS,
+    _format_casting_time,
+    _format_components,
+    _format_duration,
+    _format_feat_category,
+    _format_prerequisite,
+    _format_range,
     _menu_image_url,
+    _pick_translation,
 )
-from apps.rules.models import Ability, Background, Class, Equipment, Skill, Species
+from apps.rules.models import (
+    Ability,
+    Background,
+    Class,
+    Equipment,
+    Feat,
+    OptionalFeature,
+    Skill,
+    Species,
+    Spell,
+)
 
 STEP_LABELS = {
     "class": gettext_lazy("Class"),
@@ -42,9 +62,8 @@ STEP_LABELS = {
     "languages": gettext_lazy("Languages"),
     "equipment": gettext_lazy("Equipment"),
     "abilities": gettext_lazy("Ability scores"),
-    "choices": gettext_lazy("Class features"),
     "alignment": gettext_lazy("Alignment"),
-    "details": gettext_lazy("Details"),
+    "story": gettext_lazy("Background story"),
     "review": gettext_lazy("Review"),
 }
 BACKSTORY_QUESTIONS = (
@@ -228,53 +247,56 @@ def wizard_discard(request, pk):
 # --- step handlers -----------------------------------------------------------------------------
 
 
-def _class_step(request, character):
+def _pickers_step(request, character, *, step, current_of, choose, options_for, pickers_for, save):
+    """A step that picks one catalog row (class, background, species) and answers its choices.
+
+    The choices appear right under the picked row (see `_options.html`). Three kinds of POST:
+
+    - `action=select` (the page's script, when a row is clicked): remember the row; nothing more.
+    - `action=refresh` (the script, when an answer changes what other answers offer): save what is
+      filled in so far. Neither shows "still missing" messages - the player is mid-answer.
+    - the "Save and continue" button: save, and move on once nothing is missing.
+
+    Without the script (or after picking a different row and pressing the button) the same three
+    outcomes happen through a full page load.
+    """
     problems = []
     if request.method == "POST":
-        problems = origins.select_class(character, request.POST.get("class", ""))
-        if not problems:
-            return _advance(character, "class")
-    current = Draft(character).klass
-    options = [
+        action = request.POST.get("action", "continue")
+        current = current_of(Draft(character))
+        posted = request.POST.get(step, "")
+        if posted and (current is None or current.id != posted):
+            problems = choose(character, posted)  # a different row: its choices start afresh
+        elif current is not None:
+            pickers = pickers_for(Draft(character))
+            problems = save(character, read_values(pickers, request.POST.getlist))
+            if action == "continue" and not problems:
+                return _advance(character, step)
+        if action in ("select", "refresh"):
+            problems = []
+    draft = Draft(character)
+    return {
+        "field": step,
+        "options": options_for(current_of(draft)),
+        "pickers": _decorate(pickers_for(draft)),
+        **_issues_context(problems),
+    }
+
+
+def _class_options(current):
+    return [
         {
             "id": c.id,
             "name": c.name,
             "detail": c.short_description,
             "facts": c.primary_ability_display,
             "image": _menu_image_url("classes", f"{c.id}-grey.png"),
+            "vignette": False,
             "url": reverse("world-class-detail", args=[c.id]),
             "selected": bool(current and current.id == c.id),
         }
         for c in Class.objects.all()
     ]
-    return {"field": "class", "options": options, **_issues_context(problems)}
-
-
-def _pickers_step(request, character, *, step, choose, options_for, pickers_for, save, image=None):
-    """Steps that pick one catalog row (background, species) and then answer its sub-choices.
-
-    Choosing a different row saves it and re-renders (its sub-choices depend on it); submitting
-    with the same row saves the sub-choices and moves on once nothing is missing.
-    """
-    problems = []
-    if request.method == "POST":
-        current = getattr(Draft(character), step)
-        posted = request.POST.get(step, "")
-        if posted and (current is None or current.id != posted):
-            problems = choose(character, posted)
-        elif current is not None:
-            pickers = pickers_for(Draft(character))
-            problems = save(character, read_values(pickers, request.POST.getlist))
-            if not problems:
-                return _advance(character, step)
-    draft = Draft(character)
-    current = getattr(draft, step)
-    return {
-        "field": step,
-        "options": options_for(current),
-        "pickers": pickers_for(draft),
-        **_issues_context(problems),
-    }
 
 
 def _background_options(current):
@@ -287,6 +309,7 @@ def _background_options(current):
             "image": _menu_image_url(
                 "backgrounds", f"{_BACKGROUND_IMAGE_SLUGS.get(b.id, b.id)}.jpeg"
             ),
+            "vignette": True,  # the background artwork gets the same soft edge as in the World
             "url": reverse("world-background-detail", args=[b.id]),
             "selected": bool(current and current.id == b.id),
         }
@@ -302,11 +325,30 @@ def _species_options(current):
             "detail": s.short_description,
             "facts": "",
             "image": _menu_image_url("species", f"{_SPECIES_IMAGE_SLUGS.get(s.id, s.id)}-grey.png"),
+            "vignette": False,
             "url": reverse("world-species-detail", args=[s.id]),
             "selected": bool(current and current.id == s.id),
         }
         for s in Species.objects.filter(hidden=False)
     ]
+
+
+def _class_step(request, character):
+    def save(character, values):
+        return class_choices.save(
+            character, **{k.removeprefix("class."): v for k, v in values.items()}
+        )
+
+    return _pickers_step(
+        request,
+        character,
+        step="class",
+        current_of=lambda draft: draft.klass,
+        choose=origins.select_class,
+        options_for=_class_options,
+        pickers_for=class_choices.pickers,
+        save=save,
+    )
 
 
 def _background_step(request, character):
@@ -319,6 +361,7 @@ def _background_step(request, character):
         request,
         character,
         step="background",
+        current_of=lambda draft: draft.background,
         choose=origins.select_background,
         options_for=_background_options,
         pickers_for=origins.background_pickers,
@@ -336,10 +379,193 @@ def _species_step(request, character):
         request,
         character,
         step="species",
+        current_of=lambda draft: draft.species,
         choose=origins.select_species,
         options_for=_species_options,
         pickers_for=origins.species_pickers,
         save=save,
+    )
+
+
+# --- catalog cards for pickers -----------------------------------------------------------------
+# A picker of spells / tools / feats / ... is shown in the World's list design (icon, name, a line
+# of properties) with a "Read" button that unfolds the description. The rows are the same ones the
+# World lists show; the properties line is built the same way.
+
+_DAMAGE_TYPE_LABELS = {
+    "piercing": ("piercing", "perforanti"),
+    "bludgeoning": ("bludgeoning", "contundenti"),
+    "slashing": ("slashing", "taglienti"),
+    "psychic": ("psychic", "psichici"),
+}
+_CARD_MODELS = {
+    "spell": Spell,
+    "equipment": Equipment,
+    "feat": Feat,
+    "invocation": OptionalFeature,
+    "skill": Skill,
+}
+
+
+def _damage_text(item: Equipment) -> str:
+    kind = _pick_translation(_DAMAGE_TYPE_LABELS, item.damage_type) if item.damage_type else ""
+    return f"{item.damage_dice} {kind}".strip()
+
+
+def _card_line(kind: str, obj) -> str:
+    """The line of properties under a card's name - the same one the World list rows carry."""
+    if kind == "spell":
+        level = _("Cantrip") if obj.level == 0 else f"{_('Level')} {obj.level}"
+        return f"{level} · {_pick_translation(_SCHOOL_LABELS, obj.school)}"
+    if kind == "feat":
+        return _format_feat_category(obj.category)
+    if kind == "invocation":
+        return _("Eldritch Invocation")
+    if kind == "skill":
+        return obj.ability.name
+    parts = [obj.type.name if obj.type_id else ""]
+    if obj.weapon_category:
+        parts.insert(0, _pick_translation(_WEAPON_CATEGORY_LABELS, obj.weapon_category))
+    if obj.damage_dice:
+        parts.append(_damage_text(obj))
+    if masteries := ", ".join(m.name for m in obj.masteries.all()):
+        parts.append(masteries)
+    if obj.value:
+        parts.append(_gold_label(obj.value))
+    return " · ".join(p for p in parts if p)
+
+
+def _card_image(kind: str, obj) -> str | None:
+    if kind == "spell":
+        return _menu_image_url("spells", f"{obj.school.lower()}.jpeg")
+    if kind == "feat":
+        return _menu_image_url(
+            "feats", f"{obj.category.split(' (')[0].lower().replace(' ', '_')}.jpeg"
+        )
+    return None
+
+
+def _decorate(pickers):
+    """Give each catalog picker its `cards` (see the module note above); plain ones need none."""
+    for picker in pickers:
+        model = _CARD_MODELS.get(picker.kind)
+        if model is None:
+            picker.cards = None
+            continue
+        ids = [c[0] for c in picker.candidates]
+        queryset = model.objects.filter(id__in=ids)
+        if picker.kind == "skill":
+            queryset = queryset.select_related("ability")
+        elif picker.kind == "equipment":
+            queryset = queryset.select_related("type").prefetch_related("masteries")
+        objects = queryset.in_bulk()
+        picker.cards = [
+            {
+                "id": ident,
+                "name": name,
+                "detail": _card_line(picker.kind, objects[ident]),
+                "image": _card_image(picker.kind, objects[ident]),
+                "describe": reverse("character-describe", args=[picker.kind, ident]),
+                "checked": ident in picker.selected,
+            }
+            for ident, name in picker.candidates
+            if ident in objects
+        ]
+    return pickers
+
+
+# --- descriptions (unfolded under a card) -------------------------------------------------------
+
+
+def _describe_spell(pk):
+    spell = get_object_or_404(Spell, pk=pk)
+    facts = [
+        (_("Level"), _("Cantrip") if spell.level == 0 else spell.level),
+        (_("School"), _pick_translation(_SCHOOL_LABELS, spell.school)),
+        (_("Casting Time"), _format_casting_time(spell.casting_time)),
+        (_("Range"), _format_range(spell.range)),
+        (_("Components"), _format_components(spell.components)),
+        (_("Duration"), _format_duration(spell.duration)),
+    ]
+    sections = [render_entries(spell.entries)]
+    if spell.entries_higher_level:
+        sections.append(render_entries(spell.entries_higher_level))
+    return facts, sections
+
+
+def _describe_feat(pk):
+    feat = get_object_or_404(Feat, pk=pk)
+    facts = [(_("Category"), _format_feat_category(feat.category))]
+    if feat.prerequisite:
+        facts.append((_("Prerequisite"), _format_prerequisite(feat.prerequisite)))
+    return facts, [render_entries(feat.entries)]
+
+
+def _describe_invocation(pk):
+    feature = get_object_or_404(OptionalFeature, pk=pk)
+    facts = []
+    if feature.prerequisite:
+        facts.append((_("Prerequisite"), _format_prerequisite(feature.prerequisite)))
+    return facts, [render_entries(feature.entries)]
+
+
+def _describe_skill(pk):
+    skill = get_object_or_404(Skill.objects.select_related("ability"), pk=pk)
+    return [(_("Ability"), skill.ability.name)], [render_entries(skill.entries)]
+
+
+def _describe_equipment(pk):
+    item = get_object_or_404(
+        Equipment.objects.select_related("type").prefetch_related("properties", "masteries"), pk=pk
+    )
+    facts = []
+    if item.type_id:
+        facts.append((_("Type"), item.type.name))
+    if item.weapon_category:
+        facts.append(
+            (_("Category"), _pick_translation(_WEAPON_CATEGORY_LABELS, item.weapon_category))
+        )
+    if item.damage_dice:
+        facts.append((_("Damage"), _damage_text(item)))
+    if item.ac:
+        facts.append((_("Armor Class"), item.ac))
+    if properties := ", ".join(p.name for p in item.properties.all()):
+        facts.append((_("Properties"), properties))
+    if masteries := ", ".join(m.name for m in item.masteries.all()):
+        facts.append((_("Mastery"), masteries))
+    if item.value:
+        facts.append((_("Cost"), _gold_label(item.value)))
+    if item.weight:
+        facts.append((_("Weight"), units.metricize_text(f"{item.weight:g} lb.")))
+    sections = [render_entries(item.entries)] if item.entries else []
+    # A weapon has no description of its own: what matters is what its properties and its
+    # Mastery mean, so those are spelled out.
+    for mastery in item.masteries.all():
+        sections.append(
+            render_entries([{"type": "entries", "name": mastery.name, "entries": mastery.entries}])
+        )
+    for prop in item.properties.all():
+        sections.append(render_entries(prop.entries))
+    return facts, sections
+
+
+_DESCRIBERS = {
+    "spell": _describe_spell,
+    "feat": _describe_feat,
+    "invocation": _describe_invocation,
+    "skill": _describe_skill,
+    "equipment": _describe_equipment,
+}
+
+
+def describe(request, kind, pk):
+    """The description of one catalog row, as a fragment the wizard unfolds under its card."""
+    describer = _DESCRIBERS.get(kind)
+    if describer is None:
+        raise Http404
+    facts, sections = describer(pk)
+    return render(
+        request, "frontend/characters/_describe.html", {"facts": facts, "sections": sections}
     )
 
 
@@ -508,19 +734,6 @@ def _abilities_step(request, character):
     }
 
 
-def _choices_step(request, character):
-    problems = []
-    if request.method == "POST":
-        pickers = class_choices.pickers(Draft(character))
-        values = read_values(pickers, request.POST.getlist)
-        problems = class_choices.save(
-            character, **{k.removeprefix("class."): v for k, v in values.items()}
-        )
-        if not problems:
-            return _advance(character, "choices")
-    return {"pickers": class_choices.pickers(Draft(character)), **_issues_context(problems)}
-
-
 def _alignment_step(request, character):
     problems = []
     if request.method == "POST":
@@ -535,26 +748,11 @@ def _alignment_step(request, character):
     }
 
 
-def _details_step(request, character):
+def _story_step(request, character):
     if request.method == "POST":
-        backstory = {
-            str(i): request.POST.get(f"backstory.{i}", "").strip()
-            for i in range(len(BACKSTORY_QUESTIONS))
-        }
-        creation.save_details(
-            character,
-            appearance=request.POST.get("appearance", ""),
-            notes=request.POST.get("notes", ""),
-            backstory=backstory,
-        )
-        return _advance(character, "details")
-    character.refresh_from_db()
-    saved = (Draft(character).get("details") or {}).get("backstory", {})
-    return {
-        "questions": [
-            (str(i), q, saved.get(str(i), "")) for i, q in enumerate(BACKSTORY_QUESTIONS)
-        ],
-    }
+        creation.save_backstory(character, request.POST.get("backstory", ""))
+        return _advance(character, "story")
+    return {"questions": BACKSTORY_QUESTIONS, "backstory": character.backstory}
 
 
 def _review_step(request, character):
@@ -673,9 +871,8 @@ _HANDLERS = {
     "languages": _languages_step,
     "equipment": _equipment_step,
     "abilities": _abilities_step,
-    "choices": _choices_step,
     "alignment": _alignment_step,
-    "details": _details_step,
+    "story": _story_step,
     "review": _review_step,
 }
 

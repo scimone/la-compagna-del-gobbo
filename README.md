@@ -740,10 +740,29 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
   lists every finished character of every account (with its owner) plus the viewer's own
   unfinished ones under "In creation"; the **`+`** button (`/characters/new/`, sign-in required)
   asks for a name and starts the wizard at `/characters/<id>/create/<step>/` - steps `class →
-  background → species → languages → equipment → abilities → choices → alignment → details →
-  review`, each reachable from a progress bar once its prerequisites exist. Progress is saved on
-  every step (the draft is a real `Character` row), so leaving and coming back resumes. Finish and
-  Discard use `data-nav="root"` so the wizard leaves the Characters history and lands on the list.
+  background → species → languages → equipment → abilities → alignment → story → review`, each
+  reachable from a progress bar once its prerequisites exist. Progress is saved on every step (the
+  draft is a real `Character` row), so leaving and coming back resumes. Finish and Discard use
+  `data-nav="root"` so the wizard leaves the Characters history and lands on the list.
+  - **Choices open under the picked row.** Class, background and species are pick-one lists in the
+    World's card design (shared CSS in `_item_list_style.html`; backgrounds get the same vignette);
+    the picked row's own choices - the class's level-1 choices (there is no separate "class
+    features" step), a background's tool and feat picks, a species' size/lineage/cantrip/skill -
+    open directly under it. A script (`wizard_base.html`) POSTs `action=select` when a row is
+    clicked and `action=refresh` when an answer changes what other answers offer (a picker with
+    `refresh=True`: skills, Divine/Primal Order, spellbook, lineage), then swaps `.wiz` with the
+    server's page - no "Save and continue" needed to see them. Without JS the button does the same
+    through a full page load.
+  - **Catalog pickers are cards.** A picker of spells, tools, weapons, feats, invocations or skills
+    (`Picker.kind`) renders in the World's list design - school/feat-category icon, name, the same
+    properties line - with a **Read** button that unfolds the description, fetched lazily from
+    `GET /characters/describe/<kind>/<id>/` (spell facts + entries, tool/weapon facts with
+    properties and Mastery, ...). Other pickers stay a select/checkbox group.
+  - **Order-independent answers**: a later answer can invalidate an earlier pick (a background that
+    already grants a skill picked for the class); `services/prune.py` drops such picks on every
+    recompute, and the step shows the choice as still to do.
+  - **Background story** (`story`) is one free-text field (`Character.backstory`) with the SRD's
+    six "past and present" questions above it as a writing guide.
   `GET /characters/<id>/` is a bare read-only summary of a finished character (the full character
   sheet is a later task). Trinkets are not in the wizard yet (see the plan's TODO).
 - `GET /handbook/` (`handbook_overview`) lists every `rules.HandbookSection` (a `list_page` like

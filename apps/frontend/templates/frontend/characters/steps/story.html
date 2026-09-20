@@ -1,0 +1,18 @@
+{% extends "frontend/characters/wizard_base.html" %}
+{% load i18n %}
+{% block step_style %}
+  .guide { margin: 0; padding: 0.6rem 0.9rem 0.6rem 1.7rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; font-size: 0.9rem; color: var(--muted); }
+  .guide li { margin: 0.15rem 0; }
+  .wiz textarea.story { min-height: 16rem; }
+{% endblock %}
+{% block step %}
+  <p class="hint">{% translate "Let your background and species inspire your character's past, and write it down as one story. These questions are only a guide: answer as if you were your character." %}</p>
+  <ul class="guide">
+    {% for question in questions %}<li>{{ question }}</li>{% endfor %}
+  </ul>
+  <form method="post">
+    {% csrf_token %}
+    <textarea class="story" name="backstory" aria-label="{% translate 'Background story' %}">{{ backstory }}</textarea>
+    <div class="actions"><button type="submit" class="btn">{% translate "Save and continue" %}</button></div>
+  </form>
+{% endblock %}

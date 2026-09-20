@@ -920,3 +920,41 @@ msgstr "Termina"
 
 msgid "You can override any ability score (%(lo)s-%(hi)s) and any skill, whatever your class, species or background say. Your adjustments are kept even if you go back and change something."
 msgstr "Puoi modificare qualsiasi punteggio di caratteristica (%(lo)s-%(hi)s) e qualsiasi abilità, a prescindere da ciò che dicono classe, specie o background. Le tue modifiche vengono mantenute anche se torni indietro e cambi qualcosa."
+
+# Character creation wizard (docs/character_creation_plan.md)
+
+msgid "Only skills you are proficient in. Choose your background and species first to include the skills they give you."
+msgstr "Solo abilità in cui hai competenza. Scegli prima background e specie per includere le abilità che ti danno."
+
+msgid "The spells come from the %(list)s spell list."
+msgstr "Gli incantesimi provengono dalla lista di incantesimi da %(list)s."
+
+msgid "Background story"
+msgstr "Storia del personaggio"
+
+msgid "Type"
+msgstr "Tipo"
+
+msgid "Properties"
+msgstr "Proprietà"
+
+msgid "Mastery"
+msgstr "Padronanza"
+
+msgid "Cost"
+msgstr "Costo"
+
+msgid "Weight"
+msgstr "Peso"
+
+msgid "Pick a species. Its choices (size, lineage, cantrip, ...) open right under it."
+msgstr "Scegli una specie. Le sue scelte (taglia, stirpe, trucchetto, ...) si aprono subito sotto."
+
+msgid "Pick a background. What it asks of you (a tool, its feat's choices) opens right under it."
+msgstr "Scegli un background. Ciò che richiede (uno strumento, le scelte del suo talento) si apre subito sotto."
+
+msgid "Let your background and species inspire your character's past, and write it down as one story. These questions are only a guide: answer as if you were your character."
+msgstr "Lasciati ispirare dal background e dalla specie del personaggio per immaginarne il passato, e scrivilo come un'unica storia. Queste domande sono solo una guida: rispondi come se fossi il tuo personaggio."
+
+msgid "Pick a class. It sets your hit die, saving throws, armor and weapon training and the features you start with. Its level 1 choices open right under it."
+msgstr "Scegli una classe. Determina il Dado Vita, i tiri salvezza, le competenze in armature e armi e i privilegi iniziali. Le sue scelte di 1º livello si aprono subito sotto."

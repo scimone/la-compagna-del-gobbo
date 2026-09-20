@@ -222,18 +222,48 @@ def test_a_skill_the_background_gave_is_not_offered_again(owner):
     assert class_choices.save(c, skills=["athletics", "acrobatics"])  # rejected: already held
 
 
-def test_changing_the_background_makes_a_stale_pick_a_problem_not_a_silent_duplicate(owner):
-    c = build_character(owner, "fighter", "soldier")
-    picked = set(Draft(c).get("class.skills"))
-    # Guard: switch to a background that grants one of the skills already picked for the class.
+def test_changing_the_background_drops_a_class_pick_it_now_duplicates(owner):
+    """The class (and its picks) can be answered before the background. When a later background
+    already grants a picked skill, the pick is removed - never kept as a duplicate - and the class
+    step shows that skill as still to choose."""
     from apps.rules.models import Background
 
+    c = build_character(owner, "fighter", "soldier")
+    picked = set(Draft(c).get("class.skills"))
     other = next(b for b in Background.objects.all() if picked & {s.id for s in b.skills.all()})
+    clash = picked & {s.id for s in other.skills.all()}
+
     origins.select_background(c, other.id)
 
+    remaining = set(Draft(c).get("class.skills"))
+    assert not remaining & clash and remaining <= picked  # the clashing pick is gone, the rest stay
     assert any(
-        i.step == "choices" and i.path == "class.skills" for i in class_choices.issues(Draft(c))
+        i.step == "class" and i.path == "class.skills" for i in class_choices.issues(Draft(c))
     )
+    held = set(c.proficiencies.filter(category="skill").values_list("name", flat=True))
+    assert clash <= held  # ...and the background still gives it exactly once
+    assert c.proficiencies.filter(category="skill").count() == len(held)
+
+
+def test_a_valid_incomplete_selection_is_left_alone_by_pruning(owner):
+    from apps.builder.services import prune
+
+    c = build_character(owner, "wizard")
+    class_choices.save(c, cantrips=["fire-bolt"])  # 1 of 3: incomplete but valid
+
+    assert prune.run(c) is False
+    assert Draft(c).get("class.cantrips") == ["fire-bolt"]
+
+
+def test_prepared_spells_are_pruned_when_the_spellbook_no_longer_holds_them(owner):
+    wizard = build_character(owner, "wizard")
+    book = Draft(wizard).get("class.spellbook")
+    prepared = Draft(wizard).get("class.spells")
+    dropped = prepared[0]
+
+    class_choices.save(wizard, spellbook=[s for s in book if s != dropped])
+
+    assert dropped not in Draft(wizard).get("class.spells")
 
 
 def test_languages_are_two_distinct_standard_languages(owner):

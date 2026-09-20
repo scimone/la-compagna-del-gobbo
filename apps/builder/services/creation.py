@@ -10,7 +10,7 @@ from . import effects, validation
 from .store import STEPS, Draft, Issue, clear_choices, set_choice
 
 #: Steps that must be complete before Finish (`details` is optional, `review` is derived).
-REQUIRED_STEPS = tuple(s for s in STEPS if s not in ("details", "review"))
+REQUIRED_STEPS = tuple(s for s in STEPS if s not in ("story", "review"))
 
 
 def start_draft(owner, name: str) -> Character:
@@ -34,7 +34,7 @@ def get_state(character: Character) -> dict:
             status = "locked"
         elif by_step[step]:
             status = "incomplete"
-        elif step in ("details", "review"):
+        elif step in ("story", "review"):
             status = "optional"
         else:
             status = "complete"
@@ -57,16 +57,10 @@ def get_state(character: Character) -> dict:
 # --- details & the manual layer ---------------------------------------------------------------
 
 
-def save_details(
-    character: Character, *, appearance: str = "", notes: str = "", backstory: dict | None = None
-) -> None:
-    character.appearance = appearance
-    character.notes = notes
-    character.save(update_fields=["appearance", "notes", "updated_at"])
-    details = dict(Draft(character).get("details") or {})
-    if backstory is not None:
-        details["backstory"] = backstory
-    set_choice(character, "details", details)
+def save_backstory(character: Character, text: str) -> None:
+    """The background story: one free-form text (the SRD's questions are just a guide)."""
+    character.backstory = text.strip()
+    character.save(update_fields=["backstory", "updated_at"])
 
 
 def set_manual_abilities(character: Character, scores: dict[str, int]) -> list[Issue]:

@@ -91,6 +91,9 @@ def _equipped_armor(items, grants: Grants) -> set[int]:
 def apply(character: Character) -> None:
     if character.status != Character.STATUS_DRAFT:
         return
+    from . import prune  # local: prune -> origins/class_choices -> effects
+
+    prune.run(character)
     draft = Draft(character)
     grants = compute_grants(draft)
     items, gold, _problems = equipment_resolver.resolve(draft)

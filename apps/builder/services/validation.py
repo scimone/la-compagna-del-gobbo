@@ -13,7 +13,6 @@ from .store import STEPS, Draft, Issue
 PREREQUISITES = {
     "equipment": ("class", "background"),
     "abilities": ("background",),
-    "choices": ("class", "background", "species"),
 }
 
 
@@ -34,6 +33,8 @@ def step_issues(draft: Draft) -> dict[str, list[Issue]]:
     result: dict[str, list[Issue]] = {step: [] for step in STEPS}
     if draft.klass is None:
         result["class"] = [Issue("class", "missing", _("Choose a class."), "class")]
+    else:
+        result["class"] = class_choices.issues(draft)
     result["background"] = origins.background_issues(draft)
     result["species"] = origins.species_issues(draft)
     result["languages"] = origins.languages_issues(draft)
@@ -41,8 +42,6 @@ def step_issues(draft: Draft) -> dict[str, list[Issue]]:
         result["equipment"] = origins.equipment_issues(draft)
     if not locked(draft, "abilities"):
         result["abilities"] = abilities.issues(draft)
-    if not locked(draft, "choices"):
-        result["choices"] = class_choices.issues(draft)
     result["alignment"] = origins.alignment_issues(draft)
     result["review"] = abilities.manual_issues(draft.get("manual.abilities") or {})
     return result
