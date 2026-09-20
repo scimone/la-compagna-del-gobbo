@@ -6,11 +6,8 @@ set -e
 # Navigate to the project directory
 cd /home/ascimone/projects/la-compagna-del-gobbo || { echo "Directory not found"; exit 1; }
 
-# Pull latest changes from git
-echo "Pulling latest changes..."
-git pull
-
-# Build the Docker images
+# Build the Docker images from the working tree as it is on disk - no `git pull`, so this needs
+# no GitHub credentials; commit/push separately.
 echo "Building Docker images..."
 docker compose build
 

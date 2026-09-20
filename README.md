@@ -51,8 +51,8 @@ reachable from the container, if you'd rather not use the bundled `dnd-db` at al
 that service just goes unused; nothing requires the app to talk to it). App: `http://localhost:3000/`
 — API docs: `http://localhost:3000/api/docs`.
 
-**Redeploying** after a code change: `bash update-app.sh` — pulls `git`, rebuilds the image, and
-restarts only `dnd-web` (`dnd-db` and its data are left running untouched).
+**Redeploying** after a code change: `bash update-app.sh` — rebuilds the image from the working tree (no
+`git pull`, so no GitHub credentials needed) and restarts only `dnd-web` (`dnd-db` and its data are left running untouched).
 
 After changing anything under `db/it/` (the Italian game-content translations), load it with
 `docker compose exec dnd-web uv run manage.py import_translations` — unlike `import_rules_data`
