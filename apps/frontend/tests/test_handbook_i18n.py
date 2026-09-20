@@ -142,6 +142,51 @@ def test_spell_range_filter_shows_metric_labels_on_the_italian_site(client, cata
     assert "150 feet" in html
 
 
+def test_spell_school_casting_time_and_classes_are_translated_in_italian(client, catalogs):
+    # Divine Smite: an Evocation spell (translated "Invocazione" - the classic Italian D&D
+    # swap with Conjuration/"Evocazione"), a Bonus Action with a translated reaction-style
+    # condition whose {@variantrule} tag still resolves to a real link, cast by Paladins.
+    html = _get(client, "/world/spells/divine-smite/", "it")
+    assert "Invocazione" in html
+    assert "Evocation" not in html
+    assert "1 azione bonus, che compi subito dopo aver colpito" in html
+    assert '<a href="/world/rules/unarmed-strike/">colpo senz&#x27;armi</a>' in html
+    assert "Paladino" in html
+    assert "Bonus Action" not in html
+
+    html = _get(client, "/world/spells/divine-smite/", "en")
+    assert "Evocation" in html
+    assert "1 bonus action, which you take immediately after hitting" in html
+    assert "Paladin" in html
+
+    # Summon Fiend: a Conjuration spell (translated "Evocazione"), cast by Warlocks.
+    html = _get(client, "/world/spells/summon-fiend/", "it")
+    assert "Evocazione" in html
+    assert "Conjuration" not in html
+
+    # Wish: cast by both Sorcerers and Wizards - every class in `Spell.classes` is translated,
+    # not just the first.
+    html = _get(client, "/world/spells/wish/", "it")
+    assert "Stregone, Mago" in html
+
+
+def test_spell_filters_show_translated_school_class_and_casting_time_labels(client, catalogs):
+    html = _get(client, "/world/spells/", "it")
+    assert "Invocazione" in html
+    assert "Evocazione" in html
+    assert "Abiurazione" in html
+    assert "azione bonus" in html
+    assert "10 minuti" in html
+    assert "Paladino" in html
+
+    html = _get(client, "/world/spells/", "en")
+    assert "Evocation" in html
+    assert "Conjuration" in html
+    assert "Bonus Action" in html
+    assert "10 Minutes" in html
+    assert "Paladin" in html
+
+
 def test_english_fallback_text_shows_metric_measurements_on_the_italian_site(client, catalogs):
     # Every spell has Italian text by now, so force one row back into the "no Italian text yet"
     # state this test targets: its body still mentions a distance ("10 feet"), which should read

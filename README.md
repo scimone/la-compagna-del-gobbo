@@ -803,6 +803,28 @@ catalog isn't safe for this particular vocabulary. A *named* tool proficiency (e
 tools") is the source's own lowercase `Equipment` name, so it's resolved through that row's own
 translation instead of a separate mapping.
 
+**A Spell's own facts needed the same treatment.** `school`, `casting_time` and `classes` are
+raw structured data (see `Spell`'s docstring), not `entries` prose, so the translation pipeline
+never touches them - they were showing English on the Italian site even once everything else on
+the page was translated. Fixed the same way as the codes above: `_SCHOOL_LABELS` (all 8 schools -
+note the classic Italian D&D swap, English "Conjuration"/"Evocation" are Italian "Evocazione"/
+"Invocazione", the other way around from what the cognates suggest, confirmed against this
+project's own already-translated Evoker subclass, "Invocatore", and its Evocation-school
+features) and `_CASTING_TIME_UNIT_LABELS` are `(english, italian)` dicts like the others;
+`_CASTING_TIME_CONDITIONS` (a Reaction spell's free-text trigger, e.g. "which you take when you
+are hit by an attack roll...") is instead a plain `{english: italian}` lookup by exact sentence,
+since there are only ever a handful of distinct ones across the whole catalog and it's prose, not
+a code; `_class_name()` resolves a `classes` entry through the matching `Class.name` (already
+translated) with one hardcoded fallback, `"Artificer"` (not one of this project's `Class` rows -
+see the model's docstring), the same shape as `_proficiency_label()`'s `Equipment` lookup above.
+Fixing `_format_casting_time()` also surfaced a pre-existing bug in *both* languages: a
+condition's `{@variantrule ...}` markup was being shown as a literal, un-rendered tag rather than
+resolved to a link, since a fact's value only ever went through a plain `{{ value }}` (auto-
+escaping, no tag handling) - now routed through the new `entries_render.render_text()`, the same
+tag resolution `entries` prose gets but without its `<p>` wrapper, since this is one short phrase
+inside a larger sentence, not a block of its own. The World > Spells filter row and each spell's
+list-page subtitle went through the same fix for `school`/`classes`/`casting_time` labels.
+
 **How it's wired**: `LANGUAGES = [("en", ...), ("it", ...)]` + `LocaleMiddleware` (in
 `config/settings.py`) + `path("i18n/", include("django.conf.urls.i18n"))` (in `config/urls.py`)
 gives a `POST /i18n/setlang/` endpoint for free - that's the "change language with a button"

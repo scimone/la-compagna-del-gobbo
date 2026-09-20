@@ -148,6 +148,14 @@ def render_entries(entries) -> SafeString:
     return mark_safe(_render_node(entries, linker))
 
 
+def render_text(text: str) -> SafeString:
+    """Render one bare string's `{@tag ...}` markup inline, with no `<p>` wrapper - for a short
+    snippet embedded in a larger sentence (e.g. a Spell's casting-time condition, "...or an
+    {@variantrule Unarmed Strike|XPHB}") rather than a full `entries` block of its own.
+    """
+    return mark_safe(_render_text(text, _ReferenceLinker()))
+
+
 def render_handbook_section(entries) -> SafeString:
     """Render a `rules.HandbookSection`'s `entries` the same way `render_entries()` does, except
     every named `type: "entries"` block - at any nesting depth - becomes a collapsible toggle

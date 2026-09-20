@@ -3,7 +3,7 @@ from django.db.models import Prefetch, Q
 from django.shortcuts import redirect, render
 from django.templatetags.static import static
 from django.urls import reverse
-from django.utils.html import escape, format_html
+from django.utils.html import escape, format_html, format_html_join
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
 from django.utils.translation import gettext as _
@@ -16,10 +16,11 @@ from apps.frontend.entries_render import (
     render_key_value_table,
     render_starting_equipment,
     render_subclasses,
+    render_text,
     render_trait_cards,
     self_translated_badge,
 )
-from apps.rules.models import Ability, Equipment, Feature, Subclass
+from apps.rules.models import Ability, Class, Equipment, Feature, Subclass
 from apps.rules.services import background as background_service
 from apps.rules.services import class_ as class_service
 from apps.rules.services import feat as feat_service
@@ -99,6 +100,95 @@ _TOOL_CHOICE_LABELS = {
     "anyArtisansTool": ("an artisan's tool", "uno strumento da artigiano"),
     "anyGamingSet": ("a gaming set", "un gioco"),
 }
+# `Spell.school`/`Spell.casting_time` are raw structured data (not `entries` prose), so they're
+# never touched by the translation pipeline at all - these are the fixed vocabularies that need
+# translating for display, same treatment as the other closed-vocabulary dicts above. Note the
+# classic Italian D&D swap: English "Conjuration"/"Evocation" map to Italian "Evocazione"/
+# "Invocazione" - the other way around from what the English cognates would suggest - confirmed
+# against this project's own already-translated Evoker subclass ("Invocatore") and its Evocation-
+# school features ("scuola di Invocazione").
+_SCHOOL_LABELS = {
+    "Abjuration": ("Abjuration", "Abiurazione"),
+    "Conjuration": ("Conjuration", "Evocazione"),
+    "Divination": ("Divination", "Divinazione"),
+    "Enchantment": ("Enchantment", "Ammaliamento"),
+    "Evocation": ("Evocation", "Invocazione"),
+    "Illusion": ("Illusion", "Illusione"),
+    "Necromancy": ("Necromancy", "Necromanzia"),
+    "Transmutation": ("Transmutation", "Trasmutazione"),
+}
+_CASTING_TIME_UNIT_LABELS = {
+    "action": ("action", "azione"),
+    "bonus": ("bonus action", "azione bonus"),
+    "reaction": ("reaction", "reazione"),
+    "minute": ("minute", "minuto"),
+    "hour": ("hour", "ora"),
+}
+# `rules.services.spell.list_casting_times()` bakes its own English display label per option
+# (`_CASTING_TIME_LABELS` there) - translated here by exact match rather than reusing
+# `_CASTING_TIME_UNIT_LABELS` above, since the filter's labels are already-pluralized whole
+# phrases ("10 Minutes"), not a bare number + unit `_format_casting_time()` assembles itself.
+_CASTING_TIME_FILTER_LABELS = {
+    "1 Action": ("1 Action", "1 azione"),
+    "1 Bonus Action": ("1 Bonus Action", "1 azione bonus"),
+    "1 Reaction": ("1 Reaction", "1 reazione"),
+    "1 Minute": ("1 Minute", "1 minuto"),
+    "10 Minutes": ("10 Minutes", "10 minuti"),
+    "1 Hour": ("1 Hour", "1 ora"),
+    "8 Hours": ("8 Hours", "8 ore"),
+    "12 Hours": ("12 Hours", "12 ore"),
+    "24 Hours": ("24 Hours", "24 ore"),
+}
+# `Spell.casting_time`'s free-text `condition` (only on Reaction-cast spells, e.g. "which you take
+# when you are hit by an attack roll...") is prose, but it's structured data outside `entries`, so
+# it's translated here by exact match rather than through the overlay pipeline - there are only
+# ever a handful of distinct sentences across the whole catalog (most Reaction spells share one).
+_CASTING_TIME_CONDITIONS = {
+    "which you take immediately after hitting a target with a Melee weapon or an "
+    "{@variantrule Unarmed Strike|XPHB}": (
+        "che compi subito dopo aver colpito un bersaglio con un'arma da mischia o con un "
+        "{@variantrule Unarmed Strike|XPHB|colpo senz'armi}"
+    ),
+    "which you take immediately after hitting a creature with a Melee weapon or an "
+    "{@variantrule Unarmed Strike|XPHB}": (
+        "che compi subito dopo aver colpito una creatura con un'arma da mischia o con un "
+        "{@variantrule Unarmed Strike|XPHB|colpo senz'armi}"
+    ),
+    "which you take immediately after hitting a creature with a weapon": (
+        "che compi subito dopo aver colpito una creatura con un'arma"
+    ),
+    "which you take when you or a creature you can see within 60 feet of you falls": (
+        "che compi quando tu o una creatura che riesci a vedere entro 18 metri da te cade"
+    ),
+    "which you take immediately after hitting a creature with a Ranged weapon": (
+        "che compi subito dopo aver colpito una creatura con un'arma a distanza"
+    ),
+    "which you take in response to taking damage from a creature that you can see within 60 "
+    "feet of yourself": (
+        "che compi in risposta a subire danni da una creatura che riesci a vedere entro 18 metri "
+        "da te"
+    ),
+    "which you take when you are hit by an attack roll or targeted by the Magic Missile spell": (
+        "che compi quando sei colpito da un tiro per colpire o preso di mira dall'incantesimo "
+        "{@spell Magic Missile|XPHB|dardo incantato}"
+    ),
+    "which you take when you see a creature within 60 feet of yourself casting a spell with "
+    "Verbal, Somatic, or Material components": (
+        "che compi quando vedi una creatura entro 18 metri da te lanciare un incantesimo con "
+        "componenti Verbali, Somatiche o Materiali"
+    ),
+    "which you take immediately after hitting or missing a target with a ranged attack using a "
+    "weapon": (
+        "che compi subito dopo aver colpito o mancato un bersaglio con un attacco a distanza "
+        "usando un'arma"
+    ),
+}
+# `Spell.classes` is a plain list of English class names (see the model's docstring for why it's
+# not a `Class` FK) - resolved through `Class.name` (already translated) where one matches, since
+# every name but "Artificer" (not one of this project's XPHB `Class` rows) is a real Class.
+_CLASS_NAME_FALLBACKS = {
+    "Artificer": ("Artificer", "Artefice"),
+}
 
 
 def _pick_translation(table: dict[str, tuple[str, str]], code: str) -> str:
@@ -116,6 +206,17 @@ def _ability_names() -> dict[str, str]:
     English dict.
     """
     return dict(Ability.objects.values_list("pk", "name"))
+
+
+def _class_name(english_name: str) -> str:
+    """A `Spell.classes` entry's own (already-translated) `Class.name` where `english_name`
+    matches a real class, else its `_CLASS_NAME_FALLBACKS` entry (just "Artificer" today), else
+    unchanged.
+    """
+    klass = Class.objects.filter(name_en=english_name).first()
+    if klass:
+        return klass.name
+    return _pick_translation(_CLASS_NAME_FALLBACKS, english_name)
 
 
 def _proficiency_label(code: str) -> str:
@@ -214,11 +315,21 @@ def _format_creature_types(codes: list[str] | None) -> str:
 def _format_casting_time(raw_list):
     parts = []
     for entry in raw_list or []:
-        text = f"{entry.get('number', '')} {entry.get('unit', '')}".strip()
-        if entry.get("condition"):
-            text = f"{text}, {entry['condition']}"
+        unit = _pick_translation(_CASTING_TIME_UNIT_LABELS, entry.get("unit", ""))
+        text = f"{entry.get('number', '')} {unit}".strip()
+        condition = entry.get("condition")
+        if condition:
+            # `_CASTING_TIME_CONDITIONS` is `{english: italian}`, not an `(english, italian)`
+            # pair like `_pick_translation()`'s other tables - the English text is already
+            # correct as-is, so there's nothing to look up on the English site.
+            if (get_language() or "en").startswith("it"):
+                condition = _CASTING_TIME_CONDITIONS.get(condition, condition)
+            # `condition` carries `{@tag ...}` markup (e.g. "...or an
+            # {@variantrule Unarmed Strike|XPHB}") that plain `escape()`/`{{ }}` would show
+            # literally - `render_text()` resolves it the same way `entries` prose does.
+            text = format_html("{}, {}", text, render_text(condition))
         parts.append(text)
-    return ", ".join(parts)
+    return format_html_join(", ", "{}", ((part,) for part in parts))
 
 
 def _format_range(range_data):
@@ -845,10 +956,13 @@ def world_spells(request):
         [("0", _("Cantrip"))] + [(str(n), f"{_('Level')} {n}") for n in range(1, 10)],
     )
     class_filter = _checklist_filter(
-        request, "class", _("Class"), [(c, c) for c in spell_service.list_classes()]
+        request, "class", _("Class"), [(c, _class_name(c)) for c in spell_service.list_classes()]
     )
     school_filter = _checklist_filter(
-        request, "school", _("School"), [(s, s) for s in spell_service.list_schools()]
+        request,
+        "school",
+        _("School"),
+        [(s, _pick_translation(_SCHOOL_LABELS, s)) for s in spell_service.list_schools()],
     )
     range_filter = _checklist_filter(
         request,
@@ -859,7 +973,13 @@ def world_spells(request):
         [(k, units.range_label(k)) for k in spell_service.list_range_kinds()],
     )
     casting_time_filter = _checklist_filter(
-        request, "casting_time", _("Casting Time"), spell_service.list_casting_times()
+        request,
+        "casting_time",
+        _("Casting Time"),
+        [
+            (key, _pick_translation(_CASTING_TIME_FILTER_LABELS, label))
+            for key, label in spell_service.list_casting_times()
+        ],
     )
     save_filter = _checklist_filter(
         request, "save", _("Saving Throw"), [(a.id, a.name) for a in Ability.objects.all()]
@@ -900,8 +1020,10 @@ def world_spells(request):
         items.append(
             {
                 "name": s.name,
-                "detail": f"{level_text} · {s.school}",
+                "detail": f"{level_text} · {_pick_translation(_SCHOOL_LABELS, s.school)}",
                 "url": reverse("world-spell-detail", args=[s.pk]),
+                # The image filename is keyed by the school's own *English* name (a fixed set of
+                # asset files on disk), so this stays `s.school.lower()`, not the translated label.
                 "image": _menu_image_url("spells", f"{s.school.lower()}.jpeg"),
             }
         )
@@ -930,7 +1052,7 @@ def world_spell_detail(request, pk):
 
     facts = [
         (_("Level"), level_value),
-        (_("School"), spell.school),
+        (_("School"), _pick_translation(_SCHOOL_LABELS, spell.school)),
         (_("Casting Time"), _format_casting_time(spell.casting_time)),
         (_("Range"), _format_range(spell.range)),
         (_("Components"), _format_components(spell.components)),
@@ -944,7 +1066,7 @@ def world_spell_detail(request, pk):
     if saving_throws:
         facts.append((_("Saving Throw"), saving_throws))
     if spell.classes:
-        facts.append((_("Classes"), ", ".join(spell.classes)))
+        facts.append((_("Classes"), ", ".join(_class_name(c) for c in spell.classes)))
     facts.append((_("Page"), spell.page))
 
     description_heading = _badged_heading(_("Description"), _self_translated(spell, "entries"))
