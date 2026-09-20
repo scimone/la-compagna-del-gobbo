@@ -26,8 +26,11 @@ class Spell(models.Model):
     `db_old/spells.json`'s arrays instead - a deliberate, frozen exception to "only `db/` is live
     source data", kept until upstream ships a real replacement (see
     `docs/data_migration_2025.md`). Still plain JSON lists, not relations, for the same reason as
-    before: a hard FK would either drop data (e.g. "Artificer", not one of our XPHB `Class` rows)
-    or invent a matching row the source doesn't give.
+    before: `subclasses` names plenty of pre-XPHB subclasses (e.g. "Way of Shadow", "The Archfey")
+    this project's own `Subclass` table has no row for, so a hard FK would either drop that data or
+    invent a matching row the source doesn't give. (`classes` itself only ever named one class not
+    in our `Class` table - "Artificer" - dropped entirely at import time, at the project owner's
+    request, rather than kept as an unmatched fallback.)
     """
 
     id = models.SlugField(primary_key=True, max_length=100)

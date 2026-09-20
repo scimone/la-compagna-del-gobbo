@@ -174,19 +174,20 @@ def test_spell_school_casting_time_and_classes_are_translated_in_italian(client,
     ) in html
 
 
-def test_spell_classes_are_clickable_except_for_a_class_with_no_own_page(client, catalogs):
-    # Acid Splash is cast by the Artificer too, which isn't one of this project's Class rows
-    # (see Spell's docstring) - it shows as plain text, not a broken link, alongside real ones.
+def test_artificer_is_dropped_entirely_from_spell_classes(client, catalogs):
+    # `db_old/spells.json` (the only source for `Spell.classes`/`subclasses`, see Spell's
+    # docstring) names Acid Splash's casters as Artificer, Sorcerer and Wizard - Artificer isn't
+    # one of this project's Class rows and is dropped at import time, at the project owner's
+    # request, rather than shown as an unlinked class name.
     html = _get(client, "/world/spells/acid-splash/", "it")
-    assert "Artefice, " in html
     assert '<a href="/world/classes/sorcerer/">Stregone</a>' in html
     assert '<a href="/world/classes/wizard/">Mago</a>' in html
-    assert '"/world/classes/artefice/"' not in html
+    assert "Artefice" not in html
     assert "Artificer" not in html
 
     html = _get(client, "/world/spells/acid-splash/", "en")
-    assert "Artificer, " in html
     assert '<a href="/world/classes/sorcerer/">Sorcerer</a>' in html
+    assert "Artificer" not in html
 
 
 def test_spell_filters_show_translated_school_class_and_casting_time_labels(client, catalogs):

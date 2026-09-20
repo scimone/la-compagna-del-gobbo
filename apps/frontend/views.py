@@ -202,12 +202,6 @@ _CASTING_TIME_CONDITIONS = {
         "usando un'arma"
     ),
 }
-# `Spell.classes` is a plain list of English class names (see the model's docstring for why it's
-# not a `Class` FK) - resolved through `Class.name` (already translated) where one matches, since
-# every name but "Artificer" (not one of this project's XPHB `Class` rows) is a real Class.
-_CLASS_NAME_FALLBACKS = {
-    "Artificer": ("Artificer", "Artefice"),
-}
 
 
 def _pick_translation(table: dict[str, tuple[str, str]], code: str) -> str:
@@ -235,30 +229,26 @@ def _classes_by_name() -> dict[str, Class]:
 
 
 def _class_name(english_name: str) -> str:
-    """A `Spell.classes` entry's own (already-translated) `Class.name` where `english_name`
-    matches a real class, else its `_CLASS_NAME_FALLBACKS` entry (just "Artificer" today), else
-    unchanged. For the filter dropdown, which only needs the label, not a link.
+    """A `Spell.classes` entry's own (already-translated) `Class.name` - every entry matches a
+    real `Class` row (see `spell_service.list_classes()`'s docstring). For the filter dropdown,
+    which only needs the label, not a link.
     """
-    klass = _classes_by_name().get(english_name)
-    if klass:
-        return klass.name
-    return _pick_translation(_CLASS_NAME_FALLBACKS, english_name)
+    return _classes_by_name()[english_name].name
 
 
 def _format_spell_classes(class_names: list[str]) -> str:
     """`Spell.classes` (plain English names, see the model's docstring) as a comma-separated list
-    of links to each class's own detail page - except "Artificer" (not one of this project's
-    `Class` rows), which stays plain text.
+    of links to each class's own detail page.
     """
     classes_by_name = _classes_by_name()
-    parts = []
-    for name in class_names:
-        klass = classes_by_name.get(name)
-        if klass:
-            url = reverse("world-class-detail", args=[klass.pk])
-            parts.append(format_html('<a href="{}">{}</a>', url, klass.name))
-        else:
-            parts.append(_pick_translation(_CLASS_NAME_FALLBACKS, name))
+    parts = [
+        format_html(
+            '<a href="{}">{}</a>',
+            reverse("world-class-detail", args=[classes_by_name[name].pk]),
+            classes_by_name[name].name,
+        )
+        for name in class_names
+    ]
     return format_html_join(", ", "{}", ((part,) for part in parts))
 
 
@@ -516,15 +506,6 @@ def _checklist_filter(request, name, label, options):
     }
 
 
-def _section(heading, html, *, open=True):
-    """One (heading, html, open) entry for `_detail_page`'s `sections` - a collapsible
-    `<details>` block in detail.html. `open=False` for sections long enough that showing them
-    expanded by default buries the rest of the page (e.g. a Class's per-level features or
-    subclasses) - everything else defaults open since it's usually short enough to just read.
-    """
-    return (heading, html, open)
-
-
 def _self_translated(obj, *fields: str) -> bool:
     """True when any of `obj`'s given field(s) was hand-translated for this project rather than
     lifted from the official Italian SRD (see `Feature.self_translated_fields`'s docstring) - only
@@ -540,7 +521,7 @@ def _self_translated(obj, *fields: str) -> bool:
 
 
 def _badged_heading(label, is_self_translated: bool):
-    """`label`, with a "Traduzione" badge appended when `is_self_translated` - for a `_section()`/
+    """`label`, with a "Traduzione" badge appended when `is_self_translated` - for a
     `plain_sections` heading built from a hand-translated field (see `_self_translated()`).
     """
     badge = self_translated_badge(is_self_translated)
@@ -552,7 +533,6 @@ def _detail_page(
     title,
     back_url_name,
     facts,
-    sections=(),
     body=None,
     plain_sections=(),
     tabs=None,
@@ -569,7 +549,6 @@ def _detail_page(
             "page_title": title,
             "back_url": reverse(back_url_name),
             "facts": facts,
-            "sections": sections,
             "body": body,
             "plain_sections": plain_sections,
             "tabs": tabs,
@@ -1150,11 +1129,11 @@ def world_rule_detail(request, pk):
     rule = rule_service.get_rule(pk)
     facts = [(_("Page"), rule.page)]
     description_heading = _badged_heading(_("Description"), _self_translated(rule, "entries"))
-    sections = [_section(description_heading, render_entries(rule.entries))]
+    plain_sections = [(description_heading, render_entries(rule.entries))]
     return _detail_page(
         request,
         _badged_heading(rule.name, _self_translated(rule, "name")),
         "world-overview",
         facts,
-        sections,
+        plain_sections=plain_sections,
     )

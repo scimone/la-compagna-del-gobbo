@@ -815,11 +815,13 @@ features) and `_CASTING_TIME_UNIT_LABELS` are `(english, italian)` dicts like th
 are hit by an attack roll...") is instead a plain `{english: italian}` lookup by exact sentence,
 since there are only ever a handful of distinct ones across the whole catalog and it's prose, not
 a code; `_classes_by_name()` resolves each `classes` entry through the matching `Class.name`
-(already translated) with one hardcoded fallback, `"Artificer"` (not one of this project's
-`Class` rows - see the model's docstring), the same shape as `_proficiency_label()`'s `Equipment`
-lookup above - `_format_spell_classes()` uses it to render each class as a link to its own detail
-page (Artificer stays plain text, since it has no page to link to), and the World > Spells class
-filter's `_class_name()` uses it for a plain label. Fixing `_format_casting_time()` also surfaced
+(already translated), the same shape as `_proficiency_label()`'s `Equipment` lookup above -
+`_format_spell_classes()` uses it to render each class as a link to its own detail page, and the
+World > Spells class filter's `_class_name()` uses it for a plain label. Every `classes` entry
+matches a real `Class` row now - the one name that didn't, `"Artificer"` (not one of this
+project's `Class` rows - see `Spell`'s docstring), is dropped entirely at import time instead of
+kept as an unlinked fallback, at the project owner's request. Fixing `_format_casting_time()` also
+surfaced
 a pre-existing bug in *both* languages: a condition's `{@variantrule ...}` markup was being shown
 as a literal, un-rendered tag rather than resolved to a link, since a fact's value only ever went
 through a plain `{{ value }}` (auto-escaping, no tag handling) - now routed through the new

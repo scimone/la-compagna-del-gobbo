@@ -44,39 +44,13 @@
     padding: 0.7rem 0.9rem;
   }
 
-  /* Content passed as `body` (not a collapsible `sections` entry) renders directly on the page
-     - still `.detail-section` for its typography (h3/p/ul/table/...), just without the card
-     look, since there's no heading of its own to justify boxing it off from the page. */
+  /* Content passed as `body` (not a `plain_sections` entry) renders directly on the page - still
+     `.detail-section` for its typography (h3/p/ul/table/...), just without the card look, since
+     there's no heading of its own to justify boxing it off from the page. */
   .detail-section.plain {
     background: none;
     border: none;
     padding: 0;
-  }
-
-  .detail-section > summary {
-    cursor: pointer;
-    list-style: none;
-    display: flex;
-    align-items: baseline;
-    gap: 0.4rem;
-    touch-action: manipulation;
-  }
-
-  .detail-section > summary::-webkit-details-marker {
-    display: none;
-  }
-
-  .detail-section > summary::before {
-    content: "▸";
-    display: inline-block;
-    width: 1em;
-    flex-shrink: 0;
-    color: var(--accent);
-    transition: transform 0.15s ease;
-  }
-
-  .detail-section[open] > summary::before {
-    transform: rotate(90deg);
   }
 
   .detail-section-body {
@@ -289,6 +263,16 @@
     font-size: 0.9rem;
   }
 
+  /* `border-collapse: collapse` resolves shared borders against the table's own layout grid,
+     not each cell's rendered (possibly `sticky`-shifted) box - so as a column scrolls under the
+     sticky first column, a hairline of it could still show past the sticky cell's edge. Collapsed
+     borders and sticky cells don't mix; `separate` gives every cell (including the sticky one)
+     its own fully self-contained border and background, nothing to peek through. */
+  .table-scroll table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
   .detail-section caption {
     text-align: left;
     color: var(--muted);
@@ -332,13 +316,6 @@
         <h2>{{ heading }}</h2>
         <div class="detail-section-body">{{ html }}</div>
       </div>
-    {% endfor %}
-
-    {% for heading, html, open in sections %}
-      <details class="detail-section"{% if open %} open{% endif %}>
-        <summary><h2>{{ heading }}</h2></summary>
-        <div class="detail-section-body">{{ html }}</div>
-      </details>
     {% endfor %}
   </div>
 {% endblock %}

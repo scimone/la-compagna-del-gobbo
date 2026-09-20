@@ -995,6 +995,13 @@ class Command(BaseCommand):
         rows = []
         for it in _load("spells.json")["spell"]:
             old = old_spells.get(it["name"].lower(), {})
+            # `db_old/spells.json`'s `classes`/`subclasses` name "Artificer" (a class this
+            # project's own `db/` drop never had - see `Spell`'s docstring) - dropped here rather
+            # than carried into the catalog, at the project owner's request.
+            old_classes = [c for c in old.get("classes", []) if c != "Artificer"]
+            old_subclasses = [
+                sc for sc in old.get("subclasses", []) if not sc.startswith("Artificer:")
+            ]
             rows.append(
                 Spell(
                     id=_slug(it["name"]),
@@ -1012,8 +1019,8 @@ class Command(BaseCommand):
                         for d in it.get("duration", [])
                     ),
                     ritual=bool((it.get("meta") or {}).get("ritual", False)),
-                    classes=old.get("classes", []),
-                    subclasses=old.get("subclasses", []),
+                    classes=old_classes,
+                    subclasses=old_subclasses,
                     entries=it.get("entries", []),
                     entries_higher_level=it.get("entriesHigherLevel", []),
                 )

@@ -372,6 +372,25 @@
       color: var(--accent);
     }
 
+    /* How many of this filter's checkboxes are checked - a solid badge rather than just the
+       `.active` border/text color above, since that alone reads as "hovered" as much as
+       "applied" at this font size. Only shown once at least one box is checked (see the
+       markup below), so an idle filter row stays uncluttered. */
+    .filter-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1.1rem;
+      height: 1.1rem;
+      padding: 0 0.3rem;
+      border-radius: 999px;
+      background: var(--accent);
+      color: var(--accent-text);
+      font-size: 0.7rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
     /* Sits below its trigger button - the popover only ever holds one filter's own checkboxes,
        so it doesn't need to be wider than a short dropdown regardless of how many buttons sit
        next to it in the (wrapping) row above. */
@@ -534,7 +553,10 @@
               {# see the script below) so several options can be picked in one visit.           #}
               <details class="filter-popover" name="world-filter-popover">
                 <summary class="filter-button{% if filter.values %} active{% endif %}">
-                  {{ filter.label }}{% if filter.values %} ({{ filter.values|length }}){% endif %}
+                  {{ filter.label }}
+                  {% if filter.values %}
+                    <span class="filter-count">{{ filter.values|length }}</span>
+                  {% endif %}
                 </summary>
                 <div class="filter-popover-panel">
                   {% for value, label in filter.options %}
