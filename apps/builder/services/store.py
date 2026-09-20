@@ -143,7 +143,10 @@ def picker_issues(step: str, pickers: list[Picker]) -> list[Issue]:
         chosen = picker.selected
         if len(chosen) != picker.count or len(set(chosen)) != len(chosen):
             code = "wrong_count"
-            message = _("%(label)s: choose %(count)d.") % {"label": picker.label, "count": picker.count}
+            message = _("%(label)s: choose %(count)d.") % {
+                "label": picker.label,
+                "count": picker.count,
+            }
         elif not set(chosen) <= picker.candidate_ids:
             code = "invalid_choice"
             message = _("%(label)s: one of your choices isn't available.") % {"label": picker.label}

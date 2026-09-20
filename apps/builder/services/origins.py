@@ -11,7 +11,7 @@ import secrets
 from django.utils.translation import gettext as _
 
 from apps.characters.models import Character, CharacterClass
-from apps.rules.models import Background, Class, Equipment, Feat, Language, Skill, Species
+from apps.rules.models import Ability, Background, Class, Equipment, Feat, Language, Skill, Species
 
 from .. import tables
 from ..resolvers import equipment as equipment_resolver
@@ -21,7 +21,7 @@ from ..resolvers import species as species_resolver
 from ..resolvers.proficiency import background_tool_grant, tool_options
 from ..resolvers.spell import class_spell_list
 from . import effects
-from .store import Draft, Issue, clear_choices, set_choice
+from .store import Draft, Issue, Picker, clear_choices, picker_issues, set_choice, stored
 
 _rng = secrets.SystemRandom()
 
@@ -77,84 +77,105 @@ def save_background_choices(
     return problems
 
 
-def background_issues(draft: Draft) -> list[Issue]:
+def background_pickers(draft: Draft) -> list[Picker]:
     if draft.background is None:
-        return [Issue("background", "missing", _("Choose a background."), "background")]
-    found: list[Issue] = []
+        return []
+    pickers: list[Picker] = []
     _fixed, pick = background_tool_grant(draft.background)
     if pick:
-        tool = draft.get("background.tool")
-        options = {e.id for e in tool_options(pick[0])} - held_resolver.held(
-            draft, exclude=("background",)
-        )["tools"]
-        if tool not in options:
-            found.append(
-                Issue(
-                    "background", "missing_tool", _("Choose a tool proficiency."), "background.tool"
-                )
+        blocked = held_resolver.held(draft, exclude=("background",))["tools"]
+        pickers.append(
+            Picker(
+                "background.tool",
+                _("Tool proficiency"),
+                1,
+                [(e.id, e.name) for e in tool_options(pick[0]) if e.id not in blocked],
+                stored(draft, "background.tool", True),
+                single=True,
             )
+        )
     if draft.background.feat:
-        found += feat_pick_issues(
-            "background",
+        pickers += feat_pickers(
             draft,
             draft.background.feat,
-            dict(draft.get("background.feat") or {}),
             "background.feat",
             fixed_variant=draft.background.feat_variant,
         )
-    return found
+    return pickers
+
+
+def background_issues(draft: Draft) -> list[Issue]:
+    if draft.background is None:
+        return [Issue("background", "missing", _("Choose a background."), "background")]
+    return picker_issues("background", background_pickers(draft))
 
 
 # --- feats' sub-choices (shared by background and species) ---------------------------------------
 
+_PICK_LABELS = {
+    "variant": _("Spell list"),
+    "spell_ability": _("Spellcasting ability"),
+    "cantrips": _("Cantrips"),
+    "spell": _("Spell"),
+    "tools": _("Tools"),
+    "proficiencies": _("Skills or tools"),
+}
 
-def feat_pick_issues(
-    step, draft, feat: Feat, chosen: dict, path: str, *, fixed_variant: str = ""
-) -> list[Issue]:
-    found: list[Issue] = []
-    exclude = (path,)
-    held = held_resolver.held(draft, exclude=exclude)
+
+def _ability_names() -> dict[str, str]:
+    return {a.id: a.name for a in Ability.objects.all()}
+
+
+def feat_pickers(draft: Draft, feat: Feat, path: str, *, fixed_variant: str = "") -> list[Picker]:
+    """The pickers for one feat's own sub-choices, stored in the dict at `path`."""
+    chosen = dict(draft.get(path) or {})
     variant = fixed_variant or chosen.get("variant", "")
+    held = held_resolver.held(draft, exclude=(path,))
+    pickers: list[Picker] = []
     for pick in feat_resolver.picks(feat, variant):
         if pick.key == "variant" and fixed_variant:
             continue
-        value = chosen.get(pick.key)
-        values = value if isinstance(value, list) else ([value] if value else [])
-        where = f"{path}.{pick.key}"
-        if len(values) != pick.count or len(set(values)) != len(values):
-            found.append(
-                Issue(
-                    step,
-                    "wrong_count",
-                    _("Choose %(count)d for %(feat)s.") % {"count": pick.count, "feat": feat.name},
-                    where,
-                )
-            )
-            continue
-        if pick.kind in ("variant", "ability"):
-            valid = set(pick.options)
+        if pick.kind == "variant":
+            candidates = [(v, v.title()) for v in pick.options]
+        elif pick.kind == "ability":
+            names = _ability_names()
+            candidates = [(a, names.get(a, a)) for a in pick.options]
         elif pick.kind == "spell":
-            valid = {s.id for s in class_spell_list(pick.class_name, pick.level)}
+            candidates = [(s.id, s.name) for s in class_spell_list(pick.class_name, pick.level)]
         elif pick.kind == "tool":
-            pool = pick.options or [e.id for e in tool_options(pick.tool_kinds)]
-            valid = set(pool) - held["tools"]
-        else:  # skill_or_tool, stored as "skill:arcana" / "tool:flute"
-            valid = {f"skill:{s}" for s in held_resolver.all_skill_ids() - held["skills"]}
-            valid |= {
-                f"tool:{e.id}"
-                for e in Equipment.objects.filter(type_id__in=["t", "at", "gs", "ins"])
-                if e.id not in held["tools"]
-            }
-        if not set(values) <= valid:
-            found.append(
-                Issue(
-                    step,
-                    "invalid_choice",
-                    _("One of your choices for %(feat)s isn't available.") % {"feat": feat.name},
-                    where,
-                )
+            pool = (
+                Equipment.objects.filter(id__in=pick.options)
+                if pick.options
+                else tool_options(pick.tool_kinds)
             )
-    return found
+            candidates = [
+                (e.id, e.name) for e in pool.order_by("name") if e.id not in held["tools"]
+            ]
+        else:  # skill_or_tool, stored as "skill:arcana" / "tool:flute"
+            candidates = [
+                (f"skill:{s.id}", s.name)
+                for s in Skill.objects.order_by("name")
+                if s.id not in held["skills"]
+            ] + [
+                (f"tool:{e.id}", e.name)
+                for e in Equipment.objects.filter(type_id__in=["t", "at", "gs", "ins"]).order_by(
+                    "name"
+                )
+                if e.id not in held["tools"]
+            ]
+        key = f"{path}.{pick.key}"
+        single = pick.kind in ("variant", "ability") or pick.key == "spell"
+        pickers.append(
+            Picker(
+                key,
+                f"{feat.name}: {_PICK_LABELS.get(pick.key, pick.key)}",
+                pick.count,
+                candidates,
+                stored(draft, key, single),
+                single,
+            )
+        )
+    return pickers
 
 
 # --- species -----------------------------------------------------------------------------------
@@ -184,58 +205,75 @@ def save_species_choices(character: Character, **choices) -> list[Issue]:
     return problems
 
 
-def species_issues(draft: Draft) -> list[Issue]:
+def species_pickers(draft: Draft) -> list[Picker]:
     species = draft.species
     if species is None:
-        return [Issue("species", "missing", _("Choose a species."), "species")]
-    found: list[Issue] = []
-    if len(species.size) > 1 and draft.get("species.size") not in species.size:
-        found.append(Issue("species", "missing_size", _("Choose a size."), "species.size"))
-    if species.lineages and species_resolver.chosen_lineage(draft) is None:
-        found.append(Issue("species", "missing_lineage", _("Choose a lineage."), "species.lineage"))
-    options = species_resolver.spell_ability_options(draft)
-    if options and draft.get("species.spell_ability") not in options:
-        found.append(
-            Issue(
-                "species",
-                "missing_spell_ability",
-                _("Choose your spellcasting ability."),
-                "species.spell_ability",
-            )
+        return []
+    pickers: list[Picker] = []
+
+    def add(key, label, count, candidates, single=False):
+        pickers.append(Picker(key, label, count, candidates, stored(draft, key, single), single))
+
+    if len(species.size) > 1:
+        labels = {"S": _("Small"), "M": _("Medium")}
+        add("species.size", _("Size"), 1, [(c, labels.get(c, c)) for c in species.size], True)
+    if species.lineages:
+        add(
+            "species.lineage",
+            _("Lineage"),
+            1,
+            [(lin["key"], lin["label"]) for lin in species.lineages],
+            True,
         )
-    picks = [p for g in species_resolver.spell_grants(draft) for p in g.picks]
-    if picks:
-        chosen = draft.get("species.cantrip", [])
-        valid = {s.id for p in picks for s in class_spell_list(p.class_name, p.level)}
-        if len(chosen) != sum(p.count for p in picks) or not set(chosen) <= valid:
-            found.append(
-                Issue("species", "missing_cantrip", _("Choose your cantrip."), "species.cantrip")
-            )
+    if options := species_resolver.spell_ability_options(draft):
+        names = _ability_names()
+        add(
+            "species.spell_ability",
+            _("Spellcasting ability"),
+            1,
+            [(a, names.get(a, a)) for a in options],
+            True,
+        )
+    if spell_picks := [p for g in species_resolver.spell_grants(draft) for p in g.picks]:
+        pool = {
+            (s.id, s.name) for p in spell_picks for s in class_spell_list(p.class_name, p.level)
+        }
+        add(
+            "species.cantrip",
+            _("Cantrip"),
+            sum(p.count for p in spell_picks),
+            sorted(pool, key=lambda c: c[1]),
+        )
     for choice in species.choice_definitions.filter(kind__in=["skills", "feats"]):
         if choice.kind == "skills":
-            skill = draft.get("species.skill")
-            options = set(choice.options) or held_resolver.all_skill_ids()
-            options -= held_resolver.held(draft, exclude=("species",))["skills"]
-            if skill not in options:
-                found.append(
-                    Issue(
-                        "species",
-                        "missing_skill",
-                        _("Choose a skill proficiency."),
-                        "species.skill",
-                    )
-                )
+            allowed = set(choice.options) or held_resolver.all_skill_ids()
+            blocked = held_resolver.held(draft, exclude=("species",))["skills"]
+            skills = Skill.objects.filter(id__in=allowed - blocked).order_by("name")
+            add(
+                "species.skill",
+                _("Skill proficiency"),
+                choice.count or 1,
+                [(s.id, s.name) for s in skills],
+                True,
+            )
         else:
+            taken = draft.background.feat if draft.background else None
+            feats = [
+                (f.id, f.name)
+                for f in feat_resolver.origin_feats()
+                if taken is None or f.id != taken.id or feat_resolver.is_repeatable(f)
+            ]
+            add("species.feat.feat", _("Origin feat"), 1, feats, True)
             extra = dict(draft.get("species.feat") or {})
-            feat = Feat.objects.filter(id=extra.get("feat"), category="Origin").first()
-            taken = draft.background.feat_id if draft.background else None
-            if feat is None or (feat.id == taken and not feat_resolver.is_repeatable(feat)):
-                found.append(
-                    Issue("species", "missing_feat", _("Choose an Origin feat."), "species.feat")
-                )
-            else:
-                found += feat_pick_issues("species", draft, feat, extra, "species.feat")
-    return found
+            if feat := Feat.objects.filter(id=extra.get("feat"), category="Origin").first():
+                pickers += feat_pickers(draft, feat, "species.feat")
+    return pickers
+
+
+def species_issues(draft: Draft) -> list[Issue]:
+    if draft.species is None:
+        return [Issue("species", "missing", _("Choose a species."), "species")]
+    return picker_issues("species", species_pickers(draft))
 
 
 # --- languages ---------------------------------------------------------------------------------

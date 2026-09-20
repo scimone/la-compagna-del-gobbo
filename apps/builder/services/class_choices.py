@@ -5,8 +5,6 @@ candidates, what is selected - and both the screen and `issues()` are built from
 form offers and what validation accepts cannot drift apart.
 """
 
-from dataclasses import dataclass, field
-
 from django.utils.translation import gettext as _
 
 from apps.characters.models import Character
@@ -19,23 +17,9 @@ from ..resolvers import held as held_resolver
 from ..resolvers.proficiency import tool_options
 from ..resolvers.spell import max_spell_level
 from . import effects
-from .store import Draft, Issue, set_choice
+from .store import Draft, Issue, Picker, picker_issues, set_choice
 
 STEP = "choices"
-
-
-@dataclass
-class Picker:
-    key: str  # the `CharacterChoice` key, e.g. "class.skills"
-    label: str
-    count: int
-    candidates: list[tuple[str, str]]  # (id, display name)
-    selected: list[str] = field(default_factory=list)
-    single: bool = False  # stored as a bare value instead of a list
-
-    @property
-    def candidate_ids(self) -> set[str]:
-        return {c[0] for c in self.candidates}
 
 
 def _selected(draft: Draft, key: str, single: bool) -> list[str]:
@@ -204,25 +188,7 @@ def _slug(name: str) -> str:
 
 
 def issues(draft: Draft) -> list[Issue]:
-    if draft.klass is None:
-        return []
-    found: list[Issue] = []
-    for picker in pickers(draft):
-        chosen = picker.selected
-        if len(chosen) != picker.count or len(set(chosen)) != len(chosen):
-            code, message = (
-                "wrong_count",
-                _("%(label)s: choose %(count)d.") % {"label": picker.label, "count": picker.count},
-            )
-        elif not set(chosen) <= picker.candidate_ids:
-            code, message = (
-                "invalid_choice",
-                _("%(label)s: one of your choices isn't available.") % {"label": picker.label},
-            )
-        else:
-            continue
-        found.append(Issue(STEP, code, message, picker.key))
-    return found
+    return picker_issues(STEP, pickers(draft)) if draft.klass else []
 
 
 def save(character: Character, **values) -> list[Issue]:

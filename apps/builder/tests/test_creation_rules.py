@@ -185,7 +185,7 @@ def test_lineages_change_speed_darkvision_and_spells(owner):
 def test_species_with_two_sizes_must_pick_one(owner):
     c = build_character(owner, "fighter")
     origins.select_species(c, "human")
-    assert any(i.code == "missing_size" for i in origins.species_issues(Draft(c)))
+    assert any(i.path == "species.size" for i in origins.species_issues(Draft(c)))
     origins.save_species_choices(c, size="S")
     c.refresh_from_db()
     assert c.size == "S"
