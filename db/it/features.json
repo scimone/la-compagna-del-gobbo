@@ -574,22 +574,26 @@
   "entries": [
    "Il chierico può incanalare l'energia divina direttamente dai Piani Esterni, usandola per alimentare gli effetti magici. Un chierico parte con due effetti: scintilla divina e scacciare non morti, ciascuno descritto di seguito. Ogni volta che il personaggio usa Incanalare divinità di questa classe, è possibile scegliere l'effetto desiderato della classe. Con livelli superiori da chierico si ottengono opzioni di effetto aggiuntive.",
    "Il chierico può usare Incanalare divinità due volte. Per quanto riguarda gli utilizzi consumati, ne recupera uno dopo aver completato un {@variantrule Short Rest|XPHB|riposo breve} e li recupera tutti dopo un {@variantrule Long Rest|XPHB|riposo lungo}. Quando il personaggio raggiunge determinati livelli da chierico, ottiene degli usi aggiuntivi, come mostrato nella colonna Incanalare divinità della tabella Privilegi del chierico.",
-   "Se un effetto di Incanalare divinità richiede un tiro salvezza, la CD equivale alla CD del tiro salvezza sull'incantesimo del privilegio Incantesimi di questa classe."
+   "Se un effetto di Incanalare divinità richiede un tiro salvezza, la CD equivale alla CD del tiro salvezza sull'incantesimo del privilegio Incantesimi di questa classe.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Come azione di {@action Magic|XPHB|Magia}, il chierico punta il {@item Holy Symbol|XPHB|simbolo sacro} verso una creatura entro 9 metri e che si trova nel suo campo visivo e concentra l'energia divina su di essa. Poi, tira {@dice 1d8} e aggiunge il suo modificatore di Saggezza. Ripristina i {@variantrule Hit Points|XPHB|punti ferita} della creatura di un numero pari a quello del totale o costringe la creatura a effettuare un tiro salvezza su Costituzione. Se lo fallisce, la creatura subisce danni necrotici o radiosi (a scelta) pari al risultato del tiro. Se invece lo supera, subisce la metà di quei danni (arrotondati per difetto).",
+       "Il personaggio tira un {@dice d8} aggiuntivo quando raggiunge il 7º ({@dice 2d8}), il 13º ({@dice 3d8}) e il 18º ({@dice 4d8}) livello da chierico."
+      ],
+      "name": "Scintilla divina"
+     },
+     {
+      "entries": [
+       "Come azione di {@action Magic|XPHB|Magia}, il chierico brandisce il {@item Holy Symbol|XPHB|simbolo sacro} e condanna le creature non morte. Ogni non morto a scelta entro 9 metri dal chierico deve effettuare un tiro salvezza su Saggezza. Se la creatura fallisce il tiro salvezza, è {@condition Frightened|XPHB|spaventata} e {@condition Incapacitated|XPHB|incapacitata} per 1 minuto. Per tutta la durata, la creatura cerca di allontanarsi il più possibile dal chierico durante i suoi turni. L'effetto termina anticipatamente se la creatura subisce danni, o se il chierico è {@condition Incapacitated|XPHB|incapacitato} o morto."
+      ],
+      "name": "Scacciare non morti"
+     }
+    ]
+   }
   ],
   "name": "Incanalare divinità"
- },
- "class:cleric:2:divine-spark": {
-  "entries": [
-   "Come azione di {@action Magic|XPHB|Magia}, il chierico punta il {@item Holy Symbol|XPHB|simbolo sacro} verso una creatura entro 9 metri e che si trova nel suo campo visivo e concentra l'energia divina su di essa. Poi, tira {@dice 1d8} e aggiunge il suo modificatore di Saggezza. Ripristina i {@variantrule Hit Points|XPHB|punti ferita} della creatura di un numero pari a quello del totale o costringe la creatura a effettuare un tiro salvezza su Costituzione. Se lo fallisce, la creatura subisce danni necrotici o radiosi (a scelta) pari al risultato del tiro. Se invece lo supera, subisce la metà di quei danni (arrotondati per difetto).",
-   "Il personaggio tira un {@dice d8} aggiuntivo quando raggiunge il 7º ({@dice 2d8}), il 13º ({@dice 3d8}) e il 18º ({@dice 4d8}) livello da chierico."
-  ],
-  "name": "Scintilla divina"
- },
- "class:cleric:2:turn-undead": {
-  "entries": [
-   "Come azione di {@action Magic|XPHB|Magia}, il chierico brandisce il {@item Holy Symbol|XPHB|simbolo sacro} e condanna le creature non morte. Ogni non morto a scelta entro 9 metri dal chierico deve effettuare un tiro salvezza su Saggezza. Se la creatura fallisce il tiro salvezza, è {@condition Frightened|XPHB|spaventata} e {@condition Incapacitated|XPHB|incapacitata} per 1 minuto. Per tutta la durata, la creatura cerca di allontanarsi il più possibile dal chierico durante i suoi turni. L'effetto termina anticipatamente se la creatura subisce danni, o se il chierico è {@condition Incapacitated|XPHB|incapacitato} o morto."
-  ],
-  "name": "Scacciare non morti"
  },
  "class:cleric:3:cleric-subclass": {
   "entries": [
@@ -620,26 +624,29 @@
   "name": "Privilegio della sottoclasse"
  },
  "class:cleric:7:blessed-strikes": {
+  "_self": [
+   "entries"
+  ],
   "entries": [
-   "In battaglia, il chierico è permeato di potere divino e ottiene una delle seguenti opzioni a scelta (se ottiene entrambe le opzioni da una sottoclasse del chierico di un manuale più vecchio, usa solo l'opzione scelta per questo privilegio)."
+   "In battaglia, il chierico è permeato di potere divino e ottiene una delle seguenti opzioni a scelta (se ottiene entrambe le opzioni da una sottoclasse del chierico di un manuale più vecchio, usa solo l'opzione scelta per questo privilegio).",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Una volta per ogni suo turno, quando il chierico colpisce una creatura con un tiro per colpire usando un'arma, può far sì che il bersaglio subisca {@damage 1d8} danni necrotici o radiosi extra (a scelta)."
+      ],
+      "name": "Colpo divino"
+     },
+     {
+      "entries": [
+       "Aggiungi il modificatore di Saggezza del chierico ai danni che infligge con qualsiasi trucchetto da chierico."
+      ],
+      "name": "Incantesimi potenti"
+     }
+    ]
+   }
   ],
   "name": "Colpi benedetti"
- },
- "class:cleric:7:divine-strike": {
-  "entries": [
-   "Una volta per ogni suo turno, quando il chierico colpisce una creatura con un tiro per colpire usando un'arma, può far sì che il bersaglio subisca {@damage 1d8} danni necrotici o radiosi extra (a scelta)."
-  ],
-  "name": "Colpo divino"
- },
- "class:cleric:7:potent-spellcasting": {
-  "_self": [
-   "entries",
-   "name"
-  ],
-  "entries": [
-   "Aggiungi il modificatore di Saggezza del chierico ai danni che infligge con qualsiasi trucchetto da chierico."
-  ],
-  "name": "Incantesimi potenti"
  },
  "class:cleric:8:ability-score-improvement": {
   "entries": [
@@ -930,21 +937,29 @@
  },
  "class:druid:7:elemental-fury": {
   "entries": [
-   "La forza degli elementi scorre attraverso il druido, facendogli ottenere una delle seguenti opzioni a scelta."
+   "La forza degli elementi scorre attraverso il druido, facendogli ottenere una delle seguenti opzioni a scelta.",
+   {
+    "entries": [
+     {
+      "entries": [
+       {
+        "entries": [
+         "Il personaggio aggiunge il suo modificatore di Saggezza al danno che infligge con qualsiasi trucchetto da druido."
+        ],
+        "name": "Incantesimi potenti"
+       },
+       {
+        "entries": [
+         "Una volta per ogni suo turno, quando il druido colpisce una creatura con un tiro per colpire usando un'arma o un attacco della forma bestiale in Forma selvatica, può far sì che il bersaglio subisca {@damage 1d8} danni da freddo, fuoco, fulmine o tuono extra (a scelta)."
+        ],
+        "name": "Colpo primordiale"
+       }
+      ]
+     }
+    ]
+   }
   ],
   "name": "Furia elementale"
- },
- "class:druid:7:potent-spellcasting": {
-  "entries": [
-   "Il personaggio aggiunge il suo modificatore di Saggezza al danno che infligge con qualsiasi trucchetto da druido."
-  ],
-  "name": "Incantesimi potenti"
- },
- "class:druid:7:primal-strike": {
-  "entries": [
-   "Una volta per ogni suo turno, quando il druido colpisce una creatura con un tiro per colpire usando un'arma o un attacco della forma bestiale in Forma selvatica, può far sì che il bersaglio subisca {@damage 1d8} danni da freddo, fuoco, fulmine o tuono extra (a scelta)."
-  ],
-  "name": "Colpo primordiale"
  },
  "class:druid:8:ability-score-improvement": {
   "entries": [
@@ -1237,18 +1252,6 @@
   ],
   "name": "Dono epico"
  },
- "class:monk:1:bonus-unarmed-strike": {
-  "entries": [
-   "Il monaco può effettuare un {@variantrule Unarmed Strike|XPHB|colpo senz'armi} come {@variantrule Bonus Action|XPHB|azione bonus}."
-  ],
-  "name": "Colpo senz'armi bonus"
- },
- "class:monk:1:dexterous-attacks": {
-  "entries": [
-   "Un monaco può usare il modificatore di Destrezza invece del modificatore di Forza per i tiri per colpire e i tiri per i danni dei suoi {@variantrule Unarmed Strike|XPHB|colpi senz'armi} e delle sue armi da monaco. Inoltre, quando utilizza le opzioni di afferrare o spingere del suo colpo senz'armi, il monaco può utilizzare il suo modificatore di Destrezza invece del modificatore di Forza per determinare la CD del tiro salvezza."
-  ],
-  "name": "Attacchi destri"
- },
  "class:monk:1:martial-arts": {
   "entries": [
    "Grazie alla sua perizia nelle arti marziali, un monaco padroneggia stili di combattimento che fanno uso di {@variantrule Unarmed Strike|XPHB|colpi senz'armi} e delle seguenti armi da monaco:",
@@ -1258,15 +1261,31 @@
      "Armi da mischia da guerra con la proprietà leggera"
     ]
    },
-   "Un monaco ottiene i benefici seguenti fintantoché è senz'armi o impugna soltanto armi da monaco, non indossa alcuna armatura e non impugna uno {@item Shield|XPHB|scudo}:"
+   "Un monaco ottiene i benefici seguenti fintantoché è senz'armi o impugna soltanto armi da monaco, non indossa alcuna armatura e non impugna uno {@item Shield|XPHB|scudo}:",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Il monaco può effettuare un {@variantrule Unarmed Strike|XPHB|colpo senz'armi} come {@variantrule Bonus Action|XPHB|azione bonus}."
+      ],
+      "name": "Colpo senz'armi bonus"
+     },
+     {
+      "entries": [
+       "Un monaco può tirare {@damage 1d6} al posto dei normali danni del suo {@variantrule Unarmed Strike|XPHB|colpo senz'armi} o della sua arma da monaco. Questo dado cambia man mano che il personaggio acquisisce altri livelli da monaco, come indicato nella colonna Arti marziali nella tabella Privilegi del monaco."
+      ],
+      "name": "Dado di Arti marziali"
+     },
+     {
+      "entries": [
+       "Un monaco può usare il modificatore di Destrezza invece del modificatore di Forza per i tiri per colpire e i tiri per i danni dei suoi {@variantrule Unarmed Strike|XPHB|colpi senz'armi} e delle sue armi da monaco. Inoltre, quando utilizza le opzioni di afferrare o spingere del suo colpo senz'armi, il monaco può utilizzare il suo modificatore di Destrezza invece del modificatore di Forza per determinare la CD del tiro salvezza."
+      ],
+      "name": "Attacchi destri"
+     }
+    ]
+   }
   ],
   "name": "Arti marziali"
- },
- "class:monk:1:martial-arts-die": {
-  "entries": [
-   "Un monaco può tirare {@damage 1d6} al posto dei normali danni del suo {@variantrule Unarmed Strike|XPHB|colpo senz'armi} o della sua arma da monaco. Questo dado cambia man mano che il personaggio acquisisce altri livelli da monaco, come indicato nella colonna Arti marziali nella tabella Privilegi del monaco."
-  ],
-  "name": "Dado di Arti marziali"
  },
  "class:monk:1:unarmored-defense": {
   "entries": [
@@ -1280,32 +1299,36 @@
   ],
   "name": "Corpo e mente"
  },
- "class:monk:2:flurry-of-blows": {
-  "entries": [
-   "Il monaco può spendere 1 punto concentrazione per sferrare due colpi senz'armi come {@variantrule Bonus Action|XPHB|azione bonus}."
-  ],
-  "name": "Raffica di colpi"
- },
  "class:monk:2:monks-focus": {
   "entries": [
    "La concentrazione e l'addestramento marziale del monaco gli permettono di imbrigliare una fonte di energia straordinaria dentro di sé. Questa energia è rappresentata dai punti concentrazione. Il numero di punti posseduti è determinato dal livello da monaco, come indicato nella colonna Punti concentrazione nella tabella Privilegi del monaco.",
    "Questi punti possono essere spesi per potenziare o alimentare alcuni privilegi del monaco. Inizialmente il monaco conosce tre di questi privilegi: Difesa paziente, Passo del vento e Raffica di colpi, descritti di seguito.",
    "Quando un monaco spende un punto concentrazione, quel punto non è più disponibile finché non completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}, alla fine del quale il monaco recupera tutti i punti spesi.",
-   "Alcune caratteristiche che utilizzano i punti concentrazione richiedono che il bersaglio effettui un tiro salvezza. La CD del tiro salvezza è pari a 8 più il modificatore di Saggezza e il bonus di {@variantrule Proficiency|XPHB|competenza} del monaco."
+   "Alcune caratteristiche che utilizzano i punti concentrazione richiedono che il bersaglio effettui un tiro salvezza. La CD del tiro salvezza è pari a 8 più il modificatore di Saggezza e il bonus di {@variantrule Proficiency|XPHB|competenza} del monaco.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Il monaco può spendere 1 punto concentrazione per sferrare due colpi senz'armi come {@variantrule Bonus Action|XPHB|azione bonus}."
+      ],
+      "name": "Raffica di colpi"
+     },
+     {
+      "entries": [
+       "Il monaco può effettuare l'azione di {@action Disengage|XPHB|Disimpegno} come {@variantrule Bonus Action|XPHB|azione bonus}. In alternativa, può spendere 1 punto concentrazione per effettuare le azioni di {@action Disengage|XPHB|Disimpegno} e {@action Dodge|XPHB|Schivata} come {@variantrule Bonus Action|XPHB|azione bonus}."
+      ],
+      "name": "Difesa paziente"
+     },
+     {
+      "entries": [
+       "Il monaco può utilizzare l'azione di {@action Dash|XPHB|Scatto} come {@variantrule Bonus Action|XPHB|azione bonus}. In alternativa, può spendere 1 punto concentrazione per effettuare le azioni di {@action Disengage|XPHB|Disimpegno} e {@action Dash|XPHB|Scatto} come {@variantrule Bonus Action|XPHB|azione bonus}; inoltre, la sua distanza di salto raddoppia per quel turno."
+      ],
+      "name": "Passo del vento"
+     }
+    ]
+   }
   ],
   "name": "Concentrazione da monaco"
- },
- "class:monk:2:patient-defense": {
-  "entries": [
-   "Il monaco può effettuare l'azione di {@action Disengage|XPHB|Disimpegno} come {@variantrule Bonus Action|XPHB|azione bonus}. In alternativa, può spendere 1 punto concentrazione per effettuare le azioni di {@action Disengage|XPHB|Disimpegno} e {@action Dodge|XPHB|Schivata} come {@variantrule Bonus Action|XPHB|azione bonus}."
-  ],
-  "name": "Difesa paziente"
- },
- "class:monk:2:step-of-the-wind": {
-  "entries": [
-   "Il monaco può utilizzare l'azione di {@action Dash|XPHB|Scatto} come {@variantrule Bonus Action|XPHB|azione bonus}. In alternativa, può spendere 1 punto concentrazione per effettuare le azioni di {@action Disengage|XPHB|Disimpegno} e {@action Dash|XPHB|Scatto} come {@variantrule Bonus Action|XPHB|azione bonus}; inoltre, la sua distanza di salto raddoppia per quel turno."
-  ],
-  "name": "Passo del vento"
  },
  "class:monk:2:unarmored-movement": {
   "_self": [

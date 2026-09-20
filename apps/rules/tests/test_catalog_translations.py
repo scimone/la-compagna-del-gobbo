@@ -112,7 +112,32 @@ def test_rows_without_an_official_source_are_hand_translated_and_flagged(catalog
     assert Species.objects.count() == 11
     assert Background.objects.count() == 16
     assert Equipment.objects.count() == 217
-    assert Feature.objects.count() == 707
+    assert Feature.objects.count() == 695
+
+
+def test_a_classfeature_subheading_is_nested_not_a_sibling_feature(catalogs):
+    # Monk's Martial Arts embeds Bonus Unarmed Strike/Martial Arts Die/Dexterous Attacks via
+    # `refClassFeature` pointers to `classFeature` rows marked with a `header` (5etools' own
+    # nesting-depth marker - see `_inline_header_class_features()`'s docstring) - the book itself
+    # presents them as sub-entries of Martial Arts, not as three more level-1 Monk features
+    # alongside it and Unarmored Defense.
+    monk = Class.objects.get(id="monk")
+    level_1_names = set(
+        Feature.objects.filter(class_level__klass=monk, class_level__level=1).values_list(
+            "name_en", flat=True
+        )
+    )
+    assert level_1_names == {"Martial Arts", "Unarmored Defense"}
+
+    martial_arts = Feature.objects.get(
+        class_level__klass=monk, class_level__level=1, name_en="Martial Arts"
+    )
+    with translation.override("it"):
+        html = render_entries(martial_arts.entries)
+    # `'` renders HTML-escaped (`&#x27;`) inside `_render_text()` - checked without it.
+    assert "<h3>Colpo senz" in html and "armi bonus</h3>" in html
+    assert "<h3>Dado di Arti marziali</h3>" in html
+    assert "<h3>Attacchi destri</h3>" in html
 
 
 def test_feature_rows_only_used_as_a_queryable_index_are_left_untranslated(catalogs):

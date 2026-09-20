@@ -79,6 +79,14 @@ msgid "Page"
 msgstr "Pagina"
 
 #: apps/frontend/views.py
+msgid "Rules Glossary"
+msgstr "Glossario delle regole"
+
+#: apps/frontend/views.py
+msgid "%(count)d named rules and keywords"
+msgstr "%(count)d regole e termini"
+
+#: apps/frontend/views.py
 msgid "Equipment"
 msgstr "Equipaggiamento"
 

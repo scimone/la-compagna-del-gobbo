@@ -174,7 +174,7 @@ kept on `db/handbook.json` copied verbatim from `db_old/`).
 | `Language` | Defined | `db/languages.json` | |
 | `OptionalFeature` | Defined | `db/optionalfeatures.json` | `prerequisite` is structured JSON now, same treatment as `Feat.prerequisite`. `consumes_resource_name` is new (names the resource a pick spends, e.g. "Superiority Die" - relevant to the "Open design question" below) |
 | `Proficiency` | Defined | `db/classes.json`, `db/backgrounds.json` | 47 rows - `Background.skills` moved off this model entirely (a real M2M now, see `Background`). `choice_data` is new: the two previously-excluded tool-proficiency choices (Bard's/Monk's) are now included, since the source gives them as real JSON instead of unparseable "Choose N ..." prose |
-| `Feature` | Defined | `db/classes.json`, `db/species.json`, `db/feats.json` | 704 rows (283 class, 261 subclass, 38 species, 122 feat). Class/subclass feature resolution now walks `refClassFeature`/`refSubclassFeature` pointers recursively (a class/subclass's own feature-list field doesn't always enumerate every feature - some are only reachable via a pointer inside a sibling feature's `entries`, e.g. Cleric's Divine Order choice or a subclass's granting-level wrapper) rather than reading one flat list - see `docs/data_migration_2025.md` §3.6. `consumes_resource_name` is new, same as `OptionalFeature`'s |
+| `Feature` | Defined | `db/classes.json`, `db/species.json`, `db/feats.json` | 695 rows (271 class, 261 subclass, 41 species, 122 feat). Class/subclass feature resolution now walks `refClassFeature`/`refSubclassFeature` pointers recursively (a class/subclass's own feature-list field doesn't always enumerate every feature - some are only reachable via a pointer inside a sibling feature's `entries`, e.g. Cleric's Divine Order choice or a subclass's granting-level wrapper) rather than reading one flat list - see `docs/data_migration_2025.md` §3.6. A pointer target marked with a `header` field (5etools' own "this is a sub-entry, not standalone" marker) is inlined into whichever feature points at it instead of becoming its own row - see [Known data-import issues](#known-data-import-issues) Issue 6. `consumes_resource_name` is new, same as `OptionalFeature`'s |
 | `Effect` | Partly defined | derived from `Feature.entries` | 2094 rows (independently cross-checked against the pre-migration verified-correct count) |
 | `ChoiceDefinition` | Partly defined | `db/species.json`, `db/backgrounds.json`, `db/classes.json`, `db/feats.json` | 85 rows (up from 27) - the source's own `{"choose": {"from": [...], "count"|"amount"|"weighted": ...}}` idiom replaced the old regex-over-free-text approach and extends to far more of the data (species racial choices, feat ability/skill/save choices, not just the two cases the old format could reliably pattern-match) |
 | `HandbookSection` | Defined | `db/handbook.json` (`data`) | 12 rows (15 in the source; "Playing the Game" root, "Rules Glossary" and "Player or DM?" are left out - see the i18n section): the new `db/` drop ships no replacement for this file at all, so it's copied verbatim from `db_old/handbook.json` rather than re-sourced - a deliberate exception, same as `Spell.classes`/`subclasses`. Otherwise unchanged: the source has exactly one chapter, so rather than model chapters as their own grouping, its root block and each of its direct named children ("Rules Glossary", "Player or DM?", "Dice", ...) are flattened into one row each - see the model docstring. `entries` holds each one's own content (arbitrarily nested headings/lists/tables/insets), rendered the same way as every other `entries`-shaped field. **First translated model** - `name`/`entries` also have `_en`/`_it` columns, the Italian side loaded from `db/it/handbook.json` (see [Internationalization](#internationalization-i18n)). Surfaced two edge cases in `entries_render.py` itself - see [Known data-import issues](#known-data-import-issues), Issue 3 |
@@ -376,15 +376,60 @@ commits on its own instead of one migration-wide transaction) resolved it. Neith
 in `makemigrations`' auto-generated output - both were only found by actually *running* `migrate`
 against real data and reading the error, not by inspecting the generated migration file.
 
+#### Issue 6: a `classFeature` sub-heading became a sibling `Feature` instead of a nested one
+
+**The problem**: same underlying mistake as Issue 1 ("one feature's sub-details treated as
+several features"), but the other way around, and via a different source shape. A `classFeature`
+entry can point at another one via a `{"type": "refClassFeature", "classFeature": "..."}` node
+buried in its own `entries` (already handled - see `_walk_feature_pointers()` - for a *genuine*
+sibling feature, e.g. Cleric's Divine Order choosing between Protector/Thaumaturge, each of which
+rightly gets its own `Feature` row). But 12 of these pointers (across Cleric/Druid/Monk) target a
+`classFeature` marked with a `header` field - 5etools' own nesting-depth marker for "this is a
+sub-entry of whatever points at it, not standalone" - e.g. Monk's Martial Arts embedding Bonus
+Unarmed Strike/Martial Arts Die/Dexterous Attacks, or Cleric's Channel Divinity embedding Divine
+Spark/Turn Undead, exactly how the printed book presents them. Importing every pointer target as
+its own `Feature` row regardless split each of these into extra top-level Monk/Cleric/Druid
+features standing alongside their real parent, instead of nested content within it - the same
+*kind* of wrong-shape bug as Issue 1, just at the class level and via a pointer rather than a
+bundled block.
+
+**How it was caught**: reported directly - "Bonus Unarmed Strike, Martial Arts Die, and Dexterous
+Attacks are all subheadings of Martial Arts... these three are listed as separate features"
+- not visible from a row count (283 `classFeature` rows imported "successfully" either way), same
+non-tell as Issue 1.
+
+**The fix** (`_inline_header_class_features()` and the `classFeature` loop in `_import_classes`,
+`apps/rules/management/commands/import_rules_data.py`): a pointer target with `header` set no
+longer gets its own `Feature` row; instead, wherever a pointer to it is found (anywhere in a
+`Feature`'s own `entries`, not just at the top level - Druid's Elemental Fury wraps its two
+pointers inside an extra `options` node), it's replaced in place with that target's own name/
+entries inlined as a named nested block (rendered as a sub-heading `<h3>` inside the parent's
+card - `entries_render.py` already had this exact shape covered, see `.entry-card > h3`'s own
+comment in `detail.html`, since a Wizard's Spellcasting feature nests Cantrips/Spellbook the same
+way natively in the source). Verified against all 12 `header`-marked rows (not just Monk's) before
+relying on `header` as the general signal, and specifically *not* applied to `subclassFeature`
+(229 of 309 rows there have `header` set, but for a different, already-correct reason - see the
+model status table's `Feature` row).
+
+`db/it/features.json` needed the matching structural change: the 12 sub-features' Italian text
+moved from their own now-gone top-level keys into their parent's `entries` overlay, at the same
+position the English inlining puts them (`overlay_translation()` walks list/dict positions in
+parallel, so the two have to line up) - done by hand, once, preserving the existing official
+Italian text verbatim rather than re-translating it.
+
 #### The general lesson, for next time
 
 A model being "Defined" (mapped field-for-field) doesn't mean the source's own grouping is
 semantically correct, or that nothing downstream of it is redundant:
 
-- **Wrong grouping** (Issue 1): 5etools' JSON is authored for its own renderer, not for this
-  schema, and a block that looks like "one feature with sub-details" can actually be "several
-  features that got flavor text stapled to the first one." This tends to surface as something
-  structurally *off* on a rendered page (not "missing data" but "correct data, wrong shape").
+- **Wrong grouping** (Issues 1 and 6): 5etools' JSON is authored for its own renderer, not for
+  this schema, and a block that looks like "several features" can actually be "one feature with
+  sub-details" (Issue 6, a `header`-marked pointer target) - or the other way around, "one
+  feature with sub-details" that's actually "several features that got flavor text stapled to the
+  first one" (Issue 1). Same wrong-shape failure mode both ways: it surfaces as something
+  structurally *off* on a rendered page (not "missing data" but "correct data, wrong shape"), and
+  a fix for one direction is worth checking for the other, not assumed to be the only shape 5etools
+  uses for "these belong together."
 - **Redundant storage** (Issues 2 and 4): a field that exists only because *this project* built
   it (not a source-native field kept verbatim on purpose) is worth asking "does something else
   already hold this same data via a queryable relation?" - if so, the JSON copy is dead weight,

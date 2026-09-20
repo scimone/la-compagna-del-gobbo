@@ -699,6 +699,36 @@
             });
           });
 
+        // `runSearch()` above only swaps `#search-results` (the item list) - a checklist
+        // filter's own button (its "active" state and count badge, both server-rendered from
+        // `filter.values` on first load) sits outside that node, in `.world-filter-buttons`, so
+        // it never picked up a checkbox's new checked state on this live path. Update it
+        // ourselves instead of re-fetching the whole filter row just for that.
+        Array.from(document.querySelectorAll(".filter-popover")).forEach(function (popover) {
+          var button = popover.querySelector(".filter-button");
+          if (!button) return;
+
+          function syncCount() {
+            var checked = popover.querySelectorAll("input[type=checkbox]:checked").length;
+            button.classList.toggle("active", checked > 0);
+            var badge = button.querySelector(".filter-count");
+            if (checked > 0) {
+              if (!badge) {
+                badge = document.createElement("span");
+                badge.className = "filter-count";
+                button.appendChild(badge);
+              }
+              badge.textContent = checked;
+            } else if (badge) {
+              badge.remove();
+            }
+          }
+
+          Array.from(popover.querySelectorAll("input[type=checkbox]")).forEach(function (checkbox) {
+            checkbox.addEventListener("change", syncCount);
+          });
+        });
+
         // A checkbox filter's `<details>` (see `.filter-popover` above) only closes natively on
         // its own `<summary>` being tapped again, or another one in its exclusive group opening
         // - also close it on any tap outside the popover, the behavior a "dropdown" implies.

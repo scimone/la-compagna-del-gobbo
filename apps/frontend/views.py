@@ -571,7 +571,19 @@ def _active_tab(request, tabs, default: str) -> str:
 
 
 def handbook_overview(request):
+    # The Rules Glossary sits first, ahead of every chapter section - the source book's own
+    # "Rules Glossary" section is dropped entirely (see `HandbookSection`'s docstring/the
+    # README's i18n section: it has no Italian SRD source to translate it from), but its actual
+    # purpose - a named-rule/keyword index - is better served here anyway, by linking straight
+    # into the already-translated `Rule` catalog instead of untranslatable static prose.
+    rule_count = rule_service.list_rules().count()
     items = [
+        {
+            "name": _("Rules Glossary"),
+            "detail": _("%(count)d named rules and keywords") % {"count": rule_count},
+            "url": reverse("handbook-rules-glossary"),
+        },
+    ] + [
         {
             "name": section.name,
             "detail": f"{_('Page')} {section.page}",
@@ -580,6 +592,18 @@ def handbook_overview(request):
         for section in handbook_service.list_sections()
     ]
     return _list_page(request, "Handbook", items, back_url_name="index")
+
+
+def handbook_rules_glossary(request):
+    items = [
+        {
+            "name": _badged_heading(rule.name, _self_translated(rule, "name")),
+            "detail": f"{_('Page')} {rule.page}",
+            "url": reverse("world-rule-detail", args=[rule.pk]),
+        }
+        for rule in rule_service.list_rules()
+    ]
+    return _list_page(request, "Rules Glossary", items, back_url_name="handbook-overview")
 
 
 def handbook_section_detail(request, pk):

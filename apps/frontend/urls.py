@@ -6,6 +6,13 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("characters/", views.characters_overview, name="characters-overview"),
     path("handbook/", views.handbook_overview, name="handbook-overview"),
+    # Must come before `handbook/<slug:pk>/` below, or that catch-all would try to resolve
+    # "rules-glossary" as a `HandbookSection` pk instead.
+    path(
+        "handbook/rules-glossary/",
+        views.handbook_rules_glossary,
+        name="handbook-rules-glossary",
+    ),
     path(
         "handbook/<slug:pk>/",
         views.handbook_section_detail,

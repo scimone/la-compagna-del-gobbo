@@ -367,6 +367,44 @@ def _parse_class_feature_ref(ref: str) -> tuple[str, str, str, int]:
     )
 
 
+def _inline_header_class_features(node, class_feature_lookup: dict):
+    """Replace a `{"type": "refClassFeature", "classFeature": ref}` pointer to a *sub-heading*
+    `classFeature` (one with a `header` field - 5etools' own nesting-depth marker) with that
+    feature's own name/entries inlined as a named nested block, recursively.
+
+    Verified against every `classFeature` row with `header` set (12 total, across Cleric/Druid/
+    Monk - e.g. Monk's Martial Arts embeds Bonus Unarmed Strike/Martial Arts Die/Dexterous
+    Attacks this way, Cleric's Channel Divinity embeds Divine Spark/Turn Undead): every one is
+    reachable *only* via a `refClassFeature` pointer like this, never listed directly in a
+    class's own top-level `classFeatures[]` - this is how the printed book itself presents them,
+    as sub-entries of one feature, not standalone ones, and matches
+    `_import_classes()`'s own BFS skipping a `Feature` row for any of them (see there) - this is
+    the other half of that: without it, the pointer itself doesn't render (`entries_render.py`
+    has no case for a bare `refClassFeature` node) and the text would silently vanish from the
+    page instead of just being duplicated onto it.
+
+    A pointer to a `classFeature` with no `header` (a genuine standalone feature, e.g. Cleric's
+    Protector/Thaumaturge choice) is left alone - it keeps its own `Feature` row, created
+    separately by the caller, so inlining it here too would duplicate it.
+    """
+    if isinstance(node, dict):
+        if node.get("type") == "refClassFeature" and "classFeature" in node:
+            raw = class_feature_lookup.get(_parse_class_feature_ref(node["classFeature"]))
+            if raw is not None and raw.get("header"):
+                return {
+                    "type": "entries",
+                    "name": raw["name"],
+                    "entries": _inline_header_class_features(
+                        raw.get("entries", []), class_feature_lookup
+                    ),
+                }
+            return node
+        return {k: _inline_header_class_features(v, class_feature_lookup) for k, v in node.items()}
+    if isinstance(node, list):
+        return [_inline_header_class_features(item, class_feature_lookup) for item in node]
+    return node
+
+
 def _parse_subclass_feature_ref(ref: str) -> tuple[str, str, str, str, int]:
     """A `subclassFeature` reference key (`"Life Domain Spells|Cleric|XPHB|Life|XPHB|3"`) - name,
     className, classSource, subclassShortName, subclassSource, level. `classSource` is dropped
@@ -807,17 +845,24 @@ class Command(BaseCommand):
                 if raw is None:
                     skipped_refs.append(("classFeature", it["name"], ref_str))
                     continue
+                queue.extend(
+                    _walk_feature_pointers(
+                        raw.get("entries", []), "refClassFeature", "classFeature"
+                    )
+                )
+                if raw.get("header"):
+                    # A sub-heading, not a standalone feature - inlined into whichever feature(s)
+                    # point at it instead (see `_inline_header_class_features()`), not given its
+                    # own `Feature` row here.
+                    continue
                 class_features.append(
                     Feature(
                         class_level=class_level_by_number[key[3]],
                         name=raw["name"],
-                        entries=raw.get("entries", []),
+                        entries=_inline_header_class_features(
+                            raw.get("entries", []), class_feature_lookup
+                        ),
                         consumes_resource_name=(raw.get("consumes") or {}).get("name", ""),
-                    )
-                )
-                queue.extend(
-                    _walk_feature_pointers(
-                        raw.get("entries", []), "refClassFeature", "classFeature"
                     )
                 )
 

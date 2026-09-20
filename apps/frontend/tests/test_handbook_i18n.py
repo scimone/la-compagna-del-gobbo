@@ -47,9 +47,14 @@ def test_handbook_overview_lists_the_same_sections_in_both_languages(client, han
     assert "Dadi" in italian
     assert "Combat" in english
     assert "Dice" in english
+    # "Rules Glossary" (a real nav entry here, listing the `Rule` catalog - see
+    # `handbook_rules_glossary()`) isn't the source's own dropped static-prose section of the
+    # same name (see `test_sections_without_italian_text_are_not_served_in_either_language`) -
+    # both keep the same English label on purpose, so its Italian counterpart is checked instead.
+    assert "Glossario delle regole" in italian
+    assert "Rules Glossary" in english
     for html in (italian, english):
         assert "Player or DM?" not in html
-        assert "Rules Glossary" not in html
 
 
 def test_worked_examples_are_removed_in_both_languages(client, handbook):
@@ -71,6 +76,19 @@ def test_skills_table_is_fully_translated(client, handbook):
 @pytest.fixture
 def catalogs(db):
     call_command("import_rules_data")
+
+
+def test_rules_glossary_lists_every_rule_and_links_to_its_own_detail_page(client, catalogs):
+    # `handbook/rules-glossary/` must be routed before the `handbook/<slug:pk>/` catch-all in
+    # urls.py, or this URL would 404 there instead (it doesn't match any real HandbookSection id).
+    glossary = _get(client, "/handbook/rules-glossary/", "en")
+    assert '<span class="item-name">Advantage</span>' in glossary
+    assert 'href="/world/rules/advantage/"' in glossary
+
+    # Same detail page the `{@variantrule ...}` tags elsewhere on the site already link to.
+    detail = _get(client, "/world/rules/advantage/", "en")
+    assert "<h1" in detail and "Advantage" in detail
+    assert "<h2>Description</h2>" in detail
 
 
 def test_spell_page_and_english_name_search_work_from_the_italian_site(client, catalogs):
