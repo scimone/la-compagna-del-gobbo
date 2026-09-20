@@ -211,6 +211,17 @@ def self_translated_badge(is_self_translated: bool) -> str:
     )
 
 
+def homebrew_badge() -> str:
+    """A small "Homebrew" badge for content that isn't part of the official 2024 rules (today only
+    the Grung species - see `HOMEBREW_SPECIES` in `views.py`). Shown in every language, unlike
+    `self_translated_badge()`, and the two are never shown together on the same heading: a
+    homebrew entry's text is by definition not the official SRD's, so "Traduzione" would add
+    nothing.
+    """
+    title = escape(gettext("Not part of the official 2024 rules"))
+    return f' <span class="self-translated-badge homebrew-badge" title="{title}">Homebrew</span>'
+
+
 def render_trait_cards(entries: list, *, self_translated: bool = False) -> SafeString:
     """Render a flat list of {name, entries} blocks - the shape every XPHB Species' top-level
     `entries` list uses, one block per trait (verified against every species in db/species.json)

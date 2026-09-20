@@ -79,8 +79,8 @@ msgid "Page"
 msgstr "Pagina"
 
 #: apps/frontend/views.py
-msgid "Rules Glossary"
-msgstr "Glossario delle regole"
+msgid "Glossary"
+msgstr "Glossario"
 
 #: apps/frontend/views.py
 msgid "%(count)d named rules and keywords"
@@ -958,3 +958,7 @@ msgstr "Lasciati ispirare dal background e dalla specie del personaggio per imma
 
 msgid "Pick a class. It sets your hit die, saving throws, armor and weapon training and the features you start with. Its level 1 choices open right under it."
 msgstr "Scegli una classe. Determina il Dado Vita, i tiri salvezza, le competenze in armature e armi e i privilegi iniziali. Le sue scelte di 1º livello si aprono subito sotto."
+
+#: apps/frontend/entries_render.py
+msgid "Not part of the official 2024 rules"
+msgstr "Non fa parte delle regole ufficiali 2024"

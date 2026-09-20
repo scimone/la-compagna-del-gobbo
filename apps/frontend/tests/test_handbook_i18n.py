@@ -51,10 +51,24 @@ def test_handbook_overview_lists_the_same_sections_in_both_languages(client, han
     # `handbook_rules_glossary()`) isn't the source's own dropped static-prose section of the
     # same name (see `test_sections_without_italian_text_are_not_served_in_either_language`) -
     # both keep the same English label on purpose, so its Italian counterpart is checked instead.
-    assert "Glossario delle regole" in italian
-    assert "Rules Glossary" in english
+    assert "Glossario" in italian
+    assert "Glossary" in english
+    assert "Rules Glossary" not in english and "Glossario delle regole" not in italian
     for html in (italian, english):
         assert "Player or DM?" not in html
+
+
+def test_handbook_glossary_is_set_off_and_chapters_show_their_page_on_a_page_icon(client, handbook):
+    for language, name in (("it", "Glossario"), ("en", "Glossary")):
+        html = _get(client, "/handbook/", language)
+        before, featured_and_chapters = html.split('<ul class="item-list featured-list">', 1)
+        featured, chapters = featured_and_chapters.split('class="item-list main-list', 1)
+        # the Glossary alone sits above the dividing line, in its own list
+        assert name in featured and featured.count("<li") == 1
+        # every chapter has a page icon carrying the number from its `page`, and no "Page N" line
+        assert chapters.count('<span class="page-icon"') == chapters.count("<li")
+        assert re.search(r'<span class="page-number">\d+</span>', chapters)
+        assert "item-detail" not in chapters
 
 
 def test_worked_examples_are_removed_in_both_languages(client, handbook):
@@ -106,6 +120,20 @@ def test_class_and_species_pages_render_in_italian(client, catalogs):
     assert "Ira" in _get(client, "/world/classes/barbarian/?tab=levels", "it")
     assert "Dragonide" in _get(client, "/world/species/dragonborn/", "it")
     assert "Scurovisione" in _get(client, "/world/species/dragonborn/?tab=traits", "it")
+
+
+def test_grung_is_badged_homebrew_in_both_languages_instead_of_translated(client, catalogs):
+    for language in ("it", "en"):
+        for url in ("/world/species/", "/world/species/grung/", "/world/species/grung/?tab=traits"):
+            html = _get(client, url, language)
+            assert "Homebrew</span>" in html
+            assert "Traduzione</span>" not in html.split("<h1", 1)[1].split("</h1>", 1)[0]
+        # the Traits tab and the About tab's Lore heading carry no translation badge either
+        assert "Traduzione</span>" not in _get(client, "/world/species/grung/?tab=traits", language)
+        assert "Traduzione</span>" not in _get(client, "/world/species/grung/", language)
+    # an official species never gets it, and Aasimar (hand-translated, but official) keeps its own
+    assert "Homebrew</span>" not in _get(client, "/world/species/dwarf/", "it")
+    assert "Traduzione</span>" in _get(client, "/world/species/aasimar/", "it")
 
 
 def test_class_level_table_headers_and_units_are_translated_in_italian(client, catalogs):

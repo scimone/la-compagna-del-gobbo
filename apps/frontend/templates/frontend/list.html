@@ -29,7 +29,8 @@
 
   /* Bookmarked entries of the current (searched/filtered) list, pinned above the rest: no
      heading, just visibly different (accent border and tint) from a regular entry. */
-  .bookmark-list {
+  .bookmark-list,
+  .featured-list {
     flex-shrink: 0;
     padding-bottom: 0.75rem;
     margin-bottom: 0.25rem;
@@ -74,12 +75,12 @@
     color: var(--accent);
   }
 
-  /* An entry that isn't one of its list's regular items (the Handbook's Rules Glossary): solid
-     accent block with an icon, so it reads as a different kind of thing from the chapters below. */
+  /* An entry that isn't one of its list's regular items (the Handbook's Glossary): solid
+     accent block with an icon, so it reads as a different kind of thing from the chapters below,
+     which it is also separated from by a dividing line (`.featured-list`, above). */
   .item-list li.featured {
     background: var(--accent);
     border-color: var(--accent);
-    margin-bottom: 0.5rem;
   }
 
   .item-list li.featured a {
@@ -106,13 +107,50 @@
 
   .featured-icon {
     flex-shrink: 0;
-    width: 1.9rem;
-    height: 1.9rem;
+    width: 2.7rem;
+    height: auto;
+  }
+
+  /* A Handbook chapter's page: a sheet of paper with its number on top of it. */
+  .item-list a.page-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0.9rem 0.55rem 0.7rem;
+  }
+
+  .page-icon {
+    position: relative;
+    flex-shrink: 0;
+    width: 2.6rem;
+    height: 2.6rem;
+    color: var(--accent);
+  }
+
+  .page-icon svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Centred on the sheet's body, just below its folded corner. */
+  .page-number {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translateY(-38%);
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1;
+    color: inherit;
+    font-variant-numeric: tabular-nums;
   }
 
 
 
-  /* A-Z jump strip on the right edge (Rules Glossary): press or drag along it - the big letter
+  /* A-Z jump strip on the right edge (Glossary): press or drag along it - the big letter
      popup (`.alpha-hud`, made by the script below) names the letter under the finger, and while
      it's held every entry not filed under that letter fades out (`.alpha-active`), so the matching
      ones stand out and the list scrolls to the first of them. */
@@ -199,7 +237,7 @@
 
 {% block content %}
   <div id="search-results"{% if alphabet %} class="has-alpha"{% endif %}>
-    {% if items or bookmarked_items %}
+    {% if items or bookmarked_items or featured_items %}
       {% if bookmark_kind %}
         {# One form for every bookmark button on the page (see `_list_item.html`) - inside #}
         {# `#search-results` so `next` always matches the URL this render came from.       #}
@@ -210,6 +248,13 @@
         </form>
       {% endif %}
       <div class="list-scroll">
+        {% if featured_items %}
+          <ul class="item-list featured-list">
+            {% for item in featured_items %}
+              {% include "frontend/_list_item.html" %}
+            {% endfor %}
+          </ul>
+        {% endif %}
         {% if bookmarked_items %}
           <ul class="item-list bookmark-list{% if compact_thumbs %} compact-thumbs{% endif %}" aria-label="{% translate 'Bookmarks' %}">
             {% for item in bookmarked_items %}

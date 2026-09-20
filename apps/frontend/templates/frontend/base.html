@@ -129,6 +129,14 @@
       cursor: help;
     }
 
+    /* "Homebrew" (see `homebrew_badge()`): same pill as the translation badge, outlined instead
+       of filled so the two never read as the same thing. */
+    .homebrew-badge {
+      background: transparent;
+      color: var(--accent);
+      box-shadow: inset 0 0 0 1px var(--accent);
+    }
+
     .header-actions {
       display: flex;
       align-items: center;

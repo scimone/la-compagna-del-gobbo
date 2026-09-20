@@ -19,6 +19,7 @@ from django.views.decorators.http import require_POST
 from apps.frontend import accounts, units
 from apps.frontend.bookmarks import BOOKMARK_MODELS, bookmarked_ids, is_bookmarked
 from apps.frontend.entries_render import (
+    homebrew_badge,
     render_class_features,
     render_entries,
     render_handbook_section,
@@ -456,7 +457,7 @@ def _list_page(
     bookmark_kind: str | None = None,
 ):
     """A list page is a root of its navigation menu (a World tab, the Handbook's contents), so it
-    has no back button unless `back_url_name` names a parent (only the Rules Glossary, which sits
+    has no back button unless `back_url_name` names a parent (only the Glossary, which sits
     one level below the Handbook's contents). `searchable` shows the search box (and `filters`
     under it) without the World category tabs that `world_tabs` also brings with it. `alphabet`
     adds the right-hand A-Z jump strip (each item then needs a `letter`, see `_index_letter()`).
@@ -466,6 +467,10 @@ def _list_page(
     """
     # Letters (and their jump targets) come from every entry, bookmarked or not.
     alphabet_letters = list(dict.fromkeys(item["letter"] for item in items)) if alphabet else []
+    # `featured` entries (the Handbook's Glossary) sit in their own block above everything else,
+    # set off by a dividing line like the bookmarked block's.
+    featured_items = [item for item in items if item.get("featured")]
+    items = [item for item in items if not item.get("featured")]
     bookmarked_items = []
     if not request.user.is_authenticated:
         bookmark_kind = None  # bookmarks are per account: nothing to show or toggle signed out
@@ -479,6 +484,7 @@ def _list_page(
     context = {
         "page_title": _(title),
         "items": items,
+        "featured_items": featured_items,
         "bookmarked_items": bookmarked_items,
         "bookmark_kind": bookmark_kind,
         "world_tabs": world_tabs,
@@ -563,6 +569,13 @@ def _badged_heading(label, is_self_translated: bool):
     """
     badge = self_translated_badge(is_self_translated)
     return mark_safe(f"{escape(label)}{badge}") if badge else label
+
+
+def _homebrew_heading(label):
+    """`label` with a "Homebrew" badge appended, in every language - for a species that isn't
+    part of the official 2024 rules (see `HOMEBREW_SPECIES`).
+    """
+    return mark_safe(f"{escape(label)}{homebrew_badge()}")
 
 
 def _detail_page(
@@ -690,7 +703,7 @@ def bookmark_toggle(request):
 
 
 def handbook_overview(request):
-    # The Rules Glossary sits first, ahead of every chapter section - the source book's own
+    # The Glossary sits first, ahead of every chapter section - the source book's own
     # "Rules Glossary" section is dropped entirely (see `HandbookSection`'s docstring/the
     # README's i18n section: it has no Italian SRD source to translate it from), but its actual
     # purpose - a named-rule/keyword index - is better served here anyway, by linking straight
@@ -698,7 +711,7 @@ def handbook_overview(request):
     rule_count = rule_service.list_rules().count()
     items = [
         {
-            "name": _("Rules Glossary"),
+            "name": _("Glossary"),
             "detail": _("%(count)d named rules and keywords") % {"count": rule_count},
             "url": reverse("handbook-rules-glossary"),
             "featured": True,
@@ -706,7 +719,8 @@ def handbook_overview(request):
     ] + [
         {
             "name": section.name,
-            "detail": f"{_('Page')} {section.page}",
+            # Drawn as a page icon with the number on top (`_list_item.html`), not as a detail line.
+            "page": section.page,
             "url": reverse("handbook-section-detail", args=[section.pk]),
         }
         for section in handbook_service.list_sections()
@@ -731,7 +745,7 @@ def handbook_rules_glossary(request):
     ]
     return _list_page(
         request,
-        "Rules Glossary",
+        "Glossary",
         items,
         back_url_name="handbook-overview",
         searchable=True,
@@ -1064,6 +1078,20 @@ def world_feat_detail(request, pk):
 # --- Species ---------------------------------------------------------------------------------
 
 
+#: Species that aren't official 2024 content (`Grung` is Volo's Guide, converted by hand - see
+#: `SPECIES_SHORT_DESCRIPTIONS` in `import_rules_data.py`). They get a "Homebrew" badge in place of
+#: the "Traduzione" one: their Italian text is hand-translated by definition, so flagging that as
+#: well would only repeat what "Homebrew" already says.
+HOMEBREW_SPECIES = frozenset({"grung"})
+
+
+def _species_heading(species):
+    """A species' name, badged "Homebrew" or (in Italian, if hand-translated) "Traduzione"."""
+    if species.pk in HOMEBREW_SPECIES:
+        return _homebrew_heading(species.name)
+    return _badged_heading(species.name, _self_translated(species, "name"))
+
+
 def world_species(request):
     q = _search_query(request)
     species_qs = species_service.list_species()
@@ -1072,7 +1100,7 @@ def world_species(request):
     items = [
         {
             "pk": s.pk,
-            "name": _badged_heading(s.name, _self_translated(s, "name")),
+            "name": _species_heading(s),
             "detail": s.short_description,
             "url": reverse("world-species-detail", args=[s.pk]),
             "image": _menu_image_url("species", f"{_SPECIES_IMAGE_SLUGS.get(s.id, s.id)}-grey.png"),
@@ -1108,6 +1136,7 @@ def world_species_detail(request, pk):
     tabs = [("about", _("About")), ("traits", _("Traits"))]
     active_tab = _active_tab(request, tabs, default="about")
 
+    homebrew = species.pk in HOMEBREW_SPECIES
     facts = []
     plain_sections = []
     body = None
@@ -1123,18 +1152,19 @@ def world_species_detail(request, pk):
         facts.append((_("Page"), species.page))
 
         if species.lore:
-            heading = _badged_heading(_("Lore"), _self_translated(species, "lore"))
+            heading = _badged_heading(_("Lore"), not homebrew and _self_translated(species, "lore"))
             plain_sections.append((heading, render_entries(species.lore)))
 
     elif active_tab == "traits":
         if species.entries:
             body = render_trait_cards(
-                species.entries, self_translated=_self_translated(species, "entries")
+                species.entries,
+                self_translated=not homebrew and _self_translated(species, "entries"),
             )
 
     return _detail_page(
         request,
-        _badged_heading(species.name, _self_translated(species, "name")),
+        _species_heading(species),
         "world-species",
         facts,
         body=body,

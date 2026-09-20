@@ -1,13 +1,25 @@
 {% load i18n %}
 <li{% if item.featured %} class="featured"{% endif %}{% if item.letter %} data-letter="{{ item.letter }}"{% endif %}>
-  <a href="{{ item.url }}"{% if item.image %} class="menu-thumb"{% endif %}>
+  <a href="{{ item.url }}"{% if item.image or item.page %} class="{% if item.image %}menu-thumb{% endif %}{% if item.page %} page-row{% endif %}"{% endif %}>
     {% if item.featured %}
-      {# Marks an entry that isn't one of its list's regular items (the Handbook's Rules Glossary) #}
-      <svg class="featured-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"></path>
-        <path d="M8 11h8"></path>
-        <path d="M8 7h6"></path>
+      {# Marks an entry that isn't one of its list's regular items (the Handbook's Glossary): an #}
+      {# open book with the letters A and Z on its two pages.                                     #}
+      <svg class="featured-icon" viewBox="0 0 36 26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 5.5C15 3.2 10.5 2.5 3 2.5V20c7.5 0 12 .7 15 3z"></path>
+        <path d="M18 5.5c3-2.3 7.5-3 15-3V20c-7.5 0-12 .7-15 3z"></path>
+        <text x="10.5" y="15.5" text-anchor="middle" font-size="10" font-weight="800" font-family="system-ui, sans-serif" fill="currentColor" stroke="none">A</text>
+        <text x="25.5" y="15.5" text-anchor="middle" font-size="10" font-weight="800" font-family="system-ui, sans-serif" fill="currentColor" stroke="none">Z</text>
       </svg>
+    {% endif %}
+    {% if item.page %}
+      {# A sheet of paper with the page number on top (a Handbook chapter's `page`). #}
+      <span class="page-icon" title="{% translate 'Page' %} {{ item.page }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <path d="M14 2v6h6"></path>
+        </svg>
+        <span class="page-number">{{ item.page }}</span>
+      </span>
     {% endif %}
     {% if item.image %}
       {# The vignette can't be an inset box-shadow on the <img> itself (browsers paint that #}
