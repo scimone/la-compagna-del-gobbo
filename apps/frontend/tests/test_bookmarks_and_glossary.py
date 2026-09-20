@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.auth import get_user_model
+from django.template.loader import render_to_string
 
 from apps.frontend.models import Bookmark
 from apps.frontend.views import _index_letter
@@ -116,3 +117,16 @@ def test_glossary_searches_live_from_the_first_letter_and_indexes_by_letter(clie
     found = client.get("/handbook/rules-glossary/?q=c").content.decode()
     assert "Cover" in found and "Armor Class" in found  # "c" anywhere in the name
     assert "Advantage" not in found.split('id="search-results"')[1]
+
+
+def test_vignette_is_an_overlay_wrapper_not_a_box_shadow_on_the_image():
+    # An inset box-shadow on the <img> itself is painted beneath the image and never shows,
+    # so the vignette needs a wrapper (its ::after draws over the picture).
+    item = {"name": "Acolyte", "url": "/x/", "image": "/static/images/backgrounds/acolyte.jpeg"}
+    with_vignette = render_to_string(
+        "frontend/_list_item.html", {"item": item, "image_vignette": True}
+    )
+    without = render_to_string("frontend/_list_item.html", {"item": item, "image_vignette": False})
+
+    assert '<span class="thumb-vignette">' in with_vignette
+    assert "thumb-vignette" not in without and 'class="item-thumb"' in without

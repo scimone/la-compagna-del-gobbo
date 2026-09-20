@@ -10,11 +10,12 @@
       </svg>
     {% endif %}
     {% if item.image %}
-      <img
-        class="item-thumb{% if image_vignette %} vignette{% endif %}"
-        src="{{ item.image }}"
-        alt=""
-      >
+      {# The vignette can't be an inset box-shadow on the <img> itself (browsers paint that #}
+      {# beneath a replaced element's content, so it never shows) - it's an overlay drawn   #}
+      {# over the image by the wrapper's ::after, see `.thumb-vignette` in list.html.      #}
+      {% if image_vignette %}<span class="thumb-vignette">{% endif %}
+      <img class="item-thumb" src="{{ item.image }}" alt="">
+      {% if image_vignette %}</span>{% endif %}
     {% endif %}
     <div class="item-text">
       <span class="item-name">{{ item.name }}</span>
