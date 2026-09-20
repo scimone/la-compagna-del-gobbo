@@ -662,17 +662,17 @@ def world_background_detail(request, pk):
         facts.append((_("Starting Equipment"), render_starting_equipment(starting_equipment)))
     facts.append((_("Page"), bg.page))
 
-    sections = []
+    plain_sections = []
     if bg.lore:
         heading = _badged_heading(_("Lore"), _self_translated(bg, "lore"))
-        sections.append(_section(heading, render_entries(bg.lore)))
+        plain_sections.append((heading, render_entries(bg.lore)))
 
     return _detail_page(
         request,
         _badged_heading(bg.name, _self_translated(bg, "name")),
         "world-backgrounds",
         facts,
-        sections,
+        plain_sections=plain_sections,
     )
 
 
@@ -767,7 +767,16 @@ def world_class_detail(request, pk):
 
         if klass.lore:
             heading = _badged_heading(_("Lore"), _self_translated(klass, "lore"))
-            plain_sections.append((heading, render_entries(klass.lore)))
+            # `klass.lore` is always a single top-level node whose own `name` just repeats the
+            # class's name (e.g. `[{"type": "section", "name": "Barbarian", "entries": [...]}]`,
+            # verified against every class in db/fluff-classes.json and db/it/classes.json) -
+            # already redundant with the "Lore" heading above it and the page's own title, so
+            # only its nested `entries` (the actual prose) gets rendered.
+            lore_entries = klass.lore
+            wrapper = lore_entries[0] if len(lore_entries) == 1 else None
+            if isinstance(wrapper, dict) and wrapper.get("name"):
+                lore_entries = wrapper.get("entries", [])
+            plain_sections.append((heading, render_entries(lore_entries)))
 
         levels = list(klass.levels.order_by("level"))
         if levels:
@@ -896,14 +905,14 @@ def world_feat_detail(request, pk):
     facts.append((_("Page"), feat.page))
 
     description_heading = _badged_heading(_("Description"), _self_translated(feat, "entries"))
-    sections = [_section(description_heading, render_entries(feat.entries))]
+    plain_sections = [(description_heading, render_entries(feat.entries))]
 
     return _detail_page(
         request,
         _badged_heading(feat.name, _self_translated(feat, "name")),
         "world-feats",
         facts,
-        sections,
+        plain_sections=plain_sections,
     )
 
 
@@ -1114,19 +1123,19 @@ def world_spell_detail(request, pk):
     facts.append((_("Page"), spell.page))
 
     description_heading = _badged_heading(_("Description"), _self_translated(spell, "entries"))
-    sections = [_section(description_heading, render_entries(spell.entries))]
+    plain_sections = [(description_heading, render_entries(spell.entries))]
     if spell.entries_higher_level:
         higher_level_heading = _badged_heading(
             _("At Higher Levels"), _self_translated(spell, "entries_higher_level")
         )
-        sections.append(_section(higher_level_heading, render_entries(spell.entries_higher_level)))
+        plain_sections.append((higher_level_heading, render_entries(spell.entries_higher_level)))
 
     return _detail_page(
         request,
         _badged_heading(spell.name, _self_translated(spell, "name")),
         "world-spells",
         facts,
-        sections,
+        plain_sections=plain_sections,
     )
 
 
