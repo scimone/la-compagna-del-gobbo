@@ -1,60 +1,192 @@
 {
  "barbarian": {
+  "_self": true,
+  "lore": [
+   {
+    "entries": [
+     "I Barbari sono guerrieri possenti alimentati dalle forze primordiali del multiverso, che si manifestano come Ira. Più che una semplice emozione — e non limitata alla rabbia — questa Ira è l'incarnazione della ferocia di un predatore, della furia di una tempesta e del tumulto del mare.",
+     "Alcuni Barbari personificano la propria Ira come uno spirito feroce o un antenato venerato. Altri la vedono come un legame con il dolore e l'angoscia del mondo, come un impersonale groviglio di magia selvaggia o come un'espressione del proprio io più profondo. Per ogni Barbaro, l'Ira è un potere che alimenta non solo l'abilità in battaglia, ma anche riflessi sorprendenti e sensi acuti.",
+     "I Barbari spesso fungono da protettori e guide all'interno delle proprie comunità. Si gettano a capofitto nel pericolo perché chi è sotto la loro protezione non debba farlo. Il loro coraggio di fronte al pericolo rende i Barbari perfettamente adatti alla vita d'avventura."
+    ],
+    "name": "Barbaro"
+   }
+  ],
   "name": "Barbaro",
   "short_description": "Un feroce guerriero alimentato dalla furia primordiale.",
   "subclass_title": "Sottoclasse del barbaro"
  },
  "bard": {
+  "_self": true,
+  "lore": [
+   {
+    "entries": [
+     "Invocando la magia attraverso musica, danza e versi, i Bardi sono esperti nell'ispirare gli altri, lenire le ferite, scoraggiare i nemici e creare illusioni. I Bardi credono che il multiverso sia stato pronunciato in esistenza e che i resti delle sue Parole della creazione risuonino e brillino ancora su ogni piano dell'esistenza. La magia bardica cerca di imbrigliare quelle parole, che trascendono ogni linguaggio.",
+     "Qualsiasi cosa può ispirare una nuova canzone o un nuovo racconto, perciò i Bardi sono affascinati da quasi tutto. Diventano maestri di molte cose, tra cui l'esecuzione musicale, la pratica della magia e l'arte della battuta arguta.",
+     "La vita di un Bardo trascorre viaggiando, raccogliendo sapienza, raccontando storie e vivendo della gratitudine del pubblico, proprio come qualsiasi altro intrattenitore. Ma la profondità della loro conoscenza e la padronanza della magia li distinguono dagli altri."
+    ],
+    "name": "Bardo"
+   }
+  ],
   "name": "Bardo",
   "short_description": "Un ispirato artista di magia e musica.",
   "subclass_title": "Sottoclasse del bardo"
  },
  "cleric": {
+  "_self": true,
+  "lore": [
+   {
+    "entries": [
+     "I Chierici traggono il proprio potere dai regni degli dèi e lo imbrigliano per compiere miracoli. Benedetto da una divinità, un pantheon o un'altra entità immortale, un Chierico può attingere alla magia divina dei Piani Esterni — dove dimorano gli dèi — e incanalarla per sostenere gli alleati e combattere i nemici.",
+     "Poiché il loro potere è un dono divino, i Chierici si associano di norma ai templi dedicati alla divinità o all'altra forza immortale che ha risvegliato la loro magia. Imbrigliare la magia divina non richiede un addestramento specifico, eppure i Chierici possono apprendere preghiere e riti che li aiutano ad attingere al potere dei Piani Esterni.",
+     "Non tutti i membri di un tempio o di un santuario sono Chierici. Alcuni sacerdoti sono chiamati a una vita semplice al servizio del tempio, esprimendo la propria devozione attraverso la preghiera e i rituali, non attraverso la magia. Molti mortali affermano di parlare in nome degli dèi, ma pochi sanno incanalare il potere di quegli dèi come sa fare un Chierico."
+    ],
+    "name": "Chierico"
+   }
+  ],
   "name": "Chierico",
   "short_description": "Un intermediario divino che maneggia magia sacra.",
   "subclass_title": "Sottoclasse del chierico"
  },
  "druid": {
+  "_self": true,
+  "lore": [
+   {
+    "entries": [
+     "I Druidi appartengono ad antichi ordini che invocano le forze della natura. Imbrigliando la magia degli animali, delle piante e dei quattro elementi, i Druidi guariscono, si trasformano in animali e scatenano la distruzione elementale.",
+     "Venerando la natura sopra ogni cosa, ogni Druido trae la propria magia dalla natura, da una divinità della natura, o da entrambe, e di norma si unisce ad altri Druidi per compiere riti che segnano il trascorrere delle stagioni e degli altri cicli naturali.",
+     "I Druidi si preoccupano del delicato equilibrio ecologico che sostiene la vita vegetale e animale e della necessità che le persone vivano in armonia con la natura. Spesso custodiscono siti sacri o vegliano su regioni di natura incontaminata, ma quando emerge un pericolo significativo, i Druidi assumono un ruolo più attivo come avventurieri che combattono la minaccia."
+    ],
+    "name": "Druido"
+   }
+  ],
   "name": "Druido",
   "short_description": "Un sacerdote della natura che governa la magia primordiale.",
   "subclass_title": "Sottoclasse del druido"
  },
  "fighter": {
+  "_self": true,
+  "lore": [
+   {
+    "entries": [
+     "I Guerrieri dominano molti campi di battaglia. Cavalieri erranti, campioni reali, soldati d'élite e mercenari induriti dalla guerra: in quanto Guerrieri, condividono tutti un'abilità impareggiabile con armi e armature. E hanno una profonda familiarità con la morte, sia nel darla sia nello sfidarla.",
+     "I Guerrieri padroneggiano svariate tecniche con le armi, e un Guerriero ben equipaggiato ha sempre a portata di mano lo strumento adatto per qualunque situazione di combattimento. Allo stesso modo, un Guerriero è esperto in ogni tipo di armatura. Al di là di questo grado base di familiarità, ogni Guerriero si specializza in determinati stili di combattimento. Alcuni si concentrano sul tiro con l'arco, altri sul combattere con due armi contemporaneamente, e altri ancora sul potenziare le proprie abilità marziali con la magia. Questa combinazione di abilità ad ampio raggio e specializzazione approfondita rende i Guerrieri combattenti superiori."
+    ],
+    "name": "Guerriero"
+   }
+  ],
   "name": "Guerriero",
   "short_description": "Un maestro di armi e armature.",
   "subclass_title": "Sottoclasse del guerriero"
  },
  "monk": {
+  "_self": true,
+  "lore": [
+   {
+    "entries": [
+     "I Monaci ricorrono a un rigoroso addestramento al combattimento e a una ferrea disciplina mentale per allinearsi con il multiverso e concentrare le proprie riserve interiori di potere. Monaci diversi concepiscono questo potere in modi diversi: come respiro, energia, forza vitale, essenza o sé, per esempio. Che venga incanalato come una sorprendente dimostrazione di abilità marziale o come una più sottile manifestazione di difesa e velocità, questo potere permea tutto ciò che un Monaco fa.",
+     "I Monaci concentrano il proprio potere interiore per creare effetti straordinari, persino soprannaturali. Incanalano velocità e forza sorprendenti nei propri attacchi, con o senza l'uso di armi. Nelle mani di un Monaco, anche le armi più semplici possono diventare sofisticati strumenti di maestria nel combattimento.",
+     "Molti Monaci scoprono che una vita strutturata di ritiro ascetico li aiuta a coltivare la concentrazione fisica e mentale necessaria a imbrigliare il proprio potere. Altri Monaci credono invece che immergersi nella vibrante confusione della vita alimenti la loro determinazione e disciplina.",
+     "I Monaci considerano generalmente le avventure come prove del proprio sviluppo fisico e mentale. Sono spinti dal desiderio di compiere una missione più grande del semplice uccidere mostri e saccheggiare tesori: aspirano a trasformare se stessi in armi viventi."
+    ],
+    "name": "Monaco"
+   }
+  ],
   "name": "Monaco",
   "short_description": "Un maestro di arti marziali che incanala l'energia interiore.",
   "subclass_title": "Sottoclasse del monaco"
  },
  "paladin": {
+  "_self": true,
+  "lore": [
+   {
+    "entries": [
+     "I Paladini sono uniti dai loro giuramenti a resistere contro le forze dell'annientamento e della corruzione. Che sia pronunciato davanti all'altare di un dio, in una radura sacra al cospetto degli spiriti della natura, o in un momento di disperazione e dolore con i morti come unici testimoni, il giuramento di un Paladino è un legame potente. È una fonte di potere che trasforma un guerriero devoto in un campione benedetto.",
+     "I Paladini si addestrano per apprendere le arti del combattimento, padroneggiando un'ampia varietà di armi e armature. Ciò nonostante, le loro abilità marziali sono secondarie rispetto al potere magico che maneggiano: il potere di guarire i feriti, punire i nemici e proteggere gli indifesi e coloro che combattono al loro fianco.",
+     "Quasi per definizione, la vita di un Paladino è una vita d'avventura, perché ogni Paladino vive in prima linea nella lotta cosmica contro l'annientamento. I Guerrieri sono già rari tra i ranghi degli eserciti del mondo, ma ancora meno persone possono rivendicare la chiamata di un Paladino. Quando ricevono davvero questa chiamata, questi individui benedetti abbandonano le proprie precedenti occupazioni e imbracciano armi e magia."
+    ],
+    "name": "Paladino"
+   }
+  ],
   "name": "Paladino",
   "short_description": "Un guerriero sacro legato a un giuramento.",
   "subclass_title": "Sottoclasse del paladino"
  },
  "ranger": {
+  "_self": true,
+  "lore": [
+   {
+    "entries": [
+     "Lontano dalle città affollate, tra gli alberi di foreste senza sentieri e attraverso vaste pianure, i Ranger mantengono la loro veglia incessante nelle terre selvagge. I Ranger imparano a braccare la propria preda come farebbe un predatore, muovendosi furtivamente nella natura selvaggia e nascondendosi tra la boscaglia e le rovine.",
+     "Grazie al loro legame con la natura, i Ranger possono anche lanciare incantesimi che imbrigliano i poteri primordiali delle terre selvagge. I talenti e la magia di un Ranger vengono affinati con letale concentrazione per proteggere il mondo dalle devastazioni di mostri e tiranni."
+    ],
+    "name": "Ranger"
+   }
+  ],
   "name": "Ranger",
   "short_description": "Un cacciatore e esploratore delle terre selvagge.",
   "subclass_title": "Sottoclasse del ranger"
  },
  "rogue": {
+  "_self": true,
+  "lore": [
+   {
+    "entries": [
+     "I Ladri fanno affidamento sull'astuzia, la furtività e le vulnerabilità dei nemici per avere la meglio in qualsiasi situazione. Hanno il talento di trovare la soluzione a quasi ogni problema. Alcuni imparano persino trucchi magici per integrare le proprie altre abilità. Molti Ladri si concentrano sulla furtività e sull'inganno, mentre altri affinano abilità utili in un ambiente di sotterraneo, come arrampicarsi, individuare e disinnescare trappole e scassinare serrature.",
+     "In combattimento, i Ladri privilegiano i colpi sottili rispetto alla forza bruta. Preferiscono sferrare un unico attacco preciso piuttosto che logorare un avversario con una raffica di colpi.",
+     "Alcuni Ladri hanno iniziato la propria carriera come criminali, mentre altri hanno usato la propria astuzia per combattere il crimine. Qualunque sia il rapporto di un Ladro con la legge, nessun comune criminale o tutore dell'ordine può eguagliare la sottile genialità dei più grandi Ladri."
+    ],
+    "name": "Ladro"
+   }
+  ],
   "name": "Ladro",
   "short_description": "Un furfante di astuzia, furtività e precisione.",
   "subclass_title": "Sottoclasse del ladro"
  },
  "sorcerer": {
+  "_self": true,
+  "lore": [
+   {
+    "entries": [
+     "Gli Stregoni maneggiano una magia innata impressa nel loro stesso essere. Alcuni Stregoni non sanno indicare l'origine del proprio potere, mentre altri la fanno risalire a strani eventi della loro storia personale o familiare. La benedizione di un drago o di una driade alla nascita di un bambino, oppure la scarica di un fulmine caduto da un cielo sereno, possono risvegliare il dono di uno Stregone. Lo stesso può accadere per il dono di una divinità, l'esposizione alla strana magia di un altro piano di esistenza, o uno sguardo fugace nei meccanismi più intimi della realtà. Qualunque sia l'origine, il risultato è un marchio indelebile sullo Stregone, una magia turbinosa che può tramandarsi di generazione in generazione.",
+     "Gli Stregoni non imparano la magia: il potere grezzo e ribollente della magia fa parte di loro. L'arte essenziale di uno Stregone consiste nell'imparare a imbrigliare e incanalare questa magia innata, il che permette allo Stregone di scoprire modi nuovi e sbalorditivi per scatenare il proprio potere. Man mano che gli Stregoni padroneggiano la propria magia innata, diventano più sintonizzati con la sua origine, sviluppando poteri distinti che ne rispecchiano la fonte.",
+     "Gli Stregoni sono rari. Alcune stirpi familiari producono esattamente uno Stregone per ogni generazione, ma il più delle volte i talenti della stregoneria si manifestano per puro caso. Chi possiede questo potere magico scopre presto che esso non ama restare quieto. La magia di uno Stregone vuole essere maneggiata."
+    ],
+    "name": "Stregone"
+   }
+  ],
   "name": "Stregone",
   "short_description": "Un incantatore dal potere magico innato.",
   "subclass_title": "Sottoclasse dello stregone"
  },
  "warlock": {
+  "_self": true,
+  "lore": [
+   {
+    "entries": [
+     "I Warlock sono alla ricerca di conoscenze celate nel tessuto del multiverso. Spesso iniziano la loro ricerca del potere magico immergendosi in tomi di sapienza proibita, sperimentando invocazioni pensate per attirare il potere di esseri extraplanari, o cercando luoghi di potere dove si avverte l'influenza di queste entità. In breve tempo, ogni Warlock viene attratto in un patto vincolante con un potente patrono. Attingendo all'antica conoscenza di esseri come angeli, arcifatati, demoni, diavoli, streghe ed entità aliene del Reame Lontano, i Warlock assemblano segreti arcani per rafforzare il proprio potere.",
+     "I Warlock considerano i propri patroni come risorse, come mezzi per raggiungere il fine del potere magico. Alcuni Warlock rispettano, venerano o persino amano i propri patroni; alcuni li servono con riluttanza; altri ancora cercano di comprometterli anche mentre maneggiano il potere che quei patroni hanno concesso loro.",
+     "Una volta stretto il patto, la sete di conoscenza e potere di un Warlock non può essere placata con il semplice studio. La maggior parte dei Warlock trascorre le proprie giornate inseguendo un potere maggiore e una conoscenza più profonda, il che generalmente significa un qualche tipo di avventura."
+    ],
+    "name": "Warlock"
+   }
+  ],
   "name": "Warlock",
   "short_description": "Un incantatore che ottiene magia da un patto.",
   "subclass_title": "Sottoclasse del warlock"
  },
  "wizard": {
+  "_self": true,
+  "lore": [
+   {
+    "entries": [
+     "I Maghi si definiscono per il loro studio esaustivo dei meccanismi intimi della magia. Lanciano incantesimi di fuoco esplosivo, fulmini sfrigolanti, sottili inganni e spettacolari trasformazioni. La loro magia evoca mostri da altri piani di esistenza, offre scorci sul futuro o crea barriere protettive. I loro incantesimi più potenti trasformano una sostanza in un'altra, richiamano meteore dal cielo o aprono portali verso altri mondi.",
+     "La maggior parte dei Maghi condivide un approccio erudito alla magia. Esaminano i fondamenti teorici della magia, in particolare la classificazione degli incantesimi nelle scuole di magia. Maghi rinomati come Bigby, Tasha, Mordenkainen e Yolande hanno costruito sui propri studi per inventare incantesimi iconici oggi usati in tutto il multiverso.",
+     "La cosa più vicina a una vita ordinaria a cui un Mago possa aspirare è lavorare come sapiente o docente. Altri Maghi vendono i propri servizi come consiglieri, prestano servizio nelle forze militari o intraprendono vite dedicate al crimine o al dominio.",
+     "Ma il richiamo della conoscenza attira anche i Maghi più restii all'avventura fuori dalla sicurezza delle proprie biblioteche e dei propri laboratori, verso rovine cadenti e città perdute. La maggior parte dei Maghi crede che le proprie controparti nelle civiltà antiche conoscessero segreti magici andati perduti nel tempo, e che scoprire quei segreti potrebbe schiudere la via verso un potere maggiore di qualsiasi magia disponibile nell'era presente."
+    ],
+    "name": "Mago"
+   }
+  ],
   "name": "Mago",
   "short_description": "Un studioso di magia arcana.",
   "subclass_title": "Sottoclasse del mago"

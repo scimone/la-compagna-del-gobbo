@@ -1,0 +1,110 @@
+{
+ "2h": {
+  "_self": true,
+  "entries": [
+   {
+    "entries": [
+     "Un'arma che ha la proprietà A due mani richiede entrambe le mani quando attacchi con essa."
+    ],
+    "name": "A due mani"
+   }
+  ],
+  "name": "A due mani"
+ },
+ "a": {
+  "_self": true,
+  "entries": [
+   {
+    "entries": [
+     "Puoi usare un'arma che ha la proprietà Munizioni per effettuare un attacco a distanza solo se disponi di munizioni da sparare con essa. Il tipo di munizione richiesto è specificato insieme alla gittata dell'arma. Ogni attacco consuma un pezzo di munizione. Estrarre la munizione fa parte dell'attacco (hai bisogno di una mano libera per caricare un'arma a una mano). Dopo un combattimento, puoi spendere 1 minuto per recuperare metà delle munizioni (arrotondando per difetto) usate nel combattimento; il resto va perduto."
+    ],
+    "name": "Munizioni"
+   }
+  ],
+  "name": "Munizioni"
+ },
+ "f": {
+  "_self": true,
+  "entries": [
+   {
+    "entries": [
+     "Quando effettui un attacco con un'arma che ha la proprietà Accurata, usa a tua scelta il modificatore di Forza o di Destrezza per il tiro per colpire e per il tiro per i danni. Devi usare lo stesso modificatore per entrambi i tiri."
+    ],
+    "name": "Accurata"
+   }
+  ],
+  "name": "Accurata"
+ },
+ "h": {
+  "_self": true,
+  "entries": [
+   {
+    "entries": [
+     "Hai {@variantrule Disadvantage|XPHB|svantaggio} ai tiri per colpire con un'arma che ha la proprietà Pesante se è un'arma da mischia e il tuo punteggio di Forza non è almeno 13, oppure se è un'arma a distanza e il tuo punteggio di Destrezza non è almeno 13."
+    ],
+    "name": "Pesante"
+   }
+  ],
+  "name": "Pesante"
+ },
+ "l": {
+  "_self": true,
+  "entries": [
+   {
+    "entries": [
+     "Quando intraprendi l'azione {@action Attack|XPHB|Attacco} nel tuo turno e attacchi con un'arma che ha la proprietà Leggera, puoi effettuare un attacco extra come {@variantrule Bonus Action|XPHB|azione bonus} più avanti nello stesso turno. Quell'attacco extra deve essere effettuato con un'altra arma Leggera, e non aggiungi il tuo modificatore di caratteristica al danno dell'attacco extra a meno che tale modificatore non sia negativo. Ad esempio, puoi attaccare con una {@item Shortsword|XPHB|spada corta} in una mano e un {@item Dagger|XPHB|pugnale} nell'altra usando l'azione {@action Attack|XPHB|Attacco} e una {@variantrule Bonus Action|XPHB|azione bonus}, ma non aggiungi il tuo modificatore di Forza o di Destrezza al tiro per i danni della {@variantrule Bonus Action|XPHB|azione bonus} a meno che tale modificatore non sia negativo."
+    ],
+    "name": "Leggera"
+   }
+  ],
+  "name": "Leggera"
+ },
+ "ld": {
+  "_self": true,
+  "entries": [
+   {
+    "entries": [
+     "Puoi sparare solo un pezzo di munizione da un'arma che ha la proprietà Ricarica quando usi un'azione, una {@variantrule Bonus Action|XPHB|azione bonus} o una {@variantrule Reaction|XPHB|reazione} per spararla, indipendentemente dal numero di attacchi che potresti normalmente effettuare."
+    ],
+    "name": "Ricarica"
+   }
+  ],
+  "name": "Ricarica"
+ },
+ "r": {
+  "_self": true,
+  "entries": [
+   {
+    "entries": [
+     "Un'arma che ha la proprietà Portata aggiunge 1,5 metri alla tua portata quando attacchi con essa, così come quando determini la tua portata per gli {@action Opportunity Attack|XPHB|Attacchi di Opportunità} con essa."
+    ],
+    "name": "Portata"
+   }
+  ],
+  "name": "Portata"
+ },
+ "t": {
+  "_self": true,
+  "entries": [
+   {
+    "entries": [
+     "Se un'arma ha la proprietà Da lancio, puoi lanciare l'arma per effettuare un attacco a distanza, e puoi estrarre quell'arma come parte dell'attacco. Se l'arma è un'arma da mischia, usa lo stesso modificatore di caratteristica per il tiro per colpire e per il tiro per i danni che useresti per un attacco in mischia con quell'arma."
+    ],
+    "name": "Da lancio"
+   }
+  ],
+  "name": "Da lancio"
+ },
+ "v": {
+  "_self": true,
+  "entries": [
+   {
+    "entries": [
+     "Un'arma che ha la proprietà Versatile può essere usata con una o due mani. Un valore di danno tra parentesi compare accanto alla proprietà. L'arma infligge quel danno quando viene usata con due mani per effettuare un attacco in mischia."
+    ],
+    "name": "Versatile"
+   }
+  ],
+  "name": "Versatile"
+ }
+}

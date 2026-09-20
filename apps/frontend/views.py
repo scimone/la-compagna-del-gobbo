@@ -369,6 +369,15 @@ def _section(heading, html, *, open=True):
     return (heading, html, open)
 
 
+def _is_self_translated(obj) -> bool:
+    """True when `obj`'s Italian text was hand-translated for this project rather than lifted
+    from the official Italian SRD (see `Feature.self_translated`'s docstring) - only worth
+    flagging while actually browsing in Italian, since the flag says nothing about the English
+    text.
+    """
+    return bool(getattr(obj, "self_translated", False)) and get_language() == "it"
+
+
 def _detail_page(
     request,
     title,
@@ -379,6 +388,7 @@ def _detail_page(
     plain_sections=(),
     tabs=None,
     active_tab=None,
+    self_translated=False,
 ):
     return render(
         request,
@@ -392,6 +402,7 @@ def _detail_page(
             "plain_sections": plain_sections,
             "tabs": tabs,
             "active_tab": active_tab,
+            "self_translated": self_translated,
         },
     )
 
@@ -483,7 +494,14 @@ def world_background_detail(request, pk):
     if bg.lore:
         sections.append(_section(_("Lore"), render_entries(bg.lore)))
 
-    return _detail_page(request, bg.name, "world-backgrounds", facts, sections)
+    return _detail_page(
+        request,
+        bg.name,
+        "world-backgrounds",
+        facts,
+        sections,
+        self_translated=_is_self_translated(bg),
+    )
 
 
 # --- Classes --------------------------------------------------------------------------------
@@ -652,6 +670,7 @@ def world_class_detail(request, pk):
         plain_sections=plain_sections,
         tabs=tabs,
         active_tab=active_tab,
+        self_translated=_is_self_translated(klass),
     )
 
 
@@ -706,7 +725,14 @@ def world_feat_detail(request, pk):
 
     sections = [_section(_("Description"), render_entries(feat.entries))]
 
-    return _detail_page(request, feat.name, "world-feats", facts, sections)
+    return _detail_page(
+        request,
+        feat.name,
+        "world-feats",
+        facts,
+        sections,
+        self_translated=_is_self_translated(feat),
+    )
 
 
 # --- Species ---------------------------------------------------------------------------------
@@ -784,6 +810,7 @@ def world_species_detail(request, pk):
         plain_sections=plain_sections,
         tabs=tabs,
         active_tab=active_tab,
+        self_translated=_is_self_translated(species),
     )
 
 
@@ -905,7 +932,14 @@ def world_spell_detail(request, pk):
     if spell.entries_higher_level:
         sections.append(_section(_("At Higher Levels"), render_entries(spell.entries_higher_level)))
 
-    return _detail_page(request, spell.name, "world-spells", facts, sections)
+    return _detail_page(
+        request,
+        spell.name,
+        "world-spells",
+        facts,
+        sections,
+        self_translated=_is_self_translated(spell),
+    )
 
 
 # --- Rules -----------------------------------------------------------------------------------
@@ -919,4 +953,11 @@ def world_rule_detail(request, pk):
     rule = rule_service.get_rule(pk)
     facts = [(_("Page"), rule.page)]
     sections = [_section(_("Description"), render_entries(rule.entries))]
-    return _detail_page(request, rule.name, "world-overview", facts, sections)
+    return _detail_page(
+        request,
+        rule.name,
+        "world-overview",
+        facts,
+        sections,
+        self_translated=_is_self_translated(rule),
+    )

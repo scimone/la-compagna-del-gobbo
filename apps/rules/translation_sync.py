@@ -6,6 +6,13 @@ text (`null`/omitted = keep English), laid over the row's English value (its `<f
 Rows the file doesn't mention, and fields it doesn't give, keep a NULL `<field>_it` and fall back
 to English: nothing is ever removed for lacking a translation (unlike the handbook, which drops
 its untranslated parts so both languages show the same content).
+
+A row's entry may also carry `"_self": true`, alongside its translated fields - not itself a
+field name, so `sync_catalog()`'s per-`field` loop below never touches it - to mark Italian text
+that was hand-translated for this project rather than lifted from an official Italian source (the
+SRD PDF, for everything translated up to that point). This sets the row's own `self_translated`
+column, which the frontend uses to show a "translated by us" badge instead of silently passing
+off a fan translation as the official one.
 """
 
 import json
@@ -114,7 +121,8 @@ def sync_catalog(model, filename: str, fields: tuple[str, ...]) -> tuple[int, in
                 english = getattr(row, f"{field}_en")
                 value = overlay_translation(english, value, f"{filename}:{key}.{field}")
             setattr(row, f"{field}_it", value)
-    model.objects.bulk_update(rows, [f"{field}_it" for field in fields])
+        row.self_translated = bool(translated.get("_self"))
+    model.objects.bulk_update(rows, [*(f"{field}_it" for field in fields), "self_translated"])
     return len(source), len(rows)
 
 

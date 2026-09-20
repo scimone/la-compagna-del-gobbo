@@ -1,224 +1,1298 @@
 {
  "ability-score-improvement": {
-  "name": "Aumento dei punteggi di caratteristica",
   "entries": [
    "Aumenta un punteggio di caratteristica a sua scelta di 2, oppure aumenta due punteggi di caratteristica di 1. Questo talento non può incrementare un punteggio di caratteristica oltre il 20.",
    {
-    "name": "Ripetibile",
     "entries": [
      "Questo talento è ottenibile più di una volta."
-    ]
+    ],
+    "name": "Ripetibile"
    }
-  ]
+  ],
+  "name": "Aumento dei punteggi di caratteristica"
+ },
+ "actor": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Quando è camuffato come persona reale o immaginaria, il personaggio ha {@variantrule Advantage|XPHB|vantaggio} alle prove di Carisma ({@skill Deception|XPHB|Inganno} o {@skill Performance|XPHB|Intrattenere}) effettuate per convincere gli altri di essere quella persona."
+    ],
+    "name": "Interpretazione"
+   },
+   {
+    "entries": [
+     "Il personaggio può imitare i suoni emessi da altre creature, incluso il linguaggio parlato. Una creatura che ode l'imitazione deve superare una prova di Saggezza ({@skill Insight|XPHB|Intuizione}) con {@dc 8} più il modificatore di Carisma e il bonus di {@variantrule Proficiency|XPHB|competenza} del personaggio per accorgersi che si tratta di un'imitazione."
+    ],
+    "name": "Imitazione"
+   }
+  ],
+  "name": "Attore"
  },
  "alert": {
-  "name": "Allerta",
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
-    "name": "Competenza in iniziativa",
     "entries": [
      "Quando tiri per l'{@variantrule Initiative|XPHB|iniziativa}, puoi aggiungere il bonus di {@variantrule Proficiency|XPHB|competenza} del personaggio al risultato del tiro."
-    ]
+    ],
+    "name": "Competenza in iniziativa"
    },
    {
-    "name": "Scambio di iniziativa",
     "entries": [
      "Subito dopo aver tirato per l'{@variantrule Initiative|XPHB|iniziativa}, puoi scambiare il risultato ottenuto con quello di un alleato consenziente durante il medesimo combattimento. Se il tuo personaggio o il suo alleato è {@condition Incapacitated|XPHB|incapacitato}, non è possibile eseguire lo scambio."
-    ]
+    ],
+    "name": "Scambio di iniziativa"
    }
-  ]
+  ],
+  "name": "Allerta"
  },
  "archery": {
-  "name": "Tiro",
   "entries": [
    "Il personaggio ottiene un bonus di +2 ai tiri per colpire che effettua con le armi a distanza."
-  ]
+  ],
+  "name": "Tiro"
+ },
+ "athlete": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Il personaggio ottiene una {@variantrule Climb Speed|XPHB|velocità di scalata} pari alla sua {@variantrule Speed|XPHB|velocità}."
+    ],
+    "name": "Velocità di scalata"
+   },
+   {
+    "entries": [
+     "Quando ha la condizione {@condition Prone|XPHB|prono}, il personaggio può rialzarsi spendendo solamente 1,5 metri di movimento."
+    ],
+    "name": "Rialzo rapido"
+   },
+   {
+    "entries": [
+     "Il personaggio può effettuare un {@variantrule Long Jump|XPHB|salto in lungo} o un {@variantrule High Jump|XPHB|salto in alto} con rincorsa dopo essersi mosso solamente di 1,5 metri."
+    ],
+    "name": "Salto"
+   }
+  ],
+  "name": "Atleta"
+ },
+ "blessed-warrior": {
+  "_self": true,
+  "entries": [
+   "Il personaggio apprende due {@filter trucchetti da chierico|spells|level=0|class=Cleric} a sua scelta. Sono consigliati {@spell Guidance|XPHB|guida} e {@spell Sacred Flame|XPHB|fiamma sacra}. I trucchetti scelti sono considerati incantesimi da paladino per il personaggio, e la sua caratteristica da incantatore per essi è il Carisma. Ogni volta che ottiene un livello da paladino, può sostituire uno di questi trucchetti con un altro trucchetto da chierico."
+  ],
+  "name": "Guerriero benedetto"
+ },
+ "blind-fighting": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ha {@sense Blindsight|XPHB|vista cieca} con un raggio di 3 metri."
+  ],
+  "name": "Combattimento alla cieca"
  },
  "boon-of-combat-prowess": {
-  "name": "Dono delle abilità di combattimento",
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
-    "name": "Mira impareggiabile",
     "entries": [
      "Quando il tiro per colpire del personaggio non va a segno, è possibile colpire comunque il bersaglio. Una volta sfruttato questo beneficio, non può essere riutilizzato fino all'inizio del turno successivo del personaggio."
-    ]
+    ],
+    "name": "Mira impareggiabile"
    }
-  ]
+  ],
+  "name": "Dono delle abilità di combattimento"
  },
  "boon-of-dimensional-travel": {
-  "name": "Dono del viaggio dimensionale",
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
-    "name": "Passi fulminei",
     "entries": [
      "Subito dopo che il personaggio effettua un'azione di {@action Attack|XPHB|Attacco} o {@action Magic|XPHB|Magia}, può teletrasportarsi di massimo 9 metri in uno spazio libero che è in grado di vedere."
-    ]
+    ],
+    "name": "Passi fulminei"
    }
-  ]
+  ],
+  "name": "Dono del viaggio dimensionale"
+ },
+ "boon-of-energy-resistance": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Il personaggio ottiene {@variantrule Resistance|XPHB|resistenza} a due dei seguenti tipi di danno a sua scelta: acido, freddo, fuoco, fulmine, necrotico, veleno, psichico, radioso o tuono. Ogni volta che completa un {@variantrule Long Rest|XPHB|riposo lungo}, può cambiare le sue scelte."
+    ],
+    "name": "Resistenze energetiche"
+   },
+   {
+    "entries": [
+     "Quando subisce danni di uno dei tipi scelti per il beneficio Resistenze energetiche, il personaggio può usare una {@variantrule Reaction|XPHB|reazione} per indirizzare danni dello stesso tipo verso un'altra creatura che è in grado di vedere entro 18 metri da sé e che non si trovi dietro {@variantrule Cover|XPHB|copertura totale}. Se lo fa, quella creatura deve superare un tiro salvezza su Destrezza ({@dc 8} più il modificatore di Costituzione e il bonus di {@variantrule Proficiency|XPHB|competenza} del personaggio), altrimenti subisce danni pari a {@dice 2d12} più il modificatore di Costituzione del personaggio."
+    ],
+    "name": "Deviazione energetica"
+   }
+  ],
+  "name": "Dono della resistenza energetica"
  },
  "boon-of-fate": {
-  "name": "Dono del fato",
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
-    "name": "Fato migliorato",
     "entries": [
      "Quando il personaggio o un'altra creatura entro 18 metri da sé supera o fallisce una {@variantrule D20 Test|XPHB|prova con d20}, può tirare {@dice 2d4} e applicare il risultato ottenuto come bonus o penalità a tale prova con {@dice d20}. Una volta utilizzato questo beneficio, non può più utilizzarlo finché non tira per l'{@variantrule Initiative|XPHB|iniziativa} o non completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}."
-    ]
+    ],
+    "name": "Fato migliorato"
    }
-  ]
+  ],
+  "name": "Dono del fato"
+ },
+ "boon-of-fortitude": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "I {@variantrule Hit Points|XPHB|punti ferita} massimi del personaggio aumentano di 40. Inoltre, ogni volta che recupera {@variantrule Hit Points|XPHB|punti ferita}, può recuperarne una quantità aggiuntiva pari al suo modificatore di Costituzione. Una volta recuperati questi {@variantrule Hit Points|XPHB|punti ferita} aggiuntivi, non può farlo di nuovo fino all'inizio del suo turno successivo."
+    ],
+    "name": "Salute rinforzata"
+   }
+  ],
+  "name": "Dono della fortitudine"
  },
  "boon-of-irresistible-offense": {
-  "name": "Dono dell'offensiva irresistibile",
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
-    "name": "Ignora difese",
     "entries": [
      "I danni contundenti, perforanti e taglienti inflitti dal personaggio ignorano sempre la {@variantrule Resistance|XPHB|resistenza}."
-    ]
+    ],
+    "name": "Ignora difese"
    },
    {
-    "name": "Colpo soverchiante",
     "entries": [
      "Quando tira per colpire con il {@dice d20} e ottiene un 20, il personaggio può infliggere una quantità di danni extra al bersaglio pari al punteggio di caratteristica incrementato da questo talento. Il danno aggiuntivo è dello stesso tipo di quello dell'attacco."
-    ]
+    ],
+    "name": "Colpo soverchiante"
    }
-  ]
+  ],
+  "name": "Dono dell'offensiva irresistibile"
+ },
+ "boon-of-recovery": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Quando dovrebbe essere ridotto a 0 {@variantrule Hit Points|XPHB|punti ferita}, il personaggio può invece scendere a 1 {@variantrule Hit Points|XPHB|punto ferita} e recuperare un numero di {@variantrule Hit Points|XPHB|punti ferita} pari alla metà dei suoi {@variantrule Hit Points|XPHB|punti ferita} massimi. Una volta utilizzato questo beneficio, non può utilizzarlo di nuovo finché non completa un {@variantrule Long Rest|XPHB|riposo lungo}."
+    ],
+    "name": "Ultima resistenza"
+   },
+   {
+    "entries": [
+     "Il personaggio dispone di una riserva di dieci {@dice d10}. Come {@variantrule Bonus Action|XPHB|azione bonus}, può spendere dei dadi dalla riserva, tirarli e recuperare un numero di {@variantrule Hit Points|XPHB|punti ferita} pari al totale ottenuto. Recupera tutti i dadi spesi quando completa un {@variantrule Long Rest|XPHB|riposo lungo}."
+    ],
+    "name": "Recupero di vitalità"
+   }
+  ],
+  "name": "Dono del recupero"
+ },
+ "boon-of-skill": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Il personaggio ottiene competenza in tutte le abilità."
+    ],
+    "name": "Esperto a tutto tondo"
+   },
+   {
+    "entries": [
+     "Scegli un'abilità in cui il personaggio non possiede {@variantrule Expertise|XPHB|maestria}. Il personaggio ottiene {@variantrule Expertise|XPHB|maestria} in quell'abilità."
+    ],
+    "name": "Maestria"
+   }
+  ],
+  "name": "Dono dell'abilità"
+ },
+ "boon-of-speed": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Come {@variantrule Bonus Action|XPHB|azione bonus}, il personaggio può effettuare l'azione di {@action Disengage|XPHB|Disimpegno}, che pone fine anche alla condizione di {@condition Grappled|XPHB|afferrato} su di sé."
+    ],
+    "name": "Artista della fuga"
+   },
+   {
+    "entries": [
+     "La {@variantrule Speed|XPHB|velocità} del personaggio aumenta di 9 metri."
+    ],
+    "name": "Rapidità"
+   }
+  ],
+  "name": "Dono della velocità"
  },
  "boon-of-spell-recall": {
-  "name": "Dono del richiamo degli incantesimi",
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
-    "name": "Lancio libero",
     "entries": [
      "Quando lancia un incantesimo con uno slot di livello da 1 a 4, tira {@dice 1d4}. Se il risultato corrisponde al livello dello slot, questo non verrà consumato."
-    ]
+    ],
+    "name": "Lancio libero"
    }
-  ]
+  ],
+  "name": "Dono del richiamo degli incantesimi"
  },
  "boon-of-the-night-spirit": {
-  "name": "Dono dello spirito notturno",
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
-    "name": "Fusione con le ombre",
     "entries": [
      "Finché si trova in un'area di {@variantrule Darkness|XPHB|oscurità} o {@variantrule Dim Light|XPHB|luce fioca}, può diventare {@condition Invisible|XPHB|invisibile} come {@variantrule Bonus Action|XPHB|azione bonus}. Tale condizione termina subito dopo che il personaggio effettua un'azione, un'{@variantrule Bonus Action|XPHB|azione bonus} o una {@variantrule Reaction|XPHB|reazione}."
-    ]
+    ],
+    "name": "Fusione con le ombre"
    },
    {
-    "name": "Forma d'ombra",
     "entries": [
      "Finché si trova in un'area di {@variantrule Darkness|XPHB|oscurità} o {@variantrule Dim Light|XPHB|luce fioca}, ha {@variantrule Resistance|XPHB|resistenza} a tutti i tipi di danno, tranne quelli psichici e radiosi."
-    ]
+    ],
+    "name": "Forma d'ombra"
    }
-  ]
+  ],
+  "name": "Dono dello spirito notturno"
  },
  "boon-of-truesight": {
-  "name": "Dono della vista pura",
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
-    "name": "Vista pura",
     "entries": [
      "Il personaggio ottiene {@sense Truesight|XPHB|vista pura} con un raggio di 18 metri."
-    ]
+    ],
+    "name": "Vista pura"
    }
-  ]
+  ],
+  "name": "Dono della vista pura"
+ },
+ "charger": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Quando effettua l'azione di {@action Dash|XPHB|Scatto}, la {@variantrule Speed|XPHB|velocità} del personaggio aumenta di 3 metri per quell'azione."
+    ],
+    "name": "Scatto migliorato"
+   },
+   {
+    "entries": [
+     "Se il personaggio si muove in linea retta per almeno 3 metri verso un bersaglio immediatamente prima di colpirlo con un tiro per colpire in mischia come parte dell'azione di {@action Attack|XPHB|Attacco}, scegli uno dei seguenti effetti: ottenere un bonus di {@dice 1d8} al tiro per i danni dell'attacco, oppure spingere il bersaglio fino a 3 metri di distanza se non è più di una taglia più grande del personaggio. Questo beneficio è utilizzabile una sola volta per ogni turno del personaggio."
+    ],
+    "name": "Attacco alla carica"
+   }
+  ],
+  "name": "Carica"
+ },
+ "chef": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Il personaggio ottiene competenza con gli {@item Cook's Utensils|XPHB|utensili da cuoco}, se non la possiede già."
+    ],
+    "name": "Utensili da cuoco"
+   },
+   {
+    "entries": [
+     "Come parte di un {@variantrule Short Rest|XPHB|riposo breve}, il personaggio può cucinare del cibo speciale se ha a disposizione ingredienti e {@item Cook's Utensils|XPHB|utensili da cuoco}. Può prepararne a sufficienza per un numero di creature pari a 4 più il suo bonus di {@variantrule Proficiency|XPHB|competenza}. Al termine del {@variantrule Short Rest|XPHB|riposo breve}, ogni creatura che mangia il cibo e spende uno o più {@variantrule Hit Point Dice|XPHB|Dadi Vita} per recuperare {@variantrule Hit Points|XPHB|punti ferita} ne recupera {@dice 1d8} extra."
+    ],
+    "name": "Pasto rigenerante"
+   },
+   {
+    "entries": [
+     "Con 1 ora di lavoro, oppure quando completa un {@variantrule Long Rest|XPHB|riposo lungo}, il personaggio può cucinare un numero di dolcetti pari al suo bonus di {@variantrule Proficiency|XPHB|competenza}, se ha a disposizione ingredienti e {@item Cook's Utensils|XPHB|utensili da cuoco}. Questi dolcetti speciali durano 8 ore dopo essere stati preparati. Una creatura può usare un'{@variantrule Bonus Action|XPHB|azione bonus} per mangiarne uno e ottenere un numero di {@variantrule Temporary Hit Points|XPHB|punti ferita temporanei} pari al bonus di {@variantrule Proficiency|XPHB|competenza} del personaggio."
+    ],
+    "name": "Dolcetti rinvigorenti"
+   }
+  ],
+  "name": "Cuoco"
+ },
+ "crafter": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Scegli tre diversi {@item Artisan's Tools|XPHB|strumenti da artigiano} tratti dalla tabella Creazione rapida: il personaggio ottiene competenza con essi."
+    ],
+    "name": "Competenza con gli strumenti"
+   },
+   {
+    "entries": [
+     "Ogni volta che acquista un oggetto non magico, il personaggio riceve uno sconto del 20 percento sul prezzo."
+    ],
+    "name": "Sconto"
+   },
+   {
+    "entries": [
+     "Quando completa un {@variantrule Long Rest|XPHB|riposo lungo}, il personaggio può realizzare un oggetto tratto dalla tabella Creazione rapida, a patto che disponga degli {@item Artisan's Tools|XPHB|strumenti da artigiano} associati a tale oggetto e abbia competenza con essi. L'oggetto dura fino a quando non completa un altro {@variantrule Long Rest|XPHB|riposo lungo}, momento in cui si disfa.",
+     {
+      "caption": "Creazione rapida",
+      "colLabels": [
+       "Strumenti da artigiano",
+       "Equipaggiamento creato"
+      ],
+      "rows": [
+       [
+        "{@item Carpenter's Tools|XPHB|Strumenti da falegname}",
+        "{@item Ladder|XPHB|Scala a pioli}, {@item Torch|XPHB|Torcia}"
+       ],
+       [
+        "{@item Leatherworker's Tools|XPHB|Strumenti da conciatore}",
+        "{@item Crossbow Bolt Case|XPHB|Custodia per quadrelli da balestra}, {@item Map or Scroll Case|XPHB|Custodia per mappe o pergamene}, {@item Pouch|XPHB|Borsa}"
+       ],
+       [
+        "{@item Mason's Tools|XPHB|Strumenti da muratore}",
+        "{@item Block and Tackle|XPHB|Carrucola e paranco}"
+       ],
+       [
+        "{@item Potter's Tools|XPHB|Strumenti da vasaio}",
+        "{@item Jug|XPHB|Brocca}, {@item Lamp|XPHB|Lampada}"
+       ],
+       [
+        "{@item Smith's Tools|XPHB|Strumenti da fabbro}",
+        "{@item Ball Bearings|XPHB|Sfere metalliche}, {@item Bucket|XPHB|Secchio}, {@item Caltrops|XPHB|Triboli}, {@item Grappling Hook|XPHB|Rampino}, {@item Iron Pot|XPHB|Pentola di ferro}"
+       ],
+       [
+        "{@item Tinker's Tools|XPHB|Strumenti da inventore}",
+        "{@item Bell|XPHB|Campana}, {@item Shovel|XPHB|Pala}, {@item Tinderbox|XPHB|Acciarino con pietra focaia}"
+       ],
+       [
+        "{@item Weaver's Tools|XPHB|Strumenti da tessitore}",
+        "{@item Basket|XPHB|Cesto}, {@item Rope|XPHB|Corda}, {@item Net|XPHB|Rete}, {@item Tent|XPHB|Tenda}"
+       ],
+       [
+        "{@item Woodcarver's Tools|XPHB|Strumenti da intagliatore}",
+        "{@item Club|XPHB|Randello}, {@item Greatclub|XPHB|Randello pesante}, {@item Quarterstaff|XPHB|Bastone ferrato}"
+       ]
+      ]
+     }
+    ],
+    "name": "Creazione rapida"
+   }
+  ],
+  "name": "Artigiano"
+ },
+ "crossbow-expert": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Il personaggio ignora la proprietà {@itemProperty LD|XPHB|caricamento} di {@item Hand Crossbow|XPHB|balestra a mano}, {@item Heavy Crossbow|XPHB|balestra pesante} e {@item Light Crossbow|XPHB|balestra leggera} (chiamate semplicemente balestre nel resto di questo talento). Se ne impugna una, può caricarvi una munizione anche senza avere una mano libera."
+    ],
+    "name": "Ignora caricamento"
+   },
+   {
+    "entries": [
+     "Trovarsi entro 1,5 metri da un nemico non impone {@variantrule Disadvantage|XPHB|svantaggio} ai tiri per colpire del personaggio effettuati con le balestre."
+    ],
+    "name": "Sparare in mischia"
+   },
+   {
+    "entries": [
+     "Quando il personaggio effettua l'attacco extra della proprietà {@itemProperty L|XPHB|leggera}, può aggiungere il proprio modificatore di caratteristica al danno di tale attacco se questo è eseguito con una balestra che possiede la proprietà {@itemProperty L|XPHB|leggera} e non sta già aggiungendo quel modificatore al danno."
+    ],
+    "name": "Doppia impugnatura"
+   }
+  ],
+  "name": "Esperto di balestre"
+ },
+ "crusher": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Una volta per turno, quando il personaggio colpisce una creatura con un attacco che infligge danni contundenti, può spostarla di 1,5 metri in uno spazio libero se il bersaglio non è più di una taglia più grande di lui."
+    ],
+    "name": "Spinta"
+   },
+   {
+    "entries": [
+     "Quando il personaggio mette a segno un {@variantrule Critical Hit|XPHB|colpo critico} che infligge danni contundenti a una creatura, i tiri per colpire contro quella creatura hanno {@variantrule Advantage|XPHB|vantaggio} fino all'inizio del suo turno successivo."
+    ],
+    "name": "Critico potenziato"
+   }
+  ],
+  "name": "Frantumatore"
  },
  "defense": {
-  "name": "Difesa",
   "entries": [
    "Finché il personaggio indossa un'armatura leggera, media o pesante, ottiene un +1 alla {@variantrule Armor Class|XPHB|Classe Armatura}."
-  ]
+  ],
+  "name": "Difesa"
+ },
+ "defensive-duelist": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Se il personaggio impugna un'arma accurata e un'altra creatura lo colpisce con un attacco in mischia, può usare una {@variantrule Reaction|XPHB|reazione} per aggiungere il proprio bonus di {@variantrule Proficiency|XPHB|competenza} alla sua {@variantrule Armor Class|XPHB|Classe Armatura}, facendo potenzialmente fallire l'attacco. Ottiene questo bonus alla CA contro gli attacchi in mischia fino all'inizio del suo turno successivo."
+    ],
+    "name": "Parata"
+   }
+  ],
+  "name": "Duellante difensivo"
+ },
+ "druidic-warrior": {
+  "_self": true,
+  "entries": [
+   "Il personaggio apprende due {@filter trucchetti da druido|spells|level=0|class=druid} a sua scelta. Sono consigliati {@spell Guidance|XPHB|guida} e {@spell Starry Wisp|XPHB|luce splendente}. I trucchetti scelti sono considerati incantesimi da ranger per il personaggio, e la sua caratteristica da incantatore per essi è la Saggezza. Ogni volta che ottiene un livello da ranger, può sostituire uno di questi trucchetti con un altro trucchetto da druido."
+  ],
+  "name": "Guerriero druidico"
+ },
+ "dual-wielder": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Quando effettua l'azione di {@action Attack|XPHB|Attacco} nel proprio turno e attacca con un'arma che possiede la proprietà {@itemProperty L|XPHB|leggera}, il personaggio può sferrare un attacco extra come {@variantrule Bonus Action|XPHB|azione bonus} più avanti nello stesso turno con un'arma diversa, che deve essere un'arma da mischia priva della proprietà {@itemProperty 2H|XPHB|a due mani}. Non aggiunge il proprio modificatore di caratteristica al danno dell'attacco extra, a meno che tale modificatore non sia negativo."
+    ],
+    "name": "Doppia impugnatura potenziata"
+   },
+   {
+    "entries": [
+     "Il personaggio può estrarre o riporre due armi prive della proprietà {@itemProperty 2H|XPHB|a due mani} nei momenti in cui normalmente potrebbe estrarne o riporne solamente una."
+    ],
+    "name": "Estrazione rapida"
+   }
+  ],
+  "name": "Combattente ambidestro"
+ },
+ "dueling": {
+  "_self": true,
+  "entries": [
+   "Quando il personaggio impugna un'arma da mischia in una mano e nessun'altra arma, ottiene un bonus di +2 ai tiri per i danni con quell'arma."
+  ],
+  "name": "Duello"
+ },
+ "durable": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Il personaggio ha {@variantrule Advantage|XPHB|vantaggio} ai {@variantrule Death Saving Throw|XPHB|tiri salvezza contro morte}."
+    ],
+    "name": "Sfidare la morte"
+   },
+   {
+    "entries": [
+     "Come {@variantrule Bonus Action|XPHB|azione bonus}, il personaggio può spendere uno dei suoi {@variantrule Hit Point Dice|XPHB|Dadi Vita}, tirarlo e recuperare un numero di {@variantrule Hit Points|XPHB|punti ferita} pari al risultato."
+    ],
+    "name": "Recupero rapido"
+   }
+  ],
+  "name": "Resistente"
+ },
+ "elemental-adept": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Scegli uno dei seguenti tipi di danno: acido, freddo, fuoco, fulmine o tuono. Gli incantesimi lanciati dal personaggio ignorano la {@variantrule Resistance|XPHB|resistenza} ai danni del tipo scelto. Inoltre, quando tira i danni di un incantesimo che lancia e che infligge danni di quel tipo, può considerare ogni 1 ottenuto su un dado per i danni come se fosse un 2."
+    ],
+    "name": "Padronanza energetica"
+   },
+   {
+    "entries": [
+     "Questo talento è ottenibile più di una volta, ma è necessario scegliere un tipo di danno diverso ogni volta per Padronanza energetica."
+    ],
+    "name": "Ripetibile"
+   }
+  ],
+  "name": "Adepto degli elementi"
+ },
+ "fey-touched": {
+  "_self": true,
+  "entries": [
+   "L'esposizione alla magia del Feywild conferisce al personaggio i seguenti benefici.",
+   {
+    "entries": [
+     "Scegli un {@filter incantesimo di 1º livello della scuola di Divinazione o Ammaliamento|spells|level=1|school=E;D}. Il personaggio ha sempre preparati tale incantesimo e l'incantesimo {@spell Misty Step|XPHB|passo velato}. Può lanciare ciascuno di questi incantesimi senza spendere uno slot incantesimo. Una volta lanciato uno di essi in questo modo, non può lanciarlo nuovamente in questo modo finché non completa un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciare questi incantesimi usando gli slot incantesimo di livello adeguato a sua disposizione. La caratteristica da incantatore per questi incantesimi è quella incrementata da questo talento."
+    ],
+    "name": "Magia fatata"
+   }
+  ],
+  "name": "Toccato dalle Fate"
  },
  "grappler": {
-  "name": "Lottatore",
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
-    "name": "Colpisci e afferra",
     "entries": [
      "Quando il personaggio colpisce una creatura con un {@variantrule Unarmed Strike|XPHB|colpo senz'armi} come parte di un'azione di {@action Attack|XPHB|Attacco} nel proprio turno, può usare sia l'opzione Danni che Presa. Questo beneficio è utilizzabile una sola volta per turno."
-    ]
+    ],
+    "name": "Colpisci e afferra"
    },
    {
-    "name": "Attacco con vantaggio",
     "entries": [
      "Dispone di {@variantrule Advantage|XPHB|vantaggio} ai tiri per colpire contro le creature che ha {@condition Grappled|XPHB|afferrato}."
-    ]
+    ],
+    "name": "Attacco con vantaggio"
    },
    {
-    "name": "Lottatore rapido",
     "entries": [
      "Il personaggio non deve spendere alcun movimento extra se sposta una creatura che ha {@condition Grappled|XPHB|afferrato} che sia della sua stessa categoria di taglia o inferiore."
-    ]
+    ],
+    "name": "Lottatore rapido"
    }
-  ]
+  ],
+  "name": "Lottatore"
  },
  "great-weapon-fighting": {
-  "name": "Combattere con armi possenti",
   "entries": [
    "Quando tiri per i danni per un attacco effettuato con un'arma da mischia che il personaggio impugna a due mani, se il risultato ottenuto è 1 o 2, puoi invece considerarlo come un 3. L'arma deve possedere la proprietà a due mani o versatile affinché ottenga questo beneficio."
-  ]
+  ],
+  "name": "Combattere con armi possenti"
  },
- "magic-initiate": {
-  "name": "Iniziato alla magia",
+ "great-weapon-master": {
+  "_self": true,
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
-    "name": "Due trucchetti",
+    "entries": [
+     "Quando il personaggio colpisce una creatura con un'arma che possiede la proprietà {@itemProperty H|XPHB|pesante} come parte dell'azione di {@action Attack|XPHB|Attacco} nel proprio turno, può far sì che l'arma infligga danni extra al bersaglio. I danni extra sono pari al suo bonus di {@variantrule Proficiency|XPHB|competenza}."
+    ],
+    "name": "Padronanza delle armi pesanti"
+   },
+   {
+    "entries": [
+     "Subito dopo aver messo a segno un {@variantrule Critical Hit|XPHB|colpo critico} con un'arma da mischia o aver ridotto una creatura a 0 {@variantrule Hit Points|XPHB|punti ferita} con essa, il personaggio può effettuare un attacco con la stessa arma come {@variantrule Bonus Action|XPHB|azione bonus}."
+    ],
+    "name": "Fendente"
+   }
+  ],
+  "name": "Maestro delle armi pesanti"
+ },
+ "healer": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Se dispone di una {@item Healer's Kit|XPHB|borsa del guaritore}, il personaggio può consumarne un utilizzo per prestare soccorso a una creatura entro 1,5 metri da sé come azione di {@action Utilize|XPHB|Utilizzo}. Quella creatura può spendere uno dei suoi {@variantrule Hit Point Dice|XPHB|Dadi Vita}; il personaggio tira quindi quel dado. La creatura recupera un numero di {@variantrule Hit Points|XPHB|punti ferita} pari al risultato più il bonus di {@variantrule Proficiency|XPHB|competenza} del personaggio."
+    ],
+    "name": "Medico da campo"
+   },
+   {
+    "entries": [
+     "Ogni volta che tira un dado per determinare il numero di {@variantrule Hit Points|XPHB|punti ferita} ripristinati con un incantesimo o con il beneficio Medico da campo di questo talento, il personaggio può ritirare il dado se il risultato è 1, e deve usare il nuovo tiro."
+    ],
+    "name": "Ritiro di guarigione"
+   }
+  ],
+  "name": "Guaritore"
+ },
+ "heavily-armored": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Il personaggio ottiene competenza con le armature pesanti."
+    ],
+    "name": "Competenza nelle armature"
+   }
+  ],
+  "name": "Armatura pesante"
+ },
+ "heavy-armor-master": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Quando viene colpito da un attacco mentre indossa un'armatura pesante, ogni danno contundente, perforante o tagliente inflitto al personaggio da quell'attacco è ridotto di un ammontare pari al suo bonus di {@variantrule Proficiency|XPHB|competenza}."
+    ],
+    "name": "Riduzione del danno"
+   }
+  ],
+  "name": "Maestro dell'armatura pesante"
+ },
+ "inspiring-leader": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Quando completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}, il personaggio può tenere un'esibizione motivante: un discorso, una canzone o una danza. Quando lo fa, scegli fino a sei alleati (che possono includere il personaggio stesso) entro 9 metri da sé che assistono all'esibizione. Le creature scelte ottengono ciascuna {@variantrule Temporary Hit Points|XPHB|punti ferita temporanei} pari al livello del personaggio più il modificatore della caratteristica incrementata da questo talento."
+    ],
+    "name": "Esibizione motivante"
+   }
+  ],
+  "name": "Comandante ispiratore"
+ },
+ "interception": {
+  "_self": true,
+  "entries": [
+   "Quando una creatura che il personaggio è in grado di vedere colpisce con un tiro per colpire un'altra creatura entro 1,5 metri da sé, il personaggio può usare una {@variantrule Reaction|XPHB|reazione} per ridurre i danni inflitti al bersaglio di {@dice 1d10} più il suo bonus di {@variantrule Proficiency|XPHB|competenza}. Per usare questa {@variantrule Reaction|XPHB|reazione}, deve impugnare uno {@item Shield|XPHB|scudo} oppure un'arma semplice o da guerra."
+  ],
+  "name": "Intercettazione"
+ },
+ "keen-mind": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Scegli una delle seguenti abilità: {@skill Arcana|XPHB|Arcano}, {@skill History|XPHB|Storia}, {@skill Investigation|XPHB|Indagare}, {@skill Nature|XPHB|Natura} o {@skill Religion|XPHB|Religione}. Se il personaggio non possiede competenza nell'abilità scelta, la ottiene; se invece la possiede già, ottiene {@variantrule Expertise|XPHB|maestria} in essa."
+    ],
+    "name": "Conoscenza erudita"
+   },
+   {
+    "entries": [
+     "Il personaggio può effettuare l'azione di {@action Study|XPHB|Studio} come {@variantrule Bonus Action|XPHB|azione bonus}."
+    ],
+    "name": "Studio rapido"
+   }
+  ],
+  "name": "Mente acuta"
+ },
+ "lightly-armored": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Il personaggio ottiene competenza con le armature leggere e gli scudi."
+    ],
+    "name": "Competenza nelle armature"
+   }
+  ],
+  "name": "Armatura leggera"
+ },
+ "lucky": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Il personaggio dispone di un numero di punti fortuna pari al suo bonus di {@variantrule Proficiency|XPHB|competenza} e può spenderli per ottenere i benefici seguenti. Recupera tutti i punti fortuna spesi quando completa un {@variantrule Long Rest|XPHB|riposo lungo}."
+    ],
+    "name": "Punti fortuna"
+   },
+   {
+    "entries": [
+     "Quando tira un {@dice d20} per una {@variantrule D20 Test|XPHB|prova con d20}, il personaggio può spendere 1 punto fortuna per ottenere {@variantrule Advantage|XPHB|vantaggio} al tiro."
+    ],
+    "name": "Vantaggio"
+   },
+   {
+    "entries": [
+     "Quando una creatura tira un {@dice d20} per un tiro per colpire contro di lui, il personaggio può spendere 1 punto fortuna per imporre {@variantrule Disadvantage|XPHB|svantaggio} a quel tiro."
+    ],
+    "name": "Svantaggio"
+   }
+  ],
+  "name": "Fortunato"
+ },
+ "mage-slayer": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Quando il personaggio infligge danni a una creatura che è in {@status Concentration|XPHB|concentrazione}, essa ha {@variantrule Disadvantage|XPHB|svantaggio} al tiro salvezza effettuato per mantenere la {@status Concentration|XPHB|concentrazione}."
+    ],
+    "name": "Spezza-concentrazione"
+   },
+   {
+    "entries": [
+     "Se il personaggio fallisce un tiro salvezza su Intelligenza, Saggezza o Carisma, può far sì che lo superi invece. Una volta utilizzato questo beneficio, non può utilizzarlo di nuovo finché non completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}."
+    ],
+    "name": "Mente protetta"
+   }
+  ],
+  "name": "Sterminatore di maghi"
+ },
+ "magic-initiate": {
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
     "entries": [
      "Il personaggio apprende due trucchetti a scelta tratti dalla lista degli incantesimi da chierico, druido o mago. La caratteristica da incantatore per gli incantesimi di questo talento può essere Intelligenza, Saggezza o Carisma (scegli la caratteristica quando ottieni questo talento)."
-    ]
+    ],
+    "name": "Due trucchetti"
    },
    {
-    "name": "Incantesimo di 1º livello",
     "entries": [
      "Scegli un incantesimo di 1º livello dalla stessa lista da cui hai selezionato i trucchetti forniti da questo talento. Tale incantesimo è sempre considerato come preparato. Il personaggio può lanciarlo una volta senza consumare uno slot incantesimo e ne recupera l'utilizzo in questo modo dopo aver completato un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciare l'incantesimo usando uno qualsiasi degli slot incantesimo a sua disposizione."
-    ]
+    ],
+    "name": "Incantesimo di 1º livello"
    },
    {
-    "name": "Cambio incantesimo",
     "entries": [
      "Quando il personaggio ottiene un nuovo livello, puoi sostituire uno degli incantesimi scelti per questo talento con un altro dello stesso livello dalla lista prescelta."
-    ]
+    ],
+    "name": "Cambio incantesimo"
    },
    {
-    "name": "Ripetibile",
     "entries": [
      "Questo talento è ottenibile più di una volta, ma devi scegliere una lista degli incantesimi diversa a ogni selezione."
-    ]
+    ],
+    "name": "Ripetibile"
    }
-  ]
+  ],
+  "name": "Iniziato alla magia"
+ },
+ "martial-weapon-training": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Il personaggio ottiene competenza con le {@filter armi da guerra|items|type=martial weapon}."
+    ],
+    "name": "Competenza con le armi"
+   }
+  ],
+  "name": "Addestramento con le armi da guerra"
+ },
+ "medium-armor-master": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Mentre indossa un'armatura media, il personaggio può aggiungere 3, anziché 2, alla propria CA se possiede un punteggio di Destrezza pari o superiore a 16."
+    ],
+    "name": "Portatore agile"
+   }
+  ],
+  "name": "Maestro dell'armatura media"
+ },
+ "moderately-armored": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Il personaggio ottiene competenza con le armature medie."
+    ],
+    "name": "Competenza nelle armature"
+   }
+  ],
+  "name": "Armatura media"
+ },
+ "mounted-combatant": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Mentre è {@book in sella|XPHB|1|Mounted Combat}, il personaggio ha {@variantrule Advantage|XPHB|vantaggio} ai tiri per colpire contro qualsiasi creatura non in sella entro 1,5 metri dalla sua cavalcatura che sia di almeno una taglia più piccola della cavalcatura."
+    ],
+    "name": "Attacco da cavallo"
+   },
+   {
+    "entries": [
+     "Se la cavalcatura del personaggio è soggetta a un effetto che le consente di effettuare un tiro salvezza su Destrezza per subire solo metà dei danni, non subisce invece alcun danno se supera il tiro salvezza, e solo metà dei danni se lo fallisce. Perché la cavalcatura ottenga questo beneficio, il personaggio deve trovarsi in sella e nessuno dei due deve avere la condizione di {@condition Incapacitated|XPHB|incapacitato}."
+    ],
+    "name": "Balzo di lato"
+   },
+   {
+    "entries": [
+     "Mentre è {@book in sella|XPHB|1|Mounted Combat}, il personaggio può far sì che un attacco che colpisce la sua cavalcatura colpisca invece lui, a patto che non abbia la condizione di {@condition Incapacitated|XPHB|incapacitato}."
+    ],
+    "name": "Deviazione"
+   }
+  ],
+  "name": "Combattente a cavallo"
+ },
+ "musician": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Il personaggio ottiene competenza con tre strumenti musicali a sua scelta."
+    ],
+    "name": "Competenza con gli strumenti"
+   },
+   {
+    "entries": [
+     "Mentre completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}, il personaggio può suonare un brano con uno {@item Musical Instrument|XPHB|strumento musicale} con cui ha competenza e conferire {@variantrule Heroic Inspiration|XPHB|ispirazione eroica} agli alleati che odono il brano. Il numero di alleati che può influenzare in questo modo è pari al suo bonus di {@variantrule Proficiency|XPHB|competenza}."
+    ],
+    "name": "Canto d'incoraggiamento"
+   }
+  ],
+  "name": "Musicista"
+ },
+ "observant": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Scegli una delle seguenti abilità: {@skill Insight|XPHB|Intuizione}, {@skill Investigation|XPHB|Indagare} o {@skill Perception|XPHB|Percezione}. Se il personaggio non possiede competenza nell'abilità scelta, la ottiene; se invece la possiede già, ottiene {@variantrule Expertise|XPHB|maestria} in essa."
+    ],
+    "name": "Osservatore attento"
+   },
+   {
+    "entries": [
+     "Il personaggio può effettuare l'azione di {@action Search|XPHB|Ricerca} come {@variantrule Bonus Action|XPHB|azione bonus}."
+    ],
+    "name": "Ricerca rapida"
+   }
+  ],
+  "name": "Attento"
+ },
+ "piercer": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Una volta per turno, quando il personaggio colpisce una creatura con un attacco che infligge danni perforanti, può ritirare uno dei dadi per i danni dell'attacco, e deve usare il nuovo risultato."
+    ],
+    "name": "Puntura"
+   },
+   {
+    "entries": [
+     "Quando il personaggio mette a segno un {@variantrule Critical Hit|XPHB|colpo critico} che infligge danni perforanti a una creatura, può tirare un dado per i danni aggiuntivo per determinare i danni perforanti extra subiti dal bersaglio."
+    ],
+    "name": "Critico potenziato"
+   }
+  ],
+  "name": "Perforatore"
+ },
+ "poisoner": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Quando il personaggio effettua un tiro per i danni che infligge danni da veleno, questi ignorano la {@variantrule Resistance|XPHB|resistenza} ai danni da veleno."
+    ],
+    "name": "Veleno potente"
+   },
+   {
+    "entries": [
+     "Il personaggio ottiene competenza con le {@item Poisoner's Kit|XPHB|sostanze da avvelenatore}. Con 1 ora di lavoro usando tali sostanze e spendendo materiali per un valore di 50 MO, può creare un numero di dosi di veleno pari al suo bonus di {@variantrule Proficiency|XPHB|competenza}. Come {@variantrule Bonus Action|XPHB|azione bonus}, può applicare una dose di veleno a un'arma o a una munizione. Una volta applicato, il veleno conserva la sua potenza per 1 minuto o finché il personaggio non infligge danni con l'oggetto avvelenato, a seconda di quale condizione si verifichi prima. Quando una creatura subisce danni dall'oggetto avvelenato, deve superare un tiro salvezza su Costituzione ({@dc 8} più il modificatore della caratteristica incrementata da questo talento e il bonus di {@variantrule Proficiency|XPHB|competenza} del personaggio), altrimenti subisce {@damage 2d8} danni da veleno e ottiene la condizione di {@condition Poisoned|XPHB|avvelenato} fino alla fine del turno successivo del personaggio."
+    ],
+    "name": "Preparare veleno"
+   }
+  ],
+  "name": "Avvelenatore"
+ },
+ "polearm-master": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Subito dopo aver effettuato l'azione di {@action Attack|XPHB|Attacco} e aver attaccato con un {@item Quarterstaff|XPHB|bastone ferrato}, una {@item Spear|XPHB|lancia} o un'{@filter arma che possiede le proprietà pesante e portata|items|type=melee weapon;ranged weapon|property=heavy;reach=sand}, il personaggio può usare un'{@variantrule Bonus Action|XPHB|azione bonus} per effettuare un attacco in mischia con l'estremità opposta dell'arma. L'arma infligge danni contundenti, e il suo dado per i danni per questo attacco è un {@dice d4}."
+    ],
+    "name": "Colpo d'asta"
+   },
+   {
+    "entries": [
+     "Mentre impugna un {@item Quarterstaff|XPHB|bastone ferrato}, una {@item Spear|XPHB|lancia} o un'{@filter arma che possiede le proprietà pesante e portata|items|type=melee weapon;ranged weapon|property=heavy;reach=sand}, il personaggio può usare una {@variantrule Reaction|XPHB|reazione} per effettuare un attacco in mischia contro una creatura che entra nella portata di quell'arma."
+    ],
+    "name": "Colpo reattivo"
+   }
+  ],
+  "name": "Maestro delle armi in asta"
+ },
+ "protection": {
+  "_self": true,
+  "entries": [
+   "Quando una creatura che il personaggio è in grado di vedere attacca un bersaglio diverso da lui che si trova entro 1,5 metri da sé, il personaggio può usare una {@variantrule Reaction|XPHB|reazione} per frapporre il proprio {@item Shield|XPHB|scudo}, se ne impugna uno. Impone {@variantrule Disadvantage|XPHB|svantaggio} al tiro per colpire che ha innescato questo effetto e a tutti gli altri tiri per colpire contro il bersaglio fino all'inizio del suo turno successivo, a patto che rimanga entro 1,5 metri dal bersaglio."
+  ],
+  "name": "Protezione"
+ },
+ "resilient": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Il personaggio ottiene competenza nei tiri salvezza con la caratteristica scelta."
+    ],
+    "name": "Competenza nei tiri salvezza"
+   }
+  ],
+  "name": "Resiliente"
+ },
+ "ritual-caster": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Scegli un numero di incantesimi di 1º livello pari al bonus di {@variantrule Proficiency|XPHB|competenza} del personaggio che possiedano l'{@filter etichetta Rituale|spells|level=1|components & miscellaneous=ritual}. Il personaggio ha sempre preparati questi incantesimi e può lanciarli con qualsiasi slot incantesimo abbia a disposizione. La caratteristica da incantatore per questi incantesimi è quella incrementata da questo talento. Ogni volta che il suo bonus di {@variantrule Proficiency|XPHB|competenza} aumenta in seguito, può aggiungere un ulteriore incantesimo di 1º livello con l'etichetta {@variantrule Ritual|XPHB|Rituale} agli incantesimi sempre preparati con questo privilegio."
+    ],
+    "name": "Incantesimi rituali"
+   },
+   {
+    "entries": [
+     "Grazie a questo beneficio, il personaggio può lanciare un incantesimo {@variantrule Ritual|XPHB|rituale} che ha preparato utilizzando il suo tempo di lancio normale anziché il tempo esteso richiesto per un {@variantrule Ritual|XPHB|rituale}. Farlo non richiede uno slot incantesimo. Una volta lanciato l'incantesimo in questo modo, non può utilizzare questo beneficio di nuovo finché non completa un {@variantrule Long Rest|XPHB|riposo lungo}."
+    ],
+    "name": "Rituale rapido"
+   }
+  ],
+  "name": "Incantatore rituale"
  },
  "savage-attacker": {
-  "name": "Aggressore selvaggio",
   "entries": [
    "Il personaggio si è allenato per sferrare colpi particolarmente letali. Una volta per turno, quando colpisce un bersaglio con un'arma, puoi tirare due volte per i danni dell'arma e scegliere il risultato che preferisci."
-  ]
+  ],
+  "name": "Aggressore selvaggio"
+ },
+ "sentinel": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Subito dopo che una creatura entro 1,5 metri da sé effettua l'azione di {@action Disengage|XPHB|Disimpegno} o colpisce con un attacco un bersaglio diverso dal personaggio, questi può effettuare un {@action Opportunity Attack|XPHB|attacco di opportunità} contro quella creatura."
+    ],
+    "name": "Guardiano"
+   },
+   {
+    "entries": [
+     "Quando il personaggio colpisce una creatura con un {@action Opportunity Attack|XPHB|attacco di opportunità}, la {@variantrule Speed|XPHB|velocità} di quella creatura diventa 0 per il resto del turno in corso."
+    ],
+    "name": "Alt"
+   }
+  ],
+  "name": "Sentinella"
+ },
+ "shadow-touched": {
+  "_self": true,
+  "entries": [
+   "L'esposizione alla magia dello Shadowfell conferisce al personaggio i seguenti benefici.",
+   {
+    "entries": [
+     "Scegli un {@filter incantesimo di 1º livello della scuola di Illusione o Necromanzia|spells|level=1|school=I;N}. Il personaggio ha sempre preparati tale incantesimo e l'incantesimo {@spell Invisibility|XPHB|invisibilità}. Può lanciare ciascuno di questi incantesimi senza spendere uno slot incantesimo. Una volta lanciato uno di essi in questo modo, non può lanciarlo nuovamente in questo modo finché non completa un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciare questi incantesimi usando gli slot incantesimo di livello adeguato a sua disposizione. La caratteristica da incantatore per questi incantesimi è quella incrementata da questo talento."
+    ],
+    "name": "Magia dell'ombra"
+   }
+  ],
+  "name": "Toccato dall'Ombra"
+ },
+ "sharpshooter": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Gli attacchi a distanza con le armi del personaggio ignorano la {@variantrule Cover|XPHB|mezza copertura} e i {@variantrule Cover|XPHB|tre quarti di copertura}."
+    ],
+    "name": "Ignora copertura"
+   },
+   {
+    "entries": [
+     "Trovarsi entro 1,5 metri da un nemico non impone {@variantrule Disadvantage|XPHB|svantaggio} ai tiri per colpire del personaggio con le armi a distanza."
+    ],
+    "name": "Sparare in mischia"
+   },
+   {
+    "entries": [
+     "Attaccare a lunga gittata non impone {@variantrule Disadvantage|XPHB|svantaggio} ai tiri per colpire del personaggio con le armi a distanza."
+    ],
+    "name": "Tiri lunghi"
+   }
+  ],
+  "name": "Tiratore scelto"
+ },
+ "shield-master": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Se il personaggio attacca una creatura entro 1,5 metri da sé come parte dell'azione di {@action Attack|XPHB|Attacco} e colpisce con un'arma da mischia, può immediatamente colpire il bersaglio con il proprio {@item Shield|XPHB|scudo}, se lo indossa, costringendolo a effettuare un tiro salvezza su Forza ({@dc 8} più il modificatore di Forza e il bonus di {@variantrule Proficiency|XPHB|competenza} del personaggio). Se il tiro salvezza fallisce, a scelta del personaggio, il bersaglio viene spinto di 1,5 metri lontano da lui oppure ottiene la condizione di {@condition Prone|XPHB|prono}. Questo beneficio è utilizzabile una sola volta per ogni turno del personaggio."
+    ],
+    "name": "Spinta con lo scudo"
+   },
+   {
+    "entries": [
+     "Se il personaggio è soggetto a un effetto che gli consente di effettuare un tiro salvezza su Destrezza per subire solo metà dei danni, può usare una {@variantrule Reaction|XPHB|reazione} per non subire alcun danno se supera il tiro salvezza e impugna uno {@item Shield|XPHB|scudo}."
+    ],
+    "name": "Scudo interposto"
+   }
+  ],
+  "name": "Maestro dello scudo"
+ },
+ "skill-expert": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Il personaggio ottiene competenza in un'abilità a sua scelta."
+    ],
+    "name": "Competenza in un'abilità"
+   },
+   {
+    "entries": [
+     "Scegli un'abilità in cui il personaggio ha competenza ma non {@variantrule Expertise|XPHB|maestria}. Il personaggio ottiene {@variantrule Expertise|XPHB|maestria} in quell'abilità."
+    ],
+    "name": "Maestria"
+   }
+  ],
+  "name": "Esperto di abilità"
  },
  "skilled": {
-  "name": "Abile",
   "entries": [
    "Il personaggio ottiene competenza in una combinazione di tre abilità o strumenti a scelta.",
    {
-    "name": "Ripetibile",
     "entries": [
      "Questo talento è ottenibile più di una volta."
-    ]
+    ],
+    "name": "Ripetibile"
    }
-  ]
+  ],
+  "name": "Abile"
+ },
+ "skulker": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Il personaggio ha {@sense Blindsight|XPHB|vista cieca} con un raggio di 3 metri."
+    ],
+    "name": "Vista cieca"
+   },
+   {
+    "entries": [
+     "Il personaggio sfrutta le distrazioni della battaglia, ottenendo {@variantrule Advantage|XPHB|vantaggio} a ogni prova di Destrezza ({@skill Stealth|XPHB|Furtività}) effettuata come parte dell'azione di {@action Hide|XPHB|Nascondersi} durante il combattimento."
+    ],
+    "name": "Nebbia di guerra"
+   },
+   {
+    "entries": [
+     "Se il personaggio effettua un tiro per colpire mentre è nascosto e il tiro fallisce, effettuare quel tiro per colpire non rivela la sua posizione."
+    ],
+    "name": "Cecchino"
+   }
+  ],
+  "name": "Furtivo"
+ },
+ "slasher": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Una volta per turno, quando il personaggio colpisce una creatura con un attacco che infligge danni taglienti, può ridurre la {@variantrule Speed|XPHB|velocità} di quella creatura di 3 metri fino all'inizio del proprio turno successivo."
+    ],
+    "name": "Menomare"
+   },
+   {
+    "entries": [
+     "Quando il personaggio mette a segno un {@variantrule Critical Hit|XPHB|colpo critico} che infligge danni taglienti a una creatura, questa ha {@variantrule Disadvantage|XPHB|svantaggio} ai tiri per colpire fino all'inizio del turno successivo del personaggio."
+    ],
+    "name": "Critico potenziato"
+   }
+  ],
+  "name": "Squartatore"
+ },
+ "speedy": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "La {@variantrule Speed|XPHB|velocità} del personaggio aumenta di 3 metri."
+    ],
+    "name": "Aumento della velocità"
+   },
+   {
+    "entries": [
+     "Quando il personaggio effettua l'azione di {@action Dash|XPHB|Scatto} nel proprio turno, il {@variantrule Difficult Terrain|XPHB|terreno difficile} non gli costa movimento extra per il resto di quel turno."
+    ],
+    "name": "Scatto sul terreno difficile"
+   },
+   {
+    "entries": [
+     "Gli {@action Opportunity Attack|XPHB|attacchi di opportunità} contro il personaggio hanno {@variantrule Disadvantage|XPHB|svantaggio}."
+    ],
+    "name": "Movimento agile"
+   }
+  ],
+  "name": "Veloce"
+ },
+ "spell-sniper": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "I tiri per colpire con gli incantesimi del personaggio ignorano la {@variantrule Cover|XPHB|mezza copertura} e i {@variantrule Cover|XPHB|tre quarti di copertura}."
+    ],
+    "name": "Ignora copertura"
+   },
+   {
+    "entries": [
+     "Trovarsi entro 1,5 metri da un nemico non impone {@variantrule Disadvantage|XPHB|svantaggio} ai tiri per colpire del personaggio con gli incantesimi."
+    ],
+    "name": "Lanciare in mischia"
+   },
+   {
+    "entries": [
+     "Quando il personaggio lancia un incantesimo con una gittata di almeno 3 metri che richiede un tiro per colpire, può aumentare la gittata dell'incantesimo di 18 metri."
+    ],
+    "name": "Gittata aumentata"
+   }
+  ],
+  "name": "Cecchino degli incantesimi"
+ },
+ "tavern-brawler": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Quando il personaggio colpisce con il proprio {@variantrule Unarmed Strike|XPHB|colpo senz'armi} e infligge danni, può infliggere danni contundenti pari a {@damage 1d4} più il proprio modificatore di Forza al posto dei danni normali di un {@variantrule Unarmed Strike|XPHB|colpo senz'armi}."
+    ],
+    "name": "Colpo senz'armi potenziato"
+   },
+   {
+    "entries": [
+     "Ogni volta che tira un dado per i danni per il proprio {@variantrule Unarmed Strike|XPHB|colpo senz'armi}, il personaggio può ritirare il dado se il risultato è 1, e deve usare il nuovo tiro."
+    ],
+    "name": "Ritiro dei danni"
+   },
+   {
+    "entries": [
+     "Il personaggio ha competenza con le armi improvvisate."
+    ],
+    "name": "Armi improvvisate"
+   },
+   {
+    "entries": [
+     "Quando il personaggio colpisce una creatura con un {@variantrule Unarmed Strike|XPHB|colpo senz'armi} come parte dell'azione di {@action Attack|XPHB|Attacco} nel proprio turno, può infliggere danni al bersaglio e inoltre spingerlo di 1,5 metri lontano da sé. Questo beneficio è utilizzabile una sola volta per turno."
+    ],
+    "name": "Spinta"
+   }
+  ],
+  "name": "Rissaiolo da taverna"
+ },
+ "telekinetic": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Il personaggio apprende l'incantesimo {@spell Mage Hand|XPHB|mano magica}. Può lanciarlo senza componenti verbali o somatiche, può rendere la mano spettrale {@condition Invisible|XPHB|invisibile}, e la sua gittata e la distanza a cui può allontanarsi dal personaggio aumentano entrambe di 9 metri quando lo lancia. La caratteristica da incantatore per l'incantesimo è quella incrementata da questo talento."
+    ],
+    "name": "Telecinesi minore"
+   },
+   {
+    "entries": [
+     "Come {@variantrule Bonus Action|XPHB|azione bonus}, il personaggio può spingere telecineticamente una creatura che è in grado di vedere entro 9 metri da sé. Quando lo fa, il bersaglio deve superare un tiro salvezza su Forza ({@dc 8} più il modificatore della caratteristica incrementata da questo talento e il bonus di {@variantrule Proficiency|XPHB|competenza} del personaggio), altrimenti viene spostato di 1,5 metri verso di lui o lontano da lui."
+    ],
+    "name": "Spinta telecinetica"
+   }
+  ],
+  "name": "Telecinetico"
+ },
+ "telepathic": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Il personaggio può parlare telepaticamente con qualsiasi creatura che è in grado di vedere entro 18 metri da sé. Le sue espressioni telepatiche sono in un linguaggio che conosce, e la creatura lo comprende solo se conosce quel linguaggio. Questa comunicazione non conferisce alla creatura la capacità di rispondergli telepaticamente."
+    ],
+    "name": "Espressione telepatica"
+   },
+   {
+    "entries": [
+     "Il personaggio ha sempre preparato l'incantesimo {@spell Detect Thoughts|XPHB|individuazione dei pensieri}. Può lanciarlo senza consumare uno slot incantesimo o componenti, e deve completare un {@variantrule Long Rest|XPHB|riposo lungo} prima di poterlo lanciare di nuovo in questo modo. Può anche lanciarlo usando gli slot incantesimo di livello adeguato a sua disposizione. La sua caratteristica da incantatore per l'incantesimo è quella incrementata da questo talento."
+    ],
+    "name": "Individuazione dei pensieri"
+   }
+  ],
+  "name": "Telepatico"
+ },
+ "thrown-weapon-fighting": {
+  "_self": true,
+  "entries": [
+   "Quando il personaggio colpisce con un tiro per colpire a distanza utilizzando un'arma che possiede la proprietà {@itemProperty T|XPHB|da lancio}, ottiene un bonus di +2 al tiro per i danni."
+  ],
+  "name": "Combattere con armi da lancio"
+ },
+ "tough": {
+  "_self": true,
+  "entries": [
+   "I {@variantrule Hit Points|XPHB|punti ferita} massimi del personaggio aumentano di un ammontare pari al doppio del suo livello quando ottiene questo talento. Ogni volta che ottiene un livello del personaggio in seguito, i suoi {@variantrule Hit Points|XPHB|punti ferita} massimi aumentano di altri 2 {@variantrule Hit Points|XPHB|punti ferita}."
+  ],
+  "name": "Robusto"
  },
  "two-weapon-fighting": {
-  "name": "Combattere con due armi",
   "entries": [
    "Quando il personaggio effettua un attacco extra come risultato dell'uso di un'arma leggera, puoi aggiungere il suo modificatore di caratteristica al danno di quell'attacco a patto che non sia già stato aggiunto in altro modo."
-  ]
+  ],
+  "name": "Combattere con due armi"
+ },
+ "unarmed-fighting": {
+  "_self": true,
+  "entries": [
+   "Quando il personaggio colpisce con il proprio {@variantrule Unarmed Strike|XPHB|colpo senz'armi} e infligge danni, può infliggere danni contundenti pari a {@damage 1d6} più il proprio modificatore di Forza al posto dei danni normali di un {@variantrule Unarmed Strike|XPHB|colpo senz'armi}. Se non impugna alcuna arma né uno {@item Shield|XPHB|scudo} quando effettua il tiro per colpire, il {@dice d6} diventa un {@dice d8}.",
+   "All'inizio di ciascuno dei suoi turni, il personaggio può infliggere {@damage 1d4} danni contundenti a una creatura {@condition Grappled|XPHB|afferrata} da lui."
+  ],
+  "name": "Combattere a mani nude"
+ },
+ "war-caster": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "Il personaggio ha {@variantrule Advantage|XPHB|vantaggio} ai tiri salvezza su Costituzione effettuati per mantenere la {@status Concentration|XPHB|concentrazione}."
+    ],
+    "name": "Concentrazione"
+   },
+   {
+    "entries": [
+     "Quando una creatura provoca un {@action Opportunity Attack|XPHB|attacco di opportunità} da parte del personaggio lasciando la sua portata, egli può usare una {@variantrule Reaction|XPHB|reazione} per lanciare un incantesimo contro quella creatura invece di effettuare un {@action Opportunity Attack|XPHB|attacco di opportunità}. L'incantesimo deve avere un tempo di lancio di un'azione e deve prendere di mira solo quella creatura."
+    ],
+    "name": "Incantesimo reattivo"
+   },
+   {
+    "entries": [
+     "Il personaggio può eseguire le componenti somatiche degli incantesimi anche quando ha armi o uno {@item Shield|XPHB|scudo} in una o entrambe le mani."
+    ],
+    "name": "Componenti somatiche"
+   }
+  ],
+  "name": "Incantatore da battaglia"
+ },
+ "weapon-master": {
+  "_self": true,
+  "entries": [
+   "Il personaggio ottiene i seguenti benefici.",
+   {
+    "entries": [
+     "L'addestramento con le armi del personaggio gli consente di avvalersi della proprietà di padronanza per un tipo di arma semplice o da guerra a sua scelta, a patto che vi abbia competenza. Ogni volta che completa un {@variantrule Long Rest|XPHB|riposo lungo}, può cambiare il tipo di arma con un altro tipo idoneo."
+    ],
+    "name": "Proprietà di padronanza"
+   }
+  ],
+  "name": "Maestro d'armi"
  }
 }

@@ -110,6 +110,22 @@
       text-overflow: ellipsis;
     }
 
+    /* Flags a page whose Italian text was hand-translated for this project rather than lifted
+       from the official Italian SRD - see `Feature.self_translated`'s docstring. Also reused,
+       smaller, on individual feature/subclass cards inside a Class page (see detail.html). */
+    .self-translated-badge {
+      flex-shrink: 0;
+      background: var(--accent);
+      color: var(--bg);
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      border-radius: 1rem;
+      padding: 0.15rem 0.5rem;
+      cursor: help;
+    }
+
     .lang-switcher {
       margin: 0;
       flex-shrink: 0;
@@ -419,6 +435,9 @@
       {# This is the page's only <h1> - content templates don't repeat it (see overview/list/   #}
       {# detail.html), so there's exactly one per page rather than zero or two.                 #}
       <h1 class="brand">{% firstof page_title "La Compagna del Gobbo" %}</h1>
+      {% if self_translated %}
+        <span class="self-translated-badge" title="Testo tradotto per questo progetto, non dalla fonte SRD ufficiale">Traduzione non ufficiale</span>
+      {% endif %}
     </div>
 
     {% get_current_language as CURRENT_LANGUAGE %}

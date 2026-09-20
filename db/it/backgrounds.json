@@ -1,118 +1,530 @@
 {
  "acolyte": {
-  "name": "Accolito",
+  "_self": true,
   "entries": [
    {
     "items": [
      {
-      "name": "Punteggi di caratteristica:",
-      "entry": "Intelligenza, Saggezza, Carisma"
+      "entry": "Intelligenza, Saggezza, Carisma",
+      "name": "Punteggi di caratteristica:"
      },
      {
-      "name": "Talento:",
-      "entry": "{@feat Magic Initiate|XPHB|Iniziato alla magia} (chierico) (vedi capitolo \"Talenti\")"
+      "entry": "{@feat Magic Initiate|XPHB|Iniziato alla magia} (chierico) (vedi capitolo \"Talenti\")",
+      "name": "Talento:"
      },
      {
-      "name": "Competenze nelle abilità:",
-      "entry": "{@skill Insight|XPHB|Intuizione} e {@skill Religion|XPHB|Religione}"
+      "entry": "{@skill Insight|XPHB|Intuizione} e {@skill Religion|XPHB|Religione}",
+      "name": "Competenze nelle abilità:"
      },
      {
-      "name": "Competenza negli strumenti:",
-      "entry": "{@item Calligrapher's Supplies|XPHB|scorte da calligrafo}"
+      "entry": "{@item Calligrapher's Supplies|XPHB|scorte da calligrafo}",
+      "name": "Competenza negli strumenti:"
      },
      {
-      "name": "Equipaggiamento:",
-      "entry": "a scelta tra A e B: (A) {@item Calligrapher's Supplies|XPHB|scorte da calligrafo}, {@item Book|XPHB|libro} (preghiere), {@item Holy Symbol|XPHB|simbolo sacro}, {@item Parchment|XPHB|pergamena} (10 fogli), {@item Robe|xphb|tunica}, 8 mo; o (B) 50 mo"
+      "entry": "a scelta tra A e B: (A) {@item Calligrapher's Supplies|XPHB|scorte da calligrafo}, {@item Book|XPHB|libro} (preghiere), {@item Holy Symbol|XPHB|simbolo sacro}, {@item Parchment|XPHB|pergamena} (10 fogli), {@item Robe|xphb|tunica}, 8 mo; o (B) 50 mo",
+      "name": "Equipaggiamento:"
      }
     ]
    }
-  ]
+  ],
+  "lore": [
+   "Ti sei dedicato al servizio in un tempio, incastonato in una città o nascosto in un boschetto sacro. Lì hai officiato riti in onore di un dio o di un intero pantheon. Hai servito sotto la guida di un sacerdote e hai studiato religione. Grazie agli insegnamenti del tuo sacerdote e alla tua stessa devozione, hai anche imparato a incanalare un poco di potere divino al servizio del tuo luogo di culto e di chi vi pregava."
+  ],
+  "name": "Accolito"
+ },
+ "artisan": {
+  "_self": true,
+  "entries": [
+   {
+    "items": [
+     {
+      "entry": "Forza, Destrezza, Intelligenza",
+      "name": "Punteggi di caratteristica:"
+     },
+     {
+      "entry": "{@feat Crafter|XPHB|Artigiano} (vedi capitolo \"Talenti\")",
+      "name": "Talento:"
+     },
+     {
+      "entry": "{@skill Investigation|XPHB|Indagare} e {@skill Persuasion|XPHB|Persuasione}",
+      "name": "Competenze nelle abilità:"
+     },
+     {
+      "entry": "Un tipo di strumenti da artigiano a scelta (vedi \"Equipaggiamento\")",
+      "name": "Competenza negli strumenti:"
+     },
+     {
+      "entry": "a scelta tra A e B: (A) {@item Artisan's Tools|XPHB|strumenti da artigiano} (gli stessi scelti sopra), 2 {@item Pouch|XPHB|borse}, {@item Traveler's Clothes|XPHB|abiti da viaggiatore}, 32 mo; o (B) 50 mo",
+      "name": "Equipaggiamento:"
+     }
+    ]
+   }
+  ],
+  "lore": [
+   "Hai iniziato a lavare pavimenti e banconi nella bottega di un artigiano per pochi soldi di rame al giorno non appena sei stato abbastanza forte da portare un secchio. Quando hai avuto l'età per fare apprendistato, hai imparato a creare i tuoi primi manufatti, oltre a intrattenere con belle parole qualche cliente occasionalmente esigente. Il tuo mestiere ti ha anche dato un occhio attento ai dettagli."
+  ],
+  "name": "Artigiano"
+ },
+ "charlatan": {
+  "_self": true,
+  "entries": [
+   {
+    "items": [
+     {
+      "entry": "Destrezza, Costituzione, Carisma",
+      "name": "Punteggi di caratteristica:"
+     },
+     {
+      "entry": "{@feat Skilled|XPHB|Abile} (vedi capitolo \"Talenti\")",
+      "name": "Talento:"
+     },
+     {
+      "entry": "{@skill Deception|XPHB|Inganno} e {@skill Sleight of Hand|XPHB|Rapidità di mano}",
+      "name": "Competenze nelle abilità:"
+     },
+     {
+      "entry": "{@item Forgery Kit|XPHB|arnesi da falsario}",
+      "name": "Competenza negli strumenti:"
+     },
+     {
+      "entry": "a scelta tra A e B: (A) {@item Forgery Kit|XPHB|arnesi da falsario}, {@item Costume|XPHB|costume}, {@item Fine Clothes|XPHB|abiti eleganti}, 15 mo; o (B) 50 mo",
+      "name": "Equipaggiamento:"
+     }
+    ]
+   }
+  ],
+  "lore": [
+   "Non appena hai avuto l'età per ordinare una birra, hai presto trovato uno sgabello preferito in ogni taverna nel raggio di quindici chilometri da dove sei nato. Girando da un'osteria all'altra, hai imparato ad approfittare degli sfortunati in cerca di qualche bugia rassicurante — magari una pozione taroccata o documenti d'ascendenza falsificati."
+  ],
+  "name": "Ciarlatano"
  },
  "criminal": {
-  "name": "Criminale",
+  "_self": true,
   "entries": [
    {
     "items": [
      {
-      "name": "Punteggi di caratteristica:",
-      "entry": "Destrezza, Costituzione, Intelligenza"
+      "entry": "Destrezza, Costituzione, Intelligenza",
+      "name": "Punteggi di caratteristica:"
      },
      {
-      "name": "Talento:",
-      "entry": "{@feat Alert|XPHB|Allerta} (vedi \"Talenti\")"
+      "entry": "{@feat Alert|XPHB|Allerta} (vedi \"Talenti\")",
+      "name": "Talento:"
      },
      {
-      "name": "Competenze nelle abilità:",
-      "entry": "{@skill Sleight of Hand|XPHB|Rapidità di mano} e {@skill Stealth|XPHB|Furtività}"
+      "entry": "{@skill Sleight of Hand|XPHB|Rapidità di mano} e {@skill Stealth|XPHB|Furtività}",
+      "name": "Competenze nelle abilità:"
      },
      {
-      "name": "Competenza negli strumenti:",
-      "entry": "{@item Thieves' Tools|XPHB|arnesi da scasso}"
+      "entry": "{@item Thieves' Tools|XPHB|arnesi da scasso}",
+      "name": "Competenza negli strumenti:"
      },
      {
-      "name": "Equipaggiamento:",
-      "entry": "a scelta tra A e B: (A) 2 {@item Dagger|XPHB|pugnali}, {@item Thieves' Tools|XPHB|arnesi da scasso}, {@item Crowbar|XPHB|piede di porco}, 2 {@item Pouch|XPHB|borse}, {@item Traveler's Clothes|XPHB|abiti da viaggiatore}, 16 mo; o (B) 50 mo"
+      "entry": "a scelta tra A e B: (A) 2 {@item Dagger|XPHB|pugnali}, {@item Thieves' Tools|XPHB|arnesi da scasso}, {@item Crowbar|XPHB|piede di porco}, 2 {@item Pouch|XPHB|borse}, {@item Traveler's Clothes|XPHB|abiti da viaggiatore}, 16 mo; o (B) 50 mo",
+      "name": "Equipaggiamento:"
      }
     ]
    }
-  ]
+  ],
+  "lore": [
+   "Ti sei guadagnato da vivere a stento nei vicoli bui, tagliando borse o svaligiando botteghe. Forse facevi parte di una piccola banda di malfattori che si guardavano le spalle a vicenda. Oppure eri un lupo solitario, capace di cavartela da solo contro la gilda dei ladri locale e criminali ben più temibili."
+  ],
+  "name": "Criminale"
+ },
+ "entertainer": {
+  "_self": true,
+  "entries": [
+   {
+    "items": [
+     {
+      "entry": "Forza, Destrezza, Carisma",
+      "name": "Punteggi di caratteristica:"
+     },
+     {
+      "entry": "{@feat Musician|XPHB|Musicista} (vedi capitolo \"Talenti\")",
+      "name": "Talento:"
+     },
+     {
+      "entry": "{@skill Acrobatics|XPHB|Acrobazia} e {@skill Performance|XPHB|Intrattenere}",
+      "name": "Competenze nelle abilità:"
+     },
+     {
+      "entry": "Un tipo di strumento musicale a scelta (vedi \"Equipaggiamento\")",
+      "name": "Competenza negli strumenti:"
+     },
+     {
+      "entry": "a scelta tra A e B: (A) {@item Musical Instrument|XPHB|strumento musicale} (lo stesso scelto sopra), {@item Costume|XPHB|2 costumi}, {@item Mirror|XPHB|specchio}, {@item Perfume|XPHB|profumo}, {@item Traveler's Clothes|XPHB|abiti da viaggiatore}, 11 mo; o (B) 50 mo",
+      "name": "Equipaggiamento:"
+     }
+    ]
+   }
+  ],
+  "lore": [
+   "Hai trascorso gran parte della tua giovinezza seguendo fiere e carnevali itineranti, svolgendo lavoretti per musicisti e acrobati in cambio di lezioni. Forse hai imparato a camminare sulla corda, a suonare il {@item lute|XPHB|liuto} con uno stile personale, o a recitare poesie con dizione impeccabile. Ancora oggi vivi per gli applausi e desideri ardentemente il palcoscenico."
+  ],
+  "name": "Intrattenitore"
+ },
+ "farmer": {
+  "_self": true,
+  "entries": [
+   {
+    "items": [
+     {
+      "entry": "Forza, Costituzione, Saggezza",
+      "name": "Punteggi di caratteristica:"
+     },
+     {
+      "entry": "{@feat Tough|XPHB|Robusto} (vedi capitolo \"Talenti\")",
+      "name": "Talento:"
+     },
+     {
+      "entry": "{@skill Animal Handling|XPHB|Addestrare animali} e {@skill Nature|XPHB|Natura}",
+      "name": "Competenze nelle abilità:"
+     },
+     {
+      "entry": "{@item Carpenter's Tools|XPHB|strumenti da falegname}",
+      "name": "Competenza negli strumenti:"
+     },
+     {
+      "entry": "a scelta tra A e B: (A) {@item Sickle|XPHB|falcetto}, {@item Carpenter's Tools|XPHB|strumenti da falegname}, {@item Healer's Kit|XPHB|borsa del guaritore}, {@item Iron Pot|XPHB|pentola di ferro}, {@item Shovel|XPHB|pala}, {@item Traveler's Clothes|XPHB|abiti da viaggiatore}, 30 mo; o (B) 50 mo",
+      "name": "Equipaggiamento:"
+     }
+    ]
+   }
+  ],
+  "lore": [
+   "Sei cresciuto a stretto contatto con la terra. Anni passati ad allevare animali e coltivare i campi ti hanno ricompensato con pazienza e buona salute. Hai un profondo apprezzamento per i doni della natura, insieme a un sano rispetto per la sua ira."
+  ],
+  "name": "Contadino"
+ },
+ "guard": {
+  "_self": true,
+  "entries": [
+   {
+    "items": [
+     {
+      "entry": "Forza, Intelligenza, Saggezza",
+      "name": "Punteggi di caratteristica:"
+     },
+     {
+      "entry": "{@feat Alert|XPHB|Allerta} (vedi capitolo \"Talenti\")",
+      "name": "Talento:"
+     },
+     {
+      "entry": "{@skill Athletics|XPHB|Atletica} e {@skill Perception|XPHB|Percezione}",
+      "name": "Competenze nelle abilità:"
+     },
+     {
+      "entry": "Un tipo di gioco a scelta (vedi \"Equipaggiamento\")",
+      "name": "Competenza negli strumenti:"
+     },
+     {
+      "entry": "a scelta tra A e B: (A) {@item Spear|XPHB|lancia}, {@item Light Crossbow|XPHB|balestra leggera}, 20 {@item Bolt|XPHB|quadrelli}, {@item Gaming Set|XPHB|gioco} (lo stesso scelto sopra), {@item Hooded Lantern|XPHB|lanterna schermabile}, {@item Manacles|XPHB|manette}, {@item Quiver|XPHB|faretra}, {@item Traveler's Clothes|XPHB|abiti da viaggiatore}, 12 mo; o (B) 50 mo",
+      "name": "Equipaggiamento:"
+     }
+    ]
+   }
+  ],
+  "lore": [
+   "Ti fanno male i piedi al solo ricordo delle innumerevoli ore trascorse di guardia nella torre. Sei stato addestrato a tenere un occhio rivolto fuori dalle mura, in cerca di predoni provenienti dalla foresta vicina, e l'altro rivolto dentro le mura, alla ricerca di borseggiatori e piantagrane."
+  ],
+  "name": "Guardia"
+ },
+ "guide": {
+  "_self": true,
+  "entries": [
+   {
+    "items": [
+     {
+      "entry": "Destrezza, Costituzione, Saggezza",
+      "name": "Punteggi di caratteristica:"
+     },
+     {
+      "entry": "{@feat Magic Initiate|XPHB|Iniziato alla magia} (druido) (vedi capitolo \"Talenti\")",
+      "name": "Talento:"
+     },
+     {
+      "entry": "{@skill Stealth|XPHB|Furtività} e {@skill Survival|XPHB|Sopravvivenza}",
+      "name": "Competenze nelle abilità:"
+     },
+     {
+      "entry": "{@item Cartographer's Tools|XPHB|strumenti da cartografo}",
+      "name": "Competenza negli strumenti:"
+     },
+     {
+      "entry": "a scelta tra A e B: (A) {@item Shortbow|XPHB|arco corto}, {@item Arrow|XPHB|20 frecce}, {@item Cartographer's Tools|XPHB|strumenti da cartografo}, {@item Bedroll|XPHB|giaciglio}, {@item Quiver|XPHB|faretra}, {@item Tent|XPHB|tenda}, {@item Traveler's Clothes|XPHB|abiti da viaggiatore}, 3 mo; o (B) 50 mo",
+      "name": "Equipaggiamento:"
+     }
+    ]
+   }
+  ],
+  "lore": [
+   "Sei cresciuto all'aperto, lontano dalle terre abitate. La tua casa era ovunque decidessi di stendere il tuo giaciglio. Nella natura selvaggia si celano meraviglie — mostri strani, foreste e ruscelli incontaminati, rovine coperte di vegetazione di grandi sale un tempo calpestate dai giganti — e hai imparato a cavartela da solo esplorandole. Di tanto in tanto hai fatto da guida a sacerdoti della natura amichevoli, che ti hanno istruito sui rudimenti dell'incanalare la magia selvaggia."
+  ],
+  "name": "Guida"
+ },
+ "hermit": {
+  "_self": true,
+  "entries": [
+   {
+    "items": [
+     {
+      "entry": "Costituzione, Saggezza, Carisma",
+      "name": "Punteggi di caratteristica:"
+     },
+     {
+      "entry": "{@feat Healer|XPHB|Guaritore} (vedi capitolo \"Talenti\")",
+      "name": "Talento:"
+     },
+     {
+      "entry": "{@skill Medicine|XPHB|Medicina} e {@skill Religion|XPHB|Religione}",
+      "name": "Competenze nelle abilità:"
+     },
+     {
+      "entry": "{@item Herbalism Kit|XPHB|borsa da erborista}",
+      "name": "Competenza negli strumenti:"
+     },
+     {
+      "entry": "a scelta tra A e B: (A) {@item Quarterstaff|XPHB|bastone ferrato}, {@item Herbalism Kit|XPHB|borsa da erborista}, {@item Bedroll|XPHB|giaciglio}, {@item Book|XPHB|libro} (filosofia), {@item Lamp|XPHB|lampada}, {@item Oil|XPHB|olio} (3 ampolle), {@item Traveler's Clothes|XPHB|abiti da viaggiatore}, 16 mo; o (B) 50 mo",
+      "name": "Equipaggiamento:"
+     }
+    ]
+   }
+  ],
+  "lore": [
+   "Hai trascorso i tuoi primi anni isolato in una capanna o in un monastero situato ben oltre la periferia dell'insediamento più vicino. In quei giorni, le tue uniche compagnie erano le creature della foresta e coloro che occasionalmente venivano a portare notizie dal mondo esterno e rifornimenti. La solitudine ti ha permesso di trascorrere molte ore a meditare sui misteri della creazione."
+  ],
+  "name": "Eremita"
+ },
+ "merchant": {
+  "_self": true,
+  "entries": [
+   {
+    "items": [
+     {
+      "entry": "Costituzione, Intelligenza, Carisma",
+      "name": "Punteggi di caratteristica:"
+     },
+     {
+      "entry": "{@feat Lucky|XPHB|Fortunato} (vedi capitolo \"Talenti\")",
+      "name": "Talento:"
+     },
+     {
+      "entry": "{@skill Animal Handling|XPHB|Addestrare animali} e {@skill Persuasion|XPHB|Persuasione}",
+      "name": "Competenze nelle abilità:"
+     },
+     {
+      "entry": "{@item Navigator's Tools|XPHB|strumenti da navigatore}",
+      "name": "Competenza negli strumenti:"
+     },
+     {
+      "entry": "a scelta tra A e B: (A) {@item Navigator's Tools|XPHB|strumenti da navigatore}, {@item Pouch|XPHB|2 borse}, {@item Traveler's Clothes|XPHB|abiti da viaggiatore}, 22 mo; o (B) 50 mo",
+      "name": "Equipaggiamento:"
+     }
+    ]
+   }
+  ],
+  "lore": [
+   "Sei stato apprendista di un mercante, un capo carovana o un bottegaio, imparando i fondamenti del commercio. Hai viaggiato in lungo e in largo, guadagnandoti da vivere comprando e vendendo le materie prime di cui gli artigiani hanno bisogno per il loro mestiere, o le opere finite realizzate da questi ultimi. Potresti aver trasportato merci da un luogo all'altro (via nave, carro o carovana) oppure averle acquistate da mercanti itineranti per poi rivenderle nella tua bottega."
+  ],
+  "name": "Mercante"
+ },
+ "noble": {
+  "_self": true,
+  "entries": [
+   {
+    "items": [
+     {
+      "entry": "Forza, Intelligenza, Carisma",
+      "name": "Punteggi di caratteristica:"
+     },
+     {
+      "entry": "{@feat Skilled|XPHB|Abile} (vedi capitolo \"Talenti\")",
+      "name": "Talento:"
+     },
+     {
+      "entry": "{@skill History|XPHB|Storia} e {@skill Persuasion|XPHB|Persuasione}",
+      "name": "Competenze nelle abilità:"
+     },
+     {
+      "entry": "Un tipo di gioco a scelta (vedi \"Equipaggiamento\")",
+      "name": "Competenza negli strumenti:"
+     },
+     {
+      "entry": "a scelta tra A e B: (A) {@item Gaming Set|XPHB|gioco} (lo stesso scelto sopra), {@item Fine Clothes|XPHB|abiti eleganti}, {@item Perfume|XPHB|profumo}, 29 mo; o (B) 50 mo",
+      "name": "Equipaggiamento:"
+     }
+    ]
+   }
+  ],
+  "lore": [
+   "Sei cresciuto in un castello, circondato da ricchezza, potere e privilegi. La tua famiglia di piccoli aristocratici si è assicurata che ricevessi un'istruzione di prim'ordine, che in parte hai apprezzato e in parte hai mal sopportato. Il tempo trascorso nel castello, specialmente le molte ore passate a osservare la tua famiglia a corte, ti ha anche insegnato molto sull'arte del comando."
+  ],
+  "name": "Nobile"
  },
  "sage": {
-  "name": "Sapiente",
+  "_self": true,
   "entries": [
    {
     "items": [
      {
-      "name": "Punteggi di caratteristica:",
-      "entry": "Costituzione, Intelligenza, Saggezza"
+      "entry": "Costituzione, Intelligenza, Saggezza",
+      "name": "Punteggi di caratteristica:"
      },
      {
-      "name": "Talento:",
-      "entry": "{@feat Magic Initiate|XPHB|Iniziato alla magia} (mago) (vedi capitolo \"Talenti\")"
+      "entry": "{@feat Magic Initiate|XPHB|Iniziato alla magia} (mago) (vedi capitolo \"Talenti\")",
+      "name": "Talento:"
      },
      {
-      "name": "Competenze nelle abilità:",
-      "entry": "{@skill Arcana|XPHB|Arcano} e {@skill History|XPHB|Storia}"
+      "entry": "{@skill Arcana|XPHB|Arcano} e {@skill History|XPHB|Storia}",
+      "name": "Competenze nelle abilità:"
      },
      {
-      "name": "Competenza negli strumenti:",
-      "entry": "{@item Calligrapher's Supplies|XPHB|scorte da calligrafo}"
+      "entry": "{@item Calligrapher's Supplies|XPHB|scorte da calligrafo}",
+      "name": "Competenza negli strumenti:"
      },
      {
-      "name": "Equipaggiamento:",
-      "entry": "a scelta tra A e B: (A) {@item Quarterstaff|XPHB|bastone ferrato}, {@item Calligrapher's Supplies|XPHB|scorte da calligrafo}, {@item Book|XPHB|libro} (storia) {@item Parchment|XPHB|pergamena} (8 fogli), {@item Robe|XPHB|tunica}, 8 mo; o (B) 50 mo"
+      "entry": "a scelta tra A e B: (A) {@item Quarterstaff|XPHB|bastone ferrato}, {@item Calligrapher's Supplies|XPHB|scorte da calligrafo}, {@item Book|XPHB|libro} (storia) {@item Parchment|XPHB|pergamena} (8 fogli), {@item Robe|XPHB|tunica}, 8 mo; o (B) 50 mo",
+      "name": "Equipaggiamento:"
      }
     ]
    }
-  ]
+  ],
+  "lore": [
+   "Hai trascorso i tuoi anni di formazione viaggiando tra manieri e monasteri, svolgendo vari lavoretti e servizi in cambio dell'accesso alle loro biblioteche. Hai trascorso molte lunghe serate a studiare libri e pergamene, apprendendo la sapienza del multiverso — persino i rudimenti della magia — e la tua mente brama di saperne ancora di più."
+  ],
+  "name": "Sapiente"
+ },
+ "sailor": {
+  "_self": true,
+  "entries": [
+   {
+    "items": [
+     {
+      "entry": "Forza, Destrezza, Saggezza",
+      "name": "Punteggi di caratteristica:"
+     },
+     {
+      "entry": "{@feat Tavern Brawler|XPHB|Rissaiolo} (vedi capitolo \"Talenti\")",
+      "name": "Talento:"
+     },
+     {
+      "entry": "{@skill Acrobatics|XPHB|Acrobazia} e {@skill Perception|XPHB|Percezione}",
+      "name": "Competenze nelle abilità:"
+     },
+     {
+      "entry": "{@item Navigator's Tools|XPHB|strumenti da navigatore}",
+      "name": "Competenza negli strumenti:"
+     },
+     {
+      "entry": "a scelta tra A e B: (A) {@item Dagger|XPHB|pugnale}, {@item Navigator's Tools|XPHB|strumenti da navigatore}, {@item Rope|XPHB|corda}, {@item Traveler's Clothes|XPHB|abiti da viaggiatore}, 20 mo; o (B) 50 mo",
+      "name": "Equipaggiamento:"
+     }
+    ]
+   }
+  ],
+  "lore": [
+   "Hai vissuto come un marinaio, con il vento alle spalle e i ponti ondeggianti sotto i piedi. Ti sei seduto su sgabelli da bar in più porti di quanti tu riesca a ricordare, hai affrontato tempeste possenti e scambiato racconti con genti che vivono sotto le onde."
+  ],
+  "name": "Marinaio"
+ },
+ "scribe": {
+  "_self": true,
+  "entries": [
+   {
+    "items": [
+     {
+      "entry": "Destrezza, Intelligenza, Saggezza",
+      "name": "Punteggi di caratteristica:"
+     },
+     {
+      "entry": "{@feat Skilled|XPHB|Abile} (vedi capitolo \"Talenti\")",
+      "name": "Talento:"
+     },
+     {
+      "entry": "{@skill Investigation|XPHB|Indagare} e {@skill Perception|XPHB|Percezione}",
+      "name": "Competenze nelle abilità:"
+     },
+     {
+      "entry": "{@item Calligrapher's Supplies|XPHB|scorte da calligrafo}",
+      "name": "Competenza negli strumenti:"
+     },
+     {
+      "entry": "a scelta tra A e B: (A) {@item Calligrapher's Supplies|XPHB|scorte da calligrafo}, {@item Fine Clothes|XPHB|abiti eleganti}, {@item Lamp|XPHB|lampada}, {@item Oil|XPHB|olio} (3 ampolle), {@item Parchment|XPHB|pergamena} (12 fogli), 23 mo; o (B) 50 mo",
+      "name": "Equipaggiamento:"
+     }
+    ]
+   }
+  ],
+  "lore": [
+   "Hai trascorso i tuoi anni di formazione in uno scriptorium, un monastero dedicato alla conservazione del sapere, o un ufficio governativo, dove hai imparato a scrivere con mano chiara e a produrre testi curati nella forma. Forse hai trascritto documenti governativi o copiato tomi di letteratura. Potresti avere una certa abilità come scrittore di poesia, narrativa o ricerca erudita. Soprattutto, possiedi una scrupolosa attenzione ai dettagli, che ti aiuta a evitare di introdurre errori nei documenti che copi e componi."
+  ],
+  "name": "Scriba"
  },
  "soldier": {
-  "name": "Soldato",
+  "_self": true,
   "entries": [
    {
     "items": [
      {
-      "name": "Punteggi di caratteristica:",
-      "entry": "Forza, Destrezza, Costituzione"
+      "entry": "Forza, Destrezza, Costituzione",
+      "name": "Punteggi di caratteristica:"
      },
      {
-      "name": "Talento:",
-      "entry": "{@feat Savage Attacker|XPHB|Aggressore selvaggio} (vedi capitolo \"Talenti\")"
+      "entry": "{@feat Savage Attacker|XPHB|Aggressore selvaggio} (vedi capitolo \"Talenti\")",
+      "name": "Talento:"
      },
      {
-      "name": "Competenze nelle abilità:",
-      "entry": "{@skill Athletics|XPHB|Atletica} e {@skill Intimidation|XPHB|Intimidire}"
+      "entry": "{@skill Athletics|XPHB|Atletica} e {@skill Intimidation|XPHB|Intimidire}",
+      "name": "Competenze nelle abilità:"
      },
      {
-      "name": "Competenza negli strumenti:",
-      "entry": "Un tipo di gioco a scelta (vedi \"Equipaggiamento\")"
+      "entry": "Un tipo di gioco a scelta (vedi \"Equipaggiamento\")",
+      "name": "Competenza negli strumenti:"
      },
      {
-      "name": "Equipaggiamento:",
-      "entry": "a scelta tra A e B: (A) {@item Spear|XPHB|lancia}, {@item Shortbow|XPHB|arco corto}, 20 frecce, gioco (lo stesso scelto sopra), {@item Healer's Kit|XPHB|borsa del guaritore}, {@item Quiver|XPHB|faretra}, {@item Traveler's Clothes|XPHB|abiti da viaggiatore}, 14 mo; o (B) 50 mo"
+      "entry": "a scelta tra A e B: (A) {@item Spear|XPHB|lancia}, {@item Shortbow|XPHB|arco corto}, 20 frecce, gioco (lo stesso scelto sopra), {@item Healer's Kit|XPHB|borsa del guaritore}, {@item Quiver|XPHB|faretra}, {@item Traveler's Clothes|XPHB|abiti da viaggiatore}, 14 mo; o (B) 50 mo",
+      "name": "Equipaggiamento:"
      }
     ]
    }
-  ]
+  ],
+  "lore": [
+   "Hai iniziato ad addestrarti per la guerra non appena hai raggiunto l'età adulta e conservi pochissimi ricordi della vita prima di imbracciare le armi. La battaglia ti scorre nel sangue. A volte ti sorprendi a eseguire per riflesso i primi esercizi di combattimento che hai imparato. Alla fine, hai messo in pratica quell'addestramento sul campo di battaglia, proteggendo il regno attraverso la guerra."
+  ],
+  "name": "Soldato"
+ },
+ "wayfarer": {
+  "_self": true,
+  "entries": [
+   {
+    "items": [
+     {
+      "entry": "Destrezza, Saggezza, Carisma",
+      "name": "Punteggi di caratteristica:"
+     },
+     {
+      "entry": "{@feat Lucky|XPHB|Fortunato} (vedi capitolo \"Talenti\")",
+      "name": "Talento:"
+     },
+     {
+      "entry": "{@skill Insight|XPHB|Intuizione} e {@skill Stealth|XPHB|Furtività}",
+      "name": "Competenze nelle abilità:"
+     },
+     {
+      "entry": "{@item Thieves' Tools|XPHB|arnesi da scasso}",
+      "name": "Competenza negli strumenti:"
+     },
+     {
+      "entry": "a scelta tra A e B: (A) {@item Dagger|XPHB|2 pugnali}, {@item Thieves' Tools|XPHB|arnesi da scasso}, {@item Gaming Set|XPHB|gioco} (qualsiasi), {@item Bedroll|XPHB|giaciglio}, 2 {@item Pouch|XPHB|borse}, {@item Traveler's Clothes|XPHB|abiti da viaggiatore}, 16 mo; o (B) 50 mo",
+      "name": "Equipaggiamento:"
+     }
+    ]
+   }
+  ],
+  "lore": [
+   "Sei cresciuto per strada, circondato da altri reietti dal destino simile al tuo, alcuni amici e altri rivali. Dormivi dove potevi e facevi lavoretti in cambio di cibo. A volte, quando la fame diventava insopportabile, ricorrevi al furto. Eppure non hai mai perso il tuo orgoglio né abbandonato la speranza. Il destino non ha ancora finito con te."
+  ],
+  "name": "Viandante"
  }
 }

@@ -27,6 +27,7 @@ class OptionalFeature(models.Model):
     name = models.CharField(max_length=200)
     page = models.PositiveSmallIntegerField()
     srd = models.BooleanField(default=False)
+    self_translated = models.BooleanField(default=False)
     feature_type = models.CharField(max_length=30)
     prerequisite = models.JSONField(default=list, blank=True)
     consumes_resource_name = models.CharField(max_length=100, blank=True, default="")

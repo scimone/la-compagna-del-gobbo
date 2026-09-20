@@ -143,8 +143,13 @@ def test_spell_range_filter_shows_metric_labels_on_the_italian_site(client, cata
 
 
 def test_english_fallback_text_shows_metric_measurements_on_the_italian_site(client, catalogs):
-    # Thorn Whip has no Italian text yet (falls back to English); its body still mentions a
-    # distance ("10 feet"), which should read metric even though the sentence stays English.
+    # Every spell has Italian text by now, so force one row back into the "no Italian text yet"
+    # state this test targets: its body still mentions a distance ("10 feet"), which should read
+    # metric on the Italian site even though the sentence itself stays English.
+    from apps.rules.models import Spell
+
+    Spell.objects.filter(pk="thorn-whip").update(entries_it=None)
+
     html = _get(client, "/world/spells/thorn-whip/", "it")
     assert "3 meters" in html
     assert "10 feet" not in html
@@ -225,3 +230,25 @@ def test_species_size_and_creature_type_are_translated_in_italian(client, catalo
     html = _get(client, "/world/species/human/", "en")
     assert "Small/Medium" in html
     assert "Humanoid" in html
+
+
+def test_self_translated_pages_show_the_unofficial_badge_only_in_italian(client, catalogs):
+    # Actor has no official (SRD) Italian source and was hand-translated for this project.
+    html = _get(client, "/world/feats/actor/", "it")
+    assert '<span class="self-translated-badge"' in html
+
+    html = _get(client, "/world/feats/actor/", "en")
+    assert '<span class="self-translated-badge"' not in html
+
+    # Alert is one of the SRD-sourced feats, translated from the official source.
+    html = _get(client, "/world/feats/alert/", "it")
+    assert '<span class="self-translated-badge"' not in html
+
+
+def test_self_translated_badge_shows_on_individual_feature_and_subclass_cards(client, catalogs):
+    # Path of the Zealot (and its "Divine Fury" feature) has no official Italian source either.
+    html = _get(client, "/world/classes/barbarian/?tab=subclasses", "it")
+    assert html.count('<span class="self-translated-badge"') >= 2  # subclass + feature card
+
+    html = _get(client, "/world/classes/barbarian/?tab=subclasses", "en")
+    assert '<span class="self-translated-badge"' not in html

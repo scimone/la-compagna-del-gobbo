@@ -1,0 +1,78 @@
+{
+ "abyssal": {
+  "_self": true,
+  "name": "Abissale"
+ },
+ "celestial": {
+  "_self": true,
+  "name": "Celestiale"
+ },
+ "common": {
+  "_self": true,
+  "name": "Comune"
+ },
+ "common-sign-language": {
+  "_self": true,
+  "name": "Lingua dei segni comune"
+ },
+ "deep-speech": {
+  "_self": true,
+  "name": "Loquela Profonda"
+ },
+ "draconic": {
+  "_self": true,
+  "name": "Draconico"
+ },
+ "druidic": {
+  "_self": true,
+  "name": "Druidico"
+ },
+ "dwarvish": {
+  "_self": true,
+  "name": "Nanico"
+ },
+ "elvish": {
+  "_self": true,
+  "name": "Elfico"
+ },
+ "giant": {
+  "_self": true,
+  "name": "Gigante"
+ },
+ "gnomish": {
+  "_self": true,
+  "name": "Gnomesco"
+ },
+ "goblin": {
+  "_self": true,
+  "name": "Goblin"
+ },
+ "halfling": {
+  "_self": true,
+  "name": "Halfling"
+ },
+ "infernal": {
+  "_self": true,
+  "name": "Infernale"
+ },
+ "orc": {
+  "_self": true,
+  "name": "Orchesco"
+ },
+ "primordial": {
+  "_self": true,
+  "name": "Primordiale"
+ },
+ "sylvan": {
+  "_self": true,
+  "name": "Silvano"
+ },
+ "thieves-cant": {
+  "_self": true,
+  "name": "Gergo ladresco"
+ },
+ "undercommon": {
+  "_self": true,
+  "name": "Sottocomune"
+ }
+}

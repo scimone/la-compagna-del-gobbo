@@ -22,6 +22,7 @@ class Subclass(models.Model):
     klass = models.ForeignKey("rules.Class", related_name="subclasses", on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     description = models.JSONField(default=list, blank=True)
+    self_translated = models.BooleanField(default=False)
     #: Bonus spells granted by level/delivery mechanism (prepared/known/innate/expanded), sourced
     #: from `db/classes.json`'s `subclass.additionalSpells` - kept as the raw structured JSON
     #: (spell references are already resolvable `"name|source"` keys) rather than a through-model,

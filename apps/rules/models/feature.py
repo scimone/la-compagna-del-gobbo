@@ -93,6 +93,11 @@ class Feature(models.Model):
     #: `OptionalFeature.consumes_resource_name` for why this is a bare name, not a FK.
     consumes_resource_name = models.CharField(max_length=100, blank=True, default="")
     entries = models.JSONField(default=list)
+    #: True when this row's Italian text was hand-translated for this project rather than lifted
+    #: from an official Italian source (the SRD PDF, for everything else translated so far) - see
+    #: `apps.rules.translation_sync`'s `_self` overlay flag, which sets this at sync time. Every
+    #: translated model in `TRANSLATED_CATALOGS` carries the same flag.
+    self_translated = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["name"]

@@ -730,24 +730,38 @@ translation keeps showing its English, so these pages can be partly Italian. Eac
 `{@tag}` lookups use each row's English name (`name_en`), so links still resolve when the display
 text is Italian.
 
-**Filled so far** (from `IT_SRD_CC_v5.2.1.md`): all 17 SRD feats; 335 of the 339 SRD spells
-(their names; 288 with full text - the rest differ structurally from the English text or lost their
-body in the SRD extraction, so they show an Italian name over English text); 101 of the 114 rules;
-all 12 classes (name, blurb, "subclass" title), their 12 SRD subclasses, and about 230 class,
-subclass, species-trait and feat features; the 9 SRD species (plus Italian blurbs for all 11); the
-4 SRD backgrounds; and 207 of the 217 equipment items (name for all; full text for about 85 - the
-tools and gear whose description block aligned). Class and subclass *features* that the SRD lists
-differently from the English data (option rows, repeated "Ability Score Improvement" levels,
-features with big embedded tables) keep their English text. **Not yet filled** (their columns exist
-and fall back to English): skills, senses, languages, masteries, abilities, weapon properties,
-optional features, the non-SRD rows, and structured display values that aren't free text - casting
-time ("1 action"), size/creature-type codes. The extraction was done with throwaway scripts
-(paragraph-by-paragraph alignment of the Italian markdown to the English `entries` tree, tags
-mirrored by an English-to-Italian term dictionary); a first pass accepts a row only when the
-Italian and English structure line up exactly; a second pass (paragraph-level alignment on
-numbers, dice, damage types, abilities, conditions and mirrored terms) then fills what that pass
-rejected, translating the paragraphs it can pair and leaving the rest English rather than
-guessing.
+**Filled from the official source** (`IT_SRD_CC_v5.2.1.md`, extracted with throwaway scripts:
+paragraph-by-paragraph alignment of the Italian markdown to the English `entries` tree, tags
+mirrored by an English-to-Italian term dictionary, a first pass accepting a row only when the two
+structures line up exactly and a second paragraph-level pass filling most of what that rejected):
+the 17 SRD feats; the 339 SRD spells; 114 rules; all 12 classes plus their 12 SRD subclasses and
+class/subclass features; the 9 SRD species; the 4 SRD backgrounds; and the SRD-sourced equipment
+items - collectively, this is the content flagged `self_translated = False`.
+
+**Everything else has been hand-translated for this project instead** (there's no official
+Italian source for it - PHB-only flavor text, or 2024-refresh content the SRD extract doesn't
+cover): every species'/background's/class's narrative lore, the non-SRD
+species/backgrounds/subclasses/feats/spells, skills, senses, languages, masteries, abilities,
+weapon properties, optional features, and the class/subclass features the SRD pass couldn't
+align. Each translated row's overlay entry in `db/it/<model>.json` can carry a sibling
+`"_self": true` key (not a real field, so `sync_catalog()`'s per-field loop ignores it) -
+`translation_sync.sync_catalog()` reads it into the row's own `self_translated` column (one per
+translated model, alongside the existing `srd` flag many of them already had), and the frontend
+shows a small "Traduzione non ufficiale" badge next to the page title (`base.html`, gated on
+`self_translated` and only while browsing in Italian - see `_is_self_translated()` in
+`views.py`) and on the individual feature/subclass cards inside a Class page
+(`entries_render._self_translated_badge()`) wherever that specific card's text is
+hand-translated rather than official. A row can be both at once - e.g. an SRD species'
+`name`/`entries` are official but its `lore` (PHB-only) is necessarily hand-translated, so the
+row's `self_translated` is `True` even though most of its content is official.
+
+The two gaps this still leaves **on purpose**: `Equipment.entries` (never rendered by any page
+today - only `Equipment.name` shows up, via `{@item}` tags and equipment lists, so translating a
+body of text nothing displays would be pure invisible busywork), and the `Feature` rows FK'd to a
+`Species`/`Feat` (these duplicate text already translated on the parent's own `entries` field -
+see `Feature`'s docstring - and, unlike a `Class`'s per-level features, are never the thing an
+actual page renders either, so translating them a second time would duplicate work for no visible
+gain).
 
 **Measurements are metric on the Italian site**, via `apps/frontend/units.py` - conversion
 factors (1 ft. = 0.3 m, 1 mile = 1.5 km, 1 lb. = 0.5 kg) taken from the SRD's own conversions

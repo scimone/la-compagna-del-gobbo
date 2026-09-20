@@ -26,9 +26,10 @@ def test_translated_rows_read_in_italian_and_the_rest_fall_back(catalogs):
         assert Feat.objects.get(pk="alert").name == "Allerta"
         assert Spell.objects.get(pk="fireball").name == "Palla di fuoco"
         assert Rule.objects.get(pk="advantage").name == "Vantaggio"
-        # a feat outside the SRD has no Italian text: it keeps showing English, it isn't removed
-        assert Feat.objects.get(pk="actor").name == "Actor"
-        assert Feat.objects.get(pk="actor").entries == Feat.objects.get(pk="actor").entries_en
+        # a feat outside the SRD is hand-translated now (see `self_translated`), not English
+        assert Feat.objects.get(pk="actor").name == "Attore"
+        assert Feat.objects.get(pk="actor").self_translated is True
+        assert Feat.objects.get(pk="alert").self_translated is False
 
     with translation.override("en"):
         assert Spell.objects.get(pk="fireball").name == "Fireball"
@@ -63,9 +64,9 @@ def test_reference_tags_still_link_when_the_display_text_is_italian(catalogs):
 
 def test_every_catalog_file_merges_onto_the_english_rows(catalogs):
     # `import_rules_data` already raised if any tree was misaligned; also spot-check coverage
-    assert Spell.objects.filter(name_it__isnull=False).count() == 335
-    assert Feat.objects.filter(name_it__isnull=False).count() == 17
-    assert Rule.objects.filter(name_it__isnull=False).count() == 108
+    assert Spell.objects.filter(name_it__isnull=False).count() == 391
+    assert Feat.objects.filter(name_it__isnull=False).count() == 77
+    assert Rule.objects.filter(name_it__isnull=False).count() == 114
 
 
 def test_classes_species_backgrounds_and_equipment_read_in_italian(catalogs):
@@ -85,19 +86,40 @@ def test_classes_species_backgrounds_and_equipment_read_in_italian(catalogs):
         assert Equipment.objects.get(pk="dagger").name == "Dagger"
 
 
-def test_rows_without_italian_source_stay_in_english(catalogs):
+def test_rows_without_an_official_source_are_hand_translated_and_flagged(catalogs):
+    # Aasimar/Grung, every non-SRD background, and every non-SRD subclass had no official
+    # Italian source (the SRD PDF) - they're hand-translated for this project now instead of
+    # staying English, and `self_translated` says so. Lore (PHB-only flavor text, never covered
+    # by the SRD) is hand-translated for every Species/Background/Class, including SRD ones -
+    # `self_translated` is a per-*row* flag, so even an otherwise-official row like "elf" carries
+    # it once any part of it is hand-translated.
     with translation.override("it"):
-        # Aasimar/Grung are not in the SRD (only their one-line blurb is Italian); non-SRD
-        # backgrounds and subclasses have no Italian at all
-        assert Species.objects.get(pk="aasimar").name == "Aasimar"
-        assert Background.objects.get(pk="artisan").name == "Artisan"
-        assert (
-            Subclass.objects.get(name_en="Path of the Wild Heart").name == "Path of the Wild Heart"
-        )
+        assert Species.objects.get(pk="aasimar").name == "Aasimar"  # a proper noun, unchanged
+        assert Species.objects.get(pk="aasimar").self_translated is True
+        assert Species.objects.get(pk="elf").self_translated is True  # official name, own lore
+        assert Background.objects.get(pk="artisan").name == "Artigiano"
+        assert Background.objects.get(pk="artisan").self_translated is True
+        wild_heart = Subclass.objects.get(name_en="Path of the Wild Heart")
+        assert wild_heart.name != "Path of the Wild Heart"
+        assert wild_heart.self_translated is True
+        # a row with no hand-translated field at all is never flagged
+        assert Equipment.objects.get(pk="dagger").self_translated is False
+        assert Rule.objects.get(pk="advantage").self_translated is False
     assert Species.objects.count() == 11
     assert Background.objects.count() == 16
     assert Equipment.objects.count() == 217
     assert Feature.objects.count() == 707
+
+
+def test_feature_rows_only_used_as_a_queryable_index_are_left_untranslated(catalogs):
+    # Species/Feat-linked `Feature` rows duplicate text already translated on the parent's own
+    # `entries` field (see `Feature`'s docstring) and are never rendered on any page directly -
+    # translating them a second time would be pure invisible busywork, so they're the one
+    # deliberate gap left in an otherwise fully-covered set of catalogs.
+    assert not Feature.objects.filter(class_level__isnull=False, name_it__isnull=True).exists()
+    assert not Feature.objects.filter(subclass_level__isnull=False, name_it__isnull=True).exists()
+    assert Feature.objects.filter(species__isnull=False, name_it__isnull=True).exists()
+    assert Feature.objects.filter(feat__isnull=False, name_it__isnull=True).exists()
 
 
 def test_feature_translations_survive_a_reimport(catalogs):

@@ -31,7 +31,7 @@ import re
 from django.urls import reverse
 from django.utils.html import conditional_escape, escape
 from django.utils.safestring import SafeString, mark_safe
-from django.utils.translation import gettext
+from django.utils.translation import get_language, gettext
 
 from apps.frontend.units import distance, metricize_text
 
@@ -175,10 +175,26 @@ def _render_entry_cards(blocks: list, linker: _ReferenceLinker) -> str:
         body_source = block.get("entries", []) if isinstance(block, dict) else block
         block_id = block.get("id") if isinstance(block, dict) else None
         id_attr = f' id="feature-{block_id}"' if block_id else ""
-        heading_html = f"<h3>{_render_text(name, linker)}</h3>" if name else ""
+        badge_html = _self_translated_badge(block) if isinstance(block, dict) else ""
+        heading_html = f"<h3>{_render_text(name, linker)}{badge_html}</h3>" if name else badge_html
         body_html = _render_node(body_source, linker)
         cards.append(f'<div class="entry-card"{id_attr}>{heading_html}{body_html}</div>')
     return f'<div class="entry-cards">{"".join(cards)}</div>'
+
+
+def _self_translated_badge(block: dict) -> str:
+    """A small "translated by us" badge (see `Feature.self_translated`'s docstring) for a card
+    whose Italian text was hand-translated for this project rather than lifted from the official
+    Italian SRD - only shown while actually browsing in Italian, since the flag says nothing
+    about the English text.
+    """
+    if not block.get("self_translated") or get_language() != "it":
+        return ""
+    return (
+        ' <span class="self-translated-badge" '
+        'title="Testo tradotto per questo progetto, non dalla fonte SRD ufficiale">'
+        "Traduzione non ufficiale</span>"
+    )
 
 
 def render_trait_cards(entries: list) -> SafeString:
@@ -222,7 +238,12 @@ def render_class_features(features) -> SafeString:
     by_level: dict[int, list[dict]] = {}
     for feature in features:
         by_level.setdefault(feature.class_level.level, []).append(
-            {"id": feature.pk, "name": feature.name, "entries": feature.entries}
+            {
+                "id": feature.pk,
+                "name": feature.name,
+                "entries": feature.entries,
+                "self_translated": feature.self_translated,
+            }
         )
     return mark_safe(_render_level_groups(by_level, linker))
 
@@ -249,13 +270,21 @@ def render_subclasses(subclasses) -> SafeString:
             _render_node(subclass.description, linker) if subclass.description else ""
         )
         by_level = {
-            sl.level: [{"name": f.name, "entries": f.entries} for f in sl.feature_rows.all()]
+            sl.level: [
+                {
+                    "name": f.name,
+                    "entries": f.entries,
+                    "self_translated": f.self_translated,
+                }
+                for f in sl.feature_rows.all()
+            ]
             for sl in subclass.levels.all()
         }
         groups_html = _render_level_groups(by_level, linker)
+        subclass_badge = _self_translated_badge({"self_translated": subclass.self_translated})
         blocks.append(
             f'<details class="subclass-block">'
-            f"<summary>{_render_text(subclass.name, linker)}</summary>"
+            f"<summary>{_render_text(subclass.name, linker)}{subclass_badge}</summary>"
             f'<div class="subclass-body">{description_html}{groups_html}</div>'
             f"</details>"
         )

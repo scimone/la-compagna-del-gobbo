@@ -1,13 +1,81 @@
 {
  "aasimar": {
+  "_self": true,
+  "entries": [
+   {
+    "entries": [
+     "Ha {@variantrule Resistance|XPHB|resistenza} ai danni necrotici e ai danni radiosi."
+    ],
+    "name": "Resistenza celeste"
+   },
+   {
+    "entries": [
+     "Ha {@sense Darkvision|XPHB|scurovisione} fino a un raggio di 18 metri."
+    ],
+    "name": "Scurovisione"
+   },
+   {
+    "entries": [
+     "Come azione di {@action Magic|XPHB|Magia}, tocca una creatura e tira un numero di d4 pari al suo bonus di {@variantrule Proficiency|XPHB|competenza}. La creatura recupera un numero di {@variantrule Hit Points|XPHB|punti ferita} pari al totale ottenuto. Una volta utilizzato questo tratto, non può utilizzarlo di nuovo finché non completa un {@variantrule Long Rest|XPHB|riposo lungo}."
+    ],
+    "name": "Mani guaritrici"
+   },
+   {
+    "entries": [
+     "Conosce il trucchetto {@spell Light|XPHB|luce}. Il Carisma è la sua caratteristica da incantatore per questo incantesimo."
+    ],
+    "name": "Portatore di luce"
+   },
+   {
+    "entries": [
+     "Quando raggiunge il 3º livello, può trasformarsi come {@variantrule Bonus Action|XPHB|azione bonus} scegliendo una delle opzioni seguenti (l'opzione va scelta ogni volta che ci si trasforma). La trasformazione dura 1 minuto o finché non la interrompe (nessuna azione richiesta). Dopo essersi trasformato, non può farlo di nuovo finché non completa un {@variantrule Long Rest|XPHB|riposo lungo}.",
+     "Una volta per ogni proprio turno, prima che la trasformazione termini, può infliggere danni extra a un bersaglio quando gli infligge danni con un attacco o un incantesimo. I danni extra sono pari al suo bonus di {@variantrule Proficiency|XPHB|competenza} e sono di tipo necrotico per Sudario necrotico, oppure radioso per Ali celestiali e Radianza interiore.",
+     "Ecco le opzioni di trasformazione:",
+     {
+      "items": [
+       {
+        "entries": [
+         "Due ali spettrali spuntano temporaneamente dalla sua schiena. Finché la trasformazione non termina, è dotato di una {@variantrule Fly Speed|XPHB|velocità di volo} pari alla sua {@variantrule Speed|XPHB|velocità}."
+        ],
+        "name": "Ali celestiali"
+       },
+       {
+        "entries": [
+         "Una luce accecante irradia temporaneamente dai suoi occhi e dalla sua bocca. Per la durata, emana {@variantrule Bright Light|XPHB|luce intensa} in un raggio di 3 metri e {@variantrule Dim Light|XPHB|luce fioca} per ulteriori 3 metri e, al termine di ciascuno dei suoi turni, ogni creatura entro 3 metri da lui subisce danni radiosi pari al suo bonus di {@variantrule Proficiency|XPHB|competenza}."
+        ],
+        "name": "Radianza interiore"
+       },
+       {
+        "entries": [
+         "I suoi occhi diventano per un istante pozze di tenebra e ali senza piume spuntano temporaneamente dalla sua schiena. Le creature diverse dai suoi alleati entro 3 metri da lui devono superare un tiro salvezza su Carisma ({@dc 8} più il suo modificatore di Carisma e il bonus di {@variantrule Proficiency|XPHB|competenza}) oppure diventano {@condition Frightened|XPHB|spaventate} fino alla fine del turno successivo del personaggio."
+        ],
+        "name": "Sudario necrotico"
+       }
+      ]
+     }
+    ],
+    "name": "Rivelazione celeste"
+   }
+  ],
+  "lore": [
+   {
+    "entries": [
+     {
+      "entries": [
+       "Gli aasimar (si pronuncia \"AH-sih-mar\") sono mortali che portano nella propria anima una scintilla dei Piani Superiori. Che discendano da un essere angelico o siano stati infusi di potere celestiale, possono ravvivare quella scintilla per portare luce, guarigione e furia celeste.",
+       "Gli aasimar possono nascere in seno a qualsiasi popolazione di mortali. Assomigliano ai propri genitori, ma vivono fino a 160 anni e presentano tratti che rivelano la loro discendenza celeste, come lentiggini metalliche, occhi luminosi, un'aureola o la colorazione della pelle tipica di un angelo (argentea, verde opalescente o rosso ramato). Questi tratti sono inizialmente sottili e diventano evidenti quando l'aasimar impara a rivelare pienamente la propria natura celeste."
+      ]
+     }
+    ]
+   }
+  ],
+  "name": "Aasimar",
   "short_description": "Mortali toccati dal celeste, con una luce interiore."
  },
  "dragonborn": {
-  "short_description": "Fieri esseri draconici dal soffio elementale.",
-  "name": "Dragonide",
+  "_self": true,
   "entries": [
    {
-    "name": "Discendenza draconica",
     "entries": [
      "Il personaggio discende da un progenitore draconico. Scegli la tipologia dalla tabella Antenati draconici. La tua decisione definisce il tipo soffio e il tratto di {@variantrule Resistance|XPHB|resistenza} ai {@variantrule Damage|XPHB|danni}, ma anche l'aspetto del personaggio.",
      {
@@ -59,78 +127,105 @@
        ]
       ]
      }
-    ]
+    ],
+    "name": "Discendenza draconica"
    },
    {
-    "name": "Soffio",
     "entries": [
      "Quando il personaggio esegue l'azione di {@action Attack|XPHB|Attacco} durante il turno, può sostituire uno dei suoi attacchi con un'esalazione di energia magica in un {@variantrule Cone [Area of Effect]|XPHB|cono} di 4,5 metri o in una {@variantrule Line [Area of Effect]|XPHB|linea} lunga 9 metri e larga 1,5 (puoi scegliere la forma a ogni utilizzo). Ogni creatura nell'area deve effettuare un tiro salvezza su Destrezza ({@dc 8} più il modificatore di Costituzione e il bonus di {@variantrule Proficiency|XPHB|competenza} del personaggio). In caso di fallimento, vengono inflitti {@damage 1d10} danni del tipo determinato dal tratto Discendenza draconica. In caso di successo, subisce soltanto la metà di quei danni. I danni aumentano di {@damage 1d10} quando il personaggio raggiunge il 5º livello ({@damage 2d10}), l'11º livello ({@damage 3d10}) e il 17º livello ({@damage 4d10}).",
      "Il personaggio può utilizzare il Soffio un numero di volte pari al valore del suo bonus di {@variantrule Proficiency|XPHB|competenza} e recuperare tutti gli utilizzi spesi quando completa un {@variantrule Long Rest|XPHB|riposo lungo}."
-    ]
+    ],
+    "name": "Soffio"
    },
    {
-    "name": "Resistenza ai danni",
     "entries": [
      "Il personaggio dispone di {@variantrule Resistance|XPHB|resistenza} ai danni del tipo determinato dal tratto Discendenza draconica."
-    ]
+    ],
+    "name": "Resistenza ai danni"
    },
    {
-    "name": "Scurovisione",
     "entries": [
      "Il personaggio ha {@sense Darkvision|XPHB|scurovisione} fino a un raggio di 18 metri."
-    ]
+    ],
+    "name": "Scurovisione"
    },
    {
-    "name": "Volo draconico",
     "entries": [
      "Quando il personaggio raggiunge il 5º livello, può incanalare dell'energia draconica per volare temporaneamente. Come {@variantrule Bonus Action|XPHB|azione bonus}, può far spuntare delle ali spettrali dalla sua schiena che durano per 10 minuti, fino al momento in cui decide di farle scomparire (nessuna azione richiesta) o finché non diventa {@condition Incapacitated|XPHB|incapacitato}. Durante quel periodo, è dotato di una {@variantrule Fly Speed|XPHB|velocità di volo} pari alla sua {@variantrule Speed|XPHB|velocità}. L'aspetto delle ali varia in base al tipo di energia del Soffio. Dopo aver usato questo tratto, il personaggio non può riutilizzarlo prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}."
+    ],
+    "name": "Volo draconico"
+   }
+  ],
+  "lore": [
+   {
+    "entries": [
+     {
+      "entries": [
+       "Gli antenati dei dragonidi si schiusero dalle uova di draghi cromatici e metallici. Una leggenda narra che quelle uova fossero state benedette dagli dei draconici Bahamut e Tiamat, che desideravano popolare il multiverso di creature create a propria immagine. Un'altra leggenda sostiene che furono i draghi stessi a creare i primi dragonidi, senza la benedizione degli dei. Quale che sia la loro origine, i dragonidi si sono costruiti una casa nel Piano Materiale.",
+       "I dragonidi somigliano a draghi bipedi e privi di ali — squamosi, dagli occhi vividi e dalle ossa robuste, con corna sulla testa — e la loro colorazione e altri tratti fisici richiamano quelli dei loro antenati draconici."
+      ]
+     }
     ]
    }
-  ]
+  ],
+  "name": "Dragonide",
+  "short_description": "Fieri esseri draconici dal soffio elementale."
  },
  "dwarf": {
-  "short_description": "Popolo robusto di montagne e pietra.",
-  "name": "Nano",
+  "_self": true,
   "entries": [
    {
-    "name": "Scurovisione",
     "entries": [
      "Ha {@sense Darkvision|XPHB|scurovisione} fino a un raggio di 36 metri."
-    ]
+    ],
+    "name": "Scurovisione"
    },
    {
-    "name": "Resilienza nanica",
     "entries": [
      "Ha {@variantrule Resistance|XPHB|resistenza} ai danni da veleno. Dispone di {@variantrule Advantage|XPHB|vantaggio} sui tiri salvezza eseguiti per evitare o terminare la condizione {@condition Poisoned|XPHB|avvelenato} su se stesso."
-    ]
+    ],
+    "name": "Resilienza nanica"
    },
    {
-    "name": "Robustezza nanica",
     "entries": [
      "I {@variantrule Hit Points|XPHB|punti ferita} massimi di un nano aumentano di 1 e aumentano di nuovo di 1 ogni volta che acquisisce un livello."
-    ]
+    ],
+    "name": "Robustezza nanica"
    },
    {
-    "name": "Esperto minatore",
     "entries": [
      "Come {@variantrule Bonus Action|XPHB|azione bonus}, il personaggio ottiene {@sense Tremorsense|XPHB|percezione tellurica} con un raggio di 18 metri per 10 minuti. Per poterla utilizzare, deve trovarsi su una superficie di pietra o toccarla. La pietra deve essere naturale o lavorata.",
      "Il personaggio può utilizzare questa {@variantrule Bonus Action|XPHB|azione bonus} un numero di volte pari al valore del suo bonus di {@variantrule Proficiency|XPHB|competenza}, recuperando tutti gli utilizzi spesi quando completa un {@variantrule Long Rest|XPHB|riposo lungo}."
+    ],
+    "name": "Esperto minatore"
+   }
+  ],
+  "lore": [
+   {
+    "entries": [
+     {
+      "entries": [
+       "Nei giorni antichi, i nani furono tratti dalla terra da una divinità della forgia. Conosciuta con nomi diversi a seconda del mondo — Moradin, Reorx e altri ancora — quella divinità donò ai nani un'affinità con la pietra e il metallo, oltre all'attitudine a vivere sottoterra. La stessa divinità li rese anche resistenti come le montagne, con una durata di vita di circa 350 anni.",
+       "Tozzi e spesso barbuti, i nani delle origini scavarono città e roccaforti nei fianchi delle montagne e nelle profondità della terra. Le loro leggende più antiche narrano di conflitti con i mostri delle vette montane e dell'Underdark, che si trattasse di giganti imponenti o di orrori sotterranei. Ispirati da quei racconti, i nani di ogni cultura cantano spesso imprese valorose — specialmente quelle in cui i piccoli hanno la meglio sui potenti.",
+       "Su alcuni mondi del multiverso, i primi insediamenti dei nani sorsero tra le colline o le montagne, e le famiglie che fanno risalire la propria discendenza a quegli insediamenti si definiscono, rispettivamente, nani delle colline o nani delle montagne. Le ambientazioni di Greyhawk e Dragonlance ospitano comunità di questo tipo."
+      ]
+     }
     ]
    }
-  ]
+  ],
+  "name": "Nano",
+  "short_description": "Popolo robusto di montagne e pietra."
  },
  "elf": {
-  "short_description": "Aggraziati, longevi e in sintonia con la magia.",
-  "name": "Elfo",
+  "_self": true,
   "entries": [
    {
-    "name": "Scurovisione",
     "entries": [
      "Il personaggio ha {@sense Darkvision|XPHB|scurovisione} fino a un raggio di 18 metri."
-    ]
+    ],
+    "name": "Scurovisione"
    },
    {
-    "name": "Lignaggio elfico",
     "entries": [
      "Come parte di un lignaggio, è dotato di abilità soprannaturali. Scegli un lignaggio dalla tabella Lignaggi elfici. Il personaggio otterrà il beneficio di 1º livello di quel determinato lignaggio.",
      "Quando raggiunge i livelli 3 e 5, apprenderà un incantesimo di livello superiore, come mostrato nella tabella. Tale incantesimo è sempre considerato come preparato. Può lanciarlo una volta senza consumare uno slot incantesimo e ne recupera l'utilizzo in questo modo dopo aver completato un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciarlo usando gli slot incantesimo a sua disposizione del livello appropriato.",
@@ -164,181 +259,312 @@
        ]
       ]
      }
-    ]
+    ],
+    "name": "Lignaggio elfico"
    },
    {
-    "name": "Retaggio fatato",
     "entries": [
      "Dispone di {@variantrule Advantage|XPHB|vantaggio} ai tiri salvezza eseguiti per evitare o terminare la condizione {@condition Charmed|XPHB|affascinato} su se stesso."
-    ]
+    ],
+    "name": "Retaggio fatato"
    },
    {
-    "name": "Sensi acuti",
     "entries": [
      "Ha competenza nelle abilità {@skill Insight|XPHB|Intuizione}, {@skill Perception|XPHB|Percezione} o {@skill Survival|XPHB|Sopravvivenza}."
-    ]
+    ],
+    "name": "Sensi acuti"
    },
    {
-    "name": "Trance",
     "entries": [
      "Non ha bisogno di dormire e la magia non può farlo addormentare. Può completare un {@variantrule Long Rest|XPHB|riposo lungo} in 4 ore rimanendo in uno stato di trance meditativa, durante il quale resta cosciente."
+    ],
+    "name": "Trance"
+   }
+  ],
+  "lore": [
+   {
+    "entries": [
+     "Creati dal dio Corellon, i primi elfi potevano mutare forma a piacimento. Persero questa capacità quando Corellon li maledisse per aver complottato con la divinità Lolth, che tentò senza successo di usurpare il dominio di Corellon. Quando Lolth fu scaraventata nell'Abisso, la maggior parte degli elfi la ripudiò e ottenne il perdono di Corellon, ma ciò che Corellon aveva loro tolto andò perduto per sempre.",
+     "Non più capaci di mutare forma a piacimento, gli elfi si ritirarono nel Feywild, dove la loro tristezza fu approfondita dall'influenza di quel piano. Col tempo, la curiosità spinse molti di loro a esplorare altri piani di esistenza, compresi i mondi del Piano Materiale.",
+     "Gli elfi hanno orecchie a punta e non hanno peli sul viso né sul corpo. Vivono per circa 750 anni e non dormono: quando hanno bisogno di riposare, entrano invece in trance. In quello stato, restano consapevoli di ciò che li circonda mentre si immergono in ricordi e meditazioni.",
+     "Un ambiente trasforma sottilmente gli elfi che lo abitano per un millennio o più, conferendo loro particolari forme di magia. I drow, gli elfi alti e gli elfi dei boschi sono esempi di elfi trasformati in questo modo.",
+     {
+      "entries": [
+       "I drow vivono tipicamente nell'Underdark e ne sono stati plasmati. Alcuni individui e società drow evitano del tutto l'Underdark, pur conservandone la magia. Nell'ambientazione di Eberron, per esempio, i drow abitano foreste pluviali e rovine ciclopiche sul continente di Xen'drik."
+      ],
+      "name": "Drow"
+     },
+     {
+      "entries": [
+       "Gli elfi alti sono stati infusi della magia dei punti di passaggio tra il Feywild e il Piano Materiale. Su alcuni mondi, gli elfi alti si chiamano tra loro con nomi diversi. Per esempio, nell'ambientazione dei Forgotten Realms si definiscono elfi del sole o della luna, in quella di Dragonlance Silvanesti e Qualinesti, e in quella di Eberron Aereni."
+      ],
+      "name": "Elfi alti"
+     },
+     {
+      "entries": [
+       "Gli elfi dei boschi portano dentro di sé la magia delle foreste primordiali. Sono conosciuti con molti altri nomi, tra cui elfi selvaggi, elfi verdi ed elfi della foresta. I Grugach sono elfi dei boschi solitari dell'ambientazione di Greyhawk, mentre i Kagonesti e i Tairnadal sono elfi dei boschi, rispettivamente, delle ambientazioni di Dragonlance ed Eberron."
+      ],
+      "name": "Elfi dei boschi"
+     }
     ]
    }
-  ]
+  ],
+  "name": "Elfo",
+  "short_description": "Aggraziati, longevi e in sintonia con la magia."
  },
  "gnome": {
-  "short_description": "Piccoli e ingegnosi, pieni di curiosità.",
-  "name": "Gnomo",
+  "_self": true,
   "entries": [
    {
-    "name": "Scurovisione",
     "entries": [
      "Il personaggio ha {@sense Darkvision|XPHB|scurovisione} fino a un raggio di 18 metri."
-    ]
+    ],
+    "name": "Scurovisione"
    },
    {
-    "name": "Astuzia gnomesca",
     "entries": [
      "Dispone di {@variantrule Advantage|XPHB|vantaggio} a i tiri salvezza su Intelligenza, Saggezza e Carisma."
-    ]
+    ],
+    "name": "Astuzia gnomesca"
    },
    {
-    "name": "Lignaggio gnomesco",
     "entries": [
      "Come parte di un lignaggio, è dotato di abilità soprannaturali. Scegli una delle opzioni seguenti. A prescindere da quella selezionata, la caratteristica da incantatore del personaggio può essere Intelligenza, Saggezza o Carisma per gli incantesimi lanciati con questo tratto (decidi l'abilità quando scegli il lignaggio):",
      {
       "items": [
        {
-        "name": "Gnomo delle foreste",
         "entries": [
          "Il personaggio conosce il trucchetto illusione minore. Inoltre, l'incantesimo parlare con gli animali è sempre considerato come preparato. Può lanciarlo senza consumare uno slot incantesimo un numero di volte pari al suo bonus di {@variantrule Proficiency|XPHB|competenza} e riacquista tutti gli usi spesi al termine di un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciare l'incantesimo usando uno qualsiasi degli slot incantesimo a sua disposizione."
-        ]
+        ],
+        "name": "Gnomo delle foreste"
        },
        {
-        "name": "Gnomo delle rocce",
         "entries": [
          "Conosce i trucchetti riparare e prestidigitazione. Inoltre, può impiegare 10 minuti di lancio di prestidigitazione per creare un piccolo dispositivo meccanico (CA 5, 1 PF), come un giocattolo, un accendifuoco o un carillon. Una volta creato, puoi determinare il"
-        ]
+        ],
+        "name": "Gnomo delle rocce"
        }
+      ]
+     }
+    ],
+    "name": "Lignaggio gnomesco"
+   }
+  ],
+  "lore": [
+   {
+    "entries": [
+     {
+      "entries": [
+       "Gli gnomi sono un popolo magico creato dagli dei dell'invenzione, delle illusioni e della vita sotterranea. I primi gnomi erano raramente visti dalle altre genti, per via della loro natura riservata e della propensione a vivere nelle foreste e nelle tane. Ciò che mancava loro in statura, lo compensavano con l'astuzia. Confondevano i predatori con trappole e cunicoli labirintici. Impararono inoltre la magia da divinità come Garl Glittergold, Baervan Wildwanderer e Baravar Cloakshadow, che li visitavano sotto mentite spoglie. Quella magia diede infine origine ai lignaggi degli gnomi delle foreste e degli gnomi delle rocce.",
+       "Gli gnomi sono un popolo minuto, con grandi occhi e orecchie a punta, che vive circa 425 anni. A molti gnomi piace sentire un tetto sopra la testa, anche se quel \"tetto\" non è altro che un cappello."
       ]
      }
     ]
    }
-  ]
+  ],
+  "name": "Gnomo",
+  "short_description": "Piccoli e ingegnosi, pieni di curiosità."
  },
  "goliath": {
-  "short_description": "Giganteschi abitanti di aspre vette montane.",
-  "name": "Goliath",
+  "_self": true,
   "entries": [
    null,
    {
-    "name": "Forma Grande",
     "entries": [
      "A partire dal 5º livello, come {@variantrule Bonus Action|XPHB|azione bonus} può diventare di taglia Grande se si trova in uno spazio abbastanza ampio. La trasformazione dura per 10 minuti o finché non la interrompe (nessuna azione richiesta). Per tutta la sua durata, ottiene {@variantrule Advantage|XPHB|vantaggio} alle prove di Forza e la sua {@variantrule Speed|XPHB|velocità} aumenta di 3 metri. Dopo aver usato questo tratto, il personaggio non può riutilizzarlo prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}."
-    ]
+    ],
+    "name": "Forma Grande"
    },
    {
-    "name": "Costituzione robusta",
     "entries": [
      "Ha {@variantrule Advantage|XPHB|vantaggio} a qualsiasi prova di caratteristica effettuata per non essere {@condition Grappled|XPHB|afferrato}. Inoltre, la capacità di trasporto del personaggio è quella di una taglia superiore."
+    ],
+    "name": "Costituzione robusta"
+   }
+  ],
+  "lore": [
+   {
+    "entries": [
+     {
+      "entries": [
+       "Alti ben più della maggior parte delle genti, i goliath sono discendenti lontani dei giganti. Ogni goliath porta in sé i favori dei primi giganti — favori che si manifestano in vari doni soprannaturali, inclusa la capacità di crescere rapidamente e avvicinarsi temporaneamente alla statura dei loro giganteschi parenti.",
+       "I goliath presentano caratteristiche fisiche che richiamano i giganti della propria stirpe. Per esempio, alcuni goliath somigliano a giganti delle pietre, mentre altri assomigliano a giganti del fuoco. Quali che siano i giganti a loro imparentati, i goliath si sono forgiati un proprio cammino nel multiverso — liberi dai conflitti intestini che hanno devastato la stirpe dei giganti per ere intere — e cercano di raggiungere vette superiori a quelle toccate dai loro antenati."
+      ]
+     }
     ]
    }
-  ]
+  ],
+  "name": "Goliath",
+  "short_description": "Giganteschi abitanti di aspre vette montane."
  },
  "grung": {
+  "_self": true,
+  "entries": [
+   {
+    "entries": [
+     "Può respirare sia in aria che in acqua. Il suo corpo è naturalmente adattato alla vita dentro e intorno all'acqua."
+    ],
+    "name": "Anfibio"
+   },
+   {
+    "entries": [
+     "Mentre nuota, può muoversi alla sua normale velocità di movimento a piedi. Le sue potenti zampe palmate gli permettono di muoversi in acqua con estrema facilità."
+    ],
+    "name": "Istinto natatorio"
+   },
+   {
+    "entries": [
+     "La sua capacità di salto naturale è eccezionale. Il suo salto in lungo, da fermo o con rincorsa, può coprire un numero di metri pari al suo punteggio di Forza. Anche il suo salto in alto può raggiungere un'altezza in metri pari al suo punteggio di Forza."
+    ],
+    "name": "Balzo da rana saltatrice"
+   }
+  ],
+  "lore": [
+   {
+    "entries": [
+     {
+      "entries": [
+       "I grung sono umanoidi ranocchia-simili, allegri e curiosi, che abitano fiumi, stagni e foreste pluviali delle zone tropicali. A differenza dei grung territoriali e bellicosi di un tempo, i grung di oggi sono noti per la loro ospitalità, la loro giocosità e un forte senso di comunità. Costruiscono spesso le proprie dimore attorno a stagni e corsi d'acqua, dove si riuniscono per raccontare storie, condividere il cibo e festeggiare con musica e coloratissime feste.",
+       "La società dei grung valorizza la cooperazione piuttosto che la gerarchia. Ogni individuo è incoraggiato a perseguire il ruolo più adatto ai propri talenti, che si tratti di cacciatori, artigiani, esploratori, cantastorie o guardiani delle proprie comunità. La loro pelle colorata è fonte di orgoglio e di espressione personale, non un segno di status sociale.",
+       "I grung sono naturalmente affascinati dal resto del mondo e diventano spesso viaggiatori entusiasti. Provano un affetto particolare per le altre genti, che considerano potenziali amici e fonti di nuove storie, usanze e giochi. Sebbene di statura ridotta, i grung sono energici e straordinariamente atletici, a proprio agio tanto ad arrampicarsi nella giungla fitta quanto a nuotare in fiumi impetuosi."
+      ]
+     }
+    ]
+   }
+  ],
+  "name": "Grung",
   "short_description": "Allegri uomini-rana a proprio agio in acqua e nella giungla."
  },
  "halfling": {
-  "short_description": "Piccoli e agili, noti per fortuna e allegria.",
-  "name": "Halfling",
+  "_self": true,
   "entries": [
    {
-    "name": "Coraggioso",
     "entries": [
      "Dispone di {@variantrule Advantage|XPHB|vantaggio} ai tiri salvezza eseguiti per evitare o terminare la condizione {@condition Frightened|XPHB|spaventato} su se stesso."
-    ]
+    ],
+    "name": "Coraggioso"
    },
    {
-    "name": "Agilità halfling",
     "entries": [
      "Può attraversare lo spazio occupato da qualsiasi creatura più grande di lui, ma non può soffermarcisi."
-    ]
+    ],
+    "name": "Agilità halfling"
    },
    {
-    "name": "Fortuna",
     "entries": [
      "Quando effettui una prova con {@dice d20} e ottieni 1, puoi ritirare il dado e devi utilizzare il nuovo risultato."
-    ]
+    ],
+    "name": "Fortuna"
    },
    {
-    "name": "Furtività innata",
     "entries": [
      "Può effettuare l'azione di {@action Hide|XPHB|Nascondersi} anche se è oscurato solo da una singola creatura, purché questa sia più grande di lui di almeno una taglia."
+    ],
+    "name": "Furtività innata"
+   }
+  ],
+  "lore": [
+   {
+    "entries": [
+     {
+      "entries": [
+       "Amati e guidati da divinità che tengono in gran conto la vita, la casa e il focolare, gli halfling gravitano verso rifugi bucolici, dove la famiglia e la comunità contribuiscono a plasmare le loro vite. Ciò detto, molti halfling possiedono uno spirito coraggioso e avventuroso che li spinge in viaggi alla scoperta del mondo, offrendo loro l'occasione di esplorare un mondo più grande e fare nuove amicizie lungo il cammino. La loro statura — simile a quella di un bambino umano — li aiuta a passare inosservati tra la folla e a infilarsi in spazi angusti.",
+       "Chiunque abbia trascorso del tempo in compagnia di halfling, in particolare avventurieri halfling, ha probabilmente assistito alla celebre \"fortuna degli halfling\" in azione. Quando un halfling si trova in pericolo di vita, una forza invisibile sembra intervenire in suo favore. Molti halfling credono nel potere della fortuna e attribuiscono questo dono insolito a una o più delle loro divinità benevole, tra cui Yondalla, Brandobaris e Charmalaine. Lo stesso dono potrebbe contribuire alla loro robusta durata di vita (circa 150 anni).",
+       "Le comunità halfling si presentano nelle forme più varie. Per ogni contea appartata nascosta in un angolo incontaminato del mondo, esiste una gilda criminale come il Clan Boromar nell'ambientazione di Eberron, oppure un branco territoriale di halfling come quelli dell'ambientazione di Dark Sun.",
+       "Gli halfling che preferiscono vivere sottoterra sono talvolta chiamati halfling cuorforte o robusti. Gli halfling nomadi, così come quelli che vivono tra umani e altre genti alte, sono talvolta chiamati halfling piededileggero o compagni alti."
+      ]
+     }
     ]
    }
-  ]
+  ],
+  "name": "Halfling",
+  "short_description": "Piccoli e agili, noti per fortuna e allegria."
  },
  "human": {
-  "short_description": "Adattabili, ambiziosi e infinitamente vari.",
-  "name": "Umano",
+  "_self": true,
   "entries": [
    {
-    "name": "Intraprendente",
     "entries": [
      "Ottiene {@variantrule Heroic Inspiration|XPHB|Ispirazione eroica} ogni volta che completa un {@variantrule Long Rest|XPHB|riposo lungo}."
-    ]
+    ],
+    "name": "Intraprendente"
    },
    {
-    "name": "Pluriabilità",
     "entries": [
      "Acquisisce competenza in un'abilità a sua scelta."
-    ]
+    ],
+    "name": "Pluriabilità"
    },
    {
-    "name": "Versatile",
     "entries": [
      "Ottiene un talento Origini a sua scelta (vedi capitolo \"Talenti\"). È consigliato il talento Abile."
+    ],
+    "name": "Versatile"
+   }
+  ],
+  "lore": [
+   {
+    "entries": [
+     {
+      "entries": [
+       "Presenti in tutto il multiverso, gli umani sono tanto vari quanto numerosi e si sforzano di ottenere il più possibile negli anni che gli sono concessi. La loro ambizione e intraprendenza sono lodate, rispettate e temute su molti mondi.",
+       "Gli umani sono variegati nell'aspetto quanto le genti della Terra e venerano molte divinità. Gli studiosi dibattono sull'origine dell'umanità, ma si narra che uno dei primi raduni umani conosciuti sia avvenuto a Sigil, la città a forma di toro al centro del multiverso, dove nacque la lingua comune. Da lì, gli umani potrebbero essersi diffusi in ogni angolo del multiverso, portando con sé il cosmopolitismo della Città delle Porte."
+      ]
+     }
     ]
    }
-  ]
+  ],
+  "name": "Umano",
+  "short_description": "Adattabili, ambiziosi e infinitamente vari."
  },
  "orc": {
-  "short_description": "Popolo forte e tenace, di feroce resistenza.",
-  "name": "Orco",
+  "_self": true,
   "entries": [
    {
-    "name": "Scarica di adrenalina",
     "entries": [
      "L'orco può utilizzare l'azione di {@action Dash|XPHB|Scatto} come {@variantrule Bonus Action|XPHB|azione bonus}. Ogni volta che lo fa, ottiene un numero di {@variantrule Temporary Hit Points|XPHB|punti ferita temporanei} pari al suo bonus di {@variantrule Proficiency|XPHB|competenza}.",
      "Il personaggio può usare questo tratto un numero di volte pari al valore del suo bonus di {@variantrule Proficiency|XPHB|competenza} e recupera tutti gli utilizzi spesi quando completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}."
-    ]
+    ],
+    "name": "Scarica di adrenalina"
    },
    {
-    "name": "Scurovisione",
     "entries": [
      "Ha {@sense Darkvision|XPHB|scurovisione} fino a un raggio di 36 metri."
-    ]
+    ],
+    "name": "Scurovisione"
    },
    {
-    "name": "Resistenza implacabile",
     "entries": [
      "Quando scende a 0 {@variantrule Hit Points|XPHB|punti ferita} ma non viene ucciso sul colpo, può decidere di rimanere a 1 punto ferita. Dopo averlo usato, non può riutilizzare questo tratto prima di aver completato un {@variantrule Long Rest|XPHB|riposo lungo}."
+    ],
+    "name": "Resistenza implacabile"
+   }
+  ],
+  "lore": [
+   {
+    "entries": [
+     {
+      "entries": [
+       "Gli orchi fanno risalire la propria creazione a Gruumsh, un potente dio che vagava per gli ampi spazi aperti del Piano Materiale. Gruumsh dotò i suoi figli di doni per aiutarli a percorrere grandi pianure, vaste caverne e mari in tempesta, e ad affrontare i mostri che vi si annidano. Anche quando rivolgono la propria devozione ad altre divinità, gli orchi conservano i doni di Gruumsh: resistenza, determinazione e la capacità di vedere nel buio.",
+       "Gli orchi sono, in media, alti e robusti. Hanno la pelle grigia, orecchie appuntite e canini inferiori prominenti che ricordano piccole zanne. Su alcuni mondi, ai giovani orchi vengono narrati i grandi viaggi e le fatiche dei loro antenati. Ispirati da quei racconti, molti di questi orchi si chiedono quando Gruumsh li chiamerà a eguagliare le imprese eroiche di un tempo, e se si dimostreranno degni del suo favore. Altri orchi sono ben lieti di lasciarsi alle spalle i vecchi racconti e trovare la propria strada."
+      ]
+     }
     ]
    }
-  ]
+  ],
+  "name": "Orco",
+  "short_description": "Popolo forte e tenace, di feroce resistenza."
  },
  "tiefling": {
-  "short_description": "Mortali segnati da un retaggio infernale.",
-  "name": "Tiefling",
+  "_self": true,
   "entries": [
    {
-    "name": "Scurovisione",
     "entries": [
      "Ha {@sense Darkvision|XPHB|scurovisione} fino a un raggio di 18 metri."
-    ]
+    ],
+    "name": "Scurovisione"
    },
    {
-    "name": "Retaggio immondo",
     "entries": [
      "Grazie alla sua discendenza è dotato di abilità soprannaturali. Scegli un retaggio dalla tabella Retaggi immondi. Dopodiché, il personaggio otterrà il beneficio di 1º livello del retaggio selezionato.",
      "Quando raggiunge i livelli 3 e 5, apprenderà un incantesimo di livello superiore, come mostrato nella tabella. Tale incantesimo è sempre considerato come preparato. Può lanciarlo una volta senza consumare uno slot incantesimo e ne recupera l'utilizzo in questo modo dopo aver completato un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciarlo usando gli slot incantesimo a sua disposizione del livello appropriato. La caratteristica da incantatore del personaggio può essere Intelligenza, Saggezza o Carisma per gli incantesimi lanciati con questo tratto (decidi l'abilità quando scegli il retaggio).",
@@ -371,14 +597,43 @@
        ]
       ]
      }
-    ]
+    ],
+    "name": "Retaggio immondo"
    },
    {
-    "name": "Presenza ultraterrena",
     "entries": [
      "Conosce il trucchetto taumaturgia. Quando lo lancia sfruttando questo tratto, l'incantesimo utilizza la stessa caratteristica da incantatore del tratto Retaggio immondo."
+    ],
+    "name": "Presenza ultraterrena"
+   }
+  ],
+  "lore": [
+   {
+    "entries": [
+     "I tiefling nascono nei Piani Inferiori oppure hanno antenati infernali originari di quei piani. Un tiefling (si pronuncia \"TEE-fling\") è legato per sangue a un diavolo, un demone o qualche altro Immondo. Questo legame con i Piani Inferiori costituisce il retaggio immondo del tiefling, che porta con sé la promessa del potere ma non ha alcun effetto sulla sua indole morale.",
+     "Ogni tiefling sceglie se abbracciare o rimpiangere il proprio retaggio immondo. I tre retaggi sono descritti di seguito.",
+     {
+      "entries": [
+       "L'entropia dell'Abisso, il caos di Pandemonium e la disperazione di Carceri chiamano a sé i tiefling che possiedono il retaggio abissale. Corna, pelliccia, zanne e odori peculiari sono tratti fisici comuni di questi tiefling, la maggior parte dei quali ha sangue di demone che scorre nelle vene."
+      ],
+      "name": "Abissale"
+     },
+     {
+      "entries": [
+       "I tiefling che possiedono il retaggio ctonio avvertono non solo il richiamo di Carceri, ma anche l'avidità di Gehenna e la cupezza di Ade. Alcuni di questi tiefling hanno un aspetto cadaverico. Altri possiedono la bellezza ultraterrena di una succuba, oppure condividono tratti fisici con una strega della notte, uno yugoloth o qualche altro antenato immondo Neutrale Malvagio."
+      ],
+      "name": "Ctonio"
+     },
+     {
+      "entries": [
+       "Il retaggio infernale collega i tiefling non solo a Gehenna, ma anche ai Nove Inferi e ai campi di battaglia infuocati di Acheronte. Corna, spine dorsali, code, occhi dorati e un lieve odore di zolfo o di fumo sono tratti fisici comuni di questi tiefling, la maggior parte dei quali fa risalire le proprie origini ai diavoli."
+      ],
+      "name": "Infernale"
+     }
     ]
    }
-  ]
+  ],
+  "name": "Tiefling",
+  "short_description": "Mortali segnati da un retaggio infernale."
  }
 }

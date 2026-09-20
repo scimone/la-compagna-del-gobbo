@@ -8,6 +8,7 @@ class Sense(models.Model):
     name = models.CharField(max_length=200)
     page = models.PositiveSmallIntegerField()
     srd = models.BooleanField(default=False)
+    self_translated = models.BooleanField(default=False)
     entries = models.JSONField(default=list, blank=True)
 
     class Meta:

@@ -1,42 +1,46 @@
 {
  "acid": {
-  "name": "Acido",
   "entries": [
    "Quando il personaggio effettua un'azione di {@action Attack|XPHB|Attacco}, puoi sostituire uno dei suoi attacchi con il lancio di una fiala di acido. Può prendere di mira una creatura o un oggetto che egli è in grado di vedere entro 6 metri da sé. Il bersaglio deve superare un tiro salvezza su Destrezza ({@dc 8} più il modificatore di Destrezza e il bonus di {@variantrule Proficiency|XPHB|competenza} del personaggio), altrimenti subirà {@damage 2d6} danni da acido."
-  ]
+  ],
+  "name": "Acido"
+ },
+ "airship": {
+  "_self": true,
+  "name": "Nave volante"
  },
  "alchemists-fire": {
-  "name": "Fuoco dell'alchimista",
   "entries": [
    "Quando il personaggio effettua un'azione di {@action Attack|XPHB|Attacco}, puoi sostituire uno dei suoi attacchi con il lancio di una ampolla di fuoco dell'alchimista. Può prendere di mira una creatura o un oggetto che egli è in grado di vedere entro 6 metri da sé. Il bersaglio deve superare un tiro salvezza su Destrezza ({@dc 8} più il modificatore di Destrezza e il bonus di {@variantrule Proficiency|XPHB|competenza} del"
-  ]
+  ],
+  "name": "Fuoco dell'alchimista"
  },
  "alchemists-supplies": {
-  "name": "Scorte da alchimista",
   "entries": [
    {
     "items": [
      {
-      "name": "Caratteristica:",
       "entries": [
        "Intelligenza"
-      ]
+      ],
+      "name": "Caratteristica:"
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "identificare una sostanza ({@dc 15}) o appiccare il fuoco ({@dc 15})"
-      ]
+      ],
+      "name": "Utilizzo:"
      },
      {
-      "name": "Creazione:",
       "entries": [
        "{@item Acid|XPHB|acido}, {@item Alchemist's Fire|XPHB|fuoco dell'alchimista}, {@item Component Pouch|XPHB|borsa per componenti}, {@item Oil|XPHB|olio}, {@item Paper|XPHB|carta}, {@item Perfume|XPHB|profumo}"
-      ]
+      ],
+      "name": "Creazione:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Scorte da alchimista"
  },
  "ale-mug": {
   "name": "Birra (boccale)"
@@ -45,10 +49,10 @@
   "name": "Amuleto"
  },
  "antitoxin": {
-  "name": "Antitossina",
   "entries": [
    "Come {@variantrule Bonus Action|XPHB|azione bonus}, per evitare di essere {@condition Poisoned|XPHB|avvelenato} o interrompere tale condizione, il personaggio può bere una fiala di antitossina per ottenere {@variantrule Advantage|XPHB|vantaggio} ai relativi tiri salvezza."
-  ]
+  ],
+  "name": "Antitossina"
  },
  "arrow": {
   "name": "Freccia"
@@ -57,64 +61,64 @@
   "name": "Frecce (20)"
  },
  "backpack": {
-  "name": "Zaino",
   "entries": [
    "Uno zaino può contenere fino a 15 chilogrammi all'interno di un cubo con spigolo di 30 centimetri. Può fungere anche da bisaccia."
-  ]
+  ],
+  "name": "Zaino"
  },
  "bagpipes": {
   "name": "Cornamusa"
  },
  "ball-bearings": {
-  "name": "Sfere metalliche",
   "entries": [
    "Con un'azione di {@action Utilize|XPHB|Utilizzo}, il personaggio può far cadere delle sfere metalliche dalla sua borsa. Queste si diffonderanno per coprire una superficie piana di 3 metri quadrati entro 3 metri da sé. Chiunque entri in quest'area per la prima volta in un turno deve superare un tiro salvezza su Destrezza con {@dc 10}, altrimenti cadrà {@condition Prone|XPHB|prono}. Per recuperare le sfere metalliche sono necessari 10 minuti."
-  ]
+  ],
+  "name": "Sfere metalliche"
  },
  "barrel": {
-  "name": "Barile",
   "entries": [
    "Un barile può contenere fino a 16 litri di liquido o 4 cubi con spigolo di 30 centimetri di merci essiccate."
-  ]
+  ],
+  "name": "Barile"
  },
  "basic-poison": {
-  "name": "Veleno base",
   "entries": [
    "Come {@variantrule Bonus Action|XPHB|azione bonus}, il personaggio può cospargere un'arma o fino a tre munizioni col contenuto di una fiala di veleno base. Una creatura che subisce danni perforanti o taglienti da armi o munizioni avvelenate subisce {@damage 1d4} danni da veleno extra. Una volta applicato, il veleno preserva le sue proprietà per 1 minuto o finché non vengono inflitti dei danni, a seconda dell'opzione che si verifica per prima."
-  ]
+  ],
+  "name": "Veleno base"
  },
  "basket": {
-  "name": "Cesto",
   "entries": [
    "Un cesto può contenere fino a 20 chilogrammi entro 2 cubi con spigolo di 30 centimetri."
-  ]
+  ],
+  "name": "Cesto"
  },
  "battleaxe": {
   "name": "Ascia da battaglia"
  },
  "bedroll": {
-  "name": "Giaciglio",
   "entries": [
    "Su un giaciglio può dormire una creatura di taglia Piccola o Media. Finché il personaggio si trova in un giaciglio, supera automaticamente i tiri salvezza contro il {@hazard extreme cold|XDMG|freddo estremo} (vedi \"Strumenti per le modalità di gioco\")."
-  ]
+  ],
+  "name": "Giaciglio"
  },
  "bell": {
-  "name": "Campana",
   "entries": [
    "Come azione di {@action Utilize|XPHB|Utilizzo}, la campana può essere suonata affinché produca un suono udibile fino a 18 metri di distanza."
-  ]
+  ],
+  "name": "Campana"
  },
  "blanket": {
-  "name": "Coperta",
   "entries": [
    "Finché il personaggio è avvolto dalla coperta, dispone di {@variantrule Advantage|XPHB|vantaggio} ai tiri salvezza contro il {@hazard extreme cold|XDMG|freddo estremo} (vedi \"Strumenti per le modalità di gioco\")."
-  ]
+  ],
+  "name": "Coperta"
  },
  "block-and-tackle": {
-  "name": "Carrucola e paranco",
   "entries": [
    "{@item Block and Tackle|XPHB|Carrucola e paranco} consentono al personaggio di sollevare fino a quattro volte il peso massimo che solleverebbe normalmente."
-  ]
+  ],
+  "name": "Carrucola e paranco"
  },
  "blowgun": {
   "name": "Cerbottana"
@@ -126,10 +130,10 @@
   "name": "Quadrelli (20)"
  },
  "book": {
-  "name": "Libro",
   "entries": [
    "I libri possono contenere sia opere di finzione che di carattere divulgativo. Se il personaggio ne consulta uno che tratta di un determinato argomento, ottiene un bonus di +5 alle prove di Intelligenza ({@skill Arcana|XPHB|Arcano}, {@skill History|XPHB|Storia}, {@skill Nature|XPHB|Natura} o {@skill Religion|XPHB|Religione}) eseguite su tale argomento."
-  ]
+  ],
+  "name": "Libro"
  },
  "bread-loaf": {
   "name": "Pagnotta"
@@ -138,91 +142,90 @@
   "name": "Corazza di piastre"
  },
  "brewers-supplies": {
-  "name": "Scorte da birraio",
   "entries": [
    {
     "items": [
      {
-      "name": "Caratteristica:",
       "entries": [
        "Intelligenza"
-      ]
+      ],
+      "name": "Caratteristica:"
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "individuare una bevanda avvelenata ({@dc 15}) o identificare alcolici ({@dc 10})"
-      ]
+      ],
+      "name": "Utilizzo:"
      },
      {
-      "name": "Creazione:",
       "entries": [
        "{@item Antitoxin|XPHB|antitossina}"
-      ]
+      ],
+      "name": "Creazione:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Scorte da birraio"
  },
  "bucket": {
-  "name": "Secchio",
   "entries": [
    "Un secchio ha una capacità di 14 litri."
-  ]
+  ],
+  "name": "Secchio"
  },
  "bullseye-lantern": {
   "name": "Lanterna a lente sporgente"
  },
  "burglars-pack": {
-  "name": "Dotazione da scassinatore",
   "entries": [
    "Una dotazione da scassinatore comprende i seguenti oggetti: {@item Backpack|XPHB|zaino}, {@item Ball Bearings|XPHB|sfere metalliche}, {@item Bell|XPHB|campana}, 10 {@item Candle|XPHB|candele}, {@item Crowbar|XPHB|piede di porco}, {@item Hooded Lantern|XPHB|lanterna schermabile}, 7 ampolle di {@item Oil|XPHB|olio}, 5 {@item Rations|XPHB|razioni} giornaliere, {@item Rope|XPHB|corda}, {@item Tinderbox|XPHB|acciarino con pietra focaia} e un {@item Waterskin|XPHB|otre}."
-  ]
+  ],
+  "name": "Dotazione da scassinatore"
  },
  "calligraphers-supplies": {
-  "name": "Scorte da calligrafo",
   "entries": [
    {
     "items": [
      {
-      "name": "Caratteristica:",
       "entries": [
        "Destrezza"
-      ]
+      ],
+      "name": "Caratteristica:"
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "scrivere testi usando una calligrafia articolata per impedirne la riproduzione ({@dc 15})"
-      ]
+      ],
+      "name": "Utilizzo:"
      },
      {
-      "name": "Creazione:",
       "entries": [
        "{@item Ink|XPHB|inchiostro}, {@item Spell Scroll|XDMG|pergamena magica}"
-      ]
+      ],
+      "name": "Creazione:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Scorte da calligrafo"
  },
  "caltrops": {
-  "name": "Triboli",
   "entries": [
    "Come azione di {@action Utilize|XPHB|Utilizzo}, il personaggio può spargere triboli dalla sua borsa per coprire una superficie di 1,5 metri quadrati entro 1,5 metri da sé. Chiunque entri in quest'area per la prima volta in un turno deve superare un tiro salvezza su Destrezza con {@dc 15}, altrimenti subirà 1 danno perforante e la sua {@variantrule Speed|XPHB|velocità} sarà ridotta a 0 fino all'inizio del proprio turno successivo. Per recuperare i triboli sono necessari 10 minuti."
-  ]
+  ],
+  "name": "Triboli"
  },
  "camel": {
   "name": "Cammello"
  },
  "candle": {
-  "name": "Candela",
   "entries": [
    "Per 1 ora, una candela accesa proietta {@variantrule Bright Light|XPHB|luce intensa} entro un raggio di 1,5 metri e {@variantrule Dim Light|XPHB|luce fioca} per altri 1,5 metri."
-  ]
+  ],
+  "name": "Candela"
  },
  "carpenters-tools": {
-  "name": "Strumenti da falegname",
   "entries": [
    {
     "items": [
@@ -232,20 +235,21 @@
       ]
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "sigillare o forzare l'apertura di una porta o un contenitore ({@dc 20})"
-      ]
+      ],
+      "name": "Utilizzo:"
      },
      {
-      "name": "Creazione:",
       "entries": [
        "{@item Club|XPHB|randello}, {@item Greatclub|XPHB|randello pesante}, {@item Quarterstaff|XPHB|bastone ferrato}, {@item Barrel|XPHB|barile}, {@item Chest|XPHB|forziere}, {@item Ladder|XPHB|scala a pioli}, {@item Pole|XPHB|asta}, {@item Portable Ram|XPHB|ariete portatile}, {@item Torch|XPHB|torcia}"
-      ]
+      ],
+      "name": "Creazione:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Strumenti da falegname"
  },
  "carriage": {
   "name": "Carrozza"
@@ -254,37 +258,37 @@
   "name": "Carretto"
  },
  "cartographers-tools": {
-  "name": "Strumenti da cartografo",
   "entries": [
    {
     "items": [
      {
-      "name": "Caratteristica:",
       "entries": [
        "Saggezza"
-      ]
+      ],
+      "name": "Caratteristica:"
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "disegnare una mappa di una piccola area ({@dc 15})"
-      ]
+      ],
+      "name": "Utilizzo:"
      },
      {
-      "name": "Creazione:",
       "entries": [
        "{@item Map|XPHB|mappa}"
-      ]
+      ],
+      "name": "Creazione:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Strumenti da cartografo"
  },
  "chain": {
-  "name": "Catena",
   "entries": [
    "Come azione di {@action Utilize|XPHB|Utilizzo}, se supera una prova di Forza ({@skill Athletics|XPHB|Atletica}) con {@dc 13}, il personaggio può avvolgere la catena attorno a una creatura non consenziente entro 1,5 metri da sé che sia {@condition Grappled|XPHB|afferrata}, {@condition Incapacitated|XPHB|incapacitata} o {@condition Restrained|XPHB|trattenuta}. Se le vengono legate le gambe, sarà {@condition Restrained|XPHB|trattenuta} finché non riuscirà a scappare. Per liberarsi dalla catena è necessario superare una prova di Destrezza ({@skill Acrobatics|XPHB|Acrobazia}) con {@dc 18} con un'azione. Rompere la catena richiede il superamento di una prova di Forza ({@skill Athletics|XPHB|Atletica}) con {@dc 20} con un'azione."
-  ]
+  ],
+  "name": "Catena"
  },
  "chain-mail": {
   "name": "Cotta di maglia"
@@ -299,46 +303,46 @@
   "name": "Fetta di formaggio"
  },
  "chest": {
-  "name": "Forziere",
   "entries": [
    "Un forziere ha una capacità di 12 cubi con spigolo di 30 centimetri."
-  ]
+  ],
+  "name": "Forziere"
  },
  "climbers-kit": {
-  "name": "Attrezzi da scalatore",
   "entries": [
    "Un kit da scalatore è composto da punte per stivali, guanti, chiodi da rocciatore e un'imbragatura. Come azione di {@action Utilize|XPHB|Utilizzo}, il personaggio può usare gli attrezzi da scalatore per ancorarsi; quando lo fa, non può cadere per più di 7,5 metri dal punto in cui si è ancorato e non può arrampicarsi per più di 7,5 metri dal quel punto senza disfare l'ancoraggio come {@variantrule Bonus Action|XPHB|azione bonus}."
-  ]
+  ],
+  "name": "Attrezzi da scalatore"
  },
  "club": {
   "name": "Randello"
  },
  "cobblers-tools": {
-  "name": "Strumenti da calzolaio",
   "entries": [
    {
     "items": [
      {
-      "name": "Caratteristica:",
       "entries": [
        "Destrezza"
-      ]
+      ],
+      "name": "Caratteristica:"
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "modificare calzature per conferire {@variantrule Advantage|XPHB|vantaggio} alla prossima prova di Destrezza ({@skill Acrobatics|XPHB|Acrobazia}) di chi le indossa ({@dc 10})"
-      ]
+      ],
+      "name": "Utilizzo:"
      },
      {
-      "name": "Creazione:",
       "entries": [
        "{@item Climber's Kit|XPHB|attrezzi da scalatore}"
-      ]
+      ],
+      "name": "Creazione:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Strumenti da calzolaio"
  },
  "common-wine-bottle": {
   "name": "Vino comune (bottiglia)"
@@ -347,49 +351,49 @@
   "name": "Borsa per componenti"
  },
  "cooks-utensils": {
-  "name": "Utensili da cuoco",
   "entries": [
    {
     "items": [
      {
-      "name": "Caratteristica:",
       "entries": [
        "Saggezza"
-      ]
+      ],
+      "name": "Caratteristica:"
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "migliorare il sapore del cibo ({@dc 10}) o individuare cibo avariato o avvelenato ({@dc 15})"
-      ]
+      ],
+      "name": "Utilizzo:"
      },
      {
-      "name": "Creazione:",
       "entries": [
        "{@item Rations|XPHB|razioni}"
-      ]
+      ],
+      "name": "Creazione:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Utensili da cuoco"
  },
  "costume": {
-  "name": "Costume",
   "entries": [
    "Quando il personaggio indossa un costume, dispone di {@variantrule Advantage|XPHB|vantaggio} a qualsiasi prova di caratteristica effettuata per impersonare qualcuno o una specifica tipologia di persona."
-  ]
+  ],
+  "name": "Costume"
  },
  "crossbow-bolt-case": {
-  "name": "Custodia per quadrelli da balestra",
   "entries": [
    "Una {@item Crossbow Bolt Case|XPHB|custodia per quadrelli da balestra} può contenerne fino a 20 unità."
-  ]
+  ],
+  "name": "Custodia per quadrelli da balestra"
  },
  "crowbar": {
-  "name": "Piede di porco",
   "entries": [
    "Utilizzando un piede di porco, il personaggio ottiene {@variantrule Advantage|XPHB|vantaggio} alle prove di Forza in cui è possibile applicare la sua leva."
-  ]
+  ],
+  "name": "Piede di porco"
  },
  "crystal": {
   "name": "Cristallo"
@@ -404,40 +408,44 @@
   "name": "Dadi"
  },
  "diplomats-pack": {
-  "name": "Dotazione da diplomatico",
   "entries": [
    "Una dotazione da diplomatico contiene i seguenti oggetti: {@item Chest|XPHB|forziere}, {@item Fine Clothes|XPHB|abiti eleganti}, {@item Ink|XPHB|inchiostro}, 5 {@item Ink Pen|XPHB|pennini}, {@item Lamp|XPHB|lampada}, 2 custodie per mappe o pergamene, 4 ampolle di {@item Oil|XPHB|olio}, 5 fogli di {@item Paper|XPHB|carta}, 5 fogli di {@item Parchment|XPHB|pergamena}, {@item Perfume|XPHB|profumo} e {@item Tinderbox|XPHB|acciarino con pietra focaia}."
-  ]
+  ],
+  "name": "Dotazione da diplomatico"
  },
  "disguise-kit": {
-  "name": "Trucchi per il camuffamento",
   "entries": [
    {
     "items": [
      {
-      "name": "Caratteristica:",
       "entries": [
        "Carisma"
-      ]
+      ],
+      "name": "Caratteristica:"
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "truccarsi ({@dc 10})"
-      ]
+      ],
+      "name": "Utilizzo:"
      },
      {
-      "name": "Creazione:",
       "entries": [
        "{@item Costume|XPHB|costume}"
-      ]
+      ],
+      "name": "Creazione:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Trucchi per il camuffamento"
  },
  "draft-horse": {
   "name": "Cavallo da tiro"
+ },
+ "dragonchess-set": {
+  "_self": true,
+  "name": "Scacchi draconici"
  },
  "drum": {
   "name": "Tamburo"
@@ -446,10 +454,10 @@
   "name": "Dulcimer"
  },
  "dungeoneers-pack": {
-  "name": "Dotazione da avventuriero",
   "entries": [
    "Una dotazione da avventuriero contiene i seguenti oggetti: {@item Backpack|XPHB|zaino}, {@item Caltrops|XPHB|triboli}, {@item Crowbar|XPHB|piede di porco}, 2 ampolle di {@item Oil|XPHB|olio}, 10 {@item Rations|XPHB|razioni} giornaliere, {@item Rope|XPHB|corda}, {@item Tinderbox|XPHB|acciarino con pietra focaia}, 10 torce e un {@item Waterskin|XPHB|otre}."
-  ]
+  ],
+  "name": "Dotazione da avventuriero"
  },
  "elephant": {
   "name": "Elefante"
@@ -458,64 +466,72 @@
   "name": "Emblema"
  },
  "entertainers-pack": {
-  "name": "Dotazione da intrattenitore",
   "entries": [
    "Una dotazione da intrattenitore contiene i seguenti i oggetti: {@item Backpack|XPHB|zaino}, {@item Bedroll|XPHB|giaciglio}, {@item Bell|XPHB|campana}, {@item Bullseye Lantern|XPHB|lanterna a lente sporgente}, 3 {@item Costume|XPHB|costumi}, {@item Mirror|XPHB|specchio}, 8 ampolle di {@item Oil|XPHB|olio}, 9 {@item Rations|XPHB|razioni} giornaliere e un {@item Waterskin|XPHB|otre}."
-  ]
+  ],
+  "name": "Dotazione da intrattenitore"
  },
  "exotic-saddle": {
   "name": "Sella esotica"
  },
  "explorers-pack": {
-  "name": "Dotazione da esploratore",
   "entries": [
    "Una dotazione da esploratore contiene i seguenti oggetti: {@item Backpack|XPHB|zaino}, {@item Bedroll|XPHB|giaciglio}, 2 ampolle di {@item Oil|XPHB|olio}, 10 {@item Rations|XPHB|razioni} giornaliere, {@item Rope|XPHB|corda}, {@item Tinderbox|XPHB|acciarino con pietra focaia}, 10 torce e un {@item Waterskin|XPHB|otre}."
-  ]
+  ],
+  "name": "Dotazione da esploratore"
  },
  "feed-per-day": {
   "name": "Nutrimento (al giorno)"
  },
  "fine-clothes": {
-  "name": "Abiti eleganti",
   "entries": [
    "Gli abiti eleganti sono realizzati con stoffe pregiate e decorati con dettagli raffinati. Alcuni eventi e luoghi consentono l'accesso solo a chi li indossa."
-  ]
+  ],
+  "name": "Abiti eleganti"
  },
  "fine-wine-bottle": {
   "name": "Vino pregiato (bottiglia)"
+ },
+ "firearm-bullet": {
+  "_self": true,
+  "name": "Proiettile per arma da fuoco"
+ },
+ "firearm-bullets-10": {
+  "_self": true,
+  "name": "Proiettili per arma da fuoco (10)"
  },
  "flail": {
   "name": "Mazzafrusto"
  },
  "flask": {
-  "name": "Ampolla",
   "entries": [
    "Un'ampolla ha una capacità di 0,5 litri."
-  ]
+  ],
+  "name": "Ampolla"
  },
  "flute": {
   "name": "Flauto"
  },
  "forgery-kit": {
-  "name": "Arnesi da falsario",
   "entries": [
    {
     "items": [
      {
-      "name": "Caratteristica:",
       "entries": [
        "Destrezza"
-      ]
+      ],
+      "name": "Caratteristica:"
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "scrivere 10 parole o meno copiando la scrittura di qualcun altro ({@dc 15}) o duplicare un sigillo di cera ({@dc 20})"
-      ]
+      ],
+      "name": "Utilizzo:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Arnesi da falsario"
  },
  "galley": {
   "name": "Galea"
@@ -524,19 +540,19 @@
   "name": "Falcione"
  },
  "glass-bottle": {
-  "name": "Bottiglia di vetro",
   "entries": [
    "Una bottiglia di vetro ha una capacità di 0,75 litri."
-  ]
+  ],
+  "name": "Bottiglia di vetro"
  },
  "glassblowers-tools": {
   "name": "Strumenti da soffiatore"
  },
  "grappling-hook": {
-  "name": "Rampino",
   "entries": [
    "Come azione di {@action Utilize|XPHB|Utilizzo}, il personaggio può lanciare il rampino verso una ringhiera, una sporgenza o un altro appiglio entro 15 metri da sé. Per far sì che il gancio faccia presa è necessario superare una prova di Destrezza ({@skill Acrobatics|XPHB|Acrobazia}) con {@dc 13}. Se al gancio viene legata una corda, è possibile arrampicarsi."
-  ]
+  ],
+  "name": "Rampino"
  },
  "greataxe": {
   "name": "Ascia bipenne"
@@ -560,142 +576,142 @@
   "name": "Ascia"
  },
  "healers-kit": {
-  "name": "Borsa del guaritore",
   "entries": [
    "La borsa del guaritore è utilizzabile dieci volte. Come azione di {@action Utilize|XPHB|Utilizzo}, il personaggio può consumarne un uso per stabilizzare una creatura {@condition Unconscious|XPHB|priva di sensi} con 0 {@variantrule Hit Points|XPHB|punti ferita} senza dover effettuare una prova di Saggezza ({@skill Medicine|XPHB|Medicina})."
-  ]
+  ],
+  "name": "Borsa del guaritore"
  },
  "heavy-crossbow": {
   "name": "Balestra pesante"
  },
  "herbalism-kit": {
-  "name": "Borsa da erborista",
   "entries": [
    {
     "items": [
      {
-      "name": "Caratteristica:",
       "entries": [
        "Intelligenza"
-      ]
+      ],
+      "name": "Caratteristica:"
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "identificare una pianta ({@dc 10})"
-      ]
+      ],
+      "name": "Utilizzo:"
      },
      {
-      "name": "Creazione:",
       "entries": [
        "{@item Antitoxin|XPHB|antitossina}, {@item Candle|XPHB|candela}, {@item Healer's Kit|XPHB|borsa del guaritore}, {@item Potion of Healing|XDMG|pozione di guarigione}"
-      ]
+      ],
+      "name": "Creazione:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Borsa da erborista"
  },
  "hide-armor": {
   "name": "Armatura di pelle"
  },
  "holy-water": {
-  "name": "Acqua santa",
   "entries": [
    "Quando il personaggio effettua un'azione di {@action Attack|XPHB|Attacco}, puoi sostituire uno dei suoi attacchi con il lancio di una ampolla di acqua santa verso una creatura che egli è in grado di vedere entro un raggio di 6 metri da sé. Il bersaglio deve superare un tiro salvezza su Destrezza ({@dc 8} più il modificatore di Destrezza e il bonus di {@variantrule Proficiency|XPHB|competenza} del personaggio), altrimenti subirà {@damage 2d8} danni radiosi se è un immondo o un non morto."
-  ]
+  ],
+  "name": "Acqua santa"
  },
  "hooded-lantern": {
-  "name": "Lanterna schermabile",
   "entries": [
    "Una lanterna schermabile brucia olio per proiettare {@variantrule Bright Light|XPHB|luce intensa} in un raggio di 9 metri e {@variantrule Dim Light|XPHB|luce fioca} per ulteriori 9 metri. Come {@variantrule Bonus Action|XPHB|azione bonus}, un personaggio può schermare la lanterna, riducendo la luce proiettata a {@variantrule Dim Light|XPHB|luce fioca} in un raggio di 1,5 metri o riaprirla."
-  ]
+  ],
+  "name": "Lanterna schermabile"
  },
  "horn": {
   "name": "Corno"
  },
  "hunting-trap": {
-  "name": "Tagliola",
   "entries": [
    "Come azione di {@action Utilize|XPHB|Utilizzo}, il personaggio può piazzare una tagliola, ovvero un anello metallico dentellato che si chiude di scatto qualora una creatura calpesti la piastra a pressione collocata al centro. La trappola viene fissata a una pesante catena o a un oggetto immobile come un albero o un palo piantato a terra. Quando una creatura mette un piede sulla piastra, deve superare un tiro salvezza su Destrezza con {@dc 13}, altrimenti subisce {@damage 1d4} danni perforanti e la sua {@variantrule Speed|XPHB|velocità} scende a 0 fino all'inizio del turno successivo. A quel punto, finché non si libera dalla trappola, il suo movimento è limitato dalla lunghezza della catena (solitamente 90 centimetri). Una creatura può usare la sua azione per effettuare una prova di Forza ({@skill Athletics|XPHB|Atletica}) con {@dc 13} e liberare se stessa o qualcun altro a portata in caso di successo. Ogni prova fallita infligge 1 danno perforante alla creatura intrappolata."
-  ]
+  ],
+  "name": "Tagliola"
  },
  "ink": {
-  "name": "Inchiostro",
   "entries": [
    "L'inchiostro è reperibile in boccette da 30 grammi ciascuna, con abbastanza materiale per scrivere circa 500 pagine."
-  ]
+  ],
+  "name": "Inchiostro"
  },
  "ink-pen": {
-  "name": "Pennino",
   "entries": [
    "Usando pennino e {@item Ink|XPHB|inchiostro} è possibile scrivere o disegnare."
-  ]
+  ],
+  "name": "Pennino"
  },
  "iron-pot": {
-  "name": "Pentola di ferro",
   "entries": [
    "Una pentola di ferro ha una capacità di 4 litri."
-  ]
+  ],
+  "name": "Pentola di ferro"
  },
  "iron-spike": {
   "name": "Spuntone di ferro"
  },
  "iron-spikes": {
-  "name": "Spuntoni di ferro",
   "entries": [
    "Gli spuntoni di ferro sono ottenibili in gruppi di dieci. Come azione di {@action Utilize|XPHB|Utilizzo}, il personaggio può usare un oggetto contundente come un {@item Light Hammer|XPHB|martello leggero} per conficcare gli spuntoni nel legno, nel terreno o in altri materiali simili. Tale azione è utile per bloccare una porta o per avere un supporto a cui legare una {@item Rope|XPHB|corda} o una {@item Chain|XPHB|catena}."
-  ]
+  ],
+  "name": "Spuntoni di ferro"
  },
  "javelin": {
   "name": "Giavellotto"
  },
  "jewelers-tools": {
-  "name": "Strumenti da gioielliere",
   "entries": [
    {
     "items": [
      {
-      "name": "Caratteristica:",
       "entries": [
        "Intelligenza"
-      ]
+      ],
+      "name": "Caratteristica:"
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "determinare il valore di una gemma ({@dc 15})"
-      ]
+      ],
+      "name": "Utilizzo:"
      },
      {
-      "name": "Creazione:",
       "entries": [
        "{@item Arcane Focus|XPHB|focus arcano}, {@item Holy Symbol|XPHB|simbolo sacro}"
-      ]
+      ],
+      "name": "Creazione:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Strumenti da gioielliere"
  },
  "jug": {
-  "name": "Brocca",
   "entries": [
    "Una brocca ha una capacità di 4 litri."
-  ]
+  ],
+  "name": "Brocca"
  },
  "keelboat": {
   "name": "Barcone"
  },
  "ladder": {
-  "name": "Scala a pioli",
   "entries": [
    "Una scala a pioli è alta 3 metri. Per scendere dalla scala o salirci è necessario arrampicarsi."
-  ]
+  ],
+  "name": "Scala a pioli"
  },
  "lamp": {
-  "name": "Lampada",
   "entries": [
    "Una lampada brucia {@item Oil|XPHB|olio} per proiettare {@variantrule Bright Light|XPHB|luce intensa} in un raggio di 4,5 metri e {@variantrule Dim Light|XPHB|luce fioca} per ulteriori 9 metri."
-  ]
+  ],
+  "name": "Lampada"
  },
  "lance": {
   "name": "Lancia da cavaliere"
@@ -704,31 +720,31 @@
   "name": "Armatura di cuoio"
  },
  "leatherworkers-tools": {
-  "name": "Strumenti da conciatore",
   "entries": [
    {
     "items": [
      {
-      "name": "Caratteristica:",
       "entries": [
        "Destrezza"
-      ]
+      ],
+      "name": "Caratteristica:"
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "aggiungere un motivo a un oggetto di cuoio ({@dc 10})"
-      ]
+      ],
+      "name": "Utilizzo:"
      },
      {
-      "name": "Creazione:",
       "entries": [
        "{@item Sling|XPHB|fionda}, {@item Whip|XPHB|frusta}, {@item Hide Armor|XPHB|armatura di pelle}, {@item Leather Armor|XPHB|armatura di cuoio}, {@item Studded Leather Armor|XPHB|armatura di cuoio borchiato}, {@item Backpack|XPHB|zaino}, {@item Crossbow Bolt Case|XPHB|custodia per quadrelli da balestra}, custodia per mappe o pergamene, {@item Parchment|XPHB|pergamena}, {@item Pouch|XPHB|borsa}, {@item Quiver|XPHB|faretra}, {@item Waterskin|XPHB|otre}"
-      ]
+      ],
+      "name": "Creazione:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Strumenti da conciatore"
  },
  "light-crossbow": {
   "name": "Balestra leggera"
@@ -737,10 +753,10 @@
   "name": "Martello leggero"
  },
  "lock": {
-  "name": "Serratura",
   "entries": [
    "Ogni serratura è dotata della sua chiave. Senza tale chiave, una creatura può scassinarla utilizzando gli {@item Thieves' Tools|XPHB|arnesi da scasso} e superando una prova di Destrezza ({@skill Sleight of Hand|XPHB|Rapidità di mano}) con {@dc 15}."
-  ]
+  ],
+  "name": "Serratura"
  },
  "longbow": {
   "name": "Arco lungo"
@@ -761,44 +777,52 @@
   "name": "Mazza"
  },
  "magnifying-glass": {
-  "name": "Lente d'ingrandimento",
   "entries": [
    "Una lente d'ingrandimento conferisce {@variantrule Advantage|XPHB|vantaggio} a ogni prova di caratteristica effettuata per valutare o ispezionare un oggetto estremamente dettagliato. Per accendere un fuoco con la lente d'ingrandimento è necessaria una luce da concentrare intensa quanto quella del sole, dei rametti da accendere e circa 5 minuti affinché il fuoco attecchisca."
-  ]
+  ],
+  "name": "Lente d'ingrandimento"
  },
  "manacles": {
-  "name": "Manette",
   "entries": [
    "Come azione di {@action Utilize|XPHB|Utilizzo}, se supera una prova di Destrezza ({@skill Sleight of Hand|XPHB|Rapidità di mano}) con {@dc 13}, il personaggio può usare le manette per bloccare una creatura non consenziente di taglia Piccola o Media entro 1,5 metri da sé che sia {@condition Grappled|XPHB|afferrata}, {@condition Incapacitated|XPHB|incapacitata} o {@condition Restrained|XPHB|trattenuta}. Mentre è ammanettata, la creatura ha {@variantrule Disadvantage|XPHB|svantaggio} ai tiri per colpire ed è {@condition Restrained|XPHB|trattenuta} se le manette sono attaccate a una catena o un gancio fissi in posizione. Per liberarsi è necessario superare una prova di Destrezza ({@skill Sleight of Hand|XPHB|Rapidità di mano}) con {@dc 20} con un'azione. Per romperle bisogna invece superare una prova di Forza ({@skill Athletics|XPHB|Atletica}) con {@dc 25} con un'azione.",
    "Ogni coppia di manette ha la sua chiave. Senza di essa, una creatura può scassinarne la serratura utilizzando gli {@item Thieves' Tools|XPHB|arnesi da scasso} e superando una prova di Destrezza ({@skill Sleight of Hand|XPHB|Rapidità di mano}) con {@dc 15}."
-  ]
+  ],
+  "name": "Manette"
+ },
+ "map": {
+  "_self": true,
+  "name": "Mappa"
+ },
+ "map-or-scroll-case": {
+  "_self": true,
+  "name": "Custodia per mappe o pergamene"
  },
  "masons-tools": {
-  "name": "Strumenti da muratore",
   "entries": [
    {
     "items": [
      {
-      "name": "Caratteristica:",
       "entries": [
        "Forza"
-      ]
+      ],
+      "name": "Caratteristica:"
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "intagliare un simbolo o scavare un buco nella pietra ({@dc 10})"
-      ]
+      ],
+      "name": "Utilizzo:"
      },
      {
-      "name": "Creazione:",
       "entries": [
        "{@item Block and Tackle|XPHB|carrucola e paranco}"
-      ]
+      ],
+      "name": "Creazione:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Strumenti da muratore"
  },
  "mastiff": {
   "name": "Mastino"
@@ -810,10 +834,10 @@
   "name": "Sella militare"
  },
  "mirror": {
-  "name": "Specchio",
   "entries": [
    "Uno specchio d'acciaio portatile è utile sia per la cura della persona che per sbirciare dietro gli angoli o riflettere la luce per mandare un segnale a qualcuno."
-  ]
+  ],
+  "name": "Specchio"
  },
  "morningstar": {
   "name": "Mazza chiodata"
@@ -825,7 +849,6 @@
   "name": "Moschetto"
  },
  "navigators-tools": {
-  "name": "Strumenti da navigatore",
   "entries": [
    {
     "items": [
@@ -835,14 +858,15 @@
       ]
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "pianificare una rotta ({@dc 10}) o determinare la propria posizione scrutando le stelle ({@dc 15})"
-      ]
+      ],
+      "name": "Utilizzo:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Strumenti da navigatore"
  },
  "needle": {
   "name": "Ago"
@@ -851,35 +875,35 @@
   "name": "Aghi (50)"
  },
  "net": {
-  "name": "Rete",
   "entries": [
    "Quando il personaggio effettua un'azione di {@action Attack|XPHB|Attacco}, puoi sostituire uno dei suoi attacchi con il lancio di una rete verso una creatura che egli è in grado di vedere entro un raggio di 4,5 metri da sé. Il bersaglio deve superare un tiro salvezza su Destrezza ({@dc 8} più il modificatore di Destrezza e il bonus di {@variantrule Proficiency|XPHB|competenza} del personaggio), altrimenti sarà {@condition Restrained|XPHB|trattenuto} finché non riuscirà a liberarsi. Se il bersaglio è di taglia Enorme o superiore, supera automaticamente la prova.",
    "Per fuggire, il bersaglio o una creatura entro 1,5 metri da lui deve effettuare un'azione per eseguire una prova di Forza ({@skill Athletics|XPHB|Atletica}) con {@dc 10}, liberando la creatura {@condition Restrained|XPHB|trattenuta} in caso di successo. È possibile ottenere il medesimo risultato distruggendo la rete (CA 10; 5 PF; {@variantrule Immunity|XPHB|immunità} a danni contundenti, da veleno e psichici)."
-  ]
+  ],
+  "name": "Rete"
  },
  "oil": {
-  "name": "Olio",
   "entries": [
    "Il personaggio può gettare olio su una creatura, un oggetto o un'area. In alternativa, può usarlo come combustibile, come descritto sotto.",
    {
-    "name": "Gettare olio su una creatura o un oggetto",
     "entries": [
      "Quando il personaggio effettua un'azione di {@action Attack|XPHB|Attacco}, puoi sostituire uno dei suoi attacchi con il lancio di un'ampolla di olio verso una creatura o un oggetto entro 6 metri da sé. Il bersaglio deve superare un tiro salvezza su Destrezza ({@dc 8} più il modificatore di Destrezza e il bonus di {@variantrule Proficiency|XPHB|competenza} del personaggio), altrimenti sarà coperto di olio. Se il bersaglio subisce danni da fuoco prima che l'olio si asciughi (dopo 1 minuto), subisce 5 danni da fuoco extra a causa dell'olio incendiato."
-    ]
+    ],
+    "name": "Gettare olio su una creatura o un oggetto"
    },
    {
-    "name": "Gettare olio su una superficie",
     "entries": [
      "Come azione di {@action Utilize|XPHB|Utilizzo}, il personaggio può versare un'ampolla di olio su una superficie piana per coprire una zona di 1,5 metri quadrati entro 1,5 metri da sé. Se incendiato, l'olio brucia per 2 round fino al termine del turno (o 12 secondi) e infligge 5 danni da fuoco a qualsiasi creatura entri in quell'area o finisca lì il suo turno. Una creatura può subire questi danni solo una volta per turno."
-    ]
+    ],
+    "name": "Gettare olio su una superficie"
    },
    {
-    "name": "Combustibile",
     "entries": [
      "L'olio è utilizzabile come combustibile per lampade e lanterne. Una volta versata un'ampolla di olio in una lampada o una lanterna, questo brucerà per 6 ore. Tale durata non deve necessariamente essere consecutiva: è possibile spegnere il fuoco (come azione di {@action Utilize|XPHB|Utilizzo}) e riaccenderlo finché la durata totale della combustione non raggiunge le 6 ore."
-    ]
+    ],
+    "name": "Combustibile"
    }
-  ]
+  ],
+  "name": "Olio"
  },
  "orb": {
   "name": "Globo"
@@ -888,52 +912,52 @@
   "name": "Armatura imbottita"
  },
  "painters-supplies": {
-  "name": "Strumenti da pittore",
   "entries": [
    {
     "items": [
      {
-      "name": "Caratteristica:",
       "entries": [
        "Saggezza"
-      ]
+      ],
+      "name": "Caratteristica:"
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "dipingere un'immagine riconoscibile di qualcosa che il personaggio ha visto ({@dc 10})"
-      ]
+      ],
+      "name": "Utilizzo:"
      },
      {
-      "name": "Creazione:",
       "entries": [
        "{@item Druidic Focus|XPHB|focus druidico}, {@item Holy Symbol|XPHB|simbolo sacro}"
-      ]
+      ],
+      "name": "Creazione:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Strumenti da pittore"
  },
  "pan-flute": {
   "name": "Flauto di Pan"
  },
  "paper": {
-  "name": "Carta",
   "entries": [
    "Un foglio di carta può contenere circa 250 parole scritte a mano."
-  ]
+  ],
+  "name": "Carta"
  },
  "parchment": {
-  "name": "Pergamena",
   "entries": [
    "Un foglio di pergamena può contenere circa 250 parole scritte a mano."
-  ]
+  ],
+  "name": "Pergamena"
  },
  "perfume": {
-  "name": "Profumo",
   "entries": [
    "I profumi sono disponibili in ampolle con capacità di 120 millilitri. Dopo che il personaggio ha applicato su di sé il profumo, per 1 ora avrà {@variantrule Advantage|XPHB|vantaggio} alle prove di Carisma ({@skill Persuasion|XPHB|Persuasione}) effettuate per influenzare un umanoide indifferente entro 1,5 metri da sé."
-  ]
+  ],
+  "name": "Profumo"
  },
  "pike": {
   "name": "Picca"
@@ -948,103 +972,107 @@
   "name": "Carte da gioco"
  },
  "poisoners-kit": {
-  "name": "Sostanze da avvelenatore",
   "entries": [
    {
     "items": [
      {
-      "name": "Caratteristica:",
       "entries": [
        "Intelligenza"
-      ]
+      ],
+      "name": "Caratteristica:"
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "individuare un oggetto avvelenato ({@dc 10})"
-      ]
+      ],
+      "name": "Utilizzo:"
      },
      {
-      "name": "Creazione:",
       "entries": [
        "{@item Basic Poison|XPHB|veleno base}"
-      ]
+      ],
+      "name": "Creazione:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Sostanze da avvelenatore"
  },
  "pole": {
-  "name": "Asta",
   "entries": [
    "Un'asta è lunga 3 metri. Il personaggio può usarla per toccare qualcosa a massimo 3 metri di distanza da sé. Se deve effettuare una prova di Forza ({@skill Athletics|XPHB|Atletica}) come parte di un salto in alto o in lungo, può effettuarla con {@variantrule Advantage|XPHB|vantaggio} sfruttando l'asta."
-  ]
+  ],
+  "name": "Asta"
  },
  "pony": {
   "name": "Pony"
  },
  "portable-ram": {
-  "name": "Ariete portatile",
   "entries": [
    "Un ariete portatile può essere usato per sfondare le porte e conferisce un bonus di +4 alla prova di Forza del personaggio. Un altro personaggio può aiutare il primo a usare l'ariete, nel qual caso quest'ultimo dispone di {@variantrule Advantage|XPHB|vantaggio} alla prova."
-  ]
+  ],
+  "name": "Ariete portatile"
  },
  "potters-tools": {
-  "name": "Strumenti da vasaio",
   "entries": [
    {
     "items": [
      {
-      "name": "Caratteristica:",
       "entries": [
        "Intelligenza"
-      ]
+      ],
+      "name": "Caratteristica:"
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "capire il contenuto di un oggetto di ceramica delle ultime 24 ore ({@dc 15})"
-      ]
+      ],
+      "name": "Utilizzo:"
      },
      {
-      "name": "Creazione:",
       "entries": [
        "{@item Jug|XPHB|brocca}, {@item Lamp|XPHB|lampada}"
-      ]
+      ],
+      "name": "Creazione:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Strumenti da vasaio"
  },
  "pouch": {
-  "name": "Borsa",
   "entries": [
    "Una borsa può contenere fino a 3 chilogrammi e 5 litri."
-  ]
+  ],
+  "name": "Borsa"
  },
  "priests-pack": {
-  "name": "Dotazione da sacerdote",
   "entries": [
    "Una dotazione da sacerdote contiene i seguenti oggetti: {@item Backpack|XPHB|zaino}, {@item Blanket|XPHB|coperta}, {@item Holy Water|XPHB|acqua santa}, {@item Lamp|XPHB|lampada}, 7 {@item Rations|XPHB|razioni} giornaliere, {@item Robe|XPHB|tunica} e {@item Tinderbox|XPHB|acciarino con pietra focaia}."
-  ]
+  ],
+  "name": "Dotazione da sacerdote"
+ },
+ "psychic-blade": {
+  "_self": true,
+  "name": "Lama psichica"
  },
  "quarterstaff": {
   "name": "Bastone ferrato"
  },
  "quiver": {
-  "name": "Faretra",
   "entries": [
    "Una faretra può contenere fino a 20 frecce."
-  ]
+  ],
+  "name": "Faretra"
  },
  "rapier": {
   "name": "Stocco"
  },
  "rations": {
-  "name": "Razioni",
   "entries": [
    "Le razioni sono composte da cibo da viaggio, come carne secca, frutta secca, gallette e noci. Per scoprire i rischi del digiuno, consulta la sezione \"{@hazard Malnutrition|XPHB|Malnutrizione}\" nel \"Glossario delle regole\"."
-  ]
+  ],
+  "name": "Razioni"
  },
  "reliquary": {
   "name": "Reliquiario"
@@ -1059,29 +1087,29 @@
   "name": "Corazza ad anelli"
  },
  "robe": {
-  "name": "Tunica",
   "entries": [
    "Una tunica può avere un significato cerimoniale o professionale. In alcuni luoghi ed eventi sono ammesse solo persone che indossano una tunica di un determinato colore e recante uno specifico simbolo."
-  ]
+  ],
+  "name": "Tunica"
  },
  "rod": {
   "name": "Verga"
  },
  "rope": {
-  "name": "Corda",
   "entries": [
    "Come azione di {@action Utilize|XPHB|Utilizzo}, il personaggio può stringere un nodo con la corda se supera una prova di Destrezza ({@skill Sleight of Hand|XPHB|Rapidità di mano}) con {@dc 10}. La corda può essere spezzata superando una prova di Forza ({@skill Athletics|XPHB|Atletica}) con {@dc 20}.",
    "Il personaggio può legare una creatura non consenziente con la corda solo se questa è {@condition Grappled|XPHB|afferrata}, {@condition Incapacitated|XPHB|incapacitata} o {@condition Restrained|XPHB|trattenuta}. Se le vengono legate le gambe, sarà {@condition Restrained|XPHB|trattenuta} finché non riuscirà a scappare. Per liberarsi dalla corda è necessario superare una prova di Destrezza ({@skill Acrobatics|XPHB|Acrobazia}) con {@dc 15} con un'azione."
-  ]
+  ],
+  "name": "Corda"
  },
  "rowboat": {
   "name": "Barca a remi"
  },
  "sack": {
-  "name": "Sacco",
   "entries": [
    "Un sacco può contenere fino a 15 chilogrammi all'interno di 1 cubo con spigolo di 30 centimetri."
-  ]
+  ],
+  "name": "Sacco"
  },
  "sailing-ship": {
   "name": "Nave a vela"
@@ -1090,10 +1118,10 @@
   "name": "Corazza a scaglie"
  },
  "scholars-pack": {
-  "name": "Dotazione da studioso",
   "entries": [
    "10 ampolle di {@item Oil|XPHB|olio}, 10 fogli di {@item Parchment|XPHB|pergamena} e {@item Tinderbox|XPHB|acciarino con pietra focaia}."
-  ]
+  ],
+  "name": "Dotazione da studioso"
  },
  "scimitar": {
   "name": "Scimitarra"
@@ -1111,19 +1139,19 @@
   "name": "Spada corta"
  },
  "shovel": {
-  "name": "Pala",
   "entries": [
    "Se il personaggio impiega 1 ora di lavoro, può usare la pala per scavare una buca nel terreno di 1,5 metri per lato."
-  ]
+  ],
+  "name": "Pala"
  },
  "sickle": {
   "name": "Falcetto"
  },
  "signal-whistle": {
-  "name": "Fischietto da richiamo",
   "entries": [
    "Se il personaggio soffia al suo interno con un'azione di {@action Utilize|XPHB|Utilizzo}, il fischietto da richiamo produce un suono udibile fino a 180 metri di distanza."
-  ]
+  ],
+  "name": "Fischietto da richiamo"
  },
  "sled": {
   "name": "Slitta"
@@ -1138,31 +1166,31 @@
   "name": "Proiettili per fionda (20)"
  },
  "smiths-tools": {
-  "name": "Strumenti da fabbro",
   "entries": [
    {
     "items": [
      {
-      "name": "Caratteristica:",
       "entries": [
        "Forza"
-      ]
+      ],
+      "name": "Caratteristica:"
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "forzare l'apertura di una porta o un contenitore ({@dc 20})"
-      ]
+      ],
+      "name": "Utilizzo:"
      },
      {
-      "name": "Creazione:",
       "entries": [
        "Arma da mischia (eccetto {@item Club|XPHB|randello}, {@item Greatclub|XPHB|randello pesante}, {@item Quarterstaff|XPHB|bastone ferrato} e {@item Whip|XPHB|frusta}), armatura media (eccetto di pelle), armatura pesante, {@item Ball Bearings|XPHB|sfere metalliche}, {@item Bucket|XPHB|secchio}, {@item Caltrops|XPHB|triboli}, {@item Chain|XPHB|catena}, {@item Crowbar|XPHB|piede di porco}, proiettili per armi da fuoco, {@item Grappling Hook|XPHB|rampino}, {@item Iron Pot|XPHB|pentola di ferro}, {@item Iron Spikes|XPHB|spuntoni di ferro}, proiettili da fionda"
-      ]
+      ],
+      "name": "Creazione:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Strumenti da fabbro"
  },
  "spear": {
   "name": "Lancia"
@@ -1174,10 +1202,10 @@
   "name": "Rametto di vischio"
  },
  "spyglass": {
-  "name": "Cannocchiale",
   "entries": [
    "Gli oggetti osservati attraverso un cannocchiale appaiono grandi il doppio della loro taglia."
-  ]
+  ],
+  "name": "Cannocchiale"
  },
  "stabling-per-day": {
   "name": "Stallaggio (al giorno)"
@@ -1185,89 +1213,101 @@
  "staff": {
   "name": "Bastone"
  },
+ "string": {
+  "_self": true,
+  "name": "Spago"
+ },
  "studded-leather-armor": {
   "name": "Armatura di cuoio borchiato"
  },
  "tent": {
-  "name": "Tenda",
   "entries": [
    "In una tenda possono dormire un massimo di due creature di taglia Piccola o Media."
-  ]
+  ],
+  "name": "Tenda"
  },
  "thieves-tools": {
-  "name": "Arnesi da scasso",
   "entries": [
    {
     "items": [
      {
-      "name": "Caratteristica:",
       "entries": [
        "Destrezza"
-      ]
+      ],
+      "name": "Caratteristica:"
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "scassinare una serratura ({@dc 15}) o disattivare una trappola ({@dc 15})"
-      ]
+      ],
+      "name": "Utilizzo:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Arnesi da scasso"
+ },
+ "three-dragon-ante-set": {
+  "_self": true,
+  "name": "Asso dei Tre Draghi"
  },
  "tinderbox": {
-  "name": "Acciarino con pietra focaia",
   "entries": [
    "Si tratta di un piccolo contenitore usato per accendere il fuoco, che contiene acciarino, pietra focaia e materiale combustibile (solitamente stracci essiccati e bagnati d'olio). Utilizzarlo per accendere una {@item Candle|XPHB|candela}, una {@item Lamp|XPHB|lampada}, una lanterna, una {@item Torch|XPHB|torcia} o qualunque altra cosa con sopra materiale infiammabile richiede un'{@variantrule Bonus Action|XPHB|azione bonus}. Per accendere un fuoco di qualsiasi altro tipo è richiesto 1 minuto."
-  ]
+  ],
+  "name": "Acciarino con pietra focaia"
  },
  "tinkers-tools": {
-  "name": "Strumenti da inventore",
   "entries": [
    {
     "items": [
      {
-      "name": "Caratteristica:",
       "entries": [
        "Destrezza"
-      ]
+      ],
+      "name": "Caratteristica:"
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "realizzare un oggetto minuscolo sfruttando materiali di scarto che cadrà a pezzi dopo 1 minuto ({@dc 20})"
-      ]
+      ],
+      "name": "Utilizzo:"
      },
      {
-      "name": "Creazione:",
       "entries": [
        "{@item Musket|XPHB|moschetto}, {@item Pistol|XPHB|pistola}, campanella, {@item Bullseye Lantern|XPHB|lanterna a lente sporgente}, {@item Flask|XPHB|ampolla}, {@item Hooded Lantern|XPHB|lanterna schermabile}, {@item Hunting Trap|XPHB|tagliola}, {@item Lock|XPHB|serratura}, {@item Manacles|XPHB|manette}, {@item Mirror|XPHB|specchio}, {@item Shovel|XPHB|pala}, {@item Signal Whistle|XPHB|fischietto da richiamo}, {@item Tinderbox|XPHB|acciarino con pietra focaia}"
-      ]
+      ],
+      "name": "Creazione:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Strumenti da inventore"
  },
  "torch": {
-  "name": "Torcia",
   "entries": [
    "Una torcia arde per 1 ora e proietta {@variantrule Bright Light|XPHB|luce intensa} in un raggio di 6 metri e {@variantrule Dim Light|XPHB|luce fioca} per ulteriori 6 metri. Quando il personaggio effettua l'azione di {@action Attack|XPHB|Attacco}, può farlo con la torcia usandola come arma da mischia semplice. Se il colpo va a segno, il bersaglio subisce 1 danno da fuoco."
-  ]
+  ],
+  "name": "Torcia"
  },
  "travelers-clothes": {
-  "name": "Abiti da viaggiatore",
   "entries": [
    "Gli abiti da viaggiatore sono resistenti e progettati per sopportare svariati ambienti."
-  ]
+  ],
+  "name": "Abiti da viaggiatore"
  },
  "trident": {
   "name": "Tridente"
  },
+ "trinket": {
+  "_self": true,
+  "name": "Ninnolo"
+ },
  "vial": {
-  "name": "Fiala",
   "entries": [
    "Una fiala ha una capacità di 120 millilitri."
-  ]
+  ],
+  "name": "Fiala"
  },
  "viol": {
   "name": "Viola"
@@ -1291,67 +1331,67 @@
   "name": "Nave da guerra"
  },
  "waterskin": {
-  "name": "Otre",
   "entries": [
    "Un otre ha una capacità di 2 litri. Se il personaggio non beve abbastanza acqua, corre il rischio di disidratazione (vedi \"Glossario delle regole\")."
-  ]
+  ],
+  "name": "Otre"
  },
  "weavers-tools": {
-  "name": "Strumenti da tessitore",
   "entries": [
    {
     "items": [
      {
-      "name": "Caratteristica:",
       "entries": [
        "Destrezza"
-      ]
+      ],
+      "name": "Caratteristica:"
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "rammendare tessuti lacerati ({@dc 10}) o cucire un motivo minuscolo ({@dc 10})"
-      ]
+      ],
+      "name": "Utilizzo:"
      },
      {
-      "name": "Creazione:",
       "entries": [
        "{@item Padded Armor|XPHB|armatura imbottita}, {@item Basket|XPHB|cesto}, {@item Bedroll|XPHB|giaciglio}, {@item Blanket|XPHB|coperta}, {@item Fine Clothes|XPHB|abiti eleganti}, {@item Net|XPHB|rete}, veste, {@item Rope|XPHB|corda}, {@item Sack|XPHB|sacco}, spago, {@item Tent|XPHB|tenda}, {@item Traveler's Clothes|XPHB|abiti da viaggiatore}"
-      ]
+      ],
+      "name": "Creazione:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Strumenti da tessitore"
  },
  "whip": {
   "name": "Frusta"
  },
  "woodcarvers-tools": {
-  "name": "Strumenti da intagliatore",
   "entries": [
    {
     "items": [
      {
-      "name": "Caratteristica:",
       "entries": [
        "Destrezza"
-      ]
+      ],
+      "name": "Caratteristica:"
      },
      {
-      "name": "Utilizzo:",
       "entries": [
        "intagliare un motivo nel legno ({@dc 10})"
-      ]
+      ],
+      "name": "Utilizzo:"
      },
      {
-      "name": "Creazione:",
       "entries": [
        "{@item Club|XPHB|randello}, {@item Greatclub|XPHB|randello pesante}, {@item Quarterstaff|XPHB|bastone ferrato}, armi a distanza (eccetto {@item Pistol|XPHB|pistola}, {@item Musket|XPHB|moschetto} e {@item Sling|XPHB|fionda}), {@item Arcane Focus|XPHB|focus arcano}, frecce, quadrelli, {@item Druidic Focus|XPHB|focus druidico}, {@item Ink Pen|XPHB|pennino}, aghi"
-      ]
+      ],
+      "name": "Creazione:"
      }
     ]
    }
-  ]
+  ],
+  "name": "Strumenti da intagliatore"
  },
  "wooden-staff": {
   "name": "Bastone di legno"

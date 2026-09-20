@@ -1,0 +1,65 @@
+{
+ "blindsight": {
+  "_self": true,
+  "entries": [
+   "Se hai la Vista cieca, puoi vedere entro un raggio specifico senza affidarti alla vista fisica. Entro quel raggio, puoi vedere qualsiasi cosa che non sia dietro una {@variantrule Cover|XPHB|copertura totale}, anche se hai la condizione {@condition Blinded|XPHB|accecato} o ti trovi nell'{@variantrule Darkness|XPHB|oscurità}. Inoltre, entro quel raggio, puoi vedere qualcosa che ha la condizione {@condition Invisible|XPHB|invisibile}."
+  ],
+  "name": "Vista cieca"
+ },
+ "darkvision": {
+  "_self": true,
+  "entries": [
+   "Se hai la Scurovisione, puoi vedere nella {@variantrule Dim Light|XPHB|luce fioca} entro un raggio specificato come se fosse {@variantrule Bright Light|XPHB|luce intensa}, e nell'{@variantrule Darkness|XPHB|oscurità} entro quel raggio come se fosse {@variantrule Dim Light|XPHB|luce fioca}. In quell'{@variantrule Darkness|XPHB|oscurità} puoi distinguere i colori solo come sfumature di grigio."
+  ],
+  "name": "Scurovisione"
+ },
+ "tremorsense": {
+  "_self": true,
+  "entries": [
+   "Una creatura con Percezione tellurica può individuare con precisione la posizione di creature e oggetti in movimento entro un raggio specifico, a condizione che la creatura con Percezione tellurica e qualunque cosa stia rilevando siano entrambe in contatto con la stessa superficie (come il terreno, una parete o un soffitto) o con lo stesso liquido.",
+   "La Percezione tellurica non può rilevare creature o oggetti in aria, e non è considerata una forma di vista."
+  ],
+  "name": "Percezione tellurica"
+ },
+ "truesight": {
+  "_self": true,
+  "entries": [
+   "Se hai la Vista pura, la tua vista è potenziata entro un raggio specificato. Entro quel raggio, la tua vista penetra quanto segue:",
+   {
+    "items": [
+     {
+      "entries": [
+       "Puoi vedere nell'{@variantrule Darkness|XPHB|oscurità} normale e magica."
+      ],
+      "name": "Oscurità"
+     },
+     {
+      "entries": [
+       "Vedi creature e oggetti che hanno la condizione {@condition Invisible|XPHB|invisibile}."
+      ],
+      "name": "Invisibilità"
+     },
+     {
+      "entries": [
+       "Le illusioni visive ti appaiono trasparenti, e superi automaticamente i {@variantrule Saving Throw|XPHB|tiri salvezza} contro di esse."
+      ],
+      "name": "Illusioni visive"
+     },
+     {
+      "entries": [
+       "Discerni la vera forma di qualsiasi creatura o oggetto che vedi e che sia stato trasformato dalla magia."
+      ],
+      "name": "Trasformazioni"
+     },
+     {
+      "entries": [
+       "Vedi all'interno del Piano Etereo."
+      ],
+      "name": "Piano Etereo"
+     }
+    ]
+   }
+  ],
+  "name": "Vista pura"
+ }
+}

@@ -47,6 +47,7 @@ class Class(models.Model):
     short_description = models.CharField(max_length=150, blank=True, default="")
     page = models.PositiveSmallIntegerField()
     srd = models.BooleanField(default=False)
+    self_translated = models.BooleanField(default=False)
     hit_die = models.CharField(max_length=10)
     primary_abilities = models.ManyToManyField("rules.Ability", related_name="primary_classes")
     primary_ability_conjunction = models.CharField(

@@ -1,0 +1,510 @@
+{
+ "agonizing-blast": {
+  "_self": true,
+  "entries": [
+   "Scegli uno dei {@filter trucchetti da warlock|spells|level=0|class=Warlock|damage type=acid;bludgeoning;cold;fire;force;lightning;necrotic;piercing;poison;psychic;radiant;slashing;thunder} che conosci e che infligge danni. Puoi aggiungere il tuo modificatore di Carisma ai tiri per i danni di quell'incantesimo.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Puoi ottenere questa supplica più di una volta. Ogni volta che lo fai, scegli un trucchetto idoneo diverso."
+      ],
+      "name": "Ripetibile"
+     }
+    ]
+   }
+  ],
+  "name": "Deflagrazione agonizzante"
+ },
+ "ambush": {
+  "_self": true,
+  "entries": [
+   "Quando effettui una prova di Destrezza ({@skill Stealth|XPHB|Furtività}) o un tiro per l'{@variantrule Initiative|XPHB|iniziativa}, puoi consumare un dado Superiorità e aggiungerlo al tiro, a meno che tu non abbia la condizione {@condition Incapacitated|XPHB|incapacitato}."
+  ],
+  "name": "Imboscata"
+ },
+ "armor-of-shadows": {
+  "_self": true,
+  "entries": [
+   "Puoi lanciare {@spell Mage Armor|XPHB|armatura magica} su te stesso senza consumare uno slot incantesimo."
+  ],
+  "name": "Armatura d'ombra"
+ },
+ "ascendant-step": {
+  "_self": true,
+  "entries": [
+   "Puoi lanciare {@spell Levitate|XPHB|levitazione} su te stesso senza consumare uno slot incantesimo."
+  ],
+  "name": "Passo ascendente"
+ },
+ "bait-and-switch": {
+  "_self": true,
+  "entries": [
+   "Quando ti trovi entro 1,5 metri da una creatura nel tuo turno, puoi consumare un dado Superiorità e scambiarti di posto con quella creatura, a condizione di spendere almeno 1,5 metri di movimento e che la creatura sia consenziente e non abbia la condizione {@condition Incapacitated|XPHB|incapacitato}. Questo movimento non provoca {@action Opportunity Attack|XPHB|attacchi di opportunità}.",
+   "Tira il dado Superiorità. Fino all'inizio del tuo turno successivo, tu o l'altra creatura (a tua scelta) ottenete un bonus alla CA pari al numero ottenuto."
+  ],
+  "name": "Esca e cambio"
+ },
+ "careful-spell": {
+  "_self": true,
+  "entries": [
+   "Quando lanci un incantesimo che costringe altre creature a effettuare un tiro salvezza, puoi proteggere alcune di quelle creature dalla piena forza dell'incantesimo. Per farlo, spendi 1 punto stregoneria e scegli un numero di quelle creature pari al massimo al tuo modificatore di Carisma (minimo una creatura). Una creatura scelta supera automaticamente il tiro salvezza contro l'incantesimo e non subisce alcun danno se normalmente ne subirebbe la metà in caso di successo."
+  ],
+  "name": "Incantesimo accorto"
+ },
+ "commanders-strike": {
+  "_self": true,
+  "entries": [
+   "Quando effettui l'azione di {@action Attack|XPHB|Attacco} nel tuo turno, puoi rinunciare a uno dei tuoi attacchi per ordinare a uno dei tuoi compagni di colpire. Quando lo fai, scegli una creatura consenziente che può vederti o sentirti e consuma un dado Superiorità. Quella creatura può immediatamente usare la propria {@variantrule Reaction|XPHB|reazione} per effettuare un attacco con un'arma o un {@variantrule Unarmed Strike|XPHB|colpo senz'armi}, aggiungendo il dado Superiorità al tiro per i danni dell'attacco in caso di successo."
+  ],
+  "name": "Colpo del comandante"
+ },
+ "commanding-presence": {
+  "_self": true,
+  "entries": [
+   "Quando effettui una prova di Carisma ({@skill Intimidation|XPHB|Intimidire}, {@skill Performance|XPHB|Intrattenere} o {@skill Persuasion|XPHB|Persuasione}), puoi consumare un dado Superiorità e aggiungerlo al tiro."
+  ],
+  "name": "Presenza autorevole"
+ },
+ "devils-sight": {
+  "_self": true,
+  "entries": [
+   "Puoi vedere normalmente in condizioni di {@variantrule Dim Light|XPHB|luce fioca} e {@variantrule Darkness|XPHB|oscurità} — sia magica che non magica — entro 36 metri da te."
+  ],
+  "name": "Vista diabolica"
+ },
+ "devouring-blade": {
+  "_self": true,
+  "entries": [
+   "L'Attacco extra concesso dalla tua supplica {@optfeature Thirsting Blade|XPHB|Lama assetata} conferisce due attacchi extra anziché uno."
+  ],
+  "name": "Lama divorante"
+ },
+ "disarming-attack": {
+  "_self": true,
+  "entries": [
+   "Quando colpisci una creatura con un tiro per colpire, puoi consumare un dado Superiorità per tentare di disarmare il bersaglio. Aggiungi il risultato del dado Superiorità al tiro per i danni dell'attacco. Il bersaglio deve superare un tiro salvezza su Forza, altrimenti lascia cadere un oggetto a tua scelta che sta tenendo in mano, con l'oggetto che finisce nel suo spazio."
+  ],
+  "name": "Attacco disarmante"
+ },
+ "distant-spell": {
+  "_self": true,
+  "entries": [
+   "Quando lanci un incantesimo con una gittata di almeno 1,5 metri, puoi spendere 1 punto stregoneria per raddoppiarne la gittata. Oppure, quando lanci un incantesimo con gittata pari a Contatto, puoi spendere 1 punto stregoneria per rendere la gittata dell'incantesimo pari a 9 metri."
+  ],
+  "name": "Incantesimo distante"
+ },
+ "distracting-strike": {
+  "_self": true,
+  "entries": [
+   "Quando colpisci una creatura con un tiro per colpire, puoi consumare un dado Superiorità per distrarre il bersaglio. Aggiungi il risultato del dado Superiorità al tiro per i danni dell'attacco. Il prossimo tiro per colpire effettuato contro il bersaglio da un attaccante diverso da te dispone di {@variantrule Advantage|XPHB|vantaggio}, se l'attacco viene effettuato prima dell'inizio del tuo turno successivo."
+  ],
+  "name": "Colpo distraente"
+ },
+ "eldritch-mind": {
+  "_self": true,
+  "entries": [
+   "Hai {@variantrule Advantage|XPHB|vantaggio} ai tiri salvezza su Costituzione effettuati per mantenere la {@status Concentration|XPHB|concentrazione}."
+  ],
+  "name": "Mente occulta"
+ },
+ "eldritch-smite": {
+  "_self": true,
+  "entries": [
+   "Una volta per turno, quando colpisci una creatura con la tua arma del patto, puoi consumare uno slot incantesimo di Magia del patto per infliggere al bersaglio {@damage 1d8} danni da forza extra, più un ulteriore {@dice 1d8} per livello dello slot incantesimo, e puoi dare al bersaglio la condizione {@condition Prone|XPHB|prono} se è di taglia Enorme o inferiore."
+  ],
+  "name": "Punizione occulta"
+ },
+ "eldritch-spear": {
+  "_self": true,
+  "entries": [
+   "Scegli uno dei {@filter trucchetti da warlock|spells|level=0|class=Warlock|damage type=acid;bludgeoning;cold;fire;force;lightning;necrotic;piercing;poison;psychic;radiant;slashing;thunder|range=point} che conosci, che infligge danni e ha una gittata di almeno 3 metri. Quando lanci quel trucchetto, la sua gittata aumenta di un numero di metri pari a 9 volte il tuo livello da warlock.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Puoi ottenere questa supplica più di una volta. Ogni volta che lo fai, scegli un trucchetto idoneo diverso."
+      ],
+      "name": "Ripetibile"
+     }
+    ]
+   }
+  ],
+  "name": "Lancia occulta"
+ },
+ "empowered-spell": {
+  "_self": true,
+  "entries": [
+   "Quando tiri i danni di un incantesimo, puoi spendere 1 punto stregoneria per tirare di nuovo un numero di dadi danno pari al massimo al tuo modificatore di Carisma (minimo uno) e devi usare i nuovi risultati.",
+   "Puoi usare Incantesimo potenziato anche se hai già usato una diversa opzione di Metamagia durante il lancio dell'incantesimo."
+  ],
+  "name": "Incantesimo potenziato"
+ },
+ "evasive-footwork": {
+  "_self": true,
+  "entries": [
+   "Come {@variantrule Bonus Action|XPHB|azione bonus}, puoi consumare un dado Superiorità ed effettuare l'azione di {@action Disengage|XPHB|Disimpegno}. Tiri inoltre il dado e aggiungi il numero ottenuto alla tua CA fino all'inizio del tuo turno successivo."
+  ],
+  "name": "Gioco di gambe evasivo"
+ },
+ "extended-spell": {
+  "_self": true,
+  "entries": [
+   "Quando lanci un incantesimo con una durata di 1 minuto o superiore, puoi spendere 1 punto stregoneria per raddoppiarne la durata, fino a un massimo di 24 ore.",
+   "Se l'incantesimo interessato richiede {@status Concentration|XPHB|concentrazione}, hai {@variantrule Advantage|XPHB|vantaggio} a qualsiasi tiro salvezza effettuato per mantenere quella {@status Concentration|XPHB|concentrazione}."
+  ],
+  "name": "Incantesimo esteso"
+ },
+ "feinting-attack": {
+  "_self": true,
+  "entries": [
+   "Come {@variantrule Bonus Action|XPHB|azione bonus}, puoi consumare un dado Superiorità per fintare, scegliendo come bersaglio una creatura entro 1,5 metri da te. Hai {@variantrule Advantage|XPHB|vantaggio} al tuo prossimo tiro per colpire contro quel bersaglio in questo turno. Se quell'attacco colpisce, aggiungi il dado Superiorità al tiro per i danni dell'attacco."
+  ],
+  "name": "Finta"
+ },
+ "fiendish-vigor": {
+  "_self": true,
+  "entries": [
+   "Puoi lanciare {@spell False Life|XPHB|vita falsata} su te stesso senza consumare uno slot incantesimo. Quando lanci l'incantesimo con questo privilegio, non tiri il dado per i {@variantrule Temporary Hit Points|XPHB|punti ferita temporanei}; ottieni automaticamente il numero più alto sul dado."
+  ],
+  "name": "Vigore immondo"
+ },
+ "gaze-of-two-minds": {
+  "_self": true,
+  "entries": [
+   "Puoi usare un'{@variantrule Bonus Action|XPHB|azione bonus} per toccare una creatura consenziente e percepire attraverso i suoi sensi fino alla fine del tuo turno successivo. Finché la creatura si trova sullo stesso piano di esistenza in cui ti trovi tu, puoi usare un'{@variantrule Bonus Action|XPHB|azione bonus} nei turni successivi per mantenere questa connessione, estendendone la durata fino alla fine del tuo turno successivo. La connessione termina se non la mantieni in questo modo.",
+   "Mentre percepisci attraverso i sensi dell'altra creatura, benefici di eventuali sensi speciali posseduti da quella creatura e puoi lanciare incantesimi come se ti trovassi nel tuo spazio o in quello dell'altra creatura, a condizione che entrambi vi troviate entro 18 metri l'uno dall'altra."
+  ],
+  "name": "Sguardo delle due menti"
+ },
+ "gift-of-the-depths": {
+  "_self": true,
+  "entries": [
+   "Puoi respirare sott'acqua e ottieni una {@variantrule Swim Speed|XPHB|velocità di nuoto} pari alla tua {@variantrule Speed|XPHB|velocità}.",
+   "Puoi anche lanciare {@spell Water Breathing|XPHB|respirare sott'acqua} una volta senza consumare uno slot incantesimo. Riacquisisci la capacità di lanciarlo in questo modo quando completi un {@variantrule Long Rest|XPHB|riposo lungo}."
+  ],
+  "name": "Dono degli abissi"
+ },
+ "gift-of-the-protectors": {
+  "_self": true,
+  "entries": [
+   "Una nuova pagina compare nel tuo Libro delle Ombre quando lo evochi. Con il tuo permesso, una creatura può utilizzare un'azione per scrivere il proprio nome su quella pagina, che può contenere un numero di nomi pari al tuo modificatore di Carisma (minimo un nome).",
+   "Quando una creatura il cui nome è scritto sulla pagina viene ridotta a 0 {@variantrule Hit Points|XPHB|punti ferita} ma non viene uccisa sul colpo, per magia scende invece a 1 {@variantrule Hit Points|XPHB|punto ferita}. Una volta attivata, questa magia non può beneficiare nessun'altra creatura finché non completi un {@variantrule Long Rest|XPHB|riposo lungo}.",
+   "Come azione di {@action Magic|XPHB|Magia}, puoi cancellare un nome sulla pagina toccandolo."
+  ],
+  "name": "Dono dei protettori"
+ },
+ "goading-attack": {
+  "_self": true,
+  "entries": [
+   "Quando colpisci una creatura con un tiro per colpire, puoi consumare un dado Superiorità per tentare di provocare il bersaglio, spingendolo ad attaccare te. Aggiungi il dado Superiorità al tiro per i danni dell'attacco. Il bersaglio deve superare un tiro salvezza su Saggezza, altrimenti subisce {@variantrule Disadvantage|XPHB|svantaggio} ai tiri per colpire contro bersagli diversi da te fino alla fine del tuo turno successivo."
+  ],
+  "name": "Attacco provocatorio"
+ },
+ "heightened-spell": {
+  "_self": true,
+  "entries": [
+   "Quando lanci un incantesimo che costringe una creatura a effettuare un tiro salvezza, puoi spendere 2 punti stregoneria per dare a un bersaglio dell'incantesimo {@variantrule Disadvantage|XPHB|svantaggio} ai tiri salvezza contro l'incantesimo."
+  ],
+  "name": "Incantesimo elevato"
+ },
+ "investment-of-the-chain-master": {
+  "_self": true,
+  "entries": [
+   "Quando lanci {@spell Find Familiar|XPHB|trova famiglio}, infondi nel famiglio evocato una parte del tuo potere occulto, concedendo alla creatura i seguenti benefici.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Il famiglio ottiene una {@variantrule Fly Speed|XPHB|velocità di volo} oppure una {@variantrule Swim Speed|XPHB|velocità di nuoto} (a tua scelta) di 12 metri."
+      ],
+      "name": "Aereo o acquatico"
+     },
+     {
+      "entries": [
+       "Come {@variantrule Bonus Action|XPHB|azione bonus}, puoi comandare al famiglio di effettuare l'azione di {@action Attack|XPHB|Attacco}."
+      ],
+      "name": "Attacco rapido"
+     },
+     {
+      "entries": [
+       "Ogni volta che il famiglio infligge danni contundenti, perforanti o taglienti, puoi far sì che infligga invece danni necrotici o radiosi."
+      ],
+      "name": "Danni necrotici o radiosi"
+     },
+     {
+      "entries": [
+       "Se il famiglio costringe una creatura a effettuare un tiro salvezza, questa usa la CD dei tuoi incantesimi."
+      ],
+      "name": "La tua CD del tiro salvezza"
+     },
+     {
+      "entries": [
+       "Quando il famiglio subisce danni, puoi usare una {@variantrule Reaction|XPHB|reazione} per concedergli {@variantrule Resistance|XPHB|resistenza} a quei danni."
+      ],
+      "name": "Resistenza"
+     }
+    ]
+   }
+  ],
+  "name": "Investitura del maestro delle catene"
+ },
+ "lessons-of-the-first-ones": {
+  "_self": true,
+  "entries": [
+   "Hai ricevuto conoscenza da un'entità antica del multiverso, che ti permette di ottenere un {@filter talento Origini|feats|category=o} a tua scelta.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Puoi ottenere questa supplica più di una volta. Ogni volta che lo fai, scegli un talento Origini diverso."
+      ],
+      "name": "Ripetibile"
+     }
+    ]
+   }
+  ],
+  "name": "Insegnamenti dei primigeni"
+ },
+ "lifedrinker": {
+  "_self": true,
+  "entries": [
+   "Una volta per turno, quando colpisci una creatura con la tua arma del patto, puoi infliggerle {@damage 1d6} danni necrotici, psichici o radiosi extra (a tua scelta) e puoi consumare uno dei tuoi {@variantrule Hit Point Dice|XPHB|Dadi Vita} per tirarlo e recuperare un numero di {@variantrule Hit Points|XPHB|punti ferita} pari al risultato più il tuo modificatore di Costituzione (minimo 1 {@variantrule Hit Points|XPHB|punto ferita})."
+  ],
+  "name": "Succhiavita"
+ },
+ "lunging-attack": {
+  "_self": true,
+  "entries": [
+   "Come {@variantrule Bonus Action|XPHB|azione bonus}, puoi consumare un dado Superiorità ed effettuare l'azione di {@action Dash|XPHB|Scatto}. Se ti muovi in linea retta per almeno 1,5 metri immediatamente prima di colpire con un attacco in mischia come parte dell'azione di {@action Attack|XPHB|Attacco} in questo turno, puoi aggiungere il dado Superiorità al tiro per i danni dell'attacco."
+  ],
+  "name": "Affondo"
+ },
+ "maneuvering-attack": {
+  "_self": true,
+  "entries": [
+   "Quando colpisci una creatura con un tiro per colpire, puoi consumare un dado Superiorità per far manovrare uno dei tuoi compagni in un'altra posizione. Aggiungi il risultato del dado Superiorità al tiro per i danni dell'attacco e scegli una creatura consenziente che può vederti o sentirti. Quella creatura può usare la propria {@variantrule Reaction|XPHB|reazione} per muoversi fino a metà della propria {@variantrule Speed|XPHB|velocità} senza provocare un {@action Opportunity Attack|XPHB|attacco di opportunità} da parte del bersaglio del tuo attacco."
+  ],
+  "name": "Attacco di manovra"
+ },
+ "mask-of-many-faces": {
+  "_self": true,
+  "entries": [
+   "Puoi lanciare {@spell Disguise Self|XPHB|camuffare se stesso} senza consumare uno slot incantesimo."
+  ],
+  "name": "Maschera dai mille volti"
+ },
+ "master-of-myriad-forms": {
+  "_self": true,
+  "entries": [
+   "Puoi lanciare {@spell Alter Self|XPHB|alterare se stesso} senza consumare uno slot incantesimo."
+  ],
+  "name": "Padrone delle mille forme"
+ },
+ "menacing-attack": {
+  "_self": true,
+  "entries": [
+   "Quando colpisci una creatura con un tiro per colpire, puoi consumare un dado Superiorità per tentare di spaventare il bersaglio. Aggiungi il dado Superiorità al tiro per i danni dell'attacco. Il bersaglio deve superare un tiro salvezza su Saggezza, altrimenti ottiene la condizione {@condition Frightened|XPHB|spaventato} fino alla fine del tuo turno successivo."
+  ],
+  "name": "Attacco minaccioso"
+ },
+ "misty-visions": {
+  "_self": true,
+  "entries": [
+   "Puoi lanciare {@spell Silent Image|XPHB|immagine silenziosa} senza consumare uno slot incantesimo."
+  ],
+  "name": "Visioni velate"
+ },
+ "one-with-shadows": {
+  "_self": true,
+  "entries": [
+   "Finché ti trovi in un'area di {@variantrule Dim Light|XPHB|luce fioca} o {@variantrule Darkness|XPHB|oscurità}, puoi lanciare {@spell Invisibility|XPHB|invisibilità} su te stesso senza consumare uno slot incantesimo."
+  ],
+  "name": "Tutt'uno con le ombre"
+ },
+ "otherworldly-leap": {
+  "_self": true,
+  "entries": [
+   "Puoi lanciare {@spell Jump|XPHB|salto} su te stesso senza consumare uno slot incantesimo."
+  ],
+  "name": "Balzo ultraterreno"
+ },
+ "pact-of-the-blade": {
+  "_self": true,
+  "entries": [
+   "Come {@variantrule Bonus Action|XPHB|azione bonus}, puoi evocare un'arma del patto nella tua mano — un'arma da mischia semplice o da guerra a tua scelta con cui crei un legame — oppure creare un legame con un'arma magica che tocchi; non puoi legarti a un'arma magica se un'altra creatura vi è sintonizzata o se un altro warlock vi è legato. Finché il legame non termina, hai competenza con l'arma e puoi usarla come {@variantrule Spellcasting Focus|XPHB|focus da incantatore}.",
+   "Ogni volta che attacchi con l'arma a cui sei legato, puoi usare il tuo modificatore di Carisma per i tiri per colpire e per i danni al posto di Forza o Destrezza, e puoi far sì che l'arma infligga danni necrotici, psichici o radiosi oppure il suo tipo di danno normale.",
+   "Il tuo legame con l'arma termina se usi di nuovo l'{@variantrule Bonus Action|XPHB|azione bonus} di questo privilegio, se l'arma rimane a più di 1,5 metri da te per 1 minuto o più, oppure se muori. Un'arma evocata scompare quando il legame termina."
+  ],
+  "name": "Patto della Lama"
+ },
+ "pact-of-the-chain": {
+  "_self": true,
+  "entries": [
+   "Impari l'incantesimo {@spell Find Familiar|XPHB|trova famiglio} e puoi lanciarlo come azione di {@action Magic|XPHB|Magia} senza consumare uno slot incantesimo.",
+   "Quando lanci l'incantesimo, scegli una delle forme normali per il tuo famiglio oppure una delle seguenti forme speciali: {@creature Imp|XMM|diavoletto}, {@creature Pseudodragon|XMM|pseudodrago}, {@creature Quasit|XMM|quasit}, {@creature Skeleton|XMM|scheletro}, {@creature Slaad Tadpole|XMM|girino slaad}, {@creature Sphinx of Wonder|XMM|sfinge della meraviglia}, {@creature Sprite|XMM|folletto} o {@creature Venomous Snake|XMM|serpente velenoso} (vedi l'appendice B per la scheda delle statistiche del famiglio).",
+   "Inoltre, quando effettui l'azione di {@action Attack|XPHB|Attacco}, puoi rinunciare a uno dei tuoi attacchi per permettere al tuo famiglio di effettuare un proprio attacco con la sua {@variantrule Reaction|XPHB|reazione}."
+  ],
+  "name": "Patto della Catena"
+ },
+ "pact-of-the-tome": {
+  "_self": true,
+  "entries": [
+   "Intrecciando fili d'ombra, evochi un libro nella tua mano al termine di un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}. Questo Libro delle Ombre (di cui decidi tu l'aspetto) contiene magia occulta a cui solo tu puoi accedere, concedendoti i benefici indicati di seguito. Il libro scompare se evochi un altro libro con questo privilegio oppure se muori.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Quando il libro compare, scegli tre {@filter trucchetti|spells|level=0} e due {@filter incantesimi di 1º livello|spells|level=1|components & miscellaneous=ritual} che possiedano il descrittore {@variantrule Ritual|XPHB|rituale}. Gli incantesimi possono provenire dalla lista di incantesimi di qualsiasi classe e devono essere incantesimi che non hai già preparato. Finché porti il libro con te, hai gli incantesimi scelti preparati, e per te funzionano come incantesimi da warlock."
+      ],
+      "name": "Trucchetti e rituali"
+     },
+     {
+      "entries": [
+       "Puoi usare il libro come {@variantrule Spellcasting Focus|XPHB|focus da incantatore}."
+      ],
+      "name": "Focus da incantatore"
+     }
+    ]
+   }
+  ],
+  "name": "Patto del Tomo"
+ },
+ "parry": {
+  "_self": true,
+  "entries": [
+   "Quando un'altra creatura ti infligge danni con un tiro per colpire in mischia, puoi usare una {@variantrule Reaction|XPHB|reazione} e consumare un dado Superiorità per ridurre i danni di un ammontare pari al numero ottenuto tirando il dado Superiorità, più il tuo modificatore di Forza o Destrezza (a tua scelta)."
+  ],
+  "name": "Parata"
+ },
+ "precision-attack": {
+  "_self": true,
+  "entries": [
+   "Quando fallisci un tiro per colpire, puoi consumare un dado Superiorità, tirarlo e aggiungerlo al tiro per colpire, rendendo così possibile che l'attacco vada comunque a segno."
+  ],
+  "name": "Attacco di precisione"
+ },
+ "pushing-attack": {
+  "_self": true,
+  "entries": [
+   "Quando colpisci una creatura con un tiro per colpire effettuato con un'arma o un {@variantrule Unarmed Strike|XPHB|colpo senz'armi}, puoi consumare un dado Superiorità per tentare di respingere il bersaglio. Aggiungi il dado Superiorità al tiro per i danni dell'attacco. Se il bersaglio è di taglia Grande o inferiore, deve superare un tiro salvezza su Forza, altrimenti viene spinto in linea retta fino a 4,5 metri lontano da te."
+  ],
+  "name": "Attacco a spinta"
+ },
+ "quickened-spell": {
+  "_self": true,
+  "entries": [
+   "Quando lanci un incantesimo con un tempo di lancio pari a un'azione, puoi spendere 2 punti stregoneria per cambiare il tempo di lancio in un'{@variantrule Bonus Action|XPHB|azione bonus} per questo lancio. Non puoi modificare un incantesimo in questo modo se hai già lanciato un incantesimo di 1º livello o superiore in questo turno, né puoi lanciare un incantesimo di 1º livello o superiore in questo turno dopo aver modificato un incantesimo in questo modo."
+  ],
+  "name": "Incantesimo accelerato"
+ },
+ "rally": {
+  "_self": true,
+  "entries": [
+   "Come {@variantrule Bonus Action|XPHB|azione bonus}, puoi consumare un dado Superiorità per rafforzare la determinazione di un compagno. Scegli un tuo alleato entro 9 metri da te che può vederti o sentirti. Quella creatura ottiene {@variantrule Temporary Hit Points|XPHB|punti ferita temporanei} pari al risultato del dado Superiorità più metà del tuo livello da guerriero (arrotondando per difetto)."
+  ],
+  "name": "Incitamento"
+ },
+ "repelling-blast": {
+  "_self": true,
+  "entries": [
+   "Scegli uno dei {@filter trucchetti da warlock|spells|level=0|class=Warlock|spell attack=m;r;o} che conosci e che richiede un tiro per colpire. Quando colpisci con quel trucchetto una creatura di taglia Grande o inferiore, puoi spingerla in linea retta fino a 3 metri lontano da te.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Puoi ottenere questa supplica più di una volta. Ogni volta che lo fai, scegli un trucchetto idoneo diverso."
+      ],
+      "name": "Ripetibile"
+     }
+    ]
+   }
+  ],
+  "name": "Deflagrazione repellente"
+ },
+ "riposte": {
+  "_self": true,
+  "entries": [
+   "Quando una creatura fallisce un tiro per colpire in mischia contro di te, puoi usare una {@variantrule Reaction|XPHB|reazione} e consumare un dado Superiorità per effettuare un tiro per colpire in mischia con un'arma o un {@variantrule Unarmed Strike|XPHB|colpo senz'armi} contro quella creatura. Se colpisci, aggiungi il dado Superiorità ai danni dell'attacco."
+  ],
+  "name": "Risposta"
+ },
+ "seeking-spell": {
+  "_self": true,
+  "entries": [
+   "Se effettui un tiro per colpire per un incantesimo e fallisci, puoi spendere 1 punto stregoneria per tirare di nuovo il {@dice d20} e devi usare il nuovo risultato.",
+   "Puoi usare Incantesimo mirato anche se hai già usato una diversa opzione di Metamagia durante il lancio dell'incantesimo."
+  ],
+  "name": "Incantesimo mirato"
+ },
+ "subtle-spell": {
+  "_self": true,
+  "entries": [
+   "Quando lanci un incantesimo, puoi spendere 1 punto stregoneria per lanciarlo senza componenti Verbali, Somatiche o Materiali, eccetto le componenti Materiali che vengono consumate dall'incantesimo o che hanno un costo specificato nell'incantesimo."
+  ],
+  "name": "Incantesimo sottile"
+ },
+ "sweeping-attack": {
+  "_self": true,
+  "entries": [
+   "Quando colpisci una creatura con un tiro per colpire in mischia effettuato con un'arma o un {@variantrule Unarmed Strike|XPHB|colpo senz'armi}, puoi consumare un dado Superiorità per tentare di danneggiare un'altra creatura. Scegli un'altra creatura entro 1,5 metri dal bersaglio originale e entro la tua portata. Se il tiro per colpire originale avrebbe colpito anche la seconda creatura, questa subisce danni pari al numero ottenuto tirando il tuo dado Superiorità. I danni sono dello stesso tipo di quelli inflitti dall'attacco originale."
+  ],
+  "name": "Fendente"
+ },
+ "tactical-assessment": {
+  "_self": true,
+  "entries": [
+   "Quando effettui una prova di Intelligenza ({@skill History|XPHB|Storia} o {@skill Investigation|XPHB|Indagare}) oppure una prova di Saggezza ({@skill Insight|XPHB|Intuizione}), puoi consumare un dado Superiorità e aggiungerlo alla prova di caratteristica."
+  ],
+  "name": "Valutazione tattica"
+ },
+ "thirsting-blade": {
+  "_self": true,
+  "entries": [
+   "Ottieni il privilegio Attacco extra, valido solo per la tua arma del patto. Grazie a questo privilegio, puoi attaccare due volte con l'arma anziché una quando effettui l'azione di {@action Attack|XPHB|Attacco} nel tuo turno."
+  ],
+  "name": "Lama assetata"
+ },
+ "transmuted-spell": {
+  "_self": true,
+  "entries": [
+   "Quando lanci un incantesimo che infligge un tipo di danno tra quelli della lista seguente, puoi spendere 1 punto stregoneria per cambiare quel tipo di danno in uno degli altri tipi elencati: acido, freddo, fuoco, fulmine, veleno, tuono."
+  ],
+  "name": "Incantesimo trasmutato"
+ },
+ "trip-attack": {
+  "_self": true,
+  "entries": [
+   "Quando colpisci una creatura con un tiro per colpire effettuato con un'arma o un {@variantrule Unarmed Strike|XPHB|colpo senz'armi}, puoi consumare un dado Superiorità e aggiungerlo al tiro per i danni dell'attacco. Se il bersaglio è di taglia Grande o inferiore, deve superare un tiro salvezza su Forza, altrimenti ottiene la condizione {@condition Prone|XPHB|prono}."
+  ],
+  "name": "Sgambetto"
+ },
+ "twinned-spell": {
+  "_self": true,
+  "entries": [
+   "Quando lanci un incantesimo, come ad esempio {@spell Charm Person|XPHB|charme su persone}, che può essere lanciato con uno slot incantesimo di livello superiore per avere come bersaglio una creatura aggiuntiva, puoi spendere 1 punto stregoneria per aumentare di 1 il livello effettivo dell'incantesimo."
+  ],
+  "name": "Incantesimo gemellato"
+ },
+ "visions-of-distant-realms": {
+  "_self": true,
+  "entries": [
+   "Puoi lanciare {@spell Arcane Eye|XPHB|occhio arcano} senza consumare uno slot incantesimo."
+  ],
+  "name": "Visioni di reami lontani"
+ },
+ "whispers-of-the-grave": {
+  "_self": true,
+  "entries": [
+   "Puoi lanciare {@spell Speak with Dead|XPHB|parlare con i morti} senza consumare uno slot incantesimo."
+  ],
+  "name": "Sussurri dalla tomba"
+ },
+ "witch-sight": {
+  "_self": true,
+  "entries": [
+   "Hai {@sense Truesight|XPHB|vista pura} con un raggio di 9 metri."
+  ],
+  "name": "Vista della strega"
+ }
+}
