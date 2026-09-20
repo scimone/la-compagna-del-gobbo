@@ -100,6 +100,25 @@ _TOOL_CHOICE_LABELS = {
     "anyArtisansTool": ("an artisan's tool", "uno strumento da artigiano"),
     "anyGamingSet": ("a gaming set", "un gioco"),
 }
+# `Feat.category` is decoded from the source's short code at import time (see the model's
+# docstring) - a raw code, not `entries` prose, so it's translated the same way as the codes
+# above rather than through the overlay pipeline. "Fighting Style (P)"/"(R)" sub-variants keep
+# their parenthetical suffix as-is (a class-group marker, not English prose) - only the base
+# category word is looked up, see `_format_feat_category()`.
+_FEAT_CATEGORY_LABELS = {
+    "Epic Boon": ("Epic Boon", "Dono epico"),
+    "Fighting Style": ("Fighting Style", "Stile di combattimento"),
+    "General": ("General", "Generale"),
+    "Origin": ("Origin", "Origini"),
+}
+
+
+def _format_feat_category(category: str) -> str:
+    base, _paren, suffix = category.partition(" (")
+    label = _pick_translation(_FEAT_CATEGORY_LABELS, base)
+    return f"{label} ({suffix}" if suffix else label
+
+
 # `Spell.school`/`Spell.casting_time` are raw structured data (not `entries` prose), so they're
 # never touched by the translation pipeline at all - these are the fixed vocabularies that need
 # translating for display, same treatment as the other closed-vocabulary dicts above. Note the
@@ -208,15 +227,39 @@ def _ability_names() -> dict[str, str]:
     return dict(Ability.objects.values_list("pk", "name"))
 
 
+def _classes_by_name() -> dict[str, Class]:
+    """`{English class name: Class}` for every real `Class` row - one query per call, so
+    `_format_spell_classes()` doesn't issue one per entry in `Spell.classes`.
+    """
+    return {c.name_en: c for c in Class.objects.all()}
+
+
 def _class_name(english_name: str) -> str:
     """A `Spell.classes` entry's own (already-translated) `Class.name` where `english_name`
     matches a real class, else its `_CLASS_NAME_FALLBACKS` entry (just "Artificer" today), else
-    unchanged.
+    unchanged. For the filter dropdown, which only needs the label, not a link.
     """
-    klass = Class.objects.filter(name_en=english_name).first()
+    klass = _classes_by_name().get(english_name)
     if klass:
         return klass.name
     return _pick_translation(_CLASS_NAME_FALLBACKS, english_name)
+
+
+def _format_spell_classes(class_names: list[str]) -> str:
+    """`Spell.classes` (plain English names, see the model's docstring) as a comma-separated list
+    of links to each class's own detail page - except "Artificer" (not one of this project's
+    `Class` rows), which stays plain text.
+    """
+    classes_by_name = _classes_by_name()
+    parts = []
+    for name in class_names:
+        klass = classes_by_name.get(name)
+        if klass:
+            url = reverse("world-class-detail", args=[klass.pk])
+            parts.append(format_html('<a href="{}">{}</a>', url, klass.name))
+        else:
+            parts.append(_pick_translation(_CLASS_NAME_FALLBACKS, name))
+    return format_html_join(", ", "{}", ((part,) for part in parts))
 
 
 def _proficiency_label(code: str) -> str:
@@ -577,7 +620,8 @@ def world_backgrounds(request):
         backgrounds = _by_name(backgrounds, q)
     items = [
         {
-            "name": b.name,
+            "name": _badged_heading(b.name, _self_translated(b, "name")),
+            "detail": b.short_description,
             "url": reverse("world-background-detail", args=[b.pk]),
             "image": _menu_image_url(
                 "backgrounds", f"{_BACKGROUND_IMAGE_SLUGS.get(b.id, b.id)}.jpeg"
@@ -642,7 +686,7 @@ def world_classes(request):
         classes = _by_name(classes, q)
     items = [
         {
-            "name": c.name,
+            "name": _badged_heading(c.name, _self_translated(c, "name")),
             "detail": c.short_description,
             "url": reverse("world-class-detail", args=[c.pk]),
             "image": _menu_image_url("classes", f"{c.id}-grey.png"),
@@ -656,7 +700,7 @@ def world_classes(request):
         subclasses = _by_name(Subclass.objects.all(), q).select_related("klass")
         items += [
             {
-                "name": sc.name,
+                "name": _badged_heading(sc.name, _self_translated(sc, "name")),
                 "detail": _("Subclass of %(klass)s") % {"klass": sc.klass.name},
                 "url": f"{reverse('world-class-detail', args=[sc.klass_id])}?tab=subclasses",
             }
@@ -667,7 +711,7 @@ def world_classes(request):
         )
         items += [
             {
-                "name": feature.name,
+                "name": _badged_heading(feature.name, _self_translated(feature, "name")),
                 "detail": _("Feature of %(klass)s (Level %(level)s)")
                 % {
                     "klass": feature.class_level.klass.name,
@@ -811,7 +855,7 @@ def world_feats(request):
         request,
         "category",
         _("Category"),
-        [(c, c) for c in feat_service.list_categories()],
+        [(c, _format_feat_category(c)) for c in feat_service.list_categories()],
         all_label=_("All categories"),
     )
     feats = feat_service.list_feats()
@@ -821,8 +865,8 @@ def world_feats(request):
         feats = feat_service.matching_category(feats, category_filter["value"])
     items = [
         {
-            "name": f.name,
-            "detail": f.category,
+            "name": _badged_heading(f.name, _self_translated(f, "name")),
+            "detail": _format_feat_category(f.category),
             "url": reverse("world-feat-detail", args=[f.pk]),
             # "Fighting Style (P)"/"(R)" sub-variants share their base category's artwork.
             "image": _menu_image_url(
@@ -846,7 +890,7 @@ def world_feats(request):
 def world_feat_detail(request, pk):
     feat = feat_service.get_feat(pk)
 
-    facts = [(_("Category"), feat.category)]
+    facts = [(_("Category"), _format_feat_category(feat.category))]
     if feat.prerequisite:
         facts.append((_("Prerequisite"), _format_prerequisite(feat.prerequisite)))
     facts.append((_("Page"), feat.page))
@@ -873,7 +917,7 @@ def world_species(request):
         species_qs = _by_name(species_qs, q)
     items = [
         {
-            "name": s.name,
+            "name": _badged_heading(s.name, _self_translated(s, "name")),
             "detail": s.short_description,
             "url": reverse("world-species-detail", args=[s.pk]),
             "image": _menu_image_url("species", f"{_SPECIES_IMAGE_SLUGS.get(s.id, s.id)}-grey.png"),
@@ -886,7 +930,7 @@ def world_species(request):
         )
         items += [
             {
-                "name": trait.name,
+                "name": _badged_heading(trait.name, _self_translated(trait, "name")),
                 "detail": _("Trait of %(species)s") % {"species": trait.species.name},
                 "url": f"{reverse('world-species-detail', args=[trait.species_id])}?tab=traits",
             }
@@ -1019,7 +1063,7 @@ def world_spells(request):
         level_text = _("Cantrip") if s.level == 0 else f"{_('Level')} {s.level}"
         items.append(
             {
-                "name": s.name,
+                "name": _badged_heading(s.name, _self_translated(s, "name")),
                 "detail": f"{level_text} · {_pick_translation(_SCHOOL_LABELS, s.school)}",
                 "url": reverse("world-spell-detail", args=[s.pk]),
                 # The image filename is keyed by the school's own *English* name (a fixed set of
@@ -1066,7 +1110,7 @@ def world_spell_detail(request, pk):
     if saving_throws:
         facts.append((_("Saving Throw"), saving_throws))
     if spell.classes:
-        facts.append((_("Classes"), ", ".join(_class_name(c) for c in spell.classes)))
+        facts.append((_("Classes"), _format_spell_classes(spell.classes)))
     facts.append((_("Page"), spell.page))
 
     description_heading = _badged_heading(_("Description"), _self_translated(spell, "entries"))

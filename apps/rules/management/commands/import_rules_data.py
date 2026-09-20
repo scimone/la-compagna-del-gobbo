@@ -132,6 +132,25 @@ SPECIES_SHORT_DESCRIPTIONS = {
     "tiefling": "Mortals marked by an infernal bloodline.",
 }
 
+BACKGROUND_SHORT_DESCRIPTIONS = {
+    "acolyte": "A devoted servant of a temple and its faith.",
+    "artisan": "A skilled crafter who trades in fine goods.",
+    "charlatan": "A smooth-talking con artist and swindler.",
+    "criminal": "A survivor of the streets and the underworld.",
+    "entertainer": "A performer who thrives on a crowd's attention.",
+    "farmer": "A hardy tender of the land and its harvest.",
+    "guard": "A vigilant watcher of gates, walls, and law.",
+    "guide": "A seasoned pathfinder of wilderness and ruin.",
+    "hermit": "A solitary seeker of quiet and hidden truths.",
+    "merchant": "A shrewd trader who lives by the deal.",
+    "noble": "A well-born heir to wealth and influence.",
+    "sage": "A tireless scholar in pursuit of knowledge.",
+    "sailor": "A weathered wanderer of the open seas.",
+    "scribe": "A meticulous keeper of words and records.",
+    "soldier": "A disciplined veteran forged by war.",
+    "wayfarer": "A resourceful drifter who lives by their wits.",
+}
+
 
 def _load(filename: str) -> dict:
     with open(DB_DIR / filename, encoding="utf-8") as f:
@@ -1027,6 +1046,7 @@ class Command(BaseCommand):
                 Background(
                     id=_slug(it["name"]),
                     name=it["name"],
+                    short_description=BACKGROUND_SHORT_DESCRIPTIONS.get(_slug(it["name"]), ""),
                     page=it["page"],
                     srd=bool(it.get("srd52", False)),
                     ability_scores=it.get("ability", []),

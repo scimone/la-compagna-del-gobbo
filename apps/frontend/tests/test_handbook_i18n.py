@@ -1,3 +1,5 @@
+import re
+
 import pytest
 from django.core.management import call_command
 
@@ -151,23 +153,40 @@ def test_spell_school_casting_time_and_classes_are_translated_in_italian(client,
     assert "Evocation" not in html
     assert "1 azione bonus, che compi subito dopo aver colpito" in html
     assert '<a href="/world/rules/unarmed-strike/">colpo senz&#x27;armi</a>' in html
-    assert "Paladino" in html
+    assert '<a href="/world/classes/paladin/">Paladino</a>' in html
     assert "Bonus Action" not in html
 
     html = _get(client, "/world/spells/divine-smite/", "en")
     assert "Evocation" in html
     assert "1 bonus action, which you take immediately after hitting" in html
-    assert "Paladin" in html
+    assert '<a href="/world/classes/paladin/">Paladin</a>' in html
 
     # Summon Fiend: a Conjuration spell (translated "Evocazione"), cast by Warlocks.
     html = _get(client, "/world/spells/summon-fiend/", "it")
     assert "Evocazione" in html
     assert "Conjuration" not in html
 
-    # Wish: cast by both Sorcerers and Wizards - every class in `Spell.classes` is translated,
-    # not just the first.
+    # Wish: cast by both Sorcerers and Wizards - every class in `Spell.classes` is translated
+    # and linked, not just the first.
     html = _get(client, "/world/spells/wish/", "it")
-    assert "Stregone, Mago" in html
+    assert (
+        '<a href="/world/classes/sorcerer/">Stregone</a>, <a href="/world/classes/wizard/">Mago</a>'
+    ) in html
+
+
+def test_spell_classes_are_clickable_except_for_a_class_with_no_own_page(client, catalogs):
+    # Acid Splash is cast by the Artificer too, which isn't one of this project's Class rows
+    # (see Spell's docstring) - it shows as plain text, not a broken link, alongside real ones.
+    html = _get(client, "/world/spells/acid-splash/", "it")
+    assert "Artefice, " in html
+    assert '<a href="/world/classes/sorcerer/">Stregone</a>' in html
+    assert '<a href="/world/classes/wizard/">Mago</a>' in html
+    assert '"/world/classes/artefice/"' not in html
+    assert "Artificer" not in html
+
+    html = _get(client, "/world/spells/acid-splash/", "en")
+    assert "Artificer, " in html
+    assert '<a href="/world/classes/sorcerer/">Sorcerer</a>' in html
 
 
 def test_spell_filters_show_translated_school_class_and_casting_time_labels(client, catalogs):
@@ -275,6 +294,61 @@ def test_species_size_and_creature_type_are_translated_in_italian(client, catalo
     html = _get(client, "/world/species/human/", "en")
     assert "Small/Medium" in html
     assert "Humanoid" in html
+
+
+def test_feat_category_is_translated_in_italian(client, catalogs):
+    html = _get(client, "/world/feats/ability-score-improvement/", "it")
+    assert "Generale" in html
+
+    # Alert is an Origin feat.
+    html = _get(client, "/world/feats/alert/", "it")
+    assert "Origini" in html
+
+    # The category filter's displayed labels are translated - its underlying `value="..."`
+    # attributes correctly stay the raw English category (matching a Feat's own DB column,
+    # same as every other checklist/pill filter in this project), so this only checks the
+    # labels a person actually reads.
+    html = _get(client, "/world/feats/", "it")
+    assert "Stile di combattimento" in html
+    assert "Dono epico" in html
+
+    html = _get(client, "/world/feats/ability-score-improvement/", "en")
+    assert "General" in html
+
+
+def test_background_list_shows_a_one_line_description(client, catalogs):
+    html = _get(client, "/world/backgrounds/", "it")
+    assert "Un devoto servitore di un tempio e della sua fede." in html
+
+    html = _get(client, "/world/backgrounds/", "en")
+    assert "A devoted servant of a temple and its faith." in html
+
+
+def _item_name_html(html: str, name: str) -> str:
+    """The `<span class="item-name">...</span>` block for a list item named `name` - so a badge
+    check doesn't accidentally spill into a neighboring item's own markup.
+    """
+    match = re.search(rf'<span class="item-name">{re.escape(name)}.*?</span>', html, re.S)
+    assert match, f"{name!r} not found as a list item-name"
+    return match.group(0)
+
+
+def test_list_pages_show_the_translated_badge_next_to_a_hand_translated_title(client, catalogs):
+    # Actor (a feat) and Artisan (a background) are both fully hand-translated, including their
+    # `name` - the World list pages should flag them the same way their detail pages do.
+    html = _get(client, "/world/feats/", "it")
+    assert _BADGE in _item_name_html(html, "Attore")
+
+    html = _get(client, "/world/feats/", "en")
+    assert "Attore" not in html  # English site shows the English name instead
+    assert _BADGE not in html
+
+    html = _get(client, "/world/backgrounds/", "it")
+    assert _BADGE in _item_name_html(html, "Artigiano")
+
+    # Alert (an SRD feat, officially translated) shows no badge.
+    html = _get(client, "/world/feats/", "it")
+    assert _BADGE not in _item_name_html(html, "Allerta")
 
 
 _BADGE = '<span class="self-translated-badge"'

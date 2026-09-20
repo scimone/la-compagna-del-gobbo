@@ -22,10 +22,15 @@ class Background(models.Model):
 
     `lore` has no source in this `db/` drop (no fluff file ships yet) - kept on the model and left
     empty until one is added; see `docs/data_migration_2025.md`.
+
+    `short_description` has no source in `db/` either (same as `Class.short_description`/
+    `Species.short_description`) - a hand-written one-line World-menu blurb, from
+    `BACKGROUND_SHORT_DESCRIPTIONS` in `import_rules_data.py`.
     """
 
     id = models.SlugField(primary_key=True, max_length=100)
     name = models.CharField(max_length=200)
+    short_description = models.CharField(max_length=150, blank=True, default="")
     page = models.PositiveSmallIntegerField()
     srd = models.BooleanField(default=False)
     self_translated_fields = models.JSONField(default=list, blank=True)

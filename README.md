@@ -814,16 +814,40 @@ features) and `_CASTING_TIME_UNIT_LABELS` are `(english, italian)` dicts like th
 `_CASTING_TIME_CONDITIONS` (a Reaction spell's free-text trigger, e.g. "which you take when you
 are hit by an attack roll...") is instead a plain `{english: italian}` lookup by exact sentence,
 since there are only ever a handful of distinct ones across the whole catalog and it's prose, not
-a code; `_class_name()` resolves a `classes` entry through the matching `Class.name` (already
-translated) with one hardcoded fallback, `"Artificer"` (not one of this project's `Class` rows -
-see the model's docstring), the same shape as `_proficiency_label()`'s `Equipment` lookup above.
-Fixing `_format_casting_time()` also surfaced a pre-existing bug in *both* languages: a
-condition's `{@variantrule ...}` markup was being shown as a literal, un-rendered tag rather than
-resolved to a link, since a fact's value only ever went through a plain `{{ value }}` (auto-
-escaping, no tag handling) - now routed through the new `entries_render.render_text()`, the same
-tag resolution `entries` prose gets but without its `<p>` wrapper, since this is one short phrase
-inside a larger sentence, not a block of its own. The World > Spells filter row and each spell's
-list-page subtitle went through the same fix for `school`/`classes`/`casting_time` labels.
+a code; `_classes_by_name()` resolves each `classes` entry through the matching `Class.name`
+(already translated) with one hardcoded fallback, `"Artificer"` (not one of this project's
+`Class` rows - see the model's docstring), the same shape as `_proficiency_label()`'s `Equipment`
+lookup above - `_format_spell_classes()` uses it to render each class as a link to its own detail
+page (Artificer stays plain text, since it has no page to link to), and the World > Spells class
+filter's `_class_name()` uses it for a plain label. Fixing `_format_casting_time()` also surfaced
+a pre-existing bug in *both* languages: a condition's `{@variantrule ...}` markup was being shown
+as a literal, un-rendered tag rather than resolved to a link, since a fact's value only ever went
+through a plain `{{ value }}` (auto-escaping, no tag handling) - now routed through the new
+`entries_render.render_text()`, the same tag resolution `entries` prose gets but without its
+`<p>` wrapper, since this is one short phrase inside a larger sentence, not a block of its own.
+The World > Spells filter row and each spell's list-page subtitle went through the same fix for
+`school`/`classes`/`casting_time` labels.
+
+**A Feat's `category`** (e.g. "Fighting Style", "Origin") is the same kind of raw, non-`entries`
+code, decoded from a short source letter at import time (see `Feat`'s docstring) - translated via
+`_FEAT_CATEGORY_LABELS`/`_format_feat_category()`, the same `(english, italian)`-dict pattern,
+on the feat detail page's own Category fact, the Feats list's per-row subtitle, and the category
+filter's pill labels. A "Fighting Style (P)"/"(R)" sub-variant keeps its parenthetical suffix
+untouched (a class-group marker, not English prose) and only translates the base word.
+
+**Every World list page marks a hand-translated title too**, not just its detail page: each
+`items` entry's `"name"` is built with the same `_badged_heading()`/`_self_translated()` pair the
+detail pages use (`obj.name` checked against `self_translated_fields`), so e.g. Artisan (a
+hand-translated background) shows the badge in the Backgrounds list exactly as it does on its own
+page, and an officially-translated row like Alert shows none. This covers every catalog's list
+(Backgrounds, Classes, Feats, Species, Spells) and their in-list search sub-results (Subclasses/
+Features found from the Classes search box, Traits from the Species one).
+
+**`Background` gained a `short_description`** (a one-line World-menu blurb), matching
+`Class.short_description`/`Species.short_description` - it had no such field before, so its list
+page was the only one of the three missing a subtitle. Same shape as those two: hand-written
+English in `BACKGROUND_SHORT_DESCRIPTIONS` (`import_rules_data.py`, no source for it in `db/`
+either) with a hand-translated Italian counterpart in `db/it/backgrounds.json`.
 
 **How it's wired**: `LANGUAGES = [("en", ...), ("it", ...)]` + `LocaleMiddleware` (in
 `config/settings.py`) + `path("i18n/", include("django.conf.urls.i18n"))` (in `config/urls.py`)

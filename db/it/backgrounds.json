@@ -1,7 +1,8 @@
 {
  "acolyte": {
   "_self": [
-   "lore"
+   "lore",
+   "short_description"
   ],
   "entries": [
    {
@@ -32,13 +33,15 @@
   "lore": [
    "Ti sei dedicato al servizio in un tempio, incastonato in una città o nascosto in un boschetto sacro. Lì hai officiato riti in onore di un dio o di un intero pantheon. Hai servito sotto la guida di un sacerdote e hai studiato religione. Grazie agli insegnamenti del tuo sacerdote e alla tua stessa devozione, hai anche imparato a incanalare un poco di potere divino al servizio del tuo luogo di culto e di chi vi pregava."
   ],
-  "name": "Accolito"
+  "name": "Accolito",
+  "short_description": "Un devoto servitore di un tempio e della sua fede."
  },
  "artisan": {
   "_self": [
    "entries",
    "lore",
-   "name"
+   "name",
+   "short_description"
   ],
   "entries": [
    {
@@ -69,13 +72,15 @@
   "lore": [
    "Hai iniziato a lavare pavimenti e banconi nella bottega di un artigiano per pochi soldi di rame al giorno non appena sei stato abbastanza forte da portare un secchio. Quando hai avuto l'età per fare apprendistato, hai imparato a creare i tuoi primi manufatti, oltre a intrattenere con belle parole qualche cliente occasionalmente esigente. Il tuo mestiere ti ha anche dato un occhio attento ai dettagli."
   ],
-  "name": "Artigiano"
+  "name": "Artigiano",
+  "short_description": "Un abile artigiano che commercia manufatti pregiati."
  },
  "charlatan": {
   "_self": [
    "entries",
    "lore",
-   "name"
+   "name",
+   "short_description"
   ],
   "entries": [
    {
@@ -106,11 +111,13 @@
   "lore": [
    "Non appena hai avuto l'età per ordinare una birra, hai presto trovato uno sgabello preferito in ogni taverna nel raggio di quindici chilometri da dove sei nato. Girando da un'osteria all'altra, hai imparato ad approfittare degli sfortunati in cerca di qualche bugia rassicurante — magari una pozione taroccata o documenti d'ascendenza falsificati."
   ],
-  "name": "Ciarlatano"
+  "name": "Ciarlatano",
+  "short_description": "Un truffatore dalla parlantina sciolta e ingannevole."
  },
  "criminal": {
   "_self": [
-   "lore"
+   "lore",
+   "short_description"
   ],
   "entries": [
    {
@@ -141,13 +148,15 @@
   "lore": [
    "Ti sei guadagnato da vivere a stento nei vicoli bui, tagliando borse o svaligiando botteghe. Forse facevi parte di una piccola banda di malfattori che si guardavano le spalle a vicenda. Oppure eri un lupo solitario, capace di cavartela da solo contro la gilda dei ladri locale e criminali ben più temibili."
   ],
-  "name": "Criminale"
+  "name": "Criminale",
+  "short_description": "Un sopravvissuto delle strade e del sottobosco criminale."
  },
  "entertainer": {
   "_self": [
    "entries",
    "lore",
-   "name"
+   "name",
+   "short_description"
   ],
   "entries": [
    {
@@ -178,13 +187,15 @@
   "lore": [
    "Hai trascorso gran parte della tua giovinezza seguendo fiere e carnevali itineranti, svolgendo lavoretti per musicisti e acrobati in cambio di lezioni. Forse hai imparato a camminare sulla corda, a suonare il {@item lute|XPHB|liuto} con uno stile personale, o a recitare poesie con dizione impeccabile. Ancora oggi vivi per gli applausi e desideri ardentemente il palcoscenico."
   ],
-  "name": "Intrattenitore"
+  "name": "Intrattenitore",
+  "short_description": "Un artista che vive per l'attenzione del pubblico."
  },
  "farmer": {
   "_self": [
    "entries",
    "lore",
-   "name"
+   "name",
+   "short_description"
   ],
   "entries": [
    {
@@ -215,13 +226,15 @@
   "lore": [
    "Sei cresciuto a stretto contatto con la terra. Anni passati ad allevare animali e coltivare i campi ti hanno ricompensato con pazienza e buona salute. Hai un profondo apprezzamento per i doni della natura, insieme a un sano rispetto per la sua ira."
   ],
-  "name": "Contadino"
+  "name": "Contadino",
+  "short_description": "Un instancabile coltivatore della terra e dei suoi raccolti."
  },
  "guard": {
   "_self": [
    "entries",
    "lore",
-   "name"
+   "name",
+   "short_description"
   ],
   "entries": [
    {
@@ -252,13 +265,15 @@
   "lore": [
    "Ti fanno male i piedi al solo ricordo delle innumerevoli ore trascorse di guardia nella torre. Sei stato addestrato a tenere un occhio rivolto fuori dalle mura, in cerca di predoni provenienti dalla foresta vicina, e l'altro rivolto dentro le mura, alla ricerca di borseggiatori e piantagrane."
   ],
-  "name": "Guardia"
+  "name": "Guardia",
+  "short_description": "Un vigile custode di porte, mura e legge."
  },
  "guide": {
   "_self": [
    "entries",
    "lore",
-   "name"
+   "name",
+   "short_description"
   ],
   "entries": [
    {
@@ -289,13 +304,15 @@
   "lore": [
    "Sei cresciuto all'aperto, lontano dalle terre abitate. La tua casa era ovunque decidessi di stendere il tuo giaciglio. Nella natura selvaggia si celano meraviglie — mostri strani, foreste e ruscelli incontaminati, rovine coperte di vegetazione di grandi sale un tempo calpestate dai giganti — e hai imparato a cavartela da solo esplorandole. Di tanto in tanto hai fatto da guida a sacerdoti della natura amichevoli, che ti hanno istruito sui rudimenti dell'incanalare la magia selvaggia."
   ],
-  "name": "Guida"
+  "name": "Guida",
+  "short_description": "Un esperto battitore di sentieri tra natura selvaggia e rovine."
  },
  "hermit": {
   "_self": [
    "entries",
    "lore",
-   "name"
+   "name",
+   "short_description"
   ],
   "entries": [
    {
@@ -326,13 +343,15 @@
   "lore": [
    "Hai trascorso i tuoi primi anni isolato in una capanna o in un monastero situato ben oltre la periferia dell'insediamento più vicino. In quei giorni, le tue uniche compagnie erano le creature della foresta e coloro che occasionalmente venivano a portare notizie dal mondo esterno e rifornimenti. La solitudine ti ha permesso di trascorrere molte ore a meditare sui misteri della creazione."
   ],
-  "name": "Eremita"
+  "name": "Eremita",
+  "short_description": "Un solitario cercatore di quiete e verità nascoste."
  },
  "merchant": {
   "_self": [
    "entries",
    "lore",
-   "name"
+   "name",
+   "short_description"
   ],
   "entries": [
    {
@@ -363,13 +382,15 @@
   "lore": [
    "Sei stato apprendista di un mercante, un capo carovana o un bottegaio, imparando i fondamenti del commercio. Hai viaggiato in lungo e in largo, guadagnandoti da vivere comprando e vendendo le materie prime di cui gli artigiani hanno bisogno per il loro mestiere, o le opere finite realizzate da questi ultimi. Potresti aver trasportato merci da un luogo all'altro (via nave, carro o carovana) oppure averle acquistate da mercanti itineranti per poi rivenderle nella tua bottega."
   ],
-  "name": "Mercante"
+  "name": "Mercante",
+  "short_description": "Uno scaltro commerciante che vive di affari."
  },
  "noble": {
   "_self": [
    "entries",
    "lore",
-   "name"
+   "name",
+   "short_description"
   ],
   "entries": [
    {
@@ -400,11 +421,13 @@
   "lore": [
    "Sei cresciuto in un castello, circondato da ricchezza, potere e privilegi. La tua famiglia di piccoli aristocratici si è assicurata che ricevessi un'istruzione di prim'ordine, che in parte hai apprezzato e in parte hai mal sopportato. Il tempo trascorso nel castello, specialmente le molte ore passate a osservare la tua famiglia a corte, ti ha anche insegnato molto sull'arte del comando."
   ],
-  "name": "Nobile"
+  "name": "Nobile",
+  "short_description": "Un erede ben nato di ricchezza e influenza."
  },
  "sage": {
   "_self": [
-   "lore"
+   "lore",
+   "short_description"
   ],
   "entries": [
    {
@@ -435,13 +458,15 @@
   "lore": [
    "Hai trascorso i tuoi anni di formazione viaggiando tra manieri e monasteri, svolgendo vari lavoretti e servizi in cambio dell'accesso alle loro biblioteche. Hai trascorso molte lunghe serate a studiare libri e pergamene, apprendendo la sapienza del multiverso — persino i rudimenti della magia — e la tua mente brama di saperne ancora di più."
   ],
-  "name": "Sapiente"
+  "name": "Sapiente",
+  "short_description": "Uno studioso instancabile in cerca di conoscenza."
  },
  "sailor": {
   "_self": [
    "entries",
    "lore",
-   "name"
+   "name",
+   "short_description"
   ],
   "entries": [
    {
@@ -472,13 +497,15 @@
   "lore": [
    "Hai vissuto come un marinaio, con il vento alle spalle e i ponti ondeggianti sotto i piedi. Ti sei seduto su sgabelli da bar in più porti di quanti tu riesca a ricordare, hai affrontato tempeste possenti e scambiato racconti con genti che vivono sotto le onde."
   ],
-  "name": "Marinaio"
+  "name": "Marinaio",
+  "short_description": "Un vagabondo dei mari, temprato dal viaggio."
  },
  "scribe": {
   "_self": [
    "entries",
    "lore",
-   "name"
+   "name",
+   "short_description"
   ],
   "entries": [
    {
@@ -509,11 +536,13 @@
   "lore": [
    "Hai trascorso i tuoi anni di formazione in uno scriptorium, un monastero dedicato alla conservazione del sapere, o un ufficio governativo, dove hai imparato a scrivere con mano chiara e a produrre testi curati nella forma. Forse hai trascritto documenti governativi o copiato tomi di letteratura. Potresti avere una certa abilità come scrittore di poesia, narrativa o ricerca erudita. Soprattutto, possiedi una scrupolosa attenzione ai dettagli, che ti aiuta a evitare di introdurre errori nei documenti che copi e componi."
   ],
-  "name": "Scriba"
+  "name": "Scriba",
+  "short_description": "Un meticoloso custode di parole e documenti."
  },
  "soldier": {
   "_self": [
-   "lore"
+   "lore",
+   "short_description"
   ],
   "entries": [
    {
@@ -544,13 +573,15 @@
   "lore": [
    "Hai iniziato ad addestrarti per la guerra non appena hai raggiunto l'età adulta e conservi pochissimi ricordi della vita prima di imbracciare le armi. La battaglia ti scorre nel sangue. A volte ti sorprendi a eseguire per riflesso i primi esercizi di combattimento che hai imparato. Alla fine, hai messo in pratica quell'addestramento sul campo di battaglia, proteggendo il regno attraverso la guerra."
   ],
-  "name": "Soldato"
+  "name": "Soldato",
+  "short_description": "Un veterano disciplinato, forgiato dalla guerra."
  },
  "wayfarer": {
   "_self": [
    "entries",
    "lore",
-   "name"
+   "name",
+   "short_description"
   ],
   "entries": [
    {
@@ -581,6 +612,7 @@
   "lore": [
    "Sei cresciuto per strada, circondato da altri reietti dal destino simile al tuo, alcuni amici e altri rivali. Dormivi dove potevi e facevi lavoretti in cambio di cibo. A volte, quando la fame diventava insopportabile, ricorrevi al furto. Eppure non hai mai perso il tuo orgoglio né abbandonato la speranza. Il destino non ha ancora finito con te."
   ],
-  "name": "Viandante"
+  "name": "Viandante",
+  "short_description": "Un vagabondo pieno di risorse che vive di astuzia."
  }
 }

@@ -49,7 +49,7 @@ TRANSLATED_CATALOGS = {
     Feat: ("feats.json", ("name", "entries")),
     Spell: ("spells.json", ("name", "entries", "entries_higher_level")),
     Species: ("species.json", ("name", "short_description", "lore", "entries")),
-    Background: ("backgrounds.json", ("name", "lore", "entries")),
+    Background: ("backgrounds.json", ("name", "short_description", "lore", "entries")),
     Rule: ("rules.json", ("name", "entries")),
     Skill: ("skills.json", ("name", "entries")),
     Sense: ("senses.json", ("name", "entries")),

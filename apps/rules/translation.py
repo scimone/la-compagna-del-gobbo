@@ -59,7 +59,7 @@ class SpeciesTranslationOptions(TranslationOptions):
 
 @register(Background)
 class BackgroundTranslationOptions(TranslationOptions):
-    fields = ("name", "lore", "entries")
+    fields = ("name", "short_description", "lore", "entries")
 
 
 @register(Rule)
