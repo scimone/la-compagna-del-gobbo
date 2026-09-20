@@ -188,30 +188,36 @@
       stroke: var(--surface);
     }
 
-    /* Header link to the account page, right of the language switch: a circle with the
-       signed-in name's first letter (accent-coloured), or the word "Login" while signed out. */
+    /* Header link to the account page, right of the language switch. Signed out it is the word
+       "Login" in a button shaped exactly like the language switch; signed in it becomes a circle
+       holding the first letter of the signed-in name (accent-coloured). */
     .account-link {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 2.2rem;
-      height: 2.2rem;
       box-sizing: border-box;
       border: 1px solid var(--border);
       background: var(--surface);
       color: var(--muted);
-      border-radius: 50%;
+      border-radius: 0.5rem;
+      padding: 0.35rem 0.7rem;
       text-decoration: none;
-      font-size: 0.55rem;
-      font-weight: 700;
-      line-height: 1;
+      font-size: 0.8rem;
+      font-weight: 600;
+      line-height: normal;
       touch-action: manipulation;
     }
 
     .account-link.signed-in {
-      color: var(--accent);
+      width: 2.2rem;
+      height: 2.2rem;
+      padding: 0;
       border: 2px solid var(--accent);
+      border-radius: 50%;
+      color: var(--accent);
       font-size: 1rem;
+      font-weight: 700;
+      line-height: 1;
     }
 
     .lang-switcher button {
@@ -221,6 +227,9 @@
       color: var(--muted);
       border-radius: 0.5rem;
       padding: 0.35rem 0.7rem;
+      /* Buttons don't inherit the page font by default; the "Login" link next to this button must
+         be set in exactly the same face to line up with it. */
+      font-family: inherit;
       font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;

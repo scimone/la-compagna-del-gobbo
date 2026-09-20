@@ -746,9 +746,10 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     authentication: anyone can type anyone else's name. Accounts are created with an *unusable*
     password, so real password auth later is just `set_password()` plus a password field on
     `SignInForm` - no schema change - and name-only sign-in is refused for any account that
-    already has a usable password (e.g. a `createsuperuser` admin). The header's round account
-    button (right of the language switch) links to the account page: it shows the first letter
-    of the signed-in name (accent-coloured), or "Login" while signed out. Nothing else is per-account yet:
+    already has a usable password (e.g. a `createsuperuser` admin). The header's account button
+    (right of the language switch) links to the account page: signed in it is a circle with the
+    first letter of the name (accent-coloured); signed out it reads "Login" and is shaped exactly
+    like the language button. Nothing else is per-account yet:
     `characters` still has no ownership.
   - The Handbook's **Rules Glossary** row is `featured` (solid accent block with an icon) - it's
     a catalog index, not a chapter like the rows below it.
