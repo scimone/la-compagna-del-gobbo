@@ -137,7 +137,8 @@
     }
 
     .lang-switcher,
-    .bookmark-toggle {
+    .bookmark-toggle,
+    .account-link {
       margin: 0;
       flex-shrink: 0;
     }
@@ -185,6 +186,31 @@
 
     .bookmark-btn.active .icon-on path:last-child {
       stroke: var(--surface);
+    }
+
+    /* Header link to the account page (sign in / who you are): a person icon, accent-coloured
+       while signed in. */
+    .account-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.05rem;
+      height: 2.05rem;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      border-radius: 0.5rem;
+      touch-action: manipulation;
+    }
+
+    .account-link svg {
+      width: 1.1rem;
+      height: 1.1rem;
+    }
+
+    .account-link.signed-in {
+      color: var(--accent);
+      border-color: var(--accent);
     }
 
     .lang-switcher button {
@@ -548,6 +574,25 @@
             </svg>
           </button>
         </form>
+      {% endif %}
+
+      {% if user.is_authenticated %}
+        <a
+          href="{% url 'account' %}?next={{ request.get_full_path|urlencode:'' }}"
+          class="account-link signed-in"
+          aria-label="{% blocktranslate with name=user.get_username %}Account: {{ name }}{% endblocktranslate %}"
+          title="{{ user.get_username }}"
+        >
+          {% include "frontend/_account_icon.html" %}
+        </a>
+      {% else %}
+        <a
+          href="{% url 'account' %}?next={{ request.get_full_path|urlencode:'' }}"
+          class="account-link"
+          aria-label="{% translate 'Sign in' %}"
+        >
+          {% include "frontend/_account_icon.html" %}
+        </a>
       {% endif %}
 
       {% get_current_language as CURRENT_LANGUAGE %}

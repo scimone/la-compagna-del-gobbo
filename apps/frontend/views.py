@@ -1,6 +1,8 @@
 import unicodedata
+from urllib.parse import quote
 
 from django.conf import settings
+from django.contrib.auth import login, logout
 from django.db.models import Prefetch, Q
 from django.http import Http404, JsonResponse
 from django.shortcuts import redirect, render
@@ -14,7 +16,7 @@ from django.utils.translation import get_language
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
-from apps.frontend import units
+from apps.frontend import accounts, units
 from apps.frontend.bookmarks import BOOKMARK_MODELS, bookmarked_ids, is_bookmarked
 from apps.frontend.entries_render import (
     render_class_features,
@@ -27,6 +29,7 @@ from apps.frontend.entries_render import (
     render_trait_cards,
     self_translated_badge,
 )
+from apps.frontend.forms import SignInForm
 from apps.frontend.models import Bookmark
 from apps.rules.models import Ability, Class, Equipment, Feature, Subclass
 from apps.rules.services import background as background_service
@@ -470,13 +473,16 @@ def _list_page(
     that `world_tabs` also brings with it. `alphabet` adds the right-hand A-Z jump strip (each
     item then needs a `letter`, see `_index_letter()`). `bookmark_kind` (a `BOOKMARK_MODELS` key)
     gives every item with a `pk` a bookmark button, and moves the bookmarked ones out of `items`
-    into `bookmarked_items`, shown as a highlighted block at the top of the list.
+    into `bookmarked_items`, shown as a highlighted block at the top of the list (only while
+    signed in - see `account()`).
     """
     # Letters (and their jump targets) come from every entry, bookmarked or not.
     alphabet_letters = list(dict.fromkeys(item["letter"] for item in items)) if alphabet else []
     bookmarked_items = []
+    if not request.user.is_authenticated:
+        bookmark_kind = None  # bookmarks are per account: nothing to show or toggle signed out
     if bookmark_kind:
-        ids = bookmarked_ids(bookmark_kind)
+        ids = bookmarked_ids(request.user, bookmark_kind)
         for item in items:
             item["bookmarked"] = item.get("pk") in ids
         bookmarked_items = [item for item in items if item["bookmarked"]]
@@ -596,12 +602,12 @@ def _detail_page(
         "tabs": tabs,
         "active_tab": active_tab,
     }
-    if bookmark:
+    if bookmark and request.user.is_authenticated:
         kind, object_id = bookmark
         context["bookmark"] = {
             "kind": kind,
             "id": object_id,
-            "active": is_bookmarked(kind, object_id),
+            "active": is_bookmarked(request.user, kind, object_id),
         }
     response = render(request, "frontend/detail.html", context)
     add_never_cache_headers(response)
@@ -618,27 +624,78 @@ def _active_tab(request, tabs, default: str) -> str:
     return requested if requested in valid_keys else default
 
 
+def _safe_next_url(request, default_url_name: str) -> str:
+    """The `next` param (POST body, else query string) if it's a same-site URL, else the
+    `default_url_name` page - never an open redirect."""
+    next_url = request.POST.get("next") or request.GET.get("next", "")
+    if url_has_allowed_host_and_scheme(
+        next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        return next_url
+    return reverse(default_url_name)
+
+
+def account(request):
+    """Password-less sign-in (see `accounts.py`), or - once signed in - who you are and a
+    sign-out button."""
+    next_url = _safe_next_url(request, "world-overview")
+    form = None
+    if not request.user.is_authenticated:
+        form = SignInForm(request.POST or None)
+        if request.method == "POST" and form.is_valid():
+            user = accounts.get_or_create_passwordless_user(form.cleaned_data["username"])
+            if user is None:
+                form.add_error("username", _("This name can't be used to sign in."))
+            else:
+                login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+                return redirect(next_url)
+    response = render(
+        request,
+        "frontend/account.html",
+        {
+            "page_title": _("Account") if form is None else _("Sign in"),
+            "back_url": next_url,
+            "form": form,
+            "next_url": next_url,
+        },
+    )
+    add_never_cache_headers(response)
+    return response
+
+
+@require_POST
+def account_logout(request):
+    logout(request)
+    return redirect(_safe_next_url(request, "index"))
+
+
 @require_POST
 def bookmark_toggle(request):
+    ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
+    if not request.user.is_authenticated:
+        # Stale page from before signing out (the buttons aren't rendered signed out).
+        if ajax:
+            return JsonResponse({"error": "sign in required"}, status=401)
+        return redirect(
+            f"{reverse('account')}?next={quote(_safe_next_url(request, 'world-overview'))}"
+        )
+
     kind = request.POST.get("kind", "")
     object_id = request.POST.get("object_id", "")
     model = BOOKMARK_MODELS.get(kind)
     if model is None or not model.objects.filter(pk=object_id).exists():
         raise Http404
-    _bookmark, created = Bookmark.objects.get_or_create(kind=kind, object_id=object_id)
+    _bookmark, created = Bookmark.objects.get_or_create(
+        user=request.user, kind=kind, object_id=object_id
+    )
     if not created:
         _bookmark.delete()
 
     # The header button's script posts in the background and just flips its own icon; a plain
     # form post (JS off/slow) falls back to redirecting back to the page it came from.
-    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+    if ajax:
         return JsonResponse({"bookmarked": created})
-    next_url = request.POST.get("next", "")
-    if not url_has_allowed_host_and_scheme(
-        next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
-    ):
-        next_url = reverse("world-overview")
-    return redirect(next_url)
+    return redirect(_safe_next_url(request, "world-overview"))
 
 
 # --- Handbook ----------------------------------------------------------------------------

@@ -1,0 +1,93 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+
+{% block extra_style %}
+  .account {
+    width: 100%;
+    max-width: 26rem;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .account p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+
+  .account form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .account label {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .account input[type="text"] {
+    appearance: none;
+    width: 100%;
+    padding: 0.65rem 0.8rem;
+    font: inherit;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.6rem;
+  }
+
+  .account .errorlist {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--accent);
+    font-size: 0.85rem;
+  }
+
+  .account .account-submit {
+    appearance: none;
+    border: 0;
+    background: var(--accent);
+    color: var(--accent-text);
+    font: inherit;
+    font-weight: 600;
+    padding: 0.65rem 1rem;
+    border-radius: 0.6rem;
+    cursor: pointer;
+  }
+
+  .account .account-submit.secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+{% endblock %}
+
+{% block content %}
+  <div class="account">
+    {% if form %}
+      <p>
+        {% translate "Pick a name to keep your own bookmarks. There is no password yet: anyone who types the same name gets the same bookmarks. A name nobody has used yet creates a new account." %}
+      </p>
+      <form method="post" action="{% url 'account' %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next_url }}">
+        <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+        {{ form.username }}
+        {{ form.username.errors }}
+        <button type="submit" class="account-submit">{% translate "Sign in" %}</button>
+      </form>
+    {% else %}
+      <p>{% blocktranslate with name=user.get_username %}Signed in as <strong>{{ name }}</strong>.{% endblocktranslate %}</p>
+      <form method="post" action="{% url 'account-logout' %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{% url 'index' %}">
+        <button type="submit" class="account-submit secondary">{% translate "Sign out" %}</button>
+      </form>
+    {% endif %}
+  </div>
+{% endblock %}

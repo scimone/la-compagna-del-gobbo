@@ -397,3 +397,43 @@ msgstr "Rimuovi segnalibro"
 #: apps/frontend/views.py
 msgid "Search rules"
 msgstr "Cerca regole"
+
+#: apps/frontend/templates/frontend/base.html
+#, python-format
+msgid "Account: %(name)s"
+msgstr "Account: %(name)s"
+
+#: apps/frontend/templates/frontend/base.html apps/frontend/views.py
+msgid "Sign in"
+msgstr "Accedi"
+
+#: apps/frontend/views.py
+msgid "Account"
+msgstr "Account"
+
+#: apps/frontend/forms.py
+msgid "Name"
+msgstr "Nome"
+
+#: apps/frontend/views.py
+msgid "This name can't be used to sign in."
+msgstr "Questo nome non può essere usato per accedere."
+
+#: apps/frontend/templates/frontend/account.html
+msgid ""
+"Pick a name to keep your own bookmarks. There is no password yet: anyone who "
+"types the same name gets the same bookmarks. A name nobody has used yet "
+"creates a new account."
+msgstr ""
+"Scegli un nome per avere i tuoi segnalibri. Per ora non c'è nessuna "
+"password: chiunque scriva lo stesso nome ottiene gli stessi segnalibri. Un "
+"nome che nessuno ha ancora usato crea un nuovo account."
+
+#: apps/frontend/templates/frontend/account.html
+#, python-format
+msgid "Signed in as <strong>%(name)s</strong>."
+msgstr "Accesso effettuato come <strong>%(name)s</strong>."
+
+#: apps/frontend/templates/frontend/account.html
+msgid "Sign out"
+msgstr "Esci"

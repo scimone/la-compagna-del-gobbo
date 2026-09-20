@@ -18,6 +18,8 @@ urlpatterns = [
         views.handbook_section_detail,
         name="handbook-section-detail",
     ),
+    path("account/", views.account, name="account"),
+    path("account/logout/", views.account_logout, name="account-logout"),
     path("bookmarks/toggle/", views.bookmark_toggle, name="bookmark-toggle"),
     path("world/", views.world, name="world-overview"),
     path("world/backgrounds/", views.world_backgrounds, name="world-backgrounds"),

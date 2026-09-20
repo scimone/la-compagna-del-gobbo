@@ -539,8 +539,9 @@ returning querysets/instances, no HTTP concerns. Path-validity checks (e.g. `lis
 
 ### `apps/characters/` — persisted character state
 
-The actual player characters. No auth, no ownership — any character can be read/managed by
-anyone, matching the "no users app" decision in the architecture doc.
+The actual player characters. No ownership — any character can be read/managed by anyone,
+matching the "no users app" decision in the architecture doc. (The only accounts, password-less
+ones for per-user bookmarks, live in `frontend` and nothing here references them.)
 
 **Models** (`apps/characters/models/`, one file per model) now have real fields — there's no
 external data source to import here (this is app-generated state, not static content), so
@@ -699,16 +700,26 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     scrolls to the first match. Pure client-side (script in `list.html`, bound on `document` so it
     survives live search swapping the strip).
   - **Bookmarks**: every World element page (Background/Class/Feat/Species/Spell/Rule) has a
-    bookmark button in the header, left of the language switch, and every list row (World tabs,
-    Rules Glossary) has one at its right end (`frontend.Bookmark`, toggled by
+    bookmark button in the header, left of the account and language switches, and every list row
+    (World tabs, Rules Glossary) has one at its right end (`frontend.Bookmark`, toggled by
     `POST /bookmarks/toggle/`; the scripts post in the background - on a list, then re-fetch and
     swap `#search-results` keeping the scroll position - and a plain form post redirects back).
     Bookmarked rows of the current (searched/filtered) list are moved out of the list into a
     highlighted block at its top (`_list_page(bookmark_kind=...)`), not shown twice. Stored as
-    `(kind, object_id)` in its own table, **not** a flag on each `rules` model - `import_rules_data`
-    wipes every `rules` table, which would have erased the bookmarks; there's no auth, so they
-    are global, not per user. List/detail responses are `never_cache`d so back-navigation never
-    shows a stale bookmark state.
+    `(user, kind, object_id)` in its own table, **not** a flag on each `rules` model -
+    `import_rules_data` wipes every `rules` table, which would have erased the bookmarks. They are
+    per account (see **Accounts** below); signed out, the buttons and the bookmarked block simply
+    aren't rendered. List/detail responses are `never_cache`d so back-navigation never shows a
+    stale bookmark state.
+  - **Accounts** (`accounts.py`, `GET/POST /account/`, `POST /account/logout/`): password-less on
+    purpose, for now - typing a name signs you in as that `auth.User` (case-insensitive), creating
+    it if it's new, so a few friends each get their own bookmarks. It is identity, not
+    authentication: anyone can type anyone else's name. Accounts are created with an *unusable*
+    password, so real password auth later is just `set_password()` plus a password field on
+    `SignInForm` - no schema change - and name-only sign-in is refused for any account that
+    already has a usable password (e.g. a `createsuperuser` admin). The header's person icon links
+    to the account page (accent-coloured while signed in). Nothing else is per-account yet:
+    `characters` still has no ownership.
   - The Handbook's **Rules Glossary** row is `featured` (solid accent block with an icon) - it's
     a catalog index, not a chapter like the rows below it.
   - `apps/frontend/entries_render.py` turns the raw 5etools `entries` JSON blobs (used by
@@ -936,7 +947,7 @@ own autonym, which is the correct convention for a language switcher.
 
 ## Not in scope (per the architecture doc)
 
-No `users` app, no auth, no combat system.
+No `users` app, no real auth (only the password-less accounts in `frontend`, for bookmarks), no combat system.
 
 ## Other files in this repo
 

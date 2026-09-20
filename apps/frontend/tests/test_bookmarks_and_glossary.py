@@ -1,8 +1,16 @@
 import pytest
+from django.contrib.auth import get_user_model
 
 from apps.frontend.models import Bookmark
 from apps.frontend.views import _index_letter
 from apps.rules.models import Feat, Rule
+
+
+@pytest.fixture
+def client(client, db):
+    """Bookmarks are per account, so every test here browses signed in."""
+    client.force_login(get_user_model().objects.create_user("tester"))
+    return client
 
 
 @pytest.fixture
