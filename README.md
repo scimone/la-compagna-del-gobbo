@@ -655,18 +655,43 @@ A minimal Django app serving server-rendered pages, wired up as an installable P
 `django-pwa`.
 
 **Navigation shell** — every page (`templates/frontend/base.html`, extended by the rest) has a
-header with a back button (omitted on `index`), the current page's title (just the app name on
-`index` itself), and one language-toggle button that switches to the *other* language, labeled
+header with a back button (omitted on a menu's root page, see **Navigation model** below), the
+current page's title, and one language-toggle button that switches to the *other* language, labeled
 with that language's own autonym (e.g. shows "Italiano" while browsing in English). Responsive,
 mobile-first CSS with a dark-mode variant; a JS-measured `--app-height` custom property works
 around mobile browsers resizing the visible viewport as the address bar shows/hides.
 
+- **Navigation model** (`static/js/navigation.js`, loaded by `base.html`). The pages are
+  server-rendered, so the browser's history is one linear list; this script gives each bottom-nav
+  menu (Characters / Handbook / World) its own history stack instead, kept in `sessionStorage`
+  (entries are `{u: url, p: static parent, y: scroll offset}`):
+  - **Back** - the header arrow *and* the phone's back button - goes one step back inside the
+    active menu, never into another menu visited on the way. At a menu's root nothing happens
+    (root pages - World's five tabs, the Handbook contents - have no arrow). A deep link with an
+    otherwise empty stack falls back to the page's static parent (the arrow's `href`). Scroll
+    position is restored on the way back.
+  - **The active menu changes only through the bottom nav** (which resumes each menu on the page
+    it was left on), not by URL: the Rules Glossary (Handbook) links into `/world/rules/...`, and
+    back from there returns to the Glossary. The bottom nav highlights the active menu, not the
+    URL prefix.
+  - **Not steps**: World's category tabs, a detail page's `?tab=` tabs, live search and the
+    language switch *replace* the current entry (`data-nav="replace"` on the link/form). The
+    language form's `next` carries the full path + query + `#fragment`, so switching language
+    keeps you on the same tab, search text and scroll position. The account page is transient:
+    signing in/out (`data-nav="pop"`) removes it from the history.
+  - **Phone back button**: a page cannot cancel a browser back traversal, so every page keeps a
+    two-entry history guard of its own (`base`, `top`). Back lands on `base` in the same
+    document, `popstate` fires and runs the same `goBack()` as the arrow; at a root the guard is
+    re-entered with `history.go(1)`. If a browser skips the script-added entries anyway (Chrome
+    does for a page with no user interaction yet) and the traversal reaches another document,
+    `arrive()` recognises the `back_forward` navigation type and applies the same rule.
+  - `TrackLastSectionUrlMiddleware`/`last_*_url` remain as the bottom nav links' `href`
+    fallback (no JS, or a menu with nothing in this session's stack yet).
 - `GET /` (`index`) — three full-height nav buttons: **Characters** → `/characters/`,
   **Handbook** → `/handbook/`, **World** → `/world/`. Characters is still a placeholder
   "coming soon" page (`overview.html`); **Handbook and World are both built out** (see below).
 - `GET /handbook/` (`handbook_overview`) lists every `rules.HandbookSection` (a `list_page` like
-  World's catalogs, but its back button returns to `index`, not `world-overview` - it's a
-  sibling of World, not nested under it) - 12 rows (15 minus the 3 with no Italian text, see
+  World's catalogs; it is the root of the Handbook menu, so it has no back button) - 12 rows (15 minus the 3 with no Italian text, see
 [Internationalization](#internationalization-i18n)), since the single source chapter is flattened
   one level into one row per named topic rather than modeled as its own grouping (see
   `HandbookSection`'s docstring for why). Each links to `GET /handbook/<id>/`

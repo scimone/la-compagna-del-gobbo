@@ -458,7 +458,7 @@ def _list_page(
     request,
     title,
     items,
-    back_url_name: str | None = "world-overview",
+    back_url_name: str | None = None,
     world_tabs=False,
     image_vignette=False,
     compact_thumbs=False,
@@ -469,12 +469,14 @@ def _list_page(
     alphabet=False,
     bookmark_kind: str | None = None,
 ):
-    """`searchable` shows the search box (and `filters` under it) without the World category tabs
-    that `world_tabs` also brings with it. `alphabet` adds the right-hand A-Z jump strip (each
-    item then needs a `letter`, see `_index_letter()`). `bookmark_kind` (a `BOOKMARK_MODELS` key)
-    gives every item with a `pk` a bookmark button, and moves the bookmarked ones out of `items`
-    into `bookmarked_items`, shown as a highlighted block at the top of the list (only while
-    signed in - see `account()`).
+    """A list page is a root of its navigation menu (a World tab, the Handbook's contents), so it
+    has no back button unless `back_url_name` names a parent (only the Rules Glossary, which sits
+    one level below the Handbook's contents). `searchable` shows the search box (and `filters`
+    under it) without the World category tabs that `world_tabs` also brings with it. `alphabet`
+    adds the right-hand A-Z jump strip (each item then needs a `letter`, see `_index_letter()`).
+    `bookmark_kind` (a `BOOKMARK_MODELS` key) gives every item with a `pk` a bookmark button, and
+    moves the bookmarked ones out of `items` into `bookmarked_items`, shown as a highlighted block
+    at the top of the list (only while signed in - see `account()`).
     """
     # Letters (and their jump targets) come from every entry, bookmarked or not.
     alphabet_letters = list(dict.fromkeys(item["letter"] for item in items)) if alphabet else []
@@ -723,7 +725,7 @@ def handbook_overview(request):
         }
         for section in handbook_service.list_sections()
     ]
-    return _list_page(request, "Handbook", items, back_url_name="index")
+    return _list_page(request, "Handbook", items)
 
 
 def handbook_rules_glossary(request):
@@ -781,13 +783,10 @@ def world_backgrounds(request):
         }
         for b in backgrounds
     ]
-    # No back button: `world-overview` (the default) now redirects straight back here (the
-    # leftmost World tab), which would otherwise just bounce back to this same page.
     return _list_page(
         request,
         "Backgrounds",
         items,
-        back_url_name=None,
         world_tabs=True,
         image_vignette=True,
         search_query=q,

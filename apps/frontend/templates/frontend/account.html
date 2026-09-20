@@ -73,7 +73,9 @@
       <p>
         {% translate "Pick a name to keep your own bookmarks. There is no password yet: anyone who types the same name gets the same bookmarks. A name nobody has used yet creates a new account." %}
       </p>
-      <form method="post" action="{% url 'account' %}">
+      {# `data-nav="pop"`: signing in returns to the page you came from, so the account page itself #}
+      {# must leave the navigation history (see `navigation.js`), not sit between the two.      #}
+      <form method="post" action="{% url 'account' %}" data-nav="pop">
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ next_url }}">
         <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
@@ -83,7 +85,7 @@
       </form>
     {% else %}
       <p>{% blocktranslate with name=user.get_username %}Signed in as <strong>{{ name }}</strong>.{% endblocktranslate %}</p>
-      <form method="post" action="{% url 'account-logout' %}">
+      <form method="post" action="{% url 'account-logout' %}" data-nav="pop" data-nav-menu="characters">
         {% csrf_token %}
         <input type="hidden" name="next" value="{% url 'index' %}">
         <button type="submit" class="account-submit secondary">{% translate "Sign out" %}</button>

@@ -1,4 +1,4 @@
-{% load i18n pwa %}
+{% load i18n pwa static %}
 <!doctype html>
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
@@ -524,11 +524,10 @@
   <header>
     <div class="header-left">
       {% if back_url %}
-        {# `href` is the static per-page fallback (e.g. a Feat's own detail page always falls  #}
-        {# back to the Feats list) - `back-btn.js` below upgrades this to a real "previous      #}
-        {# page" jump (via `history.back()`) whenever that previous page was in the same        #}
-        {# bottom-nav section, so e.g. Background -> (clicked link) -> Feat -> back lands on     #}
-        {# that Background again instead of always the Feats list.                              #}
+        {# `href` is this page's static parent (e.g. a Feat's detail page -> the Feats list). #}
+        {# `navigation.js` takes the click over: one step back in the active bottom-nav menu's #}
+        {# own history (the phone's back button is routed to the same function), falling back  #}
+        {# to this parent only when that history has nothing earlier (a deep link).            #}
         <a id="back-btn" class="back-btn" href="{{ back_url }}" aria-label="{% translate 'Back' %}">&larr;</a>
       {% endif %}
       {# The header shows the app name only on the very first page (no page_title set there);   #}
@@ -596,9 +595,12 @@
       {% endif %}
 
       {% get_current_language as CURRENT_LANGUAGE %}
-      <form action="{% url 'set_language' %}" method="post" class="lang-switcher">
+      {# `next` keeps the query string (`?tab=`, the search text, filters): with just the path a  #}
+      {# language switch dropped you back onto a page's first tab. `navigation.js` refreshes it  #}
+      {# at submit time (live search changes the URL without a reload) and adds the `#fragment`. #}
+      <form action="{% url 'set_language' %}" method="post" class="lang-switcher" data-nav="replace">
         {% csrf_token %}
-        <input type="hidden" name="next" value="{{ request.path }}">
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
         {# One button that switches TO the other language - always labelled with that other #}
         {# language's own name (autonym), e.g. showing "Italiano" while browsing in English. #}
         {% if CURRENT_LANGUAGE == "it" %}
@@ -614,28 +616,33 @@
     {% if world_tabs %}
     <nav class="world-tabs">
       <a
+        data-nav="replace"
         href="{% url 'world-backgrounds' %}"
         class="{% if '/world/backgrounds/' in request.path %}active{% endif %}"
       >{% translate "Backgrounds" %}</a>
       <a
+        data-nav="replace"
         href="{% url 'world-classes' %}"
         class="{% if '/world/classes/' in request.path %}active{% endif %}"
       >{% translate "Classes" %}</a>
       <a
+        data-nav="replace"
         href="{% url 'world-species' %}"
         class="{% if '/world/species/' in request.path %}active{% endif %}"
       >{% translate "Species" %}</a>
       <a
+        data-nav="replace"
         href="{% url 'world-feats' %}"
         class="{% if '/world/feats/' in request.path %}active{% endif %}"
       >{% translate "Feats" %}</a>
       <a
+        data-nav="replace"
         href="{% url 'world-spells' %}"
         class="{% if '/world/spells/' in request.path %}active{% endif %}"
       >{% translate "Spells" %}</a>
     </nav>
     {% endif %}
-    <form class="world-search" method="get" action="{{ request.path }}">
+    <form class="world-search" method="get" action="{{ request.path }}" data-nav="replace">
       <div class="world-search-field">
         <svg
           class="world-search-icon"
@@ -728,6 +735,7 @@
     <nav class="world-tabs">
       {% for key, label in tabs %}
         <a
+          data-nav="replace"
           href="?tab={{ key }}"
           class="{% if key == active_tab %}active{% endif %}"
         >{{ label }}</a>
@@ -742,6 +750,7 @@
   <nav class="bottom-nav">
     <a
       href="{{ last_characters_url }}"
+      data-menu="characters"
       class="bottom-nav-item{% if '/characters/' in request.path %} active{% endif %}"
     >
       {# Placeholder icons - hand-drawn generic shapes, swap for real artwork whenever there is any. #}
@@ -753,6 +762,7 @@
     </a>
     <a
       href="{{ last_handbook_url }}"
+      data-menu="handbook"
       class="bottom-nav-item{% if '/handbook/' in request.path %} active{% endif %}"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -763,6 +773,7 @@
     </a>
     <a
       href="{{ last_world_url }}"
+      data-menu="world"
       class="bottom-nav-item{% if '/world/' in request.path %} active{% endif %}"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -812,7 +823,10 @@
               var current = document.getElementById("search-results");
               if (!next || !current) return;
               current.replaceWith(next);
-              window.history.replaceState(null, "", url);
+              // Through `appNav` so the URL swap keeps the history guard state and the
+              // navigation stack's current entry in step with it.
+              if (window.appNav) window.appNav.replaceUrl(url);
+              else window.history.replaceState(null, "", url);
             });
         }
 
@@ -907,40 +921,6 @@
     </script>
   {% endif %}
 
-  {% if back_url %}
-    <script>
-      // Progressive enhancement over the plain `href="{{ back_url }}"` above: if the page we
-      // actually arrived from (document.referrer) is in the same bottom-nav section
-      // (Characters/Handbook/World) as this one, jump back to that exact page via
-      // history.back() instead of the static per-page fallback - real "one step back," not just
-      // "back to this section's list." A different section (or no/cross-origin referrer, e.g. a
-      // bookmark or an external link) leaves the static fallback in place, so switching sections
-      // never jumps back into the one just left.
-      (function () {
-        var backBtn = document.getElementById("back-btn");
-        if (!backBtn || !document.referrer) return;
-
-        var sectionPrefixes = ["/characters/", "/handbook/", "/world/"];
-        var section = sectionPrefixes.filter(function (prefix) {
-          return location.pathname.indexOf(prefix) === 0;
-        })[0];
-        if (!section) return;
-
-        var referrer;
-        try {
-          referrer = new URL(document.referrer);
-        } catch (error) {
-          return;
-        }
-        if (referrer.origin !== location.origin) return;
-        if (referrer.pathname.indexOf(section) !== 0) return;
-
-        backBtn.addEventListener("click", function (event) {
-          event.preventDefault();
-          history.back();
-        });
-      })();
-    </script>
-  {% endif %}
+  <script src="{% static 'js/navigation.js' %}"></script>
 </body>
 </html>
