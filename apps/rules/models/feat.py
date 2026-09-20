@@ -17,6 +17,15 @@ class Feat(models.Model):
     every occurrence in the source (10 rows, all "Fighting Style") - so there's no real "does the
     builder already have feat X" FK to extract here; it stays inside the raw `prerequisite` JSON.
 
+    `additional_spells` (the source's `additionalSpells`, e.g. Magic Initiate's per-list "two
+    cantrips + one level-1 spell, spellcasting ability Int/Wis/Cha") and `grants` (whichever of the
+    source's proficiency-grant keys the feat has, verbatim: `skillProficiencies`,
+    `toolProficiencies`, `weaponProficiencies`, `armorProficiencies`, `savingThrowProficiencies`,
+    `skillToolLanguageProficiencies`, `expertise`, `senses`, `resist`) were added for the character
+    builder - an Origin feat's sub-choices (Skilled: "any 3 skills or tools", Musician: "3
+    instruments", Crafter: "3 artisan tools") are otherwise only English prose. Ability-score
+    choices stay in `ChoiceDefinition`.
+
     `category` is decoded from the source's short code (`O`/`G`/`FS`/`EB`/...) back to the full
     word at import time, so this field's shape/values are unchanged from before.
     """
@@ -28,6 +37,8 @@ class Feat(models.Model):
     self_translated_fields = models.JSONField(default=list, blank=True)
     category = models.CharField(max_length=30)
     prerequisite = models.JSONField(default=list, blank=True)
+    additional_spells = models.JSONField(default=list, blank=True)
+    grants = models.JSONField(default=dict, blank=True)
     entries = models.JSONField(default=list, blank=True)
 
     class Meta:

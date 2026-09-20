@@ -15,7 +15,7 @@ Updated after every completed phase (and committed with it). Legend: ✅ done ·
 
 | Phase | Status | Commit / notes |
 |---|---|---|
-| 0 — Data fixes | ⬜ | |
+| 0 — Data fixes | ✅ | Importer fixes for §3.2 #1–#4 (class weapons, background skills, species lineages/resistances/spells, feat spells/grants, background `feat_variant`); migration `rules.0018`; 9 integrity tests in `apps/rules/tests/test_builder_data.py`; live DB re-imported. Skill-choice `options` are now real `Skill` ids. §3.2 #5 (`"artificer"` code) is left for Phase 8 as planned |
 | 1 — Schema | ⬜ | |
 | 2 — Tables + class spec | ⬜ | |
 | 3 — Builder engine (level 1) | ⬜ | |

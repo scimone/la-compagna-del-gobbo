@@ -77,6 +77,18 @@ DAMAGE_TYPE_CODES = {
     "T": "thunder",
 }
 FEAT_CATEGORY_CODES = {"O": "Origin", "G": "General", "FS": "Fighting Style", "EB": "Epic Boon"}
+#: The source's proficiency/sense/resistance grant keys on a feat, kept verbatim in `Feat.grants`.
+FEAT_GRANT_KEYS = (
+    "skillProficiencies",
+    "toolProficiencies",
+    "weaponProficiencies",
+    "armorProficiencies",
+    "savingThrowProficiencies",
+    "skillToolLanguageProficiencies",
+    "expertise",
+    "senses",
+    "resist",
+)
 OPTIONAL_FEATURE_TYPE_CODES = {"EI": "Eldritch Invocation", "MM": "Metamagic", "MV": "Maneuver"}
 
 #: `Equipment.stats` catch-all - mechanical fields real enough to keep but too sparse/per-category
@@ -215,6 +227,80 @@ def _feat_ref_base_name(ref_key: str) -> str:
     return ref_key.split("|")[0].split(";")[0].strip().lower()
 
 
+def _feat_ref_variant(ref_key: str) -> str:
+    """The `"; variant"` part `_feat_ref_base_name` strips, slugified: `"magic initiate; cleric|
+    xphb"` -> `"cleric"`; `""` when the reference names no variant.
+    """
+    head = ref_key.split("|")[0]
+    return _slug(head.split(";", 1)[1]) if ";" in head else ""
+
+
+def _class_weapon_proficiencies(starting_prof: dict) -> list:
+    """A class's weapon proficiency grant, in the same `[{"simple": True, ...}]` shape armor uses.
+
+    The source only fills `weaponProficiencies` (structured) for Monk and Rogue, whose grant has a
+    filter ("Martial weapons with the Light property"). Every other class has just the display
+    list `weapons: ["simple", "martial"]`, which the importer used to ignore - leaving ten of the
+    twelve classes with no weapon proficiency at all.
+    """
+    structured = starting_prof.get("weaponProficiencies")
+    if structured:
+        return structured
+    flags = {w: True for w in starting_prof.get("weapons", []) if w in ("simple", "martial")}
+    return [flags] if flags else []
+
+
+_LINEAGE_LABEL_RE = re.compile(r"\((.+)\)\s*$")
+
+
+def _lineage_from_version(version: dict) -> dict | None:
+    """One entry of a species' `_versions` (the 5etools "pick one of these variants" mechanism)
+    as a lineage - see `Species`'s docstring for the normalised shape. The lineage's name is not
+    a field of its own in the source: it is the parenthesised part of the trait the version
+    swaps in ("Elven Lineage (Drow)" -> "Drow").
+    """
+    mods = (version.get("_mod") or {}).get("entries") or []
+    for mod in mods if isinstance(mods, list) else [mods]:
+        items = mod.get("items") if isinstance(mod, dict) else None
+        match = _LINEAGE_LABEL_RE.search((items or {}).get("name", ""))
+        if mod.get("mode") == "replaceArr" and match:
+            label = match.group(1)
+            lineage = {
+                "key": _slug(label),
+                "label": label,
+                "replaces": mod["replace"],
+                "resistances": [r for r in version.get("resist", []) if isinstance(r, str)],
+                "additional_spells": version.get("additionalSpells", []),
+            }
+            for field in ("darkvision", "speed"):
+                if field in version:
+                    lineage[field] = version[field]
+            return lineage
+    return None
+
+
+def _species_lineages(raw: dict) -> list[dict]:
+    lineages = []
+    for version in raw.get("_versions", []):
+        if "_abstract" in version:
+            # Dragonborn: one abstract template expanded once per colour (`_implementations`).
+            for impl in version["_implementations"]:
+                colour = impl["_variables"]["color"]
+                lineages.append(
+                    {
+                        "key": _slug(colour),
+                        "label": colour,
+                        "replaces": "Draconic Ancestry",
+                        "damage_type": impl["_variables"]["damageType"].lower(),
+                        "resistances": impl.get("resist", []),
+                        "additional_spells": [],
+                    }
+                )
+        elif (lineage := _lineage_from_version(version)) is not None:
+            lineages.append(lineage)
+    return lineages
+
+
 def _named_dicts(entries: list) -> list[dict]:
     """Top-level list items that are dicts with an explicit "name" key - see Feature's docstring
     for why only these (never bare prose strings, never nested sub-blocks) become Feature rows.
@@ -257,9 +343,14 @@ def _iter_choice_rows(kind: str, grant_list: list | None, **parent_kwargs):
             continue
         choose = entry.get("choose")
         if isinstance(choose, dict) and "from" in choose:
+            options = choose["from"]
+            if kind == "skills":
+                # Source names ("sleight of hand") -> `Skill` ids ("sleight-of-hand"), so an
+                # option can be used as a key without the consumer having to know that.
+                options = [_slug(o) if isinstance(o, str) else o for o in options]
             yield ChoiceDefinition(
                 kind=kind,
-                options=choose["from"],
+                options=options,
                 count=choose.get("count", choose.get("amount")),
                 **parent_kwargs,
             )
@@ -715,6 +806,9 @@ class Command(BaseCommand):
                 speed=it["speed"] if isinstance(it.get("speed"), int) else 30,
                 darkvision=it.get("darkvision", 0),
                 creature_types=it.get("creatureTypes", []),
+                resistances=[r for r in it.get("resist", []) if isinstance(r, str)],
+                additional_spells=[a for a in it.get("additionalSpells", []) if "name" not in a],
+                lineages=_species_lineages(it),
                 entries=it.get("entries", []),
             )
             for it in _load("species.json")["race"]
@@ -732,6 +826,8 @@ class Command(BaseCommand):
                 srd=bool(it.get("srd52", False)),
                 category=_decode_code(it.get("category", ""), FEAT_CATEGORY_CODES),
                 prerequisite=it.get("prerequisite", []),
+                additional_spells=it.get("additionalSpells", []),
+                grants={k: it[k] for k in FEAT_GRANT_KEYS if k in it},
                 entries=it.get("entries", []),
             )
             for it in _load("feats.json")["feat"]
@@ -813,7 +909,7 @@ class Command(BaseCommand):
                 hit_die=f"d{hd['faces']}" if hd else "",
                 primary_ability_conjunction=conjunction,
                 armor_proficiencies=starting_prof.get("armorProficiencies", []),
-                weapon_proficiencies=starting_prof.get("weaponProficiencies", []),
+                weapon_proficiencies=_class_weapon_proficiencies(starting_prof),
                 tool_proficiencies=starting_prof.get("toolProficiencies", []),
                 subclass_title=it.get("subclassTitle", ""),
                 spellcasting_ability=ability_by_id.get(it.get("spellcastingAbility", "")),
@@ -1087,10 +1183,12 @@ class Command(BaseCommand):
         rows = []
         for it in _load("backgrounds.json")["background"]:
             feat_obj = None
+            feat_variant = ""
             for entry in it.get("feats", []):
                 for key, val in entry.items():
                     if val:
                         feat_obj = feat_by_name.get(_feat_ref_base_name(key))
+                        feat_variant = _feat_ref_variant(key)
                         break
                 if feat_obj:
                     break
@@ -1104,6 +1202,7 @@ class Command(BaseCommand):
                     ability_scores=it.get("ability", []),
                     tools=it.get("toolProficiencies", []),
                     feat=feat_obj,
+                    feat_variant=feat_variant,
                     entries=it.get("entries", []),
                 )
             )
@@ -1115,12 +1214,15 @@ class Command(BaseCommand):
         for it in _load("backgrounds.json")["background"]:
             background = background_by_id[_slug(it["name"])]
             skill_ids = [
-                key
+                _slug(key)  # source keys are names ("sleight of hand"), ids are slugs
                 for entry in it.get("skillProficiencies", [])
                 for key, val in entry.items()
                 if val is True
             ]
-            background.skills.set(skill_by_id[i] for i in skill_ids if i in skill_by_id)
+            missing = [i for i in skill_ids if i not in skill_by_id]
+            if missing:  # was silently dropped before - never again
+                raise CommandError(f"Background {it['name']}: unknown skill(s) {missing}")
+            background.skills.set(skill_by_id[i] for i in skill_ids)
         self.stdout.write(f"  Background: {Background.objects.count()}")
 
     def _import_background_starting_equipment(self):

@@ -20,6 +20,11 @@ class Background(models.Model):
     only had this as unparsed prose - modeled via `BackgroundStartingEquipmentOption` rows rather
     than a JSON blob, so each granted item is a real `Equipment` FK.
 
+    `feat_variant` is the part of the source's feat reference after the `;` (`"magic initiate;
+    cleric|xphb"` -> `"cleric"`): Acolyte/Guide/Sage each grant a *specific* Magic Initiate list,
+    but there is only one `Magic Initiate` `Feat` row, so the variant has to live here. Empty for
+    every other background.
+
     `lore` has no source in this `db/` drop (no fluff file ships yet) - kept on the model and left
     empty until one is added; see `docs/data_migration_2025.md`.
 
@@ -44,6 +49,7 @@ class Background(models.Model):
         blank=True,
         on_delete=models.SET_NULL,
     )
+    feat_variant = models.CharField(max_length=50, blank=True, default="")
     lore = models.JSONField(default=list, blank=True)
     entries = models.JSONField(default=list, blank=True)
 

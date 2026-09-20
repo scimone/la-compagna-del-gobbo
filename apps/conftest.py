@@ -12,3 +12,23 @@ def _english_by_default():
     translation.activate("en")
     yield
     translation.activate("en")
+
+
+@pytest.fixture(scope="module")
+def imported_rules(django_db_setup, django_db_blocker):
+    """The full `import_rules_data` result, loaded once per test module and committed (not rolled
+    back per test), for tests that check the real catalogs rather than hand-made fixtures.
+
+    Torn down by wiping the rules tables again, so a module that uses it can't leak rows into one
+    that creates its own `Class(id="wizard")` and the like. Tests that use it must not write to the
+    rules tables themselves; per-test `Character` rows are fine (the `db` fixture rolls them back).
+    """
+    from django.core.management import call_command
+
+    from apps.rules.management.commands.import_rules_data import Command
+
+    with django_db_blocker.unblock():
+        call_command("import_rules_data", verbosity=0)
+    yield
+    with django_db_blocker.unblock():
+        Command()._delete_existing()
