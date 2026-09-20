@@ -16,6 +16,7 @@
  *    don't share them). Each entry is `{u: "/path?query", p: parent url, y: scroll offset}`.
  *  - A page load is classified by a "pending" intent stored just before the navigation, by a
  *    link click or form submit (`data-nav="replace"|"pop"`, `data-menu`, default "push").
+ *  - Tapping the bottom-nav item of the menu you are already in returns to that menu's root.
  *  - The active menu only changes through the bottom nav (or a cold entry by URL). So a link
  *    from the Handbook's Rules Glossary into `/world/rules/...` stays inside the Handbook's
  *    stack and back returns to the Glossary.
@@ -212,6 +213,7 @@
     }
 
     var stack = state.stacks[active];
+    if (pending && pending.mode === "root") stack.length = 0; // back to the menu's root
     var entry = top(stack);
     if (pending && pending.mode === "replace" && entry) {
       // Same URL (a language switch): keep the entry, and with it the scroll position.
@@ -294,15 +296,24 @@
 
       if (link.dataset.menu) {
         var state = read();
-        var stack = state.stacks[link.dataset.menu].slice();
+        var menu = link.dataset.menu;
+        event.preventDefault();
+        if (state.active === menu) {
+          // Tapping the menu you are already in returns to its root page (World: the first tab),
+          // dropping whatever was drilled into.
+          var root = urlOf(link.dataset.root) || dest;
+          var own = state.stacks[menu];
+          if (root === currentUrl() && own.length <= 1) return; // already there
+          setPending("root", { menu: menu });
+          location.assign(root);
+          return;
+        }
+        var stack = state.stacks[menu].slice();
         dropTransients(stack);
         // Resume where this menu was left; the link's own href (the server's last page for it,
         // or its landing page) only when this session has nothing for it yet.
-        var resume = top(stack) ? top(stack).u : dest;
-        event.preventDefault();
-        if (resume === currentUrl() && state.active === link.dataset.menu) return;
-        setPending("switch", { menu: link.dataset.menu });
-        location.assign(resume);
+        setPending("switch", { menu: menu });
+        location.assign(top(stack) ? top(stack).u : dest);
         return;
       }
       setPending(link.dataset.nav || "push");

@@ -670,10 +670,14 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     (root pages - World's five tabs, the Handbook contents - have no arrow). A deep link with an
     otherwise empty stack falls back to the page's static parent (the arrow's `href`). Scroll
     position is restored on the way back.
-  - **The active menu changes only through the bottom nav** (which resumes each menu on the page
+  - **The active menu changes only through the bottom nav** (which resumes another menu on the page
     it was left on), not by URL: the Rules Glossary (Handbook) links into `/world/rules/...`, and
     back from there returns to the Glossary. The bottom nav highlights the active menu, not the
     URL prefix.
+  - **Tapping the bottom-nav item of the menu you are already in** returns to that menu's root
+    (`data-root`; World's is the first tab, Backgrounds) and resets its stack - so from a class
+    page opened earlier, tapping World shows the tab strip again. Tapping *another* menu resumes
+    it where it was left.
   - **Not steps**: World's category tabs, a detail page's `?tab=` tabs, live search and the
     language switch *replace* the current entry (`data-nav="replace"` on the link/form). The
     language form's `next` carries the full path + query + `#fragment`, so switching language
@@ -742,8 +746,9 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     authentication: anyone can type anyone else's name. Accounts are created with an *unusable*
     password, so real password auth later is just `set_password()` plus a password field on
     `SignInForm` - no schema change - and name-only sign-in is refused for any account that
-    already has a usable password (e.g. a `createsuperuser` admin). The header's person icon links
-    to the account page (accent-coloured while signed in). Nothing else is per-account yet:
+    already has a usable password (e.g. a `createsuperuser` admin). The header's round account
+    button (right of the language switch) links to the account page: it shows the first letter
+    of the signed-in name (accent-coloured), or "Login" while signed out. Nothing else is per-account yet:
     `characters` still has no ownership.
   - The Handbook's **Rules Glossary** row is `featured` (solid accent block with an icon) - it's
     a catalog index, not a chapter like the rows below it.

@@ -5,6 +5,7 @@ here (`#back-btn`, `data-menu`, `data-nav`, the language form's `next`)."""
 import re
 
 import pytest
+from django.contrib.auth import get_user_model
 
 from apps.rules.models import Feat
 
@@ -77,11 +78,40 @@ def test_tab_switches_and_search_replace_the_history_entry(client, feats):
 
 def test_bottom_nav_items_declare_their_menu_and_the_script_is_loaded(client, db):
     html = _html(client, "/handbook/")
-    for menu in ("characters", "handbook", "world"):
-        assert re.search(rf'<a\s+href="[^"]+"\s+data-menu="{menu}"', html), menu
+    roots = {"characters": "/characters/", "handbook": "/handbook/", "world": "/world/backgrounds/"}
+    for menu, root in roots.items():
+        # `data-root` is where tapping the menu you are already in leads: World's first tab.
+        pattern = rf'<a\s+href="[^"]+"\s+data-menu="{menu}"\s+data-root="{root}"'
+        assert re.search(pattern, html), menu
     assert '<script src="/static/js/navigation.js"></script>' in html
 
 
 def test_account_forms_leave_the_navigation_history(client, db):
     # Sign-in returns to where you came from; the account page must not stay in between.
     assert 'action="/account/" data-nav="pop"' in _html(client, "/account/")
+
+
+def _header_actions(client, url="/world/feats/"):
+    html = _html(client, url)
+    return re.search(r'<div class="header-actions">.*?</header>', html, re.S).group(0)
+
+
+def test_signed_out_account_button_says_login_after_the_language_switch(client, feats):
+    actions = _header_actions(client)
+    assert actions.index('class="lang-switcher"') < actions.index("account-link")
+    assert re.search(r'class="account-link"[^>]*>\s*<span aria-hidden="true">Login</span>', actions)
+
+
+def test_signed_in_account_button_shows_the_first_letter_of_the_name(client, feats):
+    client.force_login(get_user_model().objects.create_user("anna"))
+    actions = _header_actions(client)
+    assert actions.index('class="lang-switcher"') < actions.index("account-link")
+    assert re.search(
+        r'class="account-link signed-in".*?<span aria-hidden="true">A</span>', actions, re.S
+    )
+    assert "Login" not in actions
+
+
+def test_login_button_is_translated(client, feats):
+    client.cookies["django_language"] = "it"
+    assert ">Accedi</span>" in _header_actions(client)

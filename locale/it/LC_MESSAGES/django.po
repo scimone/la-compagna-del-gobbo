@@ -407,6 +407,10 @@ msgstr "Account: %(name)s"
 msgid "Sign in"
 msgstr "Accedi"
 
+#: apps/frontend/templates/frontend/base.html
+msgid "Login"
+msgstr "Accedi"
+
 #: apps/frontend/views.py
 msgid "Account"
 msgstr "Account"

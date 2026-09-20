@@ -188,29 +188,30 @@
       stroke: var(--surface);
     }
 
-    /* Header link to the account page (sign in / who you are): a person icon, accent-coloured
-       while signed in. */
+    /* Header link to the account page, right of the language switch: a circle with the
+       signed-in name's first letter (accent-coloured), or the word "Login" while signed out. */
     .account-link {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 2.05rem;
-      height: 2.05rem;
+      width: 2.2rem;
+      height: 2.2rem;
+      box-sizing: border-box;
       border: 1px solid var(--border);
       background: var(--surface);
       color: var(--muted);
-      border-radius: 0.5rem;
+      border-radius: 50%;
+      text-decoration: none;
+      font-size: 0.55rem;
+      font-weight: 700;
+      line-height: 1;
       touch-action: manipulation;
-    }
-
-    .account-link svg {
-      width: 1.1rem;
-      height: 1.1rem;
     }
 
     .account-link.signed-in {
       color: var(--accent);
-      border-color: var(--accent);
+      border: 2px solid var(--accent);
+      font-size: 1rem;
     }
 
     .lang-switcher button {
@@ -575,25 +576,6 @@
         </form>
       {% endif %}
 
-      {% if user.is_authenticated %}
-        <a
-          href="{% url 'account' %}?next={{ request.get_full_path|urlencode:'' }}"
-          class="account-link signed-in"
-          aria-label="{% blocktranslate with name=user.get_username %}Account: {{ name }}{% endblocktranslate %}"
-          title="{{ user.get_username }}"
-        >
-          {% include "frontend/_account_icon.html" %}
-        </a>
-      {% else %}
-        <a
-          href="{% url 'account' %}?next={{ request.get_full_path|urlencode:'' }}"
-          class="account-link"
-          aria-label="{% translate 'Sign in' %}"
-        >
-          {% include "frontend/_account_icon.html" %}
-        </a>
-      {% endif %}
-
       {% get_current_language as CURRENT_LANGUAGE %}
       {# `next` keeps the query string (`?tab=`, the search text, filters): with just the path a  #}
       {# language switch dropped you back onto a page's first tab. `navigation.js` refreshes it  #}
@@ -609,6 +591,23 @@
           <button type="submit" name="language" value="it">Italiano</button>
         {% endif %}
       </form>
+
+      {# Right of the language switch: a round button holding the signed-in name's first letter, #}
+      {# or "Login" while signed out. Both lead to the account page (sign in / who you are).    #}
+      {% if user.is_authenticated %}
+        <a
+          href="{% url 'account' %}?next={{ request.get_full_path|urlencode:'' }}"
+          class="account-link signed-in"
+          aria-label="{% blocktranslate with name=user.get_username %}Account: {{ name }}{% endblocktranslate %}"
+          title="{{ user.get_username }}"
+        ><span aria-hidden="true">{{ user.get_username|first|upper }}</span></a>
+      {% else %}
+        <a
+          href="{% url 'account' %}?next={{ request.get_full_path|urlencode:'' }}"
+          class="account-link"
+          aria-label="{% translate 'Sign in' %}"
+        ><span aria-hidden="true">{% translate "Login" %}</span></a>
+      {% endif %}
     </div>
   </header>
 
@@ -751,6 +750,7 @@
     <a
       href="{{ last_characters_url }}"
       data-menu="characters"
+      data-root="{% url 'characters-overview' %}"
       class="bottom-nav-item{% if '/characters/' in request.path %} active{% endif %}"
     >
       {# Placeholder icons - hand-drawn generic shapes, swap for real artwork whenever there is any. #}
@@ -763,6 +763,7 @@
     <a
       href="{{ last_handbook_url }}"
       data-menu="handbook"
+      data-root="{% url 'handbook-overview' %}"
       class="bottom-nav-item{% if '/handbook/' in request.path %} active{% endif %}"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -774,6 +775,7 @@
     <a
       href="{{ last_world_url }}"
       data-menu="world"
+      data-root="{% url 'world-backgrounds' %}"
       class="bottom-nav-item{% if '/world/' in request.path %} active{% endif %}"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
