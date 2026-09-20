@@ -165,3 +165,8 @@ CLASS_SPEC: dict[str, ClassSpec] = {
 
 def spec_for(class_id: str) -> ClassSpec:
     return CLASS_SPEC[class_id]
+
+
+#: Level-1 `Feature` rows that are reference material rather than something the character has
+#: (Warlock's invocation list is a table of options, not a feature). Left off the character.
+REFERENCE_FEATURES: dict[str, set[str]] = {"warlock": {"Eldritch Invocation Options"}}
