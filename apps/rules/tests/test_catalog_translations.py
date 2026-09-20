@@ -26,10 +26,10 @@ def test_translated_rows_read_in_italian_and_the_rest_fall_back(catalogs):
         assert Feat.objects.get(pk="alert").name == "Allerta"
         assert Spell.objects.get(pk="fireball").name == "Palla di fuoco"
         assert Rule.objects.get(pk="advantage").name == "Vantaggio"
-        # a feat outside the SRD is hand-translated now (see `self_translated`), not English
+        # a feat outside the SRD is hand-translated now (see `self_translated_fields`), not English
         assert Feat.objects.get(pk="actor").name == "Attore"
-        assert Feat.objects.get(pk="actor").self_translated is True
-        assert Feat.objects.get(pk="alert").self_translated is False
+        assert set(Feat.objects.get(pk="actor").self_translated_fields) == {"name", "entries"}
+        assert Feat.objects.get(pk="alert").self_translated_fields == []
 
     with translation.override("en"):
         assert Spell.objects.get(pk="fireball").name == "Fireball"
@@ -89,22 +89,26 @@ def test_classes_species_backgrounds_and_equipment_read_in_italian(catalogs):
 def test_rows_without_an_official_source_are_hand_translated_and_flagged(catalogs):
     # Aasimar/Grung, every non-SRD background, and every non-SRD subclass had no official
     # Italian source (the SRD PDF) - they're hand-translated for this project now instead of
-    # staying English, and `self_translated` says so. Lore (PHB-only flavor text, never covered
-    # by the SRD) is hand-translated for every Species/Background/Class, including SRD ones -
-    # `self_translated` is a per-*row* flag, so even an otherwise-official row like "elf" carries
-    # it once any part of it is hand-translated.
+    # staying English, and `self_translated_fields` says exactly which of their own fields.
+    # Lore (PHB-only flavor text, never covered by the SRD) is hand-translated for every
+    # Species/Background/Class, including SRD ones - so an otherwise-official row like "elf"
+    # still lists "lore" (and nothing else) once any part of it is hand-translated.
     with translation.override("it"):
         assert Species.objects.get(pk="aasimar").name == "Aasimar"  # a proper noun, unchanged
-        assert Species.objects.get(pk="aasimar").self_translated is True
-        assert Species.objects.get(pk="elf").self_translated is True  # official name, own lore
+        assert set(Species.objects.get(pk="aasimar").self_translated_fields) == {
+            "name",
+            "lore",
+            "entries",
+        }
+        assert Species.objects.get(pk="elf").self_translated_fields == ["lore"]
         assert Background.objects.get(pk="artisan").name == "Artigiano"
-        assert Background.objects.get(pk="artisan").self_translated is True
+        assert "name" in Background.objects.get(pk="artisan").self_translated_fields
         wild_heart = Subclass.objects.get(name_en="Path of the Wild Heart")
         assert wild_heart.name != "Path of the Wild Heart"
-        assert wild_heart.self_translated is True
+        assert set(wild_heart.self_translated_fields) == {"name", "description"}
         # a row with no hand-translated field at all is never flagged
-        assert Equipment.objects.get(pk="dagger").self_translated is False
-        assert Rule.objects.get(pk="advantage").self_translated is False
+        assert Equipment.objects.get(pk="dagger").self_translated_fields == []
+        assert Rule.objects.get(pk="advantage").self_translated_fields == []
     assert Species.objects.count() == 11
     assert Background.objects.count() == 16
     assert Equipment.objects.count() == 217

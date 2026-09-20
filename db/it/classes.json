@@ -1,6 +1,8 @@
 {
  "barbarian": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "lore": [
    {
     "entries": [
@@ -16,7 +18,9 @@
   "subclass_title": "Sottoclasse del barbaro"
  },
  "bard": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "lore": [
    {
     "entries": [
@@ -32,7 +36,9 @@
   "subclass_title": "Sottoclasse del bardo"
  },
  "cleric": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "lore": [
    {
     "entries": [
@@ -48,7 +54,9 @@
   "subclass_title": "Sottoclasse del chierico"
  },
  "druid": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "lore": [
    {
     "entries": [
@@ -64,7 +72,9 @@
   "subclass_title": "Sottoclasse del druido"
  },
  "fighter": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "lore": [
    {
     "entries": [
@@ -79,7 +89,9 @@
   "subclass_title": "Sottoclasse del guerriero"
  },
  "monk": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "lore": [
    {
     "entries": [
@@ -96,7 +108,9 @@
   "subclass_title": "Sottoclasse del monaco"
  },
  "paladin": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "lore": [
    {
     "entries": [
@@ -112,7 +126,9 @@
   "subclass_title": "Sottoclasse del paladino"
  },
  "ranger": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "lore": [
    {
     "entries": [
@@ -127,7 +143,9 @@
   "subclass_title": "Sottoclasse del ranger"
  },
  "rogue": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "lore": [
    {
     "entries": [
@@ -143,7 +161,9 @@
   "subclass_title": "Sottoclasse del ladro"
  },
  "sorcerer": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "lore": [
    {
     "entries": [
@@ -159,7 +179,9 @@
   "subclass_title": "Sottoclasse dello stregone"
  },
  "warlock": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "lore": [
    {
     "entries": [
@@ -175,7 +197,9 @@
   "subclass_title": "Sottoclasse del warlock"
  },
  "wizard": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "lore": [
    {
     "entries": [

@@ -3,7 +3,8 @@ from django.db.models import Prefetch, Q
 from django.shortcuts import redirect, render
 from django.templatetags.static import static
 from django.urls import reverse
-from django.utils.html import format_html
+from django.utils.html import escape, format_html
+from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
 from django.utils.translation import gettext as _
 
@@ -16,6 +17,7 @@ from apps.frontend.entries_render import (
     render_starting_equipment,
     render_subclasses,
     render_trait_cards,
+    self_translated_badge,
 )
 from apps.rules.models import Ability, Equipment, Feature, Subclass
 from apps.rules.services import background as background_service
@@ -369,13 +371,26 @@ def _section(heading, html, *, open=True):
     return (heading, html, open)
 
 
-def _is_self_translated(obj) -> bool:
-    """True when `obj`'s Italian text was hand-translated for this project rather than lifted
-    from the official Italian SRD (see `Feature.self_translated`'s docstring) - only worth
-    flagging while actually browsing in Italian, since the flag says nothing about the English
-    text.
+def _self_translated(obj, *fields: str) -> bool:
+    """True when any of `obj`'s given field(s) was hand-translated for this project rather than
+    lifted from the official Italian SRD (see `Feature.self_translated_fields`'s docstring) - only
+    worth flagging while actually browsing in Italian, since the flag says nothing about the
+    English text. Callers pass the specific field(s) a page section is actually built from (e.g.
+    `"lore"` for a Lore section, `"name"` for the page title) rather than checking the row as a
+    whole, so a page that's only partly hand-translated doesn't have every section flagged.
     """
-    return bool(getattr(obj, "self_translated", False)) and get_language() == "it"
+    if get_language() != "it":
+        return False
+    self_translated_fields = set(getattr(obj, "self_translated_fields", None) or ())
+    return bool(self_translated_fields & set(fields))
+
+
+def _badged_heading(label, is_self_translated: bool):
+    """`label`, with a "Traduzione" badge appended when `is_self_translated` - for a `_section()`/
+    `plain_sections` heading built from a hand-translated field (see `_self_translated()`).
+    """
+    badge = self_translated_badge(is_self_translated)
+    return mark_safe(f"{escape(label)}{badge}") if badge else label
 
 
 def _detail_page(
@@ -388,8 +403,11 @@ def _detail_page(
     plain_sections=(),
     tabs=None,
     active_tab=None,
-    self_translated=False,
 ):
+    # `title` may already be a `_badged_heading()` result (safe HTML with an inline "Traduzione"
+    # badge) - passed straight through as `page_title` rather than a separate flag, so the badge
+    # sits on the specific thing that's hand-translated (the row's own `name`) instead of a
+    # page-wide flag that would show even while looking at an unrelated, officially-translated tab.
     return render(
         request,
         "frontend/detail.html",
@@ -402,7 +420,6 @@ def _detail_page(
             "plain_sections": plain_sections,
             "tabs": tabs,
             "active_tab": active_tab,
-            "self_translated": self_translated,
         },
     )
 
@@ -492,15 +509,15 @@ def world_background_detail(request, pk):
 
     sections = []
     if bg.lore:
-        sections.append(_section(_("Lore"), render_entries(bg.lore)))
+        heading = _badged_heading(_("Lore"), _self_translated(bg, "lore"))
+        sections.append(_section(heading, render_entries(bg.lore)))
 
     return _detail_page(
         request,
-        bg.name,
+        _badged_heading(bg.name, _self_translated(bg, "name")),
         "world-backgrounds",
         facts,
         sections,
-        self_translated=_is_self_translated(bg),
     )
 
 
@@ -594,7 +611,8 @@ def world_class_detail(request, pk):
         facts.append((_("Page"), klass.page))
 
         if klass.lore:
-            plain_sections.append((_("Lore"), render_entries(klass.lore)))
+            heading = _badged_heading(_("Lore"), _self_translated(klass, "lore"))
+            plain_sections.append((heading, render_entries(klass.lore)))
 
         levels = list(klass.levels.order_by("level"))
         if levels:
@@ -663,14 +681,13 @@ def world_class_detail(request, pk):
 
     return _detail_page(
         request,
-        klass.name,
+        _badged_heading(klass.name, _self_translated(klass, "name")),
         "world-classes",
         facts,
         body=body,
         plain_sections=plain_sections,
         tabs=tabs,
         active_tab=active_tab,
-        self_translated=_is_self_translated(klass),
     )
 
 
@@ -723,15 +740,15 @@ def world_feat_detail(request, pk):
         facts.append((_("Prerequisite"), _format_prerequisite(feat.prerequisite)))
     facts.append((_("Page"), feat.page))
 
-    sections = [_section(_("Description"), render_entries(feat.entries))]
+    description_heading = _badged_heading(_("Description"), _self_translated(feat, "entries"))
+    sections = [_section(description_heading, render_entries(feat.entries))]
 
     return _detail_page(
         request,
-        feat.name,
+        _badged_heading(feat.name, _self_translated(feat, "name")),
         "world-feats",
         facts,
         sections,
-        self_translated=_is_self_translated(feat),
     )
 
 
@@ -795,22 +812,24 @@ def world_species_detail(request, pk):
         facts.append((_("Page"), species.page))
 
         if species.lore:
-            plain_sections.append((_("Lore"), render_entries(species.lore)))
+            heading = _badged_heading(_("Lore"), _self_translated(species, "lore"))
+            plain_sections.append((heading, render_entries(species.lore)))
 
     elif active_tab == "traits":
         if species.entries:
-            body = render_trait_cards(species.entries)
+            body = render_trait_cards(
+                species.entries, self_translated=_self_translated(species, "entries")
+            )
 
     return _detail_page(
         request,
-        species.name,
+        _badged_heading(species.name, _self_translated(species, "name")),
         "world-species",
         facts,
         body=body,
         plain_sections=plain_sections,
         tabs=tabs,
         active_tab=active_tab,
-        self_translated=_is_self_translated(species),
     )
 
 
@@ -928,17 +947,20 @@ def world_spell_detail(request, pk):
         facts.append((_("Classes"), ", ".join(spell.classes)))
     facts.append((_("Page"), spell.page))
 
-    sections = [_section(_("Description"), render_entries(spell.entries))]
+    description_heading = _badged_heading(_("Description"), _self_translated(spell, "entries"))
+    sections = [_section(description_heading, render_entries(spell.entries))]
     if spell.entries_higher_level:
-        sections.append(_section(_("At Higher Levels"), render_entries(spell.entries_higher_level)))
+        higher_level_heading = _badged_heading(
+            _("At Higher Levels"), _self_translated(spell, "entries_higher_level")
+        )
+        sections.append(_section(higher_level_heading, render_entries(spell.entries_higher_level)))
 
     return _detail_page(
         request,
-        spell.name,
+        _badged_heading(spell.name, _self_translated(spell, "name")),
         "world-spells",
         facts,
         sections,
-        self_translated=_is_self_translated(spell),
     )
 
 
@@ -952,12 +974,12 @@ def world_spell_detail(request, pk):
 def world_rule_detail(request, pk):
     rule = rule_service.get_rule(pk)
     facts = [(_("Page"), rule.page)]
-    sections = [_section(_("Description"), render_entries(rule.entries))]
+    description_heading = _badged_heading(_("Description"), _self_translated(rule, "entries"))
+    sections = [_section(description_heading, render_entries(rule.entries))]
     return _detail_page(
         request,
-        rule.name,
+        _badged_heading(rule.name, _self_translated(rule, "name")),
         "world-overview",
         facts,
         sections,
-        self_translated=_is_self_translated(rule),
     )

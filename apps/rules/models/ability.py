@@ -15,7 +15,7 @@ class Ability(models.Model):
     id = models.SlugField(primary_key=True, max_length=20)
     name = models.CharField(max_length=20)
     description = models.CharField(max_length=200)
-    self_translated = models.BooleanField(default=False)
+    self_translated_fields = models.JSONField(default=list, blank=True)
 
     class Meta:
         ordering = ["name"]

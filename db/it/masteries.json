@@ -1,55 +1,79 @@
 {
  "cleave": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Se colpisci una creatura con un tiro per colpire in mischia usando questa arma, puoi effettuare un tiro per colpire in mischia con l'arma contro una seconda creatura entro 1,5 metri dalla prima e che sia anch'essa entro la tua portata. In caso di colpo, la seconda creatura subisce i danni dell'arma, ma non aggiungere il tuo modificatore di caratteristica a quel danno a meno che tale modificatore non sia negativo. Puoi effettuare questo attacco extra solo una volta per turno."
   ],
   "name": "Falciata"
  },
  "graze": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Se il tuo tiro per colpire con questa arma manca una creatura, puoi infliggere a quella creatura danni pari al modificatore di caratteristica che hai usato per effettuare il tiro per colpire. Questo danno è dello stesso tipo inflitto dall'arma, e può essere aumentato solo aumentando il modificatore di caratteristica."
   ],
   "name": "Sfioro"
  },
  "nick": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Quando effettui l'attacco extra della proprietà Leggera, puoi farlo come parte dell'azione {@action Attack|XPHB|Attacco} invece che come {@variantrule Bonus Action|XPHB|azione bonus}. Puoi effettuare questo attacco extra solo una volta per turno."
   ],
   "name": "Intacco"
  },
  "push": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Se colpisci una creatura con questa arma, puoi spingerla in linea retta lontano da te fino a 3 metri, se è di taglia Grande o inferiore."
   ],
   "name": "Spinta"
  },
  "sap": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Se colpisci una creatura con questa arma, quella creatura ha {@variantrule Disadvantage|XPHB|svantaggio} al suo prossimo tiro per colpire prima dell'inizio del tuo turno successivo."
   ],
   "name": "Fiacca"
  },
  "slow": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Se colpisci una creatura con questa arma e le infliggi danni, puoi ridurre la sua {@variantrule Speed|XPHB|velocità} di 3 metri fino all'inizio del tuo turno successivo. Se la creatura viene colpita più di una volta da armi che hanno questa proprietà, la riduzione della {@variantrule Speed|XPHB|velocità} non supera i 3 metri."
   ],
   "name": "Lentezza"
  },
  "topple": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Se colpisci una creatura con questa arma, puoi costringerla a effettuare un tiro salvezza su Costituzione ({@dc 8} più il modificatore di caratteristica usato per il tiro per colpire e il tuo {@variantrule Proficiency|XPHB|bonus di competenza}). In caso di tiro salvezza fallito, la creatura ha la condizione {@condition Prone|XPHB|prono}."
   ],
   "name": "Capovolgimento"
  },
  "vex": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Se colpisci una creatura con questa arma e le infliggi danni, hai {@variantrule Advantage|XPHB|vantaggio} al tuo prossimo tiro per colpire contro quella creatura prima della fine del tuo turno successivo."
   ],

@@ -190,7 +190,10 @@
   "name": "Rompere gli oggetti"
  },
  "bright-light": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "La Luce intensa è l'illuminazione normale."
   ],
@@ -314,7 +317,10 @@
   "name": "Creatura"
  },
  "creature-type": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Ogni creatura, incluso ogni {@variantrule Player Character|XPHB|personaggio giocante}, possiede nel regolamento un'etichetta che ne identifica il tipo. La maggior parte dei {@variantrule Player Character|XPHB|personaggi giocanti} è di tipo Umanoide. Questi sono i tipi di creatura del gioco:",
    {
@@ -346,7 +352,10 @@
   "name": "Colpo critico"
  },
  "cube-area-of-effect": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Un Cubo è un'area di effetto che si estende in linee rette da un punto di origine situato in un punto qualsiasi di una faccia del Cubo. L'effetto che crea un Cubo ne specifica la dimensione, che corrisponde alla lunghezza di ciascun lato. Il punto di origine di un Cubo non è incluso nell'area di effetto, a meno che chi lo crea non decida diversamente."
   ],
@@ -544,7 +553,10 @@
   "name": "Maestria"
  },
  "fly-speed": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "La Velocità di volo può essere usata per spostarsi in aria. Finché hai una Velocità di volo, puoi rimanere in volo finché non atterri, cadi o muori."
   ],
@@ -884,7 +896,10 @@
   "name": "Arrotondare per difetto"
  },
  "save": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Salvezza è un altro nome per indicare un {@variantrule Saving Throw|XPHB|tiro salvezza}."
   ],
@@ -1234,7 +1249,10 @@
   "name": "Spazio libero"
  },
  "vulnerability": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Se hai Vulnerabilità a un {@variantrule Damage Types|XPHB|tipo di danno}, i danni di quel tipo sono raddoppiati nei tuoi confronti. La Vulnerabilità si applica una sola volta a una singola istanza di danno."
   ],

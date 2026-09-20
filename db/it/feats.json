@@ -12,7 +12,10 @@
   "name": "Aumento dei punteggi di caratteristica"
  },
  "actor": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -55,7 +58,10 @@
   "name": "Tiro"
  },
  "athlete": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -80,14 +86,20 @@
   "name": "Atleta"
  },
  "blessed-warrior": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio apprende due {@filter trucchetti da chierico|spells|level=0|class=Cleric} a sua scelta. Sono consigliati {@spell Guidance|XPHB|guida} e {@spell Sacred Flame|XPHB|fiamma sacra}. I trucchetti scelti sono considerati incantesimi da paladino per il personaggio, e la sua caratteristica da incantatore per essi è il Carisma. Ogni volta che ottiene un livello da paladino, può sostituire uno di questi trucchetti con un altro trucchetto da chierico."
   ],
   "name": "Guerriero benedetto"
  },
  "blind-fighting": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ha {@sense Blindsight|XPHB|vista cieca} con un raggio di 3 metri."
   ],
@@ -118,7 +130,10 @@
   "name": "Dono del viaggio dimensionale"
  },
  "boon-of-energy-resistance": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -149,7 +164,10 @@
   "name": "Dono del fato"
  },
  "boon-of-fortitude": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -180,7 +198,10 @@
   "name": "Dono dell'offensiva irresistibile"
  },
  "boon-of-recovery": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -199,7 +220,10 @@
   "name": "Dono del recupero"
  },
  "boon-of-skill": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -218,7 +242,10 @@
   "name": "Dono dell'abilità"
  },
  "boon-of-speed": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -279,7 +306,10 @@
   "name": "Dono della vista pura"
  },
  "charger": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -298,7 +328,10 @@
   "name": "Carica"
  },
  "chef": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -323,7 +356,10 @@
   "name": "Cuoco"
  },
  "crafter": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -389,7 +425,10 @@
   "name": "Artigiano"
  },
  "crossbow-expert": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -414,7 +453,10 @@
   "name": "Esperto di balestre"
  },
  "crusher": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -439,7 +481,10 @@
   "name": "Difesa"
  },
  "defensive-duelist": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -452,14 +497,20 @@
   "name": "Duellante difensivo"
  },
  "druidic-warrior": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio apprende due {@filter trucchetti da druido|spells|level=0|class=druid} a sua scelta. Sono consigliati {@spell Guidance|XPHB|guida} e {@spell Starry Wisp|XPHB|luce splendente}. I trucchetti scelti sono considerati incantesimi da ranger per il personaggio, e la sua caratteristica da incantatore per essi è la Saggezza. Ogni volta che ottiene un livello da ranger, può sostituire uno di questi trucchetti con un altro trucchetto da druido."
   ],
   "name": "Guerriero druidico"
  },
  "dual-wielder": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -478,14 +529,20 @@
   "name": "Combattente ambidestro"
  },
  "dueling": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Quando il personaggio impugna un'arma da mischia in una mano e nessun'altra arma, ottiene un bonus di +2 ai tiri per i danni con quell'arma."
   ],
   "name": "Duello"
  },
  "durable": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -504,7 +561,10 @@
   "name": "Resistente"
  },
  "elemental-adept": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -523,7 +583,10 @@
   "name": "Adepto degli elementi"
  },
  "fey-touched": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "L'esposizione alla magia del Feywild conferisce al personaggio i seguenti benefici.",
    {
@@ -566,7 +629,10 @@
   "name": "Combattere con armi possenti"
  },
  "great-weapon-master": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -585,7 +651,10 @@
   "name": "Maestro delle armi pesanti"
  },
  "healer": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -604,7 +673,10 @@
   "name": "Guaritore"
  },
  "heavily-armored": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -617,7 +689,10 @@
   "name": "Armatura pesante"
  },
  "heavy-armor-master": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -630,7 +705,10 @@
   "name": "Maestro dell'armatura pesante"
  },
  "inspiring-leader": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -643,14 +721,20 @@
   "name": "Comandante ispiratore"
  },
  "interception": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Quando una creatura che il personaggio è in grado di vedere colpisce con un tiro per colpire un'altra creatura entro 1,5 metri da sé, il personaggio può usare una {@variantrule Reaction|XPHB|reazione} per ridurre i danni inflitti al bersaglio di {@dice 1d10} più il suo bonus di {@variantrule Proficiency|XPHB|competenza}. Per usare questa {@variantrule Reaction|XPHB|reazione}, deve impugnare uno {@item Shield|XPHB|scudo} oppure un'arma semplice o da guerra."
   ],
   "name": "Intercettazione"
  },
  "keen-mind": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -669,7 +753,10 @@
   "name": "Mente acuta"
  },
  "lightly-armored": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -682,7 +769,10 @@
   "name": "Armatura leggera"
  },
  "lucky": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -707,7 +797,10 @@
   "name": "Fortunato"
  },
  "mage-slayer": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -756,7 +849,10 @@
   "name": "Iniziato alla magia"
  },
  "martial-weapon-training": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -769,7 +865,10 @@
   "name": "Addestramento con le armi da guerra"
  },
  "medium-armor-master": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -782,7 +881,10 @@
   "name": "Maestro dell'armatura media"
  },
  "moderately-armored": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -795,7 +897,10 @@
   "name": "Armatura media"
  },
  "mounted-combatant": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -820,7 +925,10 @@
   "name": "Combattente a cavallo"
  },
  "musician": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -839,7 +947,10 @@
   "name": "Musicista"
  },
  "observant": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -858,7 +969,10 @@
   "name": "Attento"
  },
  "piercer": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -877,7 +991,10 @@
   "name": "Perforatore"
  },
  "poisoner": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -896,7 +1013,10 @@
   "name": "Avvelenatore"
  },
  "polearm-master": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -915,14 +1035,20 @@
   "name": "Maestro delle armi in asta"
  },
  "protection": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Quando una creatura che il personaggio è in grado di vedere attacca un bersaglio diverso da lui che si trova entro 1,5 metri da sé, il personaggio può usare una {@variantrule Reaction|XPHB|reazione} per frapporre il proprio {@item Shield|XPHB|scudo}, se ne impugna uno. Impone {@variantrule Disadvantage|XPHB|svantaggio} al tiro per colpire che ha innescato questo effetto e a tutti gli altri tiri per colpire contro il bersaglio fino all'inizio del suo turno successivo, a patto che rimanga entro 1,5 metri dal bersaglio."
   ],
   "name": "Protezione"
  },
  "resilient": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -935,7 +1061,10 @@
   "name": "Resiliente"
  },
  "ritual-caster": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -960,7 +1089,10 @@
   "name": "Aggressore selvaggio"
  },
  "sentinel": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -979,7 +1111,10 @@
   "name": "Sentinella"
  },
  "shadow-touched": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "L'esposizione alla magia dello Shadowfell conferisce al personaggio i seguenti benefici.",
    {
@@ -992,7 +1127,10 @@
   "name": "Toccato dall'Ombra"
  },
  "sharpshooter": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -1017,7 +1155,10 @@
   "name": "Tiratore scelto"
  },
  "shield-master": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -1036,7 +1177,10 @@
   "name": "Maestro dello scudo"
  },
  "skill-expert": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -1067,7 +1211,10 @@
   "name": "Abile"
  },
  "skulker": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -1092,7 +1239,10 @@
   "name": "Furtivo"
  },
  "slasher": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -1111,7 +1261,10 @@
   "name": "Squartatore"
  },
  "speedy": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -1136,7 +1289,10 @@
   "name": "Veloce"
  },
  "spell-sniper": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -1161,7 +1317,10 @@
   "name": "Cecchino degli incantesimi"
  },
  "tavern-brawler": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -1192,7 +1351,10 @@
   "name": "Rissaiolo da taverna"
  },
  "telekinetic": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -1211,7 +1373,10 @@
   "name": "Telecinetico"
  },
  "telepathic": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -1230,14 +1395,20 @@
   "name": "Telepatico"
  },
  "thrown-weapon-fighting": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Quando il personaggio colpisce con un tiro per colpire a distanza utilizzando un'arma che possiede la proprietà {@itemProperty T|XPHB|da lancio}, ottiene un bonus di +2 al tiro per i danni."
   ],
   "name": "Combattere con armi da lancio"
  },
  "tough": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "I {@variantrule Hit Points|XPHB|punti ferita} massimi del personaggio aumentano di un ammontare pari al doppio del suo livello quando ottiene questo talento. Ogni volta che ottiene un livello del personaggio in seguito, i suoi {@variantrule Hit Points|XPHB|punti ferita} massimi aumentano di altri 2 {@variantrule Hit Points|XPHB|punti ferita}."
   ],
@@ -1250,7 +1421,10 @@
   "name": "Combattere con due armi"
  },
  "unarmed-fighting": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Quando il personaggio colpisce con il proprio {@variantrule Unarmed Strike|XPHB|colpo senz'armi} e infligge danni, può infliggere danni contundenti pari a {@damage 1d6} più il proprio modificatore di Forza al posto dei danni normali di un {@variantrule Unarmed Strike|XPHB|colpo senz'armi}. Se non impugna alcuna arma né uno {@item Shield|XPHB|scudo} quando effettua il tiro per colpire, il {@dice d6} diventa un {@dice d8}.",
    "All'inizio di ciascuno dei suoi turni, il personaggio può infliggere {@damage 1d4} danni contundenti a una creatura {@condition Grappled|XPHB|afferrata} da lui."
@@ -1258,7 +1432,10 @@
   "name": "Combattere a mani nude"
  },
  "war-caster": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {
@@ -1283,7 +1460,10 @@
   "name": "Incantatore da battaglia"
  },
  "weapon-master": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il personaggio ottiene i seguenti benefici.",
    {

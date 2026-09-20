@@ -736,24 +736,27 @@ mirrored by an English-to-Italian term dictionary, a first pass accepting a row 
 structures line up exactly and a second paragraph-level pass filling most of what that rejected):
 the 17 SRD feats; the 339 SRD spells; 114 rules; all 12 classes plus their 12 SRD subclasses and
 class/subclass features; the 9 SRD species; the 4 SRD backgrounds; and the SRD-sourced equipment
-items - collectively, this is the content flagged `self_translated = False`.
+items - collectively, this is the content that isn't in any row's `self_translated_fields` (below).
 
 **Everything else has been hand-translated for this project instead** (there's no official
 Italian source for it - PHB-only flavor text, or 2024-refresh content the SRD extract doesn't
 cover): every species'/background's/class's narrative lore, the non-SRD
 species/backgrounds/subclasses/feats/spells, skills, senses, languages, masteries, abilities,
 weapon properties, optional features, and the class/subclass features the SRD pass couldn't
-align. Each translated row's overlay entry in `db/it/<model>.json` can carry a sibling
-`"_self": true` key (not a real field, so `sync_catalog()`'s per-field loop ignores it) -
-`translation_sync.sync_catalog()` reads it into the row's own `self_translated` column (one per
-translated model, alongside the existing `srd` flag many of them already had), and the frontend
-shows a small "Traduzione non ufficiale" badge next to the page title (`base.html`, gated on
-`self_translated` and only while browsing in Italian - see `_is_self_translated()` in
-`views.py`) and on the individual feature/subclass cards inside a Class page
-(`entries_render._self_translated_badge()`) wherever that specific card's text is
-hand-translated rather than official. A row can be both at once - e.g. an SRD species'
-`name`/`entries` are official but its `lore` (PHB-only) is necessarily hand-translated, so the
-row's `self_translated` is `True` even though most of its content is official.
+align. Each translated row's overlay entry in `db/it/<model>.json` can carry a sibling `"_self"`
+key (not a real field, so `sync_catalog()`'s per-field loop ignores it) listing exactly *which*
+of that row's own fields are hand-translated, e.g. `"_self": ["lore"]` on a species whose
+`name`/`entries` are official SRD text but whose `lore` isn't - `translation_sync.sync_catalog()`
+reads that list into the row's own `self_translated_fields` column (one per translated model,
+alongside the existing `srd` flag many of them already had). The frontend shows a small
+"Traduzione" badge wherever a hand-translated field is actually displayed - next to the page
+title only if `name` itself is hand-translated, next to a "Lore"/"Description"/"At Higher
+Levels" section heading only if *that* field is, and on the individual feature/subclass cards
+inside a Class page - deliberately field-scoped rather than one flag for the whole row, so a
+page that mixes official and hand-translated content (like that species: official name and
+traits, hand-translated lore) only marks the part that actually is. `_self_translated()` and
+`_badged_heading()` in `views.py`, and `self_translated_badge()` in `entries_render.py`, are the
+three pieces that wire this up.
 
 The two gaps this still leaves **on purpose**: `Equipment.entries` (never rendered by any page
 today - only `Equipment.name` shows up, via `{@item}` tags and equipment lists, so translating a

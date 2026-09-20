@@ -7,12 +7,15 @@ Rows the file doesn't mention, and fields it doesn't give, keep a NULL `<field>_
 to English: nothing is ever removed for lacking a translation (unlike the handbook, which drops
 its untranslated parts so both languages show the same content).
 
-A row's entry may also carry `"_self": true`, alongside its translated fields - not itself a
-field name, so `sync_catalog()`'s per-`field` loop below never touches it - to mark Italian text
-that was hand-translated for this project rather than lifted from an official Italian source (the
-SRD PDF, for everything translated up to that point). This sets the row's own `self_translated`
-column, which the frontend uses to show a "translated by us" badge instead of silently passing
-off a fan translation as the official one.
+A row's entry may also carry `"_self": [...]`, alongside its translated fields - not itself a
+field name, so `sync_catalog()`'s per-`field` loop below never touches it - listing exactly which
+of that row's *own* translated fields were hand-translated for this project rather than lifted
+from an official Italian source (the SRD PDF, for everything translated up to that point), e.g.
+`["lore"]` on a species whose `name`/`entries` are official SRD text but whose `lore` (PHB-only,
+never covered by the SRD) necessarily isn't. This sets the row's own `self_translated_fields`
+column, which the frontend uses to show a "Traduzione" badge next to the *specific* heading/card
+built from a hand-translated field, instead of a single flag that would blanket an entire page
+even where only one part of it isn't official.
 """
 
 import json
@@ -121,8 +124,10 @@ def sync_catalog(model, filename: str, fields: tuple[str, ...]) -> tuple[int, in
                 english = getattr(row, f"{field}_en")
                 value = overlay_translation(english, value, f"{filename}:{key}.{field}")
             setattr(row, f"{field}_it", value)
-        row.self_translated = bool(translated.get("_self"))
-    model.objects.bulk_update(rows, [*(f"{field}_it" for field in fields), "self_translated"])
+        row.self_translated_fields = list(translated.get("_self") or [])
+    model.objects.bulk_update(
+        rows, [*(f"{field}_it" for field in fields), "self_translated_fields"]
+    )
     return len(source), len(rows)
 
 

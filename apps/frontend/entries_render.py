@@ -175,36 +175,50 @@ def _render_entry_cards(blocks: list, linker: _ReferenceLinker) -> str:
         body_source = block.get("entries", []) if isinstance(block, dict) else block
         block_id = block.get("id") if isinstance(block, dict) else None
         id_attr = f' id="feature-{block_id}"' if block_id else ""
-        badge_html = _self_translated_badge(block) if isinstance(block, dict) else ""
+        badge_html = (
+            self_translated_badge(bool(block.get("self_translated")))
+            if isinstance(block, dict)
+            else ""
+        )
         heading_html = f"<h3>{_render_text(name, linker)}{badge_html}</h3>" if name else badge_html
         body_html = _render_node(body_source, linker)
         cards.append(f'<div class="entry-card"{id_attr}>{heading_html}{body_html}</div>')
     return f'<div class="entry-cards">{"".join(cards)}</div>'
 
 
-def _self_translated_badge(block: dict) -> str:
-    """A small "translated by us" badge (see `Feature.self_translated`'s docstring) for a card
-    whose Italian text was hand-translated for this project rather than lifted from the official
-    Italian SRD - only shown while actually browsing in Italian, since the flag says nothing
-    about the English text.
+def self_translated_badge(is_self_translated: bool) -> str:
+    """A small badge marking a specific heading/card whose Italian text was hand-translated for
+    this project rather than lifted from the official Italian SRD - only shown while actually
+    browsing in Italian, since the flag says nothing about the English text. Public (not
+    underscore-prefixed): `views.py` reuses it for section headings (Lore, Description, ...) that
+    aren't built from `_render_entry_cards()`, so the badge always sits on the specific block of
+    text it describes rather than blanketing an entire page that may be only partly hand-translated.
     """
-    if not block.get("self_translated") or get_language() != "it":
+    if not is_self_translated or get_language() != "it":
         return ""
     return (
         ' <span class="self-translated-badge" '
         'title="Testo tradotto per questo progetto, non dalla fonte SRD ufficiale">'
-        "Traduzione non ufficiale</span>"
+        "Traduzione</span>"
     )
 
 
-def render_trait_cards(entries: list) -> SafeString:
+def render_trait_cards(entries: list, *, self_translated: bool = False) -> SafeString:
     """Render a flat list of {name, entries} blocks - the shape every XPHB Species' top-level
     `entries` list uses, one block per trait (verified against every species in db/species.json)
     - as one visually separated card per trait, instead of the plain stacked headings
     `render_entries()` would produce for the same shape.
+
+    `self_translated` marks every card the same way, since (unlike `Feature` rows) a Species'
+    traits all come from the one `entries` field - there's no finer-grained provenance to show
+    per trait.
     """
     linker = _ReferenceLinker()
-    return mark_safe(_render_entry_cards(entries or [], linker))
+    blocks = [
+        {**block, "self_translated": self_translated} if isinstance(block, dict) else block
+        for block in (entries or [])
+    ]
+    return mark_safe(_render_entry_cards(blocks, linker))
 
 
 def _render_level_groups(by_level: dict[int, list[dict]], linker: _ReferenceLinker) -> str:
@@ -242,7 +256,7 @@ def render_class_features(features) -> SafeString:
                 "id": feature.pk,
                 "name": feature.name,
                 "entries": feature.entries,
-                "self_translated": feature.self_translated,
+                "self_translated": bool(feature.self_translated_fields),
             }
         )
     return mark_safe(_render_level_groups(by_level, linker))
@@ -274,14 +288,14 @@ def render_subclasses(subclasses) -> SafeString:
                 {
                     "name": f.name,
                     "entries": f.entries,
-                    "self_translated": f.self_translated,
+                    "self_translated": bool(f.self_translated_fields),
                 }
                 for f in sl.feature_rows.all()
             ]
             for sl in subclass.levels.all()
         }
         groups_html = _render_level_groups(by_level, linker)
-        subclass_badge = _self_translated_badge({"self_translated": subclass.self_translated})
+        subclass_badge = self_translated_badge(bool(subclass.self_translated_fields))
         blocks.append(
             f'<details class="subclass-block">'
             f"<summary>{_render_text(subclass.name, linker)}{subclass_badge}</summary>"

@@ -1,6 +1,10 @@
 {
  "aasimar": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "lore",
+   "name"
+  ],
   "entries": [
    {
     "entries": [
@@ -73,7 +77,9 @@
   "short_description": "Mortali toccati dal celeste, con una luce interiore."
  },
  "dragonborn": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "entries": [
    {
     "entries": [
@@ -172,7 +178,9 @@
   "short_description": "Fieri esseri draconici dal soffio elementale."
  },
  "dwarf": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "entries": [
    {
     "entries": [
@@ -217,7 +225,9 @@
   "short_description": "Popolo robusto di montagne e pietra."
  },
  "elf": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "entries": [
    {
     "entries": [
@@ -313,7 +323,9 @@
   "short_description": "Aggraziati, longevi e in sintonia con la magia."
  },
  "gnome": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "entries": [
    {
     "entries": [
@@ -366,7 +378,9 @@
   "short_description": "Piccoli e ingegnosi, pieni di curiosità."
  },
  "goliath": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "entries": [
    null,
    {
@@ -398,7 +412,11 @@
   "short_description": "Giganteschi abitanti di aspre vette montane."
  },
  "grung": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "lore",
+   "name"
+  ],
   "entries": [
    {
     "entries": [
@@ -436,7 +454,9 @@
   "short_description": "Allegri uomini-rana a proprio agio in acqua e nella giungla."
  },
  "halfling": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "entries": [
    {
     "entries": [
@@ -481,7 +501,9 @@
   "short_description": "Piccoli e agili, noti per fortuna e allegria."
  },
  "human": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "entries": [
    {
     "entries": [
@@ -518,7 +540,9 @@
   "short_description": "Adattabili, ambiziosi e infinitamente vari."
  },
  "orc": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "entries": [
    {
     "entries": [
@@ -556,7 +580,9 @@
   "short_description": "Popolo forte e tenace, di feroce resistenza."
  },
  "tiefling": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "entries": [
    {
     "entries": [

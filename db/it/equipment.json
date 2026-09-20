@@ -6,7 +6,9 @@
   "name": "Acido"
  },
  "airship": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Nave volante"
  },
  "alchemists-fire": {
@@ -444,7 +446,9 @@
   "name": "Cavallo da tiro"
  },
  "dragonchess-set": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Scacchi draconici"
  },
  "drum": {
@@ -493,11 +497,15 @@
   "name": "Vino pregiato (bottiglia)"
  },
  "firearm-bullet": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Proiettile per arma da fuoco"
  },
  "firearm-bullets-10": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Proiettili per arma da fuoco (10)"
  },
  "flail": {
@@ -790,11 +798,15 @@
   "name": "Manette"
  },
  "map": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Mappa"
  },
  "map-or-scroll-case": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Custodia per mappe o pergamene"
  },
  "masons-tools": {
@@ -1053,7 +1065,9 @@
   "name": "Dotazione da sacerdote"
  },
  "psychic-blade": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Lama psichica"
  },
  "quarterstaff": {
@@ -1214,7 +1228,9 @@
   "name": "Bastone"
  },
  "string": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Spago"
  },
  "studded-leather-armor": {
@@ -1248,7 +1264,9 @@
   "name": "Arnesi da scasso"
  },
  "three-dragon-ante-set": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Asso dei Tre Draghi"
  },
  "tinderbox": {
@@ -1300,7 +1318,9 @@
   "name": "Tridente"
  },
  "trinket": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Ninnolo"
  },
  "vial": {

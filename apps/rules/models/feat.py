@@ -25,7 +25,7 @@ class Feat(models.Model):
     name = models.CharField(max_length=200)
     page = models.PositiveSmallIntegerField()
     srd = models.BooleanField(default=False)
-    self_translated = models.BooleanField(default=False)
+    self_translated_fields = models.JSONField(default=list, blank=True)
     category = models.CharField(max_length=30)
     prerequisite = models.JSONField(default=list, blank=True)
     entries = models.JSONField(default=list, blank=True)

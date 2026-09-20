@@ -30,7 +30,7 @@ class Equipment(models.Model):
     name = models.CharField(max_length=200)
     page = models.PositiveSmallIntegerField()
     srd = models.BooleanField(default=False)
-    self_translated = models.BooleanField(default=False)
+    self_translated_fields = models.JSONField(default=list, blank=True)
     type = models.ForeignKey(
         "rules.EquipmentType",
         related_name="equipment",

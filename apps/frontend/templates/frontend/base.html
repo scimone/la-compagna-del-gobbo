@@ -110,9 +110,12 @@
       text-overflow: ellipsis;
     }
 
-    /* Flags a page whose Italian text was hand-translated for this project rather than lifted
-       from the official Italian SRD - see `Feature.self_translated`'s docstring. Also reused,
-       smaller, on individual feature/subclass cards inside a Class page (see detail.html). */
+    /* Marks a specific heading/title/card whose Italian text was hand-translated for this
+       project rather than lifted from the official Italian SRD - see
+       `Feature.self_translated_fields`'s docstring. Shown next to a page's own title (only when
+       its `name` is hand-translated), a section heading like "Lore"/"Description" (only when
+       that field is), and individual feature/subclass cards inside a Class page - never as one
+       blanket flag for an entire page, since a page can mix official and hand-translated parts. */
     .self-translated-badge {
       flex-shrink: 0;
       background: var(--accent);
@@ -434,10 +437,10 @@
       {# everywhere else it shows the current page's own name instead of repeating the brand.   #}
       {# This is the page's only <h1> - content templates don't repeat it (see overview/list/   #}
       {# detail.html), so there's exactly one per page rather than zero or two.                 #}
+      {# `page_title` may already carry an inline "Traduzione" badge (safe HTML) - see          #}
+      {# `_badged_heading()` in views.py - shown only when the page's own name/title is itself   #}
+      {# hand-translated, not just some other section further down the page.                    #}
       <h1 class="brand">{% firstof page_title "La Compagna del Gobbo" %}</h1>
-      {% if self_translated %}
-        <span class="self-translated-badge" title="Testo tradotto per questo progetto, non dalla fonte SRD ufficiale">Traduzione non ufficiale</span>
-      {% endif %}
     </div>
 
     {% get_current_language as CURRENT_LANGUAGE %}

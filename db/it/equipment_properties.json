@@ -1,6 +1,9 @@
 {
  "2h": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    {
     "entries": [
@@ -12,7 +15,10 @@
   "name": "A due mani"
  },
  "a": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    {
     "entries": [
@@ -24,7 +30,10 @@
   "name": "Munizioni"
  },
  "f": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    {
     "entries": [
@@ -36,7 +45,10 @@
   "name": "Accurata"
  },
  "h": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    {
     "entries": [
@@ -48,7 +60,10 @@
   "name": "Pesante"
  },
  "l": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    {
     "entries": [
@@ -60,7 +75,10 @@
   "name": "Leggera"
  },
  "ld": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    {
     "entries": [
@@ -72,7 +90,10 @@
   "name": "Ricarica"
  },
  "r": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    {
     "entries": [
@@ -84,7 +105,10 @@
   "name": "Portata"
  },
  "t": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    {
     "entries": [
@@ -96,7 +120,10 @@
   "name": "Da lancio"
  },
  "v": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    {
     "entries": [

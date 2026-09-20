@@ -7,7 +7,10 @@
   "name": "Cammino del berserker"
  },
  "barbarian:path-of-the-wild-heart": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Cammina in comunione con il mondo animale}",
    "I Barbari che seguono il Cammino del cuore selvaggio si considerano parenti degli animali. Questi Barbari apprendono mezzi magici per comunicare con gli animali, e la loro Ira intensifica il legame con essi mentre li colma di forza soprannaturale."
@@ -15,7 +18,10 @@
   "name": "Cammino del cuore selvaggio"
  },
  "barbarian:path-of-the-world-tree": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Segui le radici e i rami del multiverso}",
    "I Barbari che seguono il Cammino dell'Albero del Mondo si connettono, attraverso la propria Ira, con l'albero cosmico Yggdrasil. Questo albero cresce tra i Piani Esterni, collegandoli tra loro e al Piano Materiale. Questi Barbari attingono alla magia dell'albero per la vitalità e come mezzo di viaggio dimensionale."
@@ -23,7 +29,10 @@
   "name": "Cammino dell'Albero del Mondo"
  },
  "barbarian:path-of-the-zealot": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Infuria in estatica unione con un dio}",
    "I Barbari che percorrono il Cammino dello zelota ricevono doni da un dio o da un pantheon. Questi Barbari vivono la propria Ira come un episodio estatico di unione divina che li colma di potere. Sono spesso alleati dei sacerdoti e degli altri seguaci del loro dio o pantheon."
@@ -31,7 +40,10 @@
   "name": "Cammino dello zelota"
  },
  "bard:college-of-dance": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Muoviti in armonia con il cosmo}",
    "I Bardi del Collegio della Danza sanno che le Parole della creazione non possono essere racchiuse nella parola o nel canto: quelle parole sono pronunciate dai movimenti dei corpi celesti e scorrono attraverso i moti delle creature più piccole. Questi Bardi praticano un modo di essere in armonia con il cosmo vorticoso che enfatizza agilità, velocità e grazia."
@@ -39,7 +51,10 @@
   "name": "Collegio della Danza"
  },
  "bard:college-of-glamour": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Intesse incantevole magia fatata}",
    "Il Collegio del Fascino fa risalire le proprie origini all'ammaliante magia del Piano Fatato. I Bardi che studiano questa magia intrecciano fili di bellezza e terrore nelle proprie canzoni e nei propri racconti, e i più potenti tra loro possono avvolgersi in una maestosità ultraterrena. Le loro esibizioni risvegliano una malinconica nostalgia per un'innocenza dimenticata, evocano ricordi inconsci di paure a lungo custodite e toccano le emozioni anche degli ascoltatori dal cuore più duro."
@@ -54,7 +69,10 @@
   "name": "Collegio della Sapienza"
  },
  "bard:college-of-valor": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Canta le gesta degli eroi antichi}",
    "I Bardi del Collegio del Valore sono audaci narratori le cui storie preservano il ricordo dei grandi eroi del passato. Questi Bardi cantano le gesta dei potenti in sale voltate o davanti a folle radunate attorno a grandi falò. Viaggiano per assistere di persona a grandi eventi e per assicurarsi che il loro ricordo non svanisca. Con i loro canti, ispirano le nuove generazioni a raggiungere le stesse vette di gloria degli eroi di un tempo."
@@ -70,7 +88,10 @@
   "name": "Dominio della Vita"
  },
  "cleric:light-domain": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Porta la luce per bandire le tenebre}",
    "Il Dominio della Luce enfatizza il potere divino di generare fuoco fiammeggiante e rivelazione. I Chierici che maneggiano questo potere sono anime illuminate, permeate di radiosità e della vista acuta delle proprie divinità, incaricate di scacciare le menzogne e bruciare le tenebre.",
@@ -79,7 +100,10 @@
   "name": "Dominio della Luce"
  },
  "cleric:trickery-domain": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Semina scompiglio e sfida l'autorità}",
    "Il Dominio dell'Inganno offre magie di raggiro, illusione e furtività. I Chierici che maneggiano questa magia sono una forza dirompente nel mondo, che sgonfia l'orgoglio, deride i tiranni, libera i prigionieri e infrange le tradizioni vuote. Preferiscono lo stratagemma e lo scherzo al confronto diretto.",
@@ -88,7 +112,10 @@
   "name": "Dominio dell'Inganno"
  },
  "cleric:war-domain": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Ispira valore e colpisci i nemici}",
    "La guerra ha molte manifestazioni. Può trasformare persone comuni in eroi. Può essere disperata e orribile, con atti di crudeltà e viltà che oscurano episodi di eccellenza e coraggio. I Chierici che attingono alla magia del Dominio della Guerra eccellono in battaglia, ispirando gli altri a combattere per la giusta causa o offrendo atti di violenza come preghiere.",
@@ -104,7 +131,10 @@
   "name": "Circolo della Terra"
  },
  "druid:circle-of-the-moon": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Assumi forme animali per proteggere le terre selvagge}",
    "I Druidi del Circolo della Luna attingono alla magia lunare per trasformarsi. Il loro ordine si riunisce sotto la luna per condividere notizie e compiere rituali.",
@@ -113,7 +143,10 @@
   "name": "Circolo della Luna"
  },
  "druid:circle-of-the-sea": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Diventa un tutt'uno con le maree e le tempeste}",
    "I Druidi del Circolo del Mare attingono alle forze tempestose degli oceani e delle tempeste. Alcuni si considerano incarnazioni dell'ira della natura, in cerca di vendetta contro chi la depreda. Altri cercano un'unione mistica con la natura sintonizzandosi con il flusso e riflusso delle maree, seguendo l'impeto delle correnti e delle onde e ascoltando gli imperscrutabili sussurri e ruggiti dei venti."
@@ -121,7 +154,10 @@
   "name": "Circolo del Mare"
  },
  "druid:circle-of-the-stars": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Imbriglia i segreti celati nelle costellazioni}",
    "Il Circolo delle Stelle osserva i moti celesti sin da tempo immemore, scoprendo segreti celati tra le costellazioni. Comprendendo questi segreti, i Druidi di questo circolo cercano di imbrigliare i poteri del cosmo."
@@ -129,7 +165,10 @@
   "name": "Circolo delle Stelle"
  },
  "fighter:battle-master": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Padroneggia sofisticate manovre di battaglia}",
    "I Maestri di Battaglia sono studiosi dell'arte della guerra, che apprendono tecniche marziali tramandate attraverso le generazioni. I Maestri di Battaglia più abili sono figure poliedriche che uniscono abilità di combattimento accuratamente affinate allo studio accademico della storia, della teoria e delle arti."
@@ -144,7 +183,10 @@
   "name": "Campione"
  },
  "fighter:eldritch-knight": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Sostieni le abilità di combattimento con la magia arcana}",
    "I Cavalieri occulti uniscono la maestria marziale comune a tutti i Guerrieri a un attento studio della magia. I loro incantesimi completano ed estendono le loro abilità di combattimento, fornendo protezione aggiuntiva a supporto della loro armatura e permettendo loro di affrontare più nemici contemporaneamente con magie esplosive."
@@ -152,7 +194,10 @@
   "name": "Cavaliere occulto"
  },
  "fighter:psi-warrior": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Potenzia la forza fisica con il potere psionico}",
    "I Guerrieri psionici risvegliano il potere della propria mente per potenziare la propria forza fisica. Imbrigliano questo potere psionico per infondere energia nei colpi delle proprie armi, scagliare energia telecinetica e creare barriere di forza mentale."
@@ -160,7 +205,10 @@
   "name": "Guerriero psionico"
  },
  "monk:warrior-of-mercy": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Manipola le forze della vita e della morte}",
    "I Guerrieri della misericordia manipolano la forza vitale altrui. Questi Monaci sono medici erranti, ma portano una fine rapida ai propri nemici. Spesso indossano maschere, presentandosi come portatori senza volto di vita e morte."
@@ -168,7 +216,10 @@
   "name": "Guerriero della misericordia"
  },
  "monk:warrior-of-shadow": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Imbriglia il potere delle ombre per furtività e inganno}",
    "I Guerrieri dell'ombra praticano la furtività e l'inganno, imbrigliando il potere del Piano Ombra. Si trovano a proprio agio nell'oscurità, capaci di avvolgersi di tenebra per nascondersi, balzare da un'ombra all'altra e assumere una forma spettrale."
@@ -176,7 +227,10 @@
   "name": "Guerriero dell'ombra"
  },
  "monk:warrior-of-the-elements": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Scatena colpi ed esplosioni di potere elementale}",
    "I Guerrieri degli elementi attingono al potere dei Piani Elementali. Imbrigliando la propria concentrazione soprannaturale, questi Monaci domano momentaneamente l'energia del Caos Elementale per potenziare se stessi dentro e fuori dal combattimento."
@@ -199,7 +253,10 @@
   "name": "Giuramento di devozione"
  },
  "paladin:oath-of-glory": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Aspira alle vette dell'eroismo}",
    "I Paladini che prestano il Giuramento di gloria credono che loro e i propri compagni siano destinati a raggiungere la gloria attraverso gesta eroiche. Si addestrano diligentemente e incoraggiano i propri compagni, così da essere tutti pronti quando il destino chiama.",
@@ -208,7 +265,10 @@
   "name": "Giuramento di gloria"
  },
  "paladin:oath-of-the-ancients": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Preserva la vita e la luce nel mondo}",
    "Il Giuramento degli antichi è antico quanto i primi elfi. I Paladini che pronunciano questo giuramento custodiscono la luce; amano le cose belle e vivificanti del mondo più di qualsiasi principio di onore, coraggio e giustizia. Spesso adornano la propria armatura e i propri abiti con immagini di cose che crescono — foglie, corna o fiori — per riflettere il proprio impegno nel preservare la vita e la luce.",
@@ -217,7 +277,10 @@
   "name": "Giuramento degli antichi"
  },
  "paladin:oath-of-vengeance": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Punisci i malvagi a ogni costo}",
    "Il Giuramento di vendetta è un solenne impegno a punire chi ha commesso atti di grave malvagità. Quando eserciti malvagi trucidano villici indifesi, quando un tiranno sfida la volontà degli dèi, quando una gilda di ladri diventa troppo violenta, quando un drago semina distruzione per le campagne — in momenti come questi, i Paladini si levano e pronunciano un Giuramento di vendetta per rimediare a ciò che è andato storto.",
@@ -226,7 +289,10 @@
   "name": "Giuramento di vendetta"
  },
  "ranger:beast-master": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Stringi un legame con una bestia primordiale}",
    "Un Signore delle bestie forma un legame mistico con un animale speciale, attingendo alla magia primordiale e a una profonda connessione con il mondo naturale."
@@ -234,7 +300,10 @@
   "name": "Signore delle bestie"
  },
  "ranger:fey-wanderer": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Maneggia l'allegria e la furia fatata}",
    "Un'aura fatata ti circonda, grazie al favore di un arcifatato o di un luogo nel Piano Fatato che ti ha trasformato. Comunque tu abbia ottenuto la magia fatata, ora sei un Viandante fatato. La tua allegra risata rischiara il cuore degli oppressi, e la tua abilità marziale semina il terrore tra i tuoi nemici, poiché grande è l'allegria dei fatati e spaventosa è la loro furia."
@@ -242,7 +311,10 @@
   "name": "Viandante fatato"
  },
  "ranger:gloom-stalker": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Attingi alla magia delle ombre per combattere i tuoi nemici}",
    "I Cacciatori delle tenebre si trovano a proprio agio nei luoghi più bui, maneggiando magia tratta dal Piano Ombra per combattere i nemici che si annidano nell'oscurità."
@@ -257,7 +329,10 @@
   "name": "Cacciatore"
  },
  "rogue:arcane-trickster": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Potenzia la furtività con incantesimi arcani}",
    "Alcuni Ladri potenziano le proprie raffinate abilità di furtività e agilità con gli incantesimi, apprendendo trucchi magici che li aiutano nel proprio mestiere. Alcuni Imbroglioni arcani usano i propri talenti come borsaioli e scassinatori, mentre altri sono semplicemente burloni."
@@ -265,7 +340,10 @@
   "name": "Imbroglione arcano"
  },
  "rogue:assassin": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Pratica la cupa arte della morte}",
    "L'addestramento di un Assassino si concentra sull'uso di furtività, veleno e travestimento per eliminare i nemici con letale efficienza. Sebbene alcuni Ladri che seguono questo cammino siano sicari, spie o cacciatori di taglie, le capacità di questa sottoclasse sono altrettanto utili per gli avventurieri che affrontano una varietà di nemici mostruosi."
@@ -273,7 +351,10 @@
   "name": "Assassino"
  },
  "rogue:soulknife": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Colpisci i nemici con lame psioniche}",
    "Una Lama dell'anima colpisce con la mente, tagliando attraverso barriere sia fisiche sia psichiche. Questi Ladri scoprono un potere psionico dentro di sé e lo incanalano per svolgere il proprio mestiere. Come Lama dell'anima, le tue abilità psioniche potrebbero averti tormentato fin dall'infanzia, rivelando il proprio pieno potenziale solo quando hai vissuto lo stress dell'avventura. Oppure potresti aver cercato un ordine di adepti psichici e trascorso anni imparando a manifestare il tuo potere."
@@ -288,7 +369,10 @@
   "name": "Furfante"
  },
  "sorcerer:aberrant-sorcery": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Maneggia un innaturale potere psionico}",
    "Un'influenza aliena ha avvolto i propri tentacoli attorno alla tua mente, donandoti un potere psionico. Ora puoi toccare altre menti con quel potere e alterare il mondo attorno a te. Questo potere risplenderà da te come un faro di speranza per gli altri? O sarai un terrore per chi avverte la puntura della tua mente?",
@@ -297,7 +381,10 @@
   "name": "Stregoneria aberrante"
  },
  "sorcerer:clockwork-sorcery": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Incanala le forze cosmiche dell'ordine}",
    "La forza cosmica dell'ordine ti ha permeato di magia. Quel potere ha origine da Mechanus o da un reame simile — un piano di esistenza plasmato interamente dall'efficienza meccanica. Tu o qualcuno del tuo lignaggio potreste esservi ritrovati coinvolti nelle macchinazioni dei modroni, gli esseri ordinati che abitano Mechanus. Forse un tuo antenato ha persino preso parte alla Grande Marcia dei Modroni. Quale che sia la sua origine dentro di te, il potere dell'ordine può sembrare strano agli altri, ma per te è parte di un sistema vasto e glorioso."
@@ -305,7 +392,9 @@
   "name": "Stregoneria meccanica"
  },
  "sorcerer:draconic-sorcery": {
-  "_self": true,
+  "_self": [
+   "description"
+  ],
   "description": [
    "{@i Respira la magia dei draghi}",
    "La tua magia innata proviene dal dono di un drago. Forse un drago antico, prossimo alla morte, ha lasciato in eredità parte del proprio potere magico a te o a un tuo antenato. Potresti aver assorbito magia da un luogo intriso del potere dei draghi. O forse hai maneggiato un tesoro sottratto al covo di un drago, impregnato di potere draconico. Oppure potresti avere un drago come antenato."
@@ -313,7 +402,10 @@
   "name": "Stregoneria draconica"
  },
  "sorcerer:wild-magic-sorcery": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Scatena la magia caotica}",
    "La tua magia innata scaturisce dalle forze del caos che sottendono l'ordine della creazione. Tu o un tuo antenato potreste aver subito l'esposizione a magia grezza, forse attraverso un portale planare che conduce al Limbo o ai Piani Elementali. Forse sei stato benedetto da un essere fatato o marchiato da un demone. Oppure la tua magia potrebbe essere un caso fortuito senza causa apparente. Quale che sia la sua fonte, questa magia ribolle dentro di te, in attesa di uno sfogo."
@@ -321,7 +413,10 @@
   "name": "Stregoneria della magia selvaggia"
  },
  "warlock:archfey-patron": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Contratta con capricciosi fatati}",
    "Il tuo patto attinge al potere del Piano Fatato. Quando scegli questa sottoclasse, potresti stringere un accordo con un arcifatato, come il Principe del Gelo; la Regina dell'Aria e delle Tenebre, sovrana della Corte del Crepuscolo; Titania della Corte d'Estate; o un'antica strega. Oppure potresti invocare un intero spettro di fatati, tessendo una rete di favori e debiti. Chiunque siano, il tuo patrono è spesso imperscrutabile e capriccioso."
@@ -329,7 +424,10 @@
   "name": "Patrono arcifatato"
  },
  "warlock:celestial-patron": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Invoca il potere dei cieli}",
    "Il tuo patto attinge ai Piani Superiori, i reami della beatitudine eterna. Potresti stringere un accordo con un empireo, un couatl, una sfinge, un unicorno o un'altra entità celeste. Oppure potresti invocare numerosi esseri simili mentre persegui obiettivi allineati ai loro. Il tuo patto ti permette di sperimentare un barlume della luce sacra che illumina il multiverso."
@@ -337,7 +435,9 @@
   "name": "Patrono celestiale"
  },
  "warlock:fiend-patron": {
-  "_self": true,
+  "_self": [
+   "description"
+  ],
   "description": [
    "{@i Stringi un accordo con i Piani Inferiori}",
    "Il tuo patto attinge ai Piani Inferiori, i reami della perdizione. Potresti forgiare un patto con un signore dei demoni come Demogorgon o Orcus; un arcidiavolo come Asmodeus; oppure un diavolo della fossa, un balor, uno yugoloth o una strega della notte particolarmente potente. Gli scopi di quel patrono sono malvagi — la corruzione o la distruzione di ogni cosa, te compreso — e il tuo cammino è definito da quanto ti opponi a quegli scopi."
@@ -345,7 +445,10 @@
   "name": "Patrono immondo"
  },
  "warlock:great-old-one-patron": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Disseppellisci la sapienza proibita di esseri ineffabili}",
    "Quando scegli questa sottoclasse, potresti legarti a un essere innominabile del Reame Lontano o a un dio antico — un'entità come Tharizdun, il Dio Incatenato; Zargon, il Redivivo; Hadar, la Fame Oscura; o il Grande Cthulhu. Oppure potresti invocare diverse entità senza vincolarti a una sola. I motivi di questi esseri sono incomprensibili, e il Grande Antico potrebbe essere indifferente alla tua esistenza. Ma i segreti che hai appreso ti permettono comunque di trarne una strana magia."
@@ -353,7 +456,10 @@
   "name": "Patrono dei Grandi Antichi"
  },
  "wizard:abjurer": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Proteggi i compagni e bandisci i nemici}",
    "Il tuo studio della magia si concentra sugli incantesimi che bloccano, bandiscono o proteggono: porre fine a effetti dannosi, bandire influenze malvagie e proteggere i deboli. Gli Abiuratori sono ricercati quando spiriti funesti richiedono un esorcismo, quando luoghi devono essere protetti da spionaggio magico, e quando portali verso altri piani di esistenza devono essere chiusi. I gruppi di avventurieri apprezzano gli Abiuratori per la protezione che offrono contro una varietà di magie ostili e altri attacchi."
@@ -361,7 +467,10 @@
   "name": "Abiuratore"
  },
  "wizard:diviner": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Apprendi i segreti del multiverso}",
    "Il consiglio di un Divinatore è ricercato da chi desidera una comprensione più chiara del passato, del presente e del futuro. Come Divinatore, ti sforzi di squarciare i veli dello spazio, del tempo e della coscienza. Lavori per padroneggiare incantesimi di discernimento, visione a distanza, conoscenza soprannaturale e preveggenza."
@@ -376,7 +485,10 @@
   "name": "Invocatore"
  },
  "wizard:illusionist": {
-  "_self": true,
+  "_self": [
+   "description",
+   "name"
+  ],
   "description": [
    "{@i Intesse sottili incantesimi d'inganno}",
    "Ti specializzi in una magia che abbaglia i sensi e inganna la mente, e le illusioni che crei rendono reale l'impossibile."

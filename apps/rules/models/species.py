@@ -32,7 +32,7 @@ class Species(models.Model):
     short_description = models.CharField(max_length=150, blank=True, default="")
     page = models.PositiveSmallIntegerField()
     srd = models.BooleanField(default=False)
-    self_translated = models.BooleanField(default=False)
+    self_translated_fields = models.JSONField(default=list, blank=True)
     hidden = models.BooleanField(default=False)
     size = models.JSONField(default=list, blank=True)
     speed = models.PositiveSmallIntegerField(default=30)

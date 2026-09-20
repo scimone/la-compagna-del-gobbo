@@ -1,6 +1,8 @@
 {
  "acolyte": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "entries": [
    {
     "items": [
@@ -33,7 +35,11 @@
   "name": "Accolito"
  },
  "artisan": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "lore",
+   "name"
+  ],
   "entries": [
    {
     "items": [
@@ -66,7 +72,11 @@
   "name": "Artigiano"
  },
  "charlatan": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "lore",
+   "name"
+  ],
   "entries": [
    {
     "items": [
@@ -99,7 +109,9 @@
   "name": "Ciarlatano"
  },
  "criminal": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "entries": [
    {
     "items": [
@@ -132,7 +144,11 @@
   "name": "Criminale"
  },
  "entertainer": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "lore",
+   "name"
+  ],
   "entries": [
    {
     "items": [
@@ -165,7 +181,11 @@
   "name": "Intrattenitore"
  },
  "farmer": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "lore",
+   "name"
+  ],
   "entries": [
    {
     "items": [
@@ -198,7 +218,11 @@
   "name": "Contadino"
  },
  "guard": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "lore",
+   "name"
+  ],
   "entries": [
    {
     "items": [
@@ -231,7 +255,11 @@
   "name": "Guardia"
  },
  "guide": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "lore",
+   "name"
+  ],
   "entries": [
    {
     "items": [
@@ -264,7 +292,11 @@
   "name": "Guida"
  },
  "hermit": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "lore",
+   "name"
+  ],
   "entries": [
    {
     "items": [
@@ -297,7 +329,11 @@
   "name": "Eremita"
  },
  "merchant": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "lore",
+   "name"
+  ],
   "entries": [
    {
     "items": [
@@ -330,7 +366,11 @@
   "name": "Mercante"
  },
  "noble": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "lore",
+   "name"
+  ],
   "entries": [
    {
     "items": [
@@ -363,7 +403,9 @@
   "name": "Nobile"
  },
  "sage": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "entries": [
    {
     "items": [
@@ -396,7 +438,11 @@
   "name": "Sapiente"
  },
  "sailor": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "lore",
+   "name"
+  ],
   "entries": [
    {
     "items": [
@@ -429,7 +475,11 @@
   "name": "Marinaio"
  },
  "scribe": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "lore",
+   "name"
+  ],
   "entries": [
    {
     "items": [
@@ -462,7 +512,9 @@
   "name": "Scriba"
  },
  "soldier": {
-  "_self": true,
+  "_self": [
+   "lore"
+  ],
   "entries": [
    {
     "items": [
@@ -495,7 +547,11 @@
   "name": "Soldato"
  },
  "wayfarer": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "lore",
+   "name"
+  ],
   "entries": [
    {
     "items": [

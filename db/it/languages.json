@@ -1,78 +1,116 @@
 {
  "abyssal": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Abissale"
  },
  "celestial": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Celestiale"
  },
  "common": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Comune"
  },
  "common-sign-language": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Lingua dei segni comune"
  },
  "deep-speech": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Loquela Profonda"
  },
  "draconic": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Draconico"
  },
  "druidic": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Druidico"
  },
  "dwarvish": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Nanico"
  },
  "elvish": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Elfico"
  },
  "giant": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Gigante"
  },
  "gnomish": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Gnomesco"
  },
  "goblin": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Goblin"
  },
  "halfling": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Halfling"
  },
  "infernal": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Infernale"
  },
  "orc": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Orchesco"
  },
  "primordial": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Primordiale"
  },
  "sylvan": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Silvano"
  },
  "thieves-cant": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Gergo ladresco"
  },
  "undercommon": {
-  "_self": true,
+  "_self": [
+   "name"
+  ],
   "name": "Sottocomune"
  }
 }

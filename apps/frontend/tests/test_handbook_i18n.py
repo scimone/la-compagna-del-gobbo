@@ -232,23 +232,53 @@ def test_species_size_and_creature_type_are_translated_in_italian(client, catalo
     assert "Humanoid" in html
 
 
-def test_self_translated_pages_show_the_unofficial_badge_only_in_italian(client, catalogs):
-    # Actor has no official (SRD) Italian source and was hand-translated for this project.
+_BADGE = '<span class="self-translated-badge"'
+
+
+def test_self_translated_pages_show_the_badge_only_in_italian(client, catalogs):
+    # Actor has no official (SRD) Italian source: both its name and its entries are hand-
+    # translated, so the badge shows next to the title *and* next to "Description".
     html = _get(client, "/world/feats/actor/", "it")
-    assert '<span class="self-translated-badge"' in html
+    assert html.count(_BADGE) == 2
+    assert "Traduzione</span>" in html
+    assert "Traduzione non ufficiale" not in html  # shortened label, not the old longer one
 
     html = _get(client, "/world/feats/actor/", "en")
-    assert '<span class="self-translated-badge"' not in html
+    assert _BADGE not in html
 
     # Alert is one of the SRD-sourced feats, translated from the official source.
     html = _get(client, "/world/feats/alert/", "it")
-    assert '<span class="self-translated-badge"' not in html
+    assert _BADGE not in html
+
+
+def test_self_translated_badge_only_marks_the_specific_hand_translated_block(client, catalogs):
+    # Elf is entirely SRD-sourced except its Lore (PHB-only flavor text, hand-translated for this
+    # project since the SRD never covers it) - the badge must sit next to "Lore" specifically,
+    # not the page title, since the title's own name is official.
+    html = _get(client, "/world/species/elf/", "it")
+    body = html.split("<body>", 1)[1]
+    header, _, rest = body.partition('<div class="facts">')
+    assert _BADGE not in header  # the title ("Elfo") is official
+    assert rest.count(_BADGE) == 1  # only the Lore heading is hand-translated
+    assert "Ambientazione" in rest  # the Lore section itself still renders
+
+    html = _get(client, "/world/species/elf/", "en")
+    assert _BADGE not in html
 
 
 def test_self_translated_badge_shows_on_individual_feature_and_subclass_cards(client, catalogs):
     # Path of the Zealot (and its "Divine Fury" feature) has no official Italian source either.
     html = _get(client, "/world/classes/barbarian/?tab=subclasses", "it")
-    assert html.count('<span class="self-translated-badge"') >= 2  # subclass + feature card
+    assert html.count(_BADGE) >= 2  # subclass block + at least one of its feature cards
 
     html = _get(client, "/world/classes/barbarian/?tab=subclasses", "en")
-    assert '<span class="self-translated-badge"' not in html
+    assert _BADGE not in html
+
+    # The same Class's About tab isn't about Path of the Zealot at all, but its own Lore section
+    # is hand-translated (PHB-only, every class), so exactly that heading gets the badge - the
+    # page title ("Barbaro", official) and the other About facts don't.
+    html = _get(client, "/world/classes/barbarian/", "it")
+    body = html.split("<body>", 1)[1]
+    header, _, rest = body.partition('<div class="facts">')
+    assert _BADGE not in header
+    assert rest.count(_BADGE) == 1

@@ -194,7 +194,10 @@
   "name": "Occhio arcano"
  },
  "arcane-gate": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "L'incantatore crea due portali di teletrasporto collegati tra loro. Sceglie due spazi liberi di taglia Grande sul terreno che è in grado di vedere, uno entro gittata e l'altro entro 3 metri da sé. In ciascuno di quegli spazi si apre un portale circolare, che permane per la durata dell'incantesimo.",
    "I portali sono anelli luminosi bidimensionali, colmi di una foschia che blocca la vista. Fluttuano a pochi centimetri dal terreno, perpendicolari ad esso.",
@@ -209,7 +212,11 @@
   "name": "Serratura arcana"
  },
  "arcane-vigor": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "L'incantatore attinge alla propria forza vitale per guarire se stesso. Tira uno o due dei propri {@variantrule Hit Point Dice|XPHB|Dadi Vita} non ancora consumati e recupera un numero di {@variantrule Hit Points|XPHB|punti ferita} pari al totale del tiro più il proprio modificatore di caratteristica da incantatore. Quei dadi vengono poi consumati."
   ],
@@ -224,7 +231,11 @@
   "name": "Vigore arcano"
  },
  "armor-of-agathys": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "Un gelo magico e protettivo avvolge l'incantatore, che guadagna 5 {@variantrule Temporary Hit Points|XPHB|punti ferita temporanei}. Se una creatura lo colpisce con un tiro per colpire in mischia prima che l'incantesimo termini, quella creatura subisce 5 danni da freddo. L'incantesimo termina anzitempo se l'incantatore non possiede più {@variantrule Temporary Hit Points|XPHB|punti ferita temporanei}."
   ],
@@ -239,7 +250,11 @@
   "name": "Armatura di Agathys"
  },
  "arms-of-hadar": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "Invocando Hadar, l'incantatore fa erompere dei tentacoli da sé. Ogni creatura entro un'{@variantrule Emanation [Area of Effect]|XPHB|emanazione} di 3 metri originata da lui effettua un tiro salvezza su Forza. In caso di fallimento, un bersaglio subisce {@damage 2d6} danni necrotici e non può effettuare reazioni fino all'inizio del proprio turno successivo. In caso di successo, subisce soltanto la metà di quei danni."
   ],
@@ -264,7 +279,9 @@
   "name": "Proiezione astrale"
  },
  "augury": {
-  "_self": true,
+  "_self": [
+   "entries"
+  ],
   "entries": [
    "L'incantatore riceve un presagio da un'entità ultraterrena riguardo ai risultati di un corso d'azione che intende intraprendere nei successivi 30 minuti. Il GM sceglie il presagio dalla tabella dei presagi.",
    {
@@ -304,14 +321,20 @@
   "name": "Aura di vita"
  },
  "aura-of-purity": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Per la durata dell'incantesimo, l'incantatore irradia un'aura in un'{@variantrule Emanation [Area of Effect]|XPHB|emanazione} di 9 metri. Finché si trovano nell'aura, l'incantatore e i suoi alleati dispongono di {@variantrule Resistance|XPHB|resistenza} ai danni da veleno e di {@variantrule Advantage|XPHB|vantaggio} ai tiri salvezza per evitare o porre fine a effetti che includono la condizione {@condition Blinded|XPHB|accecato}, {@condition Charmed|XPHB|affascinato}, {@condition Deafened|XPHB|assordato}, {@condition Frightened|XPHB|spaventato}, {@condition Paralyzed|XPHB|paralizzato}, {@condition Poisoned|XPHB|avvelenato} o {@condition Stunned|XPHB|stordito}."
   ],
   "name": "Aura di purezza"
  },
  "aura-of-vitality": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Per la durata dell'incantesimo, l'incantatore irradia un'aura in un'{@variantrule Emanation [Area of Effect]|XPHB|emanazione} di 9 metri. Quando crea l'aura e all'inizio di ciascuno dei suoi turni finché essa persiste, l'incantatore può ripristinare {@dice 2d6} {@variantrule Hit Points|XPHB|punti ferita} a una creatura al suo interno."
   ],
@@ -339,7 +362,10 @@
   "name": "Anatema"
  },
  "banishing-smite": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Il bersaglio colpito dal tiro per colpire subisce {@damage 5d10} danni da forza aggiuntivi dall'attacco. Se l'attacco riduce il bersaglio a 50 {@variantrule Hit Points|XPHB|punti ferita} o meno, il bersaglio deve superare un tiro salvezza su Carisma o essere trasportato in un semipiano innocuo per la durata dell'incantesimo. Mentre si trova lì, il bersaglio ha la condizione {@condition Incapacitated|XPHB|incapacitato}. Al termine dell'incantesimo, il bersaglio riappare nello spazio che occupava in precedenza o, se è occupato, nello spazio libero più vicino."
   ],
@@ -373,7 +399,10 @@
   "name": "Faro di speranza"
  },
  "beast-sense": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "L'incantatore tocca una bestia consenziente. Per la durata dell'incantesimo, può percepire attraverso i sensi della bestia oltre che con i propri. Quando percepisce attraverso i sensi della bestia, l'incantatore beneficia di eventuali sensi speciali che essa possiede."
   ],
@@ -461,7 +490,10 @@
   "name": "Barriera di lame"
  },
  "blade-ward": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Ogni volta che una creatura effettua un tiro per colpire contro l'incantatore prima che l'incantesimo termini, l'attaccante sottrae {@dice 1d4} al tiro per colpire."
   ],
@@ -497,7 +529,11 @@
   "name": "Inaridire"
  },
  "blinding-smite": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "Il bersaglio colpito dal colpo subisce {@damage 3d8} danni radiosi aggiuntivi dall'attacco e ha la condizione {@condition Blinded|XPHB|accecato} finché l'incantesimo non termina. Alla fine di ciascuno dei suoi turni, il bersaglio {@condition Blinded|XPHB|accecato} effettua un tiro salvezza su Costituzione, terminando l'incantesimo su di sé in caso di successo."
   ],
@@ -640,7 +676,9 @@
   "name": "Tocco gelido"
  },
  "chromatic-orb": {
-  "_self": true,
+  "_self": [
+   "entries_higher_level"
+  ],
   "entries": [
    "L'incantatore scaglia un globo di energia contro un bersaglio entro gittata. Può scegliere che tipo di globo creare tra acido, freddo, fulmine, fuoco, tuono o veleno, e poi effettuare un attacco a distanza con incantesimo contro il bersaglio. Se il colpo va a segno, il bersaglio subisce {@damage 3d8} danni del tipo scelto.",
    "Se l'incantatore ottiene lo stesso risultato su due o più d8, il globo schizza verso un altro bersaglio a scelta dell'incantatore che si trovi entro 9 metri dal primo bersaglio. L'incantatore effettua un tiro per colpire contro il secondo bersaglio e anche un altro tiro per i danni. Il globo non può più schizzare verso un altro bersaglio, a meno che l'incantatore non lanci l'incantesimo usando uno slot incantesimo di 2º livello o superiore. un altro bersaglio un numero massimo di volte pari al livello dello slot incantesimo consumato, ed è possibile bersagliare una creatura soltanto una volta per ogni lancio di questo incantesimo."
@@ -670,7 +708,10 @@
   "name": "Cerchio di morte"
  },
  "circle-of-power": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Per la durata dell'incantesimo, l'incantatore irradia un'aura in un'{@variantrule Emanation [Area of Effect]|XPHB|emanazione} di 9 metri. Finché si trovano nell'aura, l'incantatore e i suoi alleati dispongono di {@variantrule Advantage|XPHB|vantaggio} ai tiri salvezza contro incantesimi e altri effetti magici. Quando una creatura interessata effettua un tiro salvezza contro un incantesimo o un effetto magico che consente di subire solo la metà dei danni in caso di successo, non subisce alcun danno se supera il tiro salvezza."
   ],
@@ -692,7 +733,11 @@
   "name": "Clone"
  },
  "cloud-of-daggers": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "L'incantatore evoca pugnali roteanti in un {@variantrule Cube [Area of Effect]|XPHB|cubo} con spigolo di 1,5 metri centrato su un punto entro gittata. Ogni creatura in quell'area subisce {@damage 4d4} danni taglienti. Una creatura subisce questi danni anche se entra nel {@variantrule Cube [Area of Effect]|XPHB|cubo} o vi termina il proprio turno, oppure se il {@variantrule Cube [Area of Effect]|XPHB|cubo} si sposta nel suo spazio. Una creatura subisce questi danni solo una volta per turno.",
    "Nei turni successivi, l'incantatore può effettuare un'azione di {@action Magic|XPHB|Magia} per teletrasportare il {@variantrule Cube [Area of Effect]|XPHB|cubo} fino a 9 metri."
@@ -799,7 +844,10 @@
   "name": "Comunione con la natura"
  },
  "compelled-duel": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "L'incantatore tenta di costringere una creatura a un duello. Una creatura entro gittata che è in grado di vedere effettua un tiro salvezza su Saggezza. In caso di fallimento, il bersaglio ha {@variantrule Disadvantage|XPHB|svantaggio} ai tiri per colpire contro creature diverse dall'incantatore e non può spostarsi volontariamente in uno spazio a più di 9 metri da lui.",
    "L'incantesimo termina se l'incantatore effettua un tiro per colpire contro una creatura diversa dal bersaglio, se lancia un incantesimo su un nemico diverso dal bersaglio, se un suo alleato infligge danni al bersaglio, oppure se termina il proprio turno a più di 9 metri dal bersaglio."
@@ -863,7 +911,11 @@
   "name": "Evoca animali"
  },
  "conjure-barrage": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "L'incantatore brandisce l'arma usata per lanciare l'incantesimo ed evoca armi spettrali simili (o munizioni adatte all'arma) che si scagliano in avanti per poi svanire. Ogni creatura a sua scelta che è in grado di vedere in un {@variantrule Cone [Area of Effect]|XPHB|cono} di 18 metri effettua un tiro salvezza su Destrezza, subendo {@damage 5d8} danni da forza in caso di fallimento, o la metà dei danni in caso di successo."
   ],
@@ -955,7 +1007,10 @@
   "name": "Evoca elementali minori"
  },
  "conjure-volley": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "L'incantatore brandisce l'arma usata per lanciare l'incantesimo e sceglie un punto entro gittata. Centinaia di armi spettrali simili (o munizioni adatte all'arma) cadono in una scarica per poi svanire. Ogni creatura a sua scelta che è in grado di vedere in un {@variantrule Cylinder [Area of Effect]|XPHB|cilindro} del raggio di 12 metri e dell'altezza di 6 metri, centrato su quel punto, effettua un tiro salvezza su Destrezza. Una creatura subisce {@damage 8d8} danni da forza in caso di fallimento, o la metà dei danni in caso di successo."
   ],
@@ -1087,7 +1142,11 @@
   "name": "Controllare tempo atmosferico"
  },
  "cordon-of-arrows": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "L'incantatore tocca fino a quattro frecce o quadrelli non magici e li pianta nel terreno all'interno del proprio spazio. Finché l'incantesimo non termina, le munizioni non possono essere fisicamente sradicate e, ogni volta che una creatura diversa dall'incantatore entra per la prima volta in un turno in uno spazio entro 9 metri dalle munizioni, o vi termina il proprio turno, una delle munizioni scatta verso di essa per colpirla. La creatura deve superare un tiro salvezza su Destrezza o subire {@damage 2d4} danni perforanti. La munizione viene quindi distrutta. L'incantesimo termina quando nessuna munizione rimane piantata nel terreno.",
    "Quando lancia questo incantesimo, l'incantatore può designare qualsiasi creatura a sua scelta, che verrà ignorata dall'incantesimo."
@@ -1205,7 +1264,10 @@
   "name": "Creazione"
  },
  "crown-of-madness": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Una creatura entro gittata che l'incantatore è in grado di vedere deve superare un tiro salvezza su Saggezza, altrimenti ha la condizione {@condition Charmed|XPHB|affascinato} per la durata dell'incantesimo. La creatura ha automaticamente successo se non è Umanoide.",
    "Una corona spettrale appare sulla testa del bersaglio {@condition Charmed|XPHB|affascinato}, che deve utilizzare la propria azione prima di muoversi in ciascuno dei suoi turni per effettuare un attacco in mischia contro una creatura diversa da se stesso, scelta mentalmente dall'incantatore. Il bersaglio può agire normalmente nel proprio turno se l'incantatore non sceglie alcuna creatura o se nessuna creatura si trova entro la sua portata. Il bersaglio ripete il tiro salvezza alla fine di ciascuno dei suoi turni, terminando l'incantesimo su di sé in caso di successo.",
@@ -1214,7 +1276,10 @@
   "name": "Corona della follia"
  },
  "crusaders-mantle": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "L'incantatore irradia un'aura magica in un'{@variantrule Emanation [Area of Effect]|XPHB|emanazione} di 9 metri. Finché si trovano nell'aura, l'incantatore e i suoi alleati infliggono ciascuno {@damage 1d4} danni radiosi aggiuntivi quando colpiscono con un'arma o un {@variantrule Unarmed Strike|XPHB|colpo senz'armi}."
   ],
@@ -1296,7 +1361,10 @@
   "name": "Semipiano"
  },
  "destructive-wave": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Un'energia distruttiva si propaga a ondate dall'incantatore in un'{@variantrule Emanation [Area of Effect]|XPHB|emanazione} di 9 metri. Ogni creatura scelta dall'incantatore all'interno dell'{@variantrule Emanation [Area of Effect]|XPHB|emanazione} effettua un tiro salvezza su Costituzione. In caso di fallimento, un bersaglio subisce {@damage 5d6} danni da tuono e {@damage 5d6} danni radiosi o necrotici (a scelta dell'incantatore) e ottiene la condizione {@condition Prone|XPHB|prono}. In caso di successo, subisce soltanto la metà di quei danni."
   ],
@@ -1393,7 +1461,9 @@
   "name": "Dissolvi il bene e il male"
  },
  "dispel-magic": {
-  "_self": true,
+  "_self": [
+   "entries_higher_level"
+  ],
   "entries": [
    "L'incantatore sceglie una creatura, un oggetto o un effetto magico situato entro gittata. Ogni incantesimo di 3º livello o inferiore presente sul bersaglio termina. Per ogni incantesimo di 4º livello o superiore presente sul bersaglio, l'incantatore effettua una prova di caratteristica usando la propria caratteristica da incantatore ({@dc 10} più il livello di quell'incantesimo). Se la prova viene superata, l'incantesimo termina."
   ],
@@ -1496,7 +1566,11 @@
   "name": "Dominare bestie"
  },
  "dominate-monster": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "Una creatura entro gittata che l'incantatore è in grado di vedere deve superare un tiro salvezza su Saggezza, altrimenti diventa {@condition Charmed|XPHB|affascinata} per la durata dell'incantesimo. Il bersaglio dispone di {@variantrule Advantage|XPHB|vantaggio} al tiro salvezza se l'incantatore o i suoi alleati stanno combattendo contro di essa. Ogni volta che il bersaglio subisce danni, ripete il tiro salvezza, terminando l'incantesimo su di sé in caso di successo.",
    "L'incantatore ha un legame telepatico con il bersaglio {@condition Charmed|XPHB|affascinato} mentre i due si trovano sullo stesso piano di esistenza. Nel proprio turno, l'incantatore può utilizzare questo legame per impartire comandi al bersaglio (nessuna azione richiesta), come ad esempio \"{@action Attack|XPHB|attacca} quella creatura\", \"spostati lì\", o \"recupera quell'oggetto\". Il bersaglio fa del suo meglio per obbedire nel suo turno. Se porta a termine un ordine e non riceve ulteriori istruzioni dall'incantatore, agisce e si muove a suo piacimento, concentrandosi sulla propria incolumità.",
@@ -1608,7 +1682,10 @@
   "name": "Terremoto"
  },
  "eldritch-blast": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level"
+  ],
   "entries": [
    "L'incantatore scaglia un raggio di energia crepitante. Effettua un attacco a distanza con incantesimo contro una creatura o un oggetto entro gittata. Se il colpo va a segno, il bersaglio subisce {@damage 1d10} danni da forza."
   ],
@@ -1623,7 +1700,11 @@
   "name": "Deflagrazione occulta"
  },
  "elemental-weapon": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "Un'arma non magica toccata dall'incantatore diventa un'arma magica. L'incantatore sceglie uno dei seguenti tipi di danno: acido, freddo, fuoco, fulmine o tuono. Per la durata dell'incantesimo, l'arma ottiene un bonus di +1 ai tiri per colpire e infligge {@damage 1d4} danni aggiuntivi del tipo scelto quando colpisce."
   ],
@@ -1827,7 +1908,10 @@
   "name": "Caduta morbida"
  },
  "feign-death": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "L'incantatore tocca una creatura consenziente e la fa entrare in uno stato catalettico indistinguibile dalla morte.",
    "Per la durata dell'incantesimo, il bersaglio appare morto a un'ispezione esteriore e agli incantesimi usati per determinarne lo stato. Il bersaglio ha le condizioni {@condition Blinded|XPHB|accecato} e {@condition Incapacitated|XPHB|incapacitato}, e la sua {@variantrule Speed|XPHB|velocità} è pari a 0.",
@@ -2056,14 +2140,20 @@
   "name": "Gabbia di forza"
  },
  "foresight": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "L'incantatore tocca una creatura consenziente, conferendole una limitata capacità di vedere nel futuro immediato. Per la durata dell'incantesimo, il bersaglio dispone di {@variantrule Advantage|XPHB|vantaggio} alle {@variantrule D20 Test|XPHB|prove con d20} e le altre creature hanno {@variantrule Disadvantage|XPHB|svantaggio} ai tiri per colpire contro di esso. L'incantesimo termina anzitempo se l'incantatore lo lancia di nuovo."
   ],
   "name": "Preveggenza"
  },
  "fount-of-moonlight": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Per la durata dell'incantesimo, una luce fredda avvolge il corpo dell'incantatore, proiettando {@variantrule Bright Light|XPHB|luce intensa} in un raggio di 6 metri e {@variantrule Dim Light|XPHB|luce fioca} per ulteriori 6 metri.",
    "Finché l'incantesimo non termina, l'incantatore ha {@variantrule Resistance|XPHB|resistenza} ai danni radiosi e i suoi attacchi in mischia infliggono {@damage 2d6} danni radiosi aggiuntivi quando vanno a segno.",
@@ -2087,7 +2177,10 @@
   "name": "Libertà di movimento"
  },
  "friends": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "L'incantatore emana magicamente un senso di amicizia verso una creatura che è in grado di vedere entro gittata. Il bersaglio deve superare un tiro salvezza su Saggezza, altrimenti ottiene la condizione {@condition Charmed|XPHB|affascinato} per la durata dell'incantesimo. Il bersaglio ha automaticamente successo se non è Umanoide, se l'incantatore sta combattendo contro di esso, o se ha già lanciato questo incantesimo su di esso nelle ultime 24 ore.",
    "L'incantesimo termina anzitempo se il bersaglio subisce danni o se l'incantatore effettua un tiro per colpire, infligge danni o costringe qualcuno a effettuare un tiro salvezza. Quando l'incantesimo termina, il bersaglio si accorge di essere stato {@condition Charmed|XPHB|affascinato} dall'incantatore."
@@ -2144,7 +2237,9 @@
   "name": "Riposo inviolato"
  },
  "giant-insect": {
-  "_self": true,
+  "_self": [
+   "entries_higher_level"
+  ],
   "entries": [
    "L'incantatore evoca un millepiedi gigante, un ragno gigante o una vespa gigante (a sua scelta al momento del lancio). L'insetto si manifesta in uno spazio libero entro gittata che l'incantatore è in grado di vedere e utilizza la scheda delle statistiche dell' insetto gigante. La forma scelta dall'incantatore determina alcuni dettagli della sua scheda delle statistiche. La creatura scompare quando scende a 0 {@variantrule Hit Points|XPHB|punti ferita} o quando l'incantesimo termina. ed è un alleato per il personaggio e i suoi alleati. In combattimento, la creatura ha lo stesso punteggio di iniziativa dell'incantatore, ma inizia il turno immediatamente dopo il suo, obbedendo ai suoi comandi verbali (nessuna azione richiesta da parte dell'incantatore). Se l'incantatore non pronuncia comandi verbali, la creatura compie l'azione di Schivata e usa il suo movimento per sottrarsi al pericolo."
   ],
@@ -2223,7 +2318,11 @@
   "name": "Bacche benefiche"
  },
  "grasping-vine": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "L'incantatore evoca una liana che germoglia da una superficie in uno spazio libero che è in grado di vedere entro gittata. La liana permane per la durata dell'incantesimo.",
    "Effettua un attacco in mischia con incantesimo contro una creatura entro 9 metri dalla liana. Se il colpo va a segno, il bersaglio subisce {@damage 4d8} danni contundenti e viene trascinato verso la liana per un massimo di 9 metri; se il bersaglio è di taglia Enorme o inferiore, ottiene la condizione {@condition Grappled|XPHB|afferrato} (CD per sfuggire alla presa pari alla CD del tiro salvezza sull'incantesimo dell'incantatore). La liana può afferrare una sola creatura alla volta, e l'incantatore può farle rilasciare una creatura {@condition Grappled|XPHB|afferrata} (nessuna azione richiesta).",
@@ -2345,7 +2444,11 @@
   "name": "Folata di vento"
  },
  "hail-of-thorns": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "Quando l'incantatore colpisce la creatura, l'incantesimo crea una pioggia di spine che scaturisce dalla sua arma a distanza o dalle sue munizioni. Il bersaglio dell'attacco e ogni creatura entro 1,5 metri da esso effettuano un tiro salvezza su Destrezza, subendo {@damage 1d10} danni perforanti in caso di fallimento, o la metà dei danni in caso di successo."
   ],
@@ -2360,7 +2463,10 @@
   "name": "Grandine di spine"
  },
  "hallow": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "L'incantatore tocca un punto e lo infonde, insieme all'area circostante, di potere sacro o profano. L'area può avere un raggio fino a 18 metri e l'incantesimo fallisce se il raggio include un'area già sotto l'effetto di Consacrazione. L'area interessata presenta i seguenti effetti.",
    {
@@ -2590,7 +2696,11 @@
   "name": "Aura sacra"
  },
  "hunger-of-hadar": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "L'incantatore apre un varco verso il Regno Remoto, una regione infestata da orrori indicibili. Una {@variantrule Sphere [Area of Effect]|XPHB|sfera} di {@variantrule Darkness|XPHB|oscurità} dal raggio di 6 metri appare, centrata su un punto entro gittata, e dura per la durata dell'incantesimo. La {@variantrule Sphere [Area of Effect]|XPHB|sfera} è {@variantrule Difficult Terrain|XPHB|terreno difficile} ed è pervasa da strani sussurri e rumori di risucchio, udibili fino a 9 metri di distanza. Nessuna luce, magica o meno, può illuminare l'area, e le creature interamente al suo interno hanno la condizione {@condition Blinded|XPHB|accecate}.",
    "Qualunque creatura che inizia il proprio turno nell'area subisce {@damage 2d6} danni da freddo. Qualunque creatura che termina lì il proprio turno deve superare un tiro salvezza su Destrezza, o subisce {@damage 2d6} danni da acido causati da tentacoli ultraterreni."
@@ -2760,7 +2870,11 @@
   "name": "Invisibilità"
  },
  "jallarzis-storm-of-radiance": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "L'incantatore scatena una tempesta di luce lampeggiante e tuoni furiosi in un {@variantrule Cylinder [Area of Effect]|XPHB|cilindro} dal raggio di 3 metri e alto 12 metri, centrato su un punto che è in grado di vedere entro gittata. Finché si trovano in quest'area, le creature hanno le condizioni {@condition Blinded|XPHB|accecate} e {@condition Deafened|XPHB|assordate}, e non possono lanciare incantesimi con una componente verbale.",
    "Quando la tempesta appare, ogni creatura al suo interno effettua un tiro salvezza su Costituzione, subendo {@damage 2d10} danni radiosi e {@damage 2d10} danni da tuono in caso di fallimento, o la metà dei danni in caso di successo. Una creatura effettua questo tiro salvezza anche quando entra per la prima volta in un turno nell'area dell'incantesimo o vi termina il proprio turno. Una creatura effettua questo tiro salvezza solo una volta per turno."
@@ -2845,7 +2959,11 @@
   "name": "Luce"
  },
  "lightning-arrow": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "Quando l'attacco dell'incantatore colpisce o manca il bersaglio, l'arma o le munizioni che sta usando si trasformano in un fulmine. Invece di subire i danni o gli altri effetti dell'attacco, il bersaglio subisce {@damage 4d8} danni da fulmine in caso di colpo, o la metà dei danni in caso di mancato bersaglio. Ogni creatura entro 3 metri dal bersaglio effettua quindi un tiro salvezza su Destrezza, subendo {@damage 2d8} danni da fulmine in caso di fallimento, o la metà dei danni in caso di successo.",
    "L'arma o le munizioni tornano poi alla loro forma normale."
@@ -3119,7 +3237,11 @@
   "name": "Vuoto mentale"
  },
  "mind-sliver": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "L'incantatore cerca di scheggiare temporaneamente la mente di una creatura che è in grado di vedere entro gittata. Il bersaglio deve superare un tiro salvezza su Intelligenza, altrimenti subisce {@damage 1d6} danni psichici e sottrae {@dice 1d4} al prossimo tiro salvezza che effettua prima della fine del turno successivo dell'incantatore."
   ],
@@ -3466,7 +3588,10 @@
   "name": "Metamorfosi"
  },
  "power-word-fortify": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "L'incantatore fortifica fino a sei creature che è in grado di vedere entro gittata. L'incantesimo conferisce 120 {@variantrule Temporary Hit Points|XPHB|punti ferita temporanei}, che l'incantatore suddivide tra i destinatari dell'incantesimo."
   ],
@@ -3751,7 +3876,9 @@
   "name": "Fiamma sacra"
  },
  "sanctuary": {
-  "_self": true,
+  "_self": [
+   "entries"
+  ],
   "entries": [
    "L'incantatore protegge una creatura entro gittata. Finché l'incantesimo non termina, qualunque creatura che bersagli la creatura protetta con un tiro per colpire o con un incantesimo che infligge danni deve superare un tiro salvezza su Saggezza, o scegliere un nuovo bersaglio oppure perdere l'attacco o l'incantesimo. Questo incantesimo non protegge la creatura protetta dalle aree di effetto.",
    "L'incantesimo termina se la creatura protetta effettua un tiro per colpire, lancia un incantesimo o infligge danni."
@@ -3885,7 +4012,10 @@
   "name": "Frantumare"
  },
  "shield": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Una barriera impercettibile di forza magica protegge l'incantatore. Fino all'inizio del turno successivo dell'incantatore, egli ha un bonus di +5 alla CA, incluso contro l'attacco che ha scatenato l'incantesimo, e non subisce danni da {@spell Magic Missile|XPHB|dardo incantato}."
   ],
@@ -4089,7 +4219,11 @@
   "name": "Arma spirituale"
  },
  "staggering-smite": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "Il bersaglio subisce {@damage 4d6} danni psichici extra dall'attacco e deve superare un tiro salvezza su Saggezza, altrimenti ha la condizione {@condition Stunned|XPHB|stordito} fino alla fine del turno successivo dell'incantatore."
   ],
@@ -4118,7 +4252,10 @@
   "name": "Luce splendente"
  },
  "steel-wind-strike": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "L'incantatore fa roteare l'arma usata per lanciare l'incantesimo, quindi svanisce per colpire come il vento. Sceglie fino a cinque creature che è in grado di vedere entro gittata ed effettua un attacco in mischia con incantesimo contro ciascun bersaglio. Se il colpo va a segno, il bersaglio subisce {@damage 6d10} danni da forza.",
    "L'incantatore si teletrasporta quindi in uno spazio libero che è in grado di vedere entro 1,5 metri da uno dei bersagli."
@@ -4183,7 +4320,11 @@
   "name": "Suggestione"
  },
  "summon-aberration": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "L'incantatore evoca uno spirito aberrante, che si manifesta in uno spazio libero che l'incantatore è in grado di vedere entro gittata e utilizza la scheda delle statistiche dello spirito aberrante. Quando lancia l'incantesimo, l'incantatore sceglie tra Progenie di Beholder, Divoratore di menti o Slaad. La creatura assomiglia a un'Aberrazione di quel tipo, il che determina alcuni dettagli della sua scheda delle statistiche. La creatura scompare quando scende a 0 {@variantrule Hit Points|XPHB|punti ferita} o quando l'incantesimo termina.",
    "La creatura è un'alleata per l'incantatore e i suoi alleati. In combattimento, condivide il punteggio di {@variantrule Initiative|XPHB|iniziativa} dell'incantatore, ma agisce nel proprio turno immediatamente dopo di lui. Obbedisce ai suoi comandi verbali (nessuna azione richiesta da parte dell'incantatore). Se l'incantatore non ne impartisce alcuno, la creatura compie l'azione di {@action Dodge|XPHB|Schivata} e usa il proprio movimento per sottrarsi al pericolo."
@@ -4199,7 +4340,11 @@
   "name": "Richiama aberrazione"
  },
  "summon-beast": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "L'incantatore evoca uno spirito bestiale, che si manifesta in uno spazio libero che l'incantatore è in grado di vedere entro gittata e utilizza la scheda delle statistiche dello spirito bestiale. Quando lancia l'incantesimo, l'incantatore sceglie un ambiente: Aria, Terra o Acqua. La creatura assomiglia a un animale a sua scelta originario dell'ambiente scelto, il che determina alcuni dettagli della sua scheda delle statistiche. La creatura scompare quando scende a 0 {@variantrule Hit Points|XPHB|punti ferita} o quando l'incantesimo termina.",
    "La creatura è un'alleata per l'incantatore e i suoi alleati. In combattimento, condivide il punteggio di {@variantrule Initiative|XPHB|iniziativa} dell'incantatore, ma agisce nel proprio turno immediatamente dopo di lui. Obbedisce ai suoi comandi verbali (nessuna azione richiesta da parte dell'incantatore). Se l'incantatore non ne impartisce alcuno, la creatura compie l'azione di {@action Dodge|XPHB|Schivata} e usa il proprio movimento per sottrarsi al pericolo."
@@ -4215,7 +4360,11 @@
   "name": "Richiama bestia"
  },
  "summon-celestial": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "L'incantatore evoca uno spirito celestiale, che si manifesta in forma angelica in uno spazio libero che l'incantatore è in grado di vedere entro gittata e utilizza la scheda delle statistiche dello spirito celestiale. Quando lancia l'incantesimo, l'incantatore sceglie tra Vendicatore o Difensore. La sua scelta determina alcuni dettagli della scheda delle statistiche. La creatura scompare quando scende a 0 {@variantrule Hit Points|XPHB|punti ferita} o quando l'incantesimo termina.",
    "La creatura è un'alleata per l'incantatore e i suoi alleati. In combattimento, condivide il punteggio di {@variantrule Initiative|XPHB|iniziativa} dell'incantatore, ma agisce nel proprio turno immediatamente dopo di lui. Obbedisce ai suoi comandi verbali (nessuna azione richiesta da parte dell'incantatore). Se l'incantatore non ne impartisce alcuno, la creatura compie l'azione di {@action Dodge|XPHB|Schivata} e usa il proprio movimento per sottrarsi al pericolo."
@@ -4231,7 +4380,11 @@
   "name": "Richiama celestiale"
  },
  "summon-construct": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "L'incantatore evoca lo spirito di un costrutto, che si manifesta in uno spazio libero che l'incantatore è in grado di vedere entro gittata e utilizza la scheda delle statistiche dello spirito del costrutto. Quando lancia l'incantesimo, l'incantatore sceglie un materiale: Argilla, Metallo o Pietra. La creatura assomiglia a una statua animata (il cui aspetto è scelto dall'incantatore) fatta del materiale scelto, il che determina alcuni dettagli della sua scheda delle statistiche. La creatura scompare quando scende a 0 {@variantrule Hit Points|XPHB|punti ferita} o quando l'incantesimo termina.",
    "La creatura è un'alleata per l'incantatore e i suoi alleati. In combattimento, condivide il punteggio di {@variantrule Initiative|XPHB|iniziativa} dell'incantatore, ma agisce nel proprio turno immediatamente dopo di lui. Obbedisce ai suoi comandi verbali (nessuna azione richiesta da parte dell'incantatore). Se l'incantatore non ne impartisce alcuno, la creatura compie l'azione di {@action Dodge|XPHB|Schivata} e usa il proprio movimento per sottrarsi al pericolo."
@@ -4247,7 +4400,9 @@
   "name": "Richiama costrutto"
  },
  "summon-dragon": {
-  "_self": true,
+  "_self": [
+   "entries_higher_level"
+  ],
   "entries": [
    null,
    "L'incantatore invoca uno spirito di drago, che si manifesta in uno spazio libero entro gittata che egli sia in grado di vedere e utilizza la scheda delle statistiche dello spirito draconico. La creatura scompare quando scende a 0 punti ferita o quando l'incantesimo termina ed è un alleato per il personaggio e i suoi alleati. In combattimento, la creatura ha lo stesso punteggio di {@variantrule Initiative|XPHB|iniziativa} dell'incantatore, ma inizia il turno immediatamente dopo il suo, obbedendo ai suoi comandi verbali (nessuna azione richiesta da parte dell'incantatore). Se l'incantatore non pronuncia comandi verbali, la creatura compie l'azione di {@action Dodge|XPHB|Schivata} e usa il suo movimento per sottrarsi al pericolo."
@@ -4263,7 +4418,11 @@
   "name": "Richiama drago"
  },
  "summon-elemental": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "L'incantatore evoca uno spirito elementale, che si manifesta in uno spazio libero che l'incantatore è in grado di vedere entro gittata e utilizza la scheda delle statistiche dello spirito elementale. Quando lancia l'incantesimo, l'incantatore sceglie un elemento: Aria, Terra, Fuoco o Acqua. La creatura assomiglia a una forma bipede avvolta dall'elemento scelto, il che determina alcuni dettagli della sua scheda delle statistiche. La creatura scompare quando scende a 0 {@variantrule Hit Points|XPHB|punti ferita} o quando l'incantesimo termina.",
    "La creatura è un'alleata per l'incantatore e i suoi alleati. In combattimento, condivide il punteggio di {@variantrule Initiative|XPHB|iniziativa} dell'incantatore, ma agisce nel proprio turno immediatamente dopo di lui. Obbedisce ai suoi comandi verbali (nessuna azione richiesta da parte dell'incantatore). Se l'incantatore non ne impartisce alcuno, la creatura compie l'azione di {@action Dodge|XPHB|Schivata} e usa il proprio movimento per sottrarsi al pericolo."
@@ -4279,7 +4438,11 @@
   "name": "Richiama elementale"
  },
  "summon-fey": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "L'incantatore evoca uno spirito folletto, che si manifesta in uno spazio libero che l'incantatore è in grado di vedere entro gittata e utilizza la scheda delle statistiche dello spirito folletto. Quando lancia l'incantesimo, l'incantatore sceglie un umore: Furibondo, Gioviale o Beffardo. La creatura assomiglia a un Folletto a sua scelta, contraddistinto dall'umore scelto, il che determina alcuni dettagli della sua scheda delle statistiche. La creatura scompare quando scende a 0 {@variantrule Hit Points|XPHB|punti ferita} o quando l'incantesimo termina.",
    "La creatura è un'alleata per l'incantatore e i suoi alleati. In combattimento, condivide il punteggio di {@variantrule Initiative|XPHB|iniziativa} dell'incantatore, ma agisce nel proprio turno immediatamente dopo di lui. Obbedisce ai suoi comandi verbali (nessuna azione richiesta da parte dell'incantatore). Se l'incantatore non ne impartisce alcuno, la creatura compie l'azione di {@action Dodge|XPHB|Schivata} e usa il proprio movimento per sottrarsi al pericolo."
@@ -4295,7 +4458,11 @@
   "name": "Richiama folletto"
  },
  "summon-fiend": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "L'incantatore evoca uno spirito immondo, che si manifesta in uno spazio libero che l'incantatore è in grado di vedere entro gittata e utilizza la scheda delle statistiche dello spirito immondo. Quando lancia l'incantesimo, l'incantatore sceglie tra Demone, Diavolo o Yugoloth. La creatura assomiglia a un Immondo del tipo scelto, il che determina alcuni dettagli della sua scheda delle statistiche. La creatura scompare quando scende a 0 {@variantrule Hit Points|XPHB|punti ferita} o quando l'incantesimo termina.",
    "La creatura è un'alleata per l'incantatore e i suoi alleati. In combattimento, condivide il punteggio di {@variantrule Initiative|XPHB|iniziativa} dell'incantatore, ma agisce nel proprio turno immediatamente dopo di lui. Obbedisce ai suoi comandi verbali (nessuna azione richiesta da parte dell'incantatore). Se l'incantatore non ne impartisce alcuno, la creatura compie l'azione di {@action Dodge|XPHB|Schivata} e usa il proprio movimento per sottrarsi al pericolo."
@@ -4311,7 +4478,11 @@
   "name": "Richiama immondo"
  },
  "summon-undead": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "L'incantatore evoca uno spirito non morto, che si manifesta in uno spazio libero che l'incantatore è in grado di vedere entro gittata e utilizza la scheda delle statistiche dello spirito non morto. Quando lancia l'incantesimo, l'incantatore sceglie la forma della creatura: Spettrale, Putrida o Scheletrica. Lo spirito assomiglia a un Non morto con la forma scelta, il che determina alcuni dettagli della sua scheda delle statistiche. La creatura scompare quando scende a 0 {@variantrule Hit Points|XPHB|punti ferita} o quando l'incantesimo termina.",
    "La creatura è un'alleata per l'incantatore e i suoi alleati. In combattimento, condivide il punteggio di {@variantrule Initiative|XPHB|iniziativa} dell'incantatore, ma agisce nel proprio turno immediatamente dopo di lui. Obbedisce ai suoi comandi verbali (nessuna azione richiesta da parte dell'incantatore). Se l'incantatore non ne impartisce alcuno, la creatura compie l'azione di {@action Dodge|XPHB|Schivata} e usa il proprio movimento per sottrarsi al pericolo."
@@ -4343,7 +4514,10 @@
   "name": "Esplosione solare"
  },
  "swift-quiver": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "Quando lancia l'incantesimo e successivamente come {@variantrule Bonus Action|XPHB|azione bonus} finché esso dura, l'incantatore può effettuare due attacchi con un'arma che scaglia Frecce o Quadrelli, come un Arco lungo o una Balestra leggera. L'incantesimo crea magicamente le munizioni necessarie per ciascun attacco. Ogni Freccia o Quadrello creato dall'incantesimo infligge danni come un pezzo di munizioni non magico del suo tipo e si disintegra immediatamente dopo aver colpito o mancato il bersaglio."
   ],
@@ -4392,7 +4566,10 @@
   "name": "Simbolo"
  },
  "synaptic-static": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "L'incantatore fa erompere energia psichica in un punto entro gittata. Ogni creatura presente in una {@variantrule Sphere [Area of Effect]|XPHB|sfera} dal raggio di 6 metri centrata su quel punto effettua un tiro salvezza su Intelligenza, subendo {@damage 8d6} danni psichici in caso di fallimento, o la metà dei danni in caso di successo.",
    "In caso di fallimento, il bersaglio ha anche pensieri confusi per 1 minuto. Durante questo periodo, sottrae {@dice 1d6} a tutti i suoi tiri per colpire e alle prove di caratteristica, così come a qualunque tiro salvezza su Costituzione per mantenere la {@status Concentration|XPHB|concentrazione}. Il bersaglio effettua un tiro salvezza su Intelligenza alla fine di ciascuno dei suoi turni, ponendo fine all'effetto su di sé in caso di successo."
@@ -4400,7 +4577,10 @@
   "name": "Statica sinaptica"
  },
  "tashas-bubbling-cauldron": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "L'incantatore evoca un calderone dai piedi ad artiglio pieno di liquido ribollente. Il calderone appare in uno spazio libero sul terreno entro 1,5 metri dall'incantatore e dura per la durata dell'incantesimo. Il calderone non può essere spostato e scompare quando l'incantesimo termina, insieme al liquido ribollente al suo interno.",
    "Il liquido nel calderone replica le proprietà di una pozione comune o non comune a scelta dell'incantatore (come una Pozione di cura). Come {@variantrule Bonus Action|XPHB|azione bonus}, l'incantatore o un alleato può immergere la mano nel calderone ed estrarre una pozione di quel tipo. La pozione è contenuta in una fiala che scompare quando la pozione viene consumata. Il calderone può produrre un numero di queste pozioni pari al modificatore della caratteristica da incantatore dell'incantatore (minimo 1). Quando l'ultima di queste pozioni viene estratta dal calderone, il calderone scompare e l'incantesimo termina.",
@@ -4444,7 +4624,10 @@
   "name": "Telecinesi"
  },
  "telepathy": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "L'incantatore crea un legame telepatico tra sé e una creatura consenziente a lui familiare. La creatura può trovarsi ovunque sullo stesso piano di esistenza dell'incantatore. L'incantesimo termina se l'incantatore o il bersaglio non si trovano più sullo stesso piano.",
    "Finché l'incantesimo non termina, l'incantatore e il bersaglio possono condividere istantaneamente parole, immagini, suoni e altri messaggi sensoriali attraverso il legame, e il bersaglio riconosce l'incantatore come la creatura con cui sta comunicando. L'incantesimo permette a una creatura di comprendere il significato delle parole dell'incantatore e di qualunque messaggio sensoriale che le invia."
@@ -4609,7 +4792,11 @@
   "name": "Taumaturgia"
  },
  "thorn-whip": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "L'incantatore crea una frusta simile a un rampicante ricoperta di spine che scatta al suo comando verso una creatura entro gittata, effettuando un attacco in mischia con incantesimo contro il bersaglio. Se il colpo va a segno, il bersaglio subisce {@damage 1d6} danni perforanti e, se è di taglia Grande o inferiore, l'incantatore può trascinarlo fino a 3 metri più vicino a sé."
   ],
@@ -4624,7 +4811,11 @@
   "name": "Frusta di spine"
  },
  "thunderclap": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "Ogni creatura presente in un'{@variantrule Emanation [Area of Effect]|XPHB|emanazione} di 1,5 metri originata dall'incantatore deve superare un tiro salvezza su Costituzione, altrimenti subisce {@damage 1d6} danni da tuono. Il suono tonante dell'incantesimo può essere udito fino a 30 metri di distanza."
   ],
@@ -4639,7 +4830,11 @@
   "name": "Schiocco di tuono"
  },
  "thunderous-smite": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "Il colpo dell'incantatore risuona di tuono udibile entro 90 metri da lui, e il bersaglio subisce {@damage 2d6} danni da tuono extra dall'attacco. Inoltre, se il bersaglio è una creatura, deve superare un tiro salvezza su Forza, altrimenti viene spinto fino a 3 metri lontano dall'incantatore e ottiene la condizione {@condition Prone|XPHB|prona}."
   ],
@@ -4675,7 +4870,11 @@
   "name": "Fermare il tempo"
  },
  "toll-the-dead": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "L'incantatore punta il dito verso una creatura che è in grado di vedere entro gittata, e l'unico rintocco di una campana dolorosa è udibile entro 3 metri dal bersaglio. Il bersaglio deve superare un tiro salvezza su Saggezza, altrimenti subisce {@damage 1d8} danni necrotici. Se al bersaglio mancano dei {@variantrule Hit Points|XPHB|punti ferita}, subisce invece {@damage 1d12} danni necrotici."
   ],
@@ -4997,7 +5196,11 @@
   "name": "Desiderio"
  },
  "witch-bolt": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "Un raggio di energia crepitante sfreccia verso una creatura entro gittata, formando un arco di fulmine sostenuto tra l'incantatore e il bersaglio. L'incantatore effettua un attacco a distanza con incantesimo contro di essa. Se il colpo va a segno, il bersaglio subisce {@damage 2d12} danni da fulmine.",
    "In ognuno dei suoi turni successivi, l'incantatore può utilizzare un'{@variantrule Bonus Action|XPHB|azione bonus} per infliggere automaticamente {@damage 1d12} danni da fulmine al bersaglio, anche se il primo attacco ha mancato.",
@@ -5014,7 +5217,11 @@
   "name": "Dardo della strega"
  },
  "word-of-radiance": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "Una radiosità ardente erompe dall'incantatore in un'{@variantrule Emanation [Area of Effect]|XPHB|emanazione} di 1,5 metri. Ogni creatura a sua scelta che è in grado di vedere al suo interno deve superare un tiro salvezza su Costituzione, altrimenti subisce {@damage 1d6} danni radiosi."
   ],
@@ -5036,7 +5243,11 @@
   "name": "Parola del ritiro"
  },
  "wrathful-smite": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "entries_higher_level",
+   "name"
+  ],
   "entries": [
    "Il bersaglio subisce {@damage 1d6} danni necrotici extra dall'attacco e deve superare un tiro salvezza su Saggezza, altrimenti ha la condizione {@condition Frightened|XPHB|spaventato} finché l'incantesimo non termina. Alla fine di ciascuno dei suoi turni, il bersaglio {@condition Frightened|XPHB|spaventato} ripete il tiro salvezza e, se lo supera, termina l'incantesimo su di sé."
   ],
@@ -5051,7 +5262,10 @@
   "name": "Punizione furiosa"
  },
  "yolandes-regal-presence": {
-  "_self": true,
+  "_self": [
+   "entries",
+   "name"
+  ],
   "entries": [
    "L'incantatore si circonda di una maestà ultraterrena in un'{@variantrule Emanation [Area of Effect]|XPHB|emanazione} di 3 metri. Ogni volta che l'{@variantrule Emanation [Area of Effect]|XPHB|emanazione} entra nello spazio di una creatura che l'incantatore è in grado di vedere, e ogni volta che una creatura che è in grado di vedere entra nell'{@variantrule Emanation [Area of Effect]|XPHB|emanazione} o vi termina il proprio turno, l'incantatore può costringere quella creatura a effettuare un tiro salvezza su Saggezza. In caso di fallimento, il bersaglio subisce {@damage 4d6} danni psichici e ottiene la condizione {@condition Prone|XPHB|prona}, e l'incantatore può spingerlo fino a 3 metri di distanza. In caso di successo, il bersaglio subisce soltanto la metà di quei danni. Una creatura effettua questo tiro salvezza solo una volta per turno."
   ],
