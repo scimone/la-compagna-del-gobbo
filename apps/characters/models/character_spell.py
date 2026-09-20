@@ -12,6 +12,13 @@ class CharacterSpell(models.Model):
     `always_prepared` covers spells that don't count against a character's prepared limit (e.g.
     a Cleric's domain spells) - worth its own flag since it's materially different for display
     and for counting purposes, not just a note.
+
+    `klass` is the class this spell belongs to: the SRD's multiclass rule is that each prepared
+    spell is associated with one of the character's classes and cast with *that* class's
+    spellcasting ability. Null for spells that come from elsewhere (a species, a feat), whose
+    ability is then recorded via `source`/`CharacterChoice`. `in_spellbook` is the Wizard's
+    spellbook: it holds more spells than the wizard has prepared, so "known" and "prepared" are
+    genuinely different sets for that class.
     """
 
     character = models.ForeignKey(
@@ -20,6 +27,10 @@ class CharacterSpell(models.Model):
     spell = models.ForeignKey("rules.Spell", on_delete=models.PROTECT, related_name="+")
     prepared = models.BooleanField(default=False)
     always_prepared = models.BooleanField(default=False)
+    klass = models.ForeignKey(
+        "rules.Class", null=True, blank=True, on_delete=models.PROTECT, related_name="+"
+    )
+    in_spellbook = models.BooleanField(default=False)
     source = models.CharField(max_length=100, blank=True, default="")
 
     class Meta:

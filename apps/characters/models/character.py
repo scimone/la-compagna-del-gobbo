@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -14,13 +15,34 @@ class Character(models.Model):
     ability scores + proficiencies + features by `builder.services.derived_stats`, never
     persisted, for the same reason).
 
+    `owner` is the account that created the character (D1 in `docs/character_creation_plan.md`):
+    every character is *visible* to every account, but only its owner edits or deletes it.
+    Nullable because characters created through the plain API have no account, and `SET_NULL` so
+    deleting an account never deletes its characters. `status` separates a character still being
+    built by the creation wizard (`draft`) from a finished one; the plain API creates `complete`
+    ones. `experience_points` is stored (not derived from level) because it is what the player
+    actually tracks - the level is derived from it.
+
     `max_hit_points` IS stored, unlike the derived stats above, because it depends on a genuine
     per-level historical choice (roll-or-average hit dice + Con modifier at each level) that
     isn't a pure function of current state - there's nothing to recompute it from once the
     level-up moment has passed.
     """
 
+    STATUS_DRAFT = "draft"
+    STATUS_COMPLETE = "complete"
+    STATUS_CHOICES = [(STATUS_DRAFT, "Draft"), (STATUS_COMPLETE, "Complete")]
+
     name = models.CharField(max_length=100)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="characters",
+    )
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=STATUS_COMPLETE)
+    experience_points = models.PositiveIntegerField(default=0)
     species = models.ForeignKey(
         "rules.Species", null=True, blank=True, on_delete=models.PROTECT, related_name="+"
     )

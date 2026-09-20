@@ -16,7 +16,7 @@ Updated after every completed phase (and committed with it). Legend: ✅ done ·
 | Phase | Status | Commit / notes |
 |---|---|---|
 | 0 — Data fixes | ✅ | Importer fixes for §3.2 #1–#4 (class weapons, background skills, species lineages/resistances/spells, feat spells/grants, background `feat_variant`); migration `rules.0018`; 9 integrity tests in `apps/rules/tests/test_builder_data.py`; live DB re-imported. Skill-choice `options` are now real `Skill` ids. §3.2 #5 (`"artificer"` code) is left for Phase 8 as planned |
-| 1 — Schema | ⬜ | |
+| 1 — Schema | ✅ | Migration `characters.0002`: `Character.owner/status/experience_points`, `CharacterClass.is_starting_class/hit_dice_spent`, `CharacterSpell.klass/in_spellbook`, **`CharacterInventoryItem.parent`** (pack traceability, D3). `status` defaults to `complete` so API-created characters stay ordinary; the wizard sets `draft`. `admin.py` is still the empty stub it was (nothing to update). 3 tests in `apps/characters/tests/test_builder_fields.py` |
 | 2 — Tables + class spec | ⬜ | |
 | 3 — Builder engine (level 1) | ⬜ | |
 | 4 — Derived stats | ⬜ | |

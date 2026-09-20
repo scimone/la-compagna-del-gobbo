@@ -7,6 +7,11 @@ class CharacterClass(models.Model):
     One row per distinct class a character has taken levels in - multiple rows per character
     is how multiclassing is represented (e.g. Fighter 3 / Rogue 2 is two rows). `subclass` is
     nullable since it isn't chosen until the class's subclass-selection level is reached.
+
+    `is_starting_class` marks the class the character began with: only that one grants level-1
+    hit points and the full set of starting proficiencies (multiclass rules, SRD "Multiclasse").
+    `hit_dice_spent` counts the Hit Dice of *this* class spent on short rests, so pools of
+    different die sizes (Cleric d8 + Paladin d10) stay separate, as the SRD requires.
     """
 
     character = models.ForeignKey(
@@ -17,6 +22,8 @@ class CharacterClass(models.Model):
         "rules.Subclass", null=True, blank=True, on_delete=models.PROTECT, related_name="+"
     )
     level = models.PositiveSmallIntegerField(default=1)
+    is_starting_class = models.BooleanField(default=False)
+    hit_dice_spent = models.PositiveSmallIntegerField(default=0)
 
     class Meta:
         ordering = ["character", "-level"]
