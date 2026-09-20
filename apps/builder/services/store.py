@@ -22,7 +22,7 @@ Choice keys (value shapes) used across the builder:
     manual.skills {skill id: "none"|"proficient"|"expertise"}
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from apps.characters.models import Character, CharacterChoice, CharacterClass
 
@@ -89,3 +89,80 @@ def clear_choices(character: Character, *prefixes: str) -> None:
     """Forget every choice whose key starts with one of `prefixes` (e.g. `"class."`)."""
     for prefix in prefixes:
         CharacterChoice.objects.filter(character=character, key__startswith=prefix).delete()
+
+
+@dataclass
+class Picker:
+    """One thing the player must choose: how many, from which candidates, what is selected now.
+
+    The wizard screens render pickers and validation judges them, so what a form offers and what
+    validation accepts are the same list. `key` is the dotted choice key (`"class.skills"`); a key
+    under `species.feat.` / `background.feat.` lives inside that feat's dict (`NESTED`).
+    """
+
+    key: str
+    label: str
+    count: int
+    candidates: list[tuple[str, str]]  # (id, display name)
+    selected: list[str] = field(default_factory=list)
+    single: bool = False  # stored as a bare value instead of a list
+
+    @property
+    def candidate_ids(self) -> set[str]:
+        return {c[0] for c in self.candidates}
+
+
+#: Choice keys whose value is a dict of that feat's own picks.
+NESTED = ("species.feat", "background.feat")
+
+
+def split_key(key: str) -> tuple[str, str | None]:
+    """`"species.feat.cantrips"` -> `("species.feat", "cantrips")`; a plain key -> `(key, None)`."""
+    for prefix in NESTED:
+        if key.startswith(prefix + "."):
+            return prefix, key[len(prefix) + 1 :]
+    return key, None
+
+
+def stored(draft: Draft, key: str, single: bool) -> list[str]:
+    """The current selection for a picker key, as a list."""
+    choice_key, sub = split_key(key)
+    value = draft.get(choice_key)
+    if sub is not None:
+        value = (value or {}).get(sub)
+    if single:
+        return [value] if value else []
+    return list(value or [])
+
+
+def picker_issues(step: str, pickers: list[Picker]) -> list[Issue]:
+    from django.utils.translation import gettext as _
+
+    found: list[Issue] = []
+    for picker in pickers:
+        chosen = picker.selected
+        if len(chosen) != picker.count or len(set(chosen)) != len(chosen):
+            code = "wrong_count"
+            message = _("%(label)s: choose %(count)d.") % {"label": picker.label, "count": picker.count}
+        elif not set(chosen) <= picker.candidate_ids:
+            code = "invalid_choice"
+            message = _("%(label)s: one of your choices isn't available.") % {"label": picker.label}
+        else:
+            continue
+        found.append(Issue(step, code, message, picker.key))
+    return found
+
+
+def read_values(pickers: list[Picker], getlist) -> dict:
+    """Collect submitted values for `pickers` (`getlist(name)` like `QueryDict.getlist`), returning
+    `{choice_key: value}` with each feat's picks folded into that feat's dict."""
+    values: dict = {}
+    for picker in pickers:
+        submitted = [v for v in getlist(picker.key) if v]
+        value = (submitted[0] if submitted else "") if picker.single else submitted
+        choice_key, sub = split_key(picker.key)
+        if sub is None:
+            values[choice_key] = value
+        else:
+            values.setdefault(choice_key, {})[sub] = value
+    return values

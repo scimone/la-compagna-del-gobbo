@@ -172,6 +172,6 @@ EVIL_ALIGNMENT_CODES = ("LE", "NE", "CE")
 # --- Armor -----------------------------------------------------------------------------------
 
 #: Most Dexterity modifier that counts toward AC, by `rules.EquipmentType.id` (`None` = no cap).
-#: Light armor: no cap; medium: 2; heavy: Dexterity does not count at all.
+#: Light armor: no cap; medium: 2; heavy: 0 = Dexterity does not count at all (not even a penalty).
 ARMOR_DEX_CAP = {"la": None, "ma": 2, "ha": 0}
 SHIELD_TYPE_ID = "s"

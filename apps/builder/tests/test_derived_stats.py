@@ -1,0 +1,213 @@
+"""Derived numbers, against the SRD's own formulas and worked examples."""
+
+import pytest
+
+from apps.builder.services import class_choices, creation, derived_stats, origins
+from apps.builder.services.store import Draft
+from apps.characters.models import CharacterInventoryItem
+from apps.rules.models import Equipment
+
+from .conftest import build_character
+
+pytestmark = pytest.mark.usefixtures("imported_rules")
+
+
+def wear(character, *equipment_ids):
+    """Replace the inventory with exactly these items, worn."""
+    character.inventory_items.all().delete()
+    for eq in equipment_ids:
+        CharacterInventoryItem.objects.create(
+            character=character, equipment=Equipment.objects.get(id=eq), equipped=True
+        )
+
+
+def set_scores(character, **scores):
+    creation.set_manual_abilities(character, scores)
+    character.refresh_from_db()
+
+
+def test_srd_passive_perception_example(owner):
+    """SRD: Wisdom 15 and proficiency in Perception -> passive Perception 14."""
+    c = build_character(owner, "wizard")
+    set_scores(c, wis=15)
+    creation.set_manual_skills(c, {"perception": "proficient"})
+
+    stats = derived_stats.compute(c)
+
+    assert stats.abilities["wis"] == {"score": 15, "modifier": 2}
+    assert stats.skills["perception"]["modifier"] == 4  # +2 Wis +2 proficiency
+    assert stats.passive_perception == 14
+
+
+def test_expertise_doubles_the_proficiency_bonus(owner):
+    c = build_character(owner, "wizard")
+    set_scores(c, dex=14)
+    creation.set_manual_skills(c, {"stealth": "expertise", "acrobatics": "proficient"})
+
+    stats = derived_stats.compute(c)
+
+    assert stats.skills["stealth"]["modifier"] == 2 + 4  # Dex +2, expertise 2 x PB 2
+    assert stats.skills["acrobatics"]["modifier"] == 2 + 2
+    assert stats.skills["arcana"]["modifier"] == stats.abilities["int"]["modifier"] + (
+        2 if stats.skills["arcana"]["state"] != "none" else 0
+    )
+
+
+def test_saving_throws_and_proficiency_bonus(owner):
+    c = build_character(owner, "fighter")
+    stats = derived_stats.compute(c)
+
+    assert stats.proficiency_bonus == 2 and stats.level == 1
+    assert stats.saving_throws["str"] == {
+        "modifier": stats.abilities["str"]["modifier"] + 2,
+        "proficient": True,
+    }
+    assert stats.saving_throws["dex"]["proficient"] is False
+    assert stats.saving_throws["dex"]["modifier"] == stats.abilities["dex"]["modifier"]
+    assert stats.initiative == stats.abilities["dex"]["modifier"]
+    assert stats.hit_dice == {"d10": {"total": 1, "spent": 0}}
+
+
+@pytest.mark.parametrize(
+    ("worn", "dex", "expected"),
+    [
+        ((), 14, 12),  # 10 + Dex
+        (("leather-armor",), 14, 13),  # 11 + Dex
+        (("studded-leather-armor",), 14, 14),  # 12 + Dex
+        (("chain-shirt",), 18, 15),  # 13 + Dex, capped at +2
+        (("chain-shirt",), 8, 12),  # a Dex penalty still applies to light/medium armor
+        (("chain-shirt", "shield"), 14, 17),  # ... + 2 for the shield
+        (("chain-mail",), 18, 16),  # heavy: flat 16, Dexterity ignored
+        (("chain-mail", "shield"), 8, 18),  # ...even a negative modifier
+    ],
+)
+def test_armor_class_by_armor(owner, worn, dex, expected):
+    c = build_character(owner, "fighter")
+    set_scores(c, dex=dex)
+    wear(c, *worn)
+
+    assert derived_stats.compute(c).armor_class["value"] == expected
+
+
+def test_unarmored_defense_barbarian_allows_a_shield_monk_does_not(owner):
+    barbarian = build_character(owner, "barbarian")
+    set_scores(barbarian, dex=14, con=16)
+    wear(barbarian)
+    assert derived_stats.compute(barbarian).armor_class["value"] == 10 + 2 + 3
+    wear(barbarian, "shield")
+    assert derived_stats.compute(barbarian).armor_class["value"] == 10 + 2 + 3 + 2
+
+    monk = build_character(owner, "monk")
+    set_scores(monk, dex=16, wis=14, con=10)
+    wear(monk)
+    assert derived_stats.compute(monk).armor_class["value"] == 10 + 3 + 2
+    wear(monk, "shield")  # Unarmored Defense needs no armor *and* no shield: normal formula
+    ac = derived_stats.compute(monk).armor_class
+    assert (ac["value"], ac["formula"]) == (10 + 3 + 2, "unarmored")  # 10 + Dex + shield
+
+
+def test_one_ac_calculation_at_a_time_takes_the_best(owner):
+    barbarian = build_character(owner, "barbarian")
+    set_scores(barbarian, dex=10, con=10)
+    wear(barbarian, "leather-armor")  # 11 + 0 beats nothing: armor worn, so no Unarmored Defense
+    assert derived_stats.compute(barbarian).armor_class["value"] == 11
+
+
+def test_armor_warnings(owner):
+    fighter = build_character(owner, "fighter")
+    set_scores(fighter, str=10)
+    wear(fighter, "chain-mail")
+    stats = derived_stats.compute(fighter)
+    assert "strength_requirement" in stats.warnings and stats.speed == 30 - 10
+    assert "stealth_disadvantage" in stats.warnings
+
+    wizard = build_character(owner, "wizard")  # no armor training at all
+    wear(wizard, "chain-mail")
+    assert "not_proficient:heavy" in derived_stats.compute(wizard).warnings
+
+
+def test_weapon_attacks_use_the_right_ability_and_proficiency(owner):
+    fighter = build_character(owner, "fighter")
+    set_scores(fighter, str=16, dex=12)
+    wear(fighter, "greatsword", "longbow", "dagger")
+    attacks = {a["equipment_id"]: a for a in derived_stats.compute(fighter).attacks}
+
+    assert attacks["greatsword"]["attack_bonus"] == 3 + 2  # Str +3, proficient
+    assert attacks["greatsword"]["damage"] == "2d6+3"
+    assert attacks["longbow"]["ability"] == "dex" and attacks["longbow"]["attack_bonus"] == 1 + 2
+    assert attacks["dagger"]["ability"] == "str"  # finesse picks the better one: Str +3 > Dex +1
+
+    set_scores(fighter, str=8, dex=16)  # (recomputes the draft, so wear the items again)
+    wear(fighter, "dagger")
+    dagger = derived_stats.compute(fighter).attacks[0]
+    assert dagger["ability"] == "dex"
+
+
+def test_a_weapon_without_proficiency_gets_no_proficiency_bonus(owner):
+    wizard = build_character(owner, "wizard")
+    wear(wizard, "longsword", "dagger")  # a Wizard knows Simple weapons only
+    attacks = {a["equipment_id"]: a for a in derived_stats.compute(wizard).attacks}
+    assert attacks["longsword"]["proficient"] is False and attacks["dagger"]["proficient"] is True
+
+
+def test_rogue_filtered_weapon_proficiency(owner):
+    rogue = build_character(owner, "rogue")
+    wear(rogue, "rapier", "longsword", "shortsword")
+    attacks = {a["equipment_id"]: a for a in derived_stats.compute(rogue).attacks}
+    # Martial weapons with Finesse or Light: rapier (finesse) and shortsword (finesse, light).
+    assert attacks["rapier"]["proficient"] and attacks["shortsword"]["proficient"]
+    assert not attacks["longsword"]["proficient"]
+
+
+def test_spellcasting_save_dc_and_attack_bonus(owner):
+    wizard = build_character(owner, "wizard")
+    stats = derived_stats.compute(wizard)
+    (casting,) = stats.spellcasting
+    mod = stats.abilities["int"]["modifier"]
+
+    assert casting["ability"] == "int"
+    assert casting["save_dc"] == 8 + mod + 2 and casting["attack_bonus"] == mod + 2
+    assert casting["slots"][:2] == [2, 0] and casting["cantrips"] == 3 and casting["prepared"] == 4
+
+    warlock = derived_stats.compute(build_character(owner, "warlock"))
+    assert warlock.spellcasting[0]["pact"] == {"slots": 1, "level": 1}
+    assert not derived_stats.compute(build_character(owner, "fighter")).spellcasting
+
+
+def test_thaumaturge_adds_wisdom_to_arcana_and_religion_but_protector_does_not(owner):
+    cleric = build_character(owner, "cleric")
+    set_scores(cleric, wis=16, int=10)
+    class_choices.save(cleric, order="thaumaturge")
+    stats = derived_stats.compute(cleric)
+    assert stats.skills["arcana"]["bonus"] == 3 and stats.skills["religion"]["bonus"] == 3
+    assert stats.skills["history"]["bonus"] == 0
+
+    class_choices.save(cleric, order="protector")
+    assert derived_stats.compute(cleric).skills["arcana"]["bonus"] == 0
+
+
+def test_the_bonus_is_at_least_one(owner):
+    druid = build_character(owner, "druid")
+    class_choices.save(druid, order="magician")
+    set_scores(druid, wis=8)
+    assert derived_stats.compute(druid).skills["nature"]["bonus"] == 1
+
+
+def test_lineage_speed_and_species_spell_ability(owner):
+    elf = build_character(owner, "fighter", "soldier", "elf")
+    origins.save_species_choices(elf, lineage="wood-elf", skill="perception")
+    assert derived_stats.compute(elf).speed == 35
+
+    sources = [s["source"] for s in derived_stats.compute(elf).spellcasting]
+    assert "species" in sources  # the lineage's cantrip is cast with the ability the player chose
+    assert Draft(elf).get("species.spell_ability") in ("int", "wis", "cha")
+
+
+def test_manual_overrides_flow_through_to_the_numbers(owner):
+    c = build_character(owner, "fighter")
+    before = derived_stats.compute(c).armor_class["value"]
+    set_scores(c, dex=30)
+    assert derived_stats.compute(c).initiative == 10
+    creation.reset_manual(c)
+    c.refresh_from_db()
+    assert derived_stats.compute(c).armor_class["value"] == before
