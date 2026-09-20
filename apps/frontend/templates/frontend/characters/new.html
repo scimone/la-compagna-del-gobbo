@@ -1,0 +1,21 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+{% block extra_style %}
+  .newc { width: 100%; max-width: 26rem; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; }
+  .newc p { margin: 0; color: var(--muted); font-size: 0.95rem; line-height: 1.45; }
+  .newc form { display: flex; flex-direction: column; gap: 0.6rem; }
+  .newc label { font-size: 0.85rem; font-weight: 600; }
+  .newc input[type="text"] { appearance: none; width: 100%; padding: 0.65rem 0.8rem; font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; }
+  .newc button { appearance: none; border: 0; background: var(--accent); color: var(--accent-text); font: inherit; font-weight: 600; padding: 0.65rem 1rem; border-radius: 0.6rem; cursor: pointer; }
+{% endblock %}
+{% block content %}
+  <div class="newc">
+    <p>{% translate "You will be guided through the steps of creating a level 1 character: class, origins, ability scores, alignment and details. Your progress is saved, so you can leave and come back." %}</p>
+    <form method="post">
+      {% csrf_token %}
+      <label for="name">{% translate "Character name" %}</label>
+      <input id="name" type="text" name="name" maxlength="100" autocomplete="off" autofocus>
+      <button type="submit">{% translate "Start" %}</button>
+    </form>
+  </div>
+{% endblock %}

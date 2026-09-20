@@ -1,0 +1,48 @@
+{% extends "frontend/characters/wizard_base.html" %}
+{% load i18n %}
+{% block step_style %}{% include "frontend/characters/_sheet_style.html" %}{% endblock %}
+{% block step %}
+  <p class="hint">{% translate "This is your character. Nothing here is final until you press Finish." %}</p>
+
+  {% if outstanding %}
+    <ul class="wiz-issues">
+      {% for i in outstanding %}<li>{{ i.message }}</li>{% endfor %}
+    </ul>
+  {% endif %}
+
+  {% include "frontend/characters/_sheet.html" %}
+
+  <h3>{% translate "Adjust by hand" %}</h3>
+  <p class="hint">{% blocktranslate with lo=score_range.0 hi=score_range.1 %}You can override any ability score ({{ lo }}-{{ hi }}) and any skill, whatever your class, species or background say. Your adjustments are kept even if you go back and change something.{% endblocktranslate %}</p>
+  <form method="post">
+    {% csrf_token %}
+    <div class="adj-scores">
+      {% for r in ability_rows %}
+        <label>{{ r.name }}{% if r.manual %} <span class="tag">{% translate "manual" %}</span>{% endif %}
+          <input type="number" name="score.{{ r.id }}" value="{{ r.score }}" min="{{ score_range.0 }}" max="{{ score_range.1 }}"></label>
+      {% endfor %}
+    </div>
+    <div class="adj-skills">
+      {% for s in skill_rows %}
+        <span>{{ s.name }} <span class="dim">({{ s.ability }})</span>{% if s.manual %} <span class="tag">{% translate "manual" %}</span>{% endif %}</span>
+        <select name="skill.{{ s.id }}">
+          <option value="none"{% if s.state == "none" %} selected{% endif %}>{% translate "not proficient" %}</option>
+          <option value="proficient"{% if s.state == "proficient" %} selected{% endif %}>{% translate "proficient" %}</option>
+          <option value="expertise"{% if s.state == "expertise" %} selected{% endif %}>{% translate "expertise" %}</option>
+        </select>
+      {% endfor %}
+    </div>
+    <div class="actions">
+      <button type="submit" name="action" value="adjust" class="btn secondary">{% translate "Save adjustments" %}</button>
+      {% if has_manual %}<button type="submit" name="action" value="reset" class="btn secondary">{% translate "Undo all adjustments" %}</button>{% endif %}
+    </div>
+  </form>
+
+  <h3>{% translate "Inventory" %}</h3>
+  {% include "frontend/characters/_inventory.html" %}
+
+  <form method="post" action="{% url 'character-finish' character.pk %}" data-nav="root">
+    {% csrf_token %}
+    <div class="actions"><button type="submit" class="btn"{% if not state.ready %} disabled{% endif %}>{% translate "Finish" %}</button></div>
+  </form>
+{% endblock %}

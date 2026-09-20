@@ -1,0 +1,21 @@
+{% load i18n %}
+{# A pack shows as one line that expands to the items it contains (they are separate rows, each #}
+{# pointing back at the pack).                                                                     #}
+<ul class="opts">
+  {% for item, contents in inventory %}
+    <li class="opt" style="cursor:default">
+      <span class="text">
+        {% if contents %}
+          <details class="pack"><summary><span class="name">{{ item.equipment.name }}</span> <span class="dim">({{ contents|length }})</span></summary>
+            <ul>{% for c in contents %}<li>{{ c.equipment.name }}{% if c.quantity > 1 %} × {{ c.quantity }}{% endif %}</li>{% endfor %}</ul>
+          </details>
+        {% else %}
+          <span class="name">{{ item.equipment.name }}{% if item.quantity > 1 %} × {{ item.quantity }}{% endif %}{% if item.equipped %} <span class="dim">({% translate "worn" %})</span>{% endif %}</span>
+        {% endif %}
+      </span>
+    </li>
+  {% empty %}
+    <li class="hint">{% translate "Nothing yet." %}</li>
+  {% endfor %}
+</ul>
+{% if coins %}<p class="hint">{% blocktranslate with gp=coins.gold sp=coins.silver cp=coins.copper %}{{ gp }} gp, {{ sp }} sp, {{ cp }} cp{% endblocktranslate %}</p>{% endif %}

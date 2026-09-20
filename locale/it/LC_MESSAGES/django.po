@@ -441,3 +441,482 @@ msgstr "Accesso effettuato come <strong>%(name)s</strong>."
 #: apps/frontend/templates/frontend/account.html
 msgid "Sign out"
 msgstr "Esci"
+
+# Character creation wizard (docs/character_creation_plan.md)
+
+msgid "Lawful Good"
+msgstr "Legale buono"
+
+msgid "LG"
+msgstr "LB"
+
+msgid "Neutral Good"
+msgstr "Neutrale buono"
+
+msgid "NG"
+msgstr "NB"
+
+msgid "Chaotic Good"
+msgstr "Caotico buono"
+
+msgid "CG"
+msgstr "CB"
+
+msgid "Lawful Neutral"
+msgstr "Legale neutrale"
+
+msgid "LN"
+msgstr "LN"
+
+msgid "Neutral"
+msgstr "Neutrale"
+
+msgid "N"
+msgstr "N"
+
+msgid "Chaotic Neutral"
+msgstr "Caotico neutrale"
+
+msgid "CN"
+msgstr "CN"
+
+msgid "Lawful Evil"
+msgstr "Legale malvagio"
+
+msgid "LE"
+msgstr "LM"
+
+msgid "Neutral Evil"
+msgstr "Neutrale malvagio"
+
+msgid "NE"
+msgstr "NM"
+
+msgid "Chaotic Evil"
+msgstr "Caotico malvagio"
+
+msgid "CE"
+msgstr "CM"
+
+msgid "%(label)s: choose %(count)d."
+msgstr "%(label)s: scegline %(count)d."
+
+msgid "%(label)s: one of your choices isn't available."
+msgstr "%(label)s: una delle tue scelte non è disponibile."
+
+msgid "Tool proficiency"
+msgstr "Competenza negli strumenti"
+
+msgid "Fighting Style"
+msgstr "Stile di combattimento"
+
+msgid "Eldritch Invocation"
+msgstr "Supplica occulta"
+
+msgid "Language"
+msgstr "Lingua"
+
+msgid "Cantrips"
+msgstr "Trucchetti"
+
+msgid "Spellbook"
+msgstr "Libro degli incantesimi"
+
+msgid "Prepared spells"
+msgstr "Incantesimi preparati"
+
+msgid "Expertise"
+msgstr "Maestria"
+
+msgid "Divine Order"
+msgstr "Ordine divino"
+
+msgid "Primal Order"
+msgstr "Ordine primordiale"
+
+msgid "Choose how to generate your ability scores."
+msgstr "Scegli come generare i punteggi di caratteristica."
+
+msgid "Assign a score to every ability."
+msgstr "Assegna un punteggio a ogni caratteristica."
+
+msgid "Use each number of the standard array exactly once."
+msgstr "Usa ogni numero della serie standard esattamente una volta."
+
+msgid "Choose how your background raises your abilities."
+msgstr "Scegli come il tuo background aumenta le caratteristiche."
+
+msgid "An ability score can't go above 20."
+msgstr "Un punteggio di caratteristica non può superare 20."
+
+msgid "Ability scores go from %(low)d to %(high)d."
+msgstr "I punteggi di caratteristica vanno da %(low)d a %(high)d."
+
+msgid "Raise abilities your background lists: +2 and +1, or +1 to three."
+msgstr "Aumenta le caratteristiche elencate dal tuo background: +2 e +1, oppure +1 a tre di esse."
+
+msgid "Assign the six numbers you rolled."
+msgstr "Assegna i sei numeri che hai tirato."
+
+msgid "Point buy scores go from 8 to 15."
+msgstr "Con il costo in punti i punteggi vanno da 8 a 15."
+
+msgid "You spent more than 27 points."
+msgstr "Hai speso più di 27 punti."
+
+msgid "Spell list"
+msgstr "Lista di incantesimi"
+
+msgid "Spellcasting ability"
+msgstr "Caratteristica da incantatore"
+
+msgid "Spell"
+msgstr "Incantesimo"
+
+msgid "Skills or tools"
+msgstr "Abilità o strumenti"
+
+msgid "class"
+msgstr "classe"
+
+msgid "background"
+msgstr "background"
+
+msgid "species"
+msgstr "specie"
+
+msgid "Small"
+msgstr "Piccola"
+
+msgid "Medium"
+msgstr "Media"
+
+msgid "Lineage"
+msgstr "Stirpe"
+
+msgid "Unknown %(what)s."
+msgstr "%(what)s sconosciuta."
+
+msgid "Choose a background."
+msgstr "Scegli un background."
+
+msgid "Skill proficiency"
+msgstr "Competenza in un'abilità"
+
+msgid "Origin feat"
+msgstr "Talento Origini"
+
+msgid "Choose a species."
+msgstr "Scegli una specie."
+
+msgid "Choose two different standard languages besides Common."
+msgstr "Scegli due lingue standard diverse, oltre al Comune."
+
+msgid "Unknown alignment."
+msgstr "Allineamento sconosciuto."
+
+msgid "Choose an alignment."
+msgstr "Scegli un allineamento."
+
+msgid "The rules assume player characters aren't evil - talk to your GM first."
+msgstr "Le regole presuppongono che i personaggi giocanti non siano malvagi: parlane prima con il GM."
+
+msgid "Choose a starting equipment option."
+msgstr "Scegli un'opzione di equipaggiamento di partenza."
+
+msgid "Choose which item you get."
+msgstr "Scegli quale oggetto ottieni."
+
+msgid "Choose a class."
+msgstr "Scegli una classe."
+
+msgid "New character"
+msgstr "Nuovo personaggio"
+
+msgid "Unknown skill or state."
+msgstr "Abilità o stato sconosciuti."
+
+msgid "Finish every step first."
+msgstr "Completa prima tutte le fasi."
+
+msgid "Background"
+msgstr "Background"
+
+msgid "Languages"
+msgstr "Lingue"
+
+msgid "Ability scores"
+msgstr "Punteggi di caratteristica"
+
+msgid "Class features"
+msgstr "Privilegi di classe"
+
+msgid "Alignment"
+msgstr "Allineamento"
+
+msgid "Details"
+msgstr "Dettagli"
+
+msgid "Review"
+msgstr "Riepilogo"
+
+msgid "Who is your family?"
+msgstr "Chi è la tua famiglia?"
+
+msgid "Who was your closest childhood friend?"
+msgstr "Chi era il tuo più caro amico d'infanzia?"
+
+msgid "Did you grow up with a pet?"
+msgstr "Hai trascorso l'infanzia con un animale domestico?"
+
+msgid "Are you in a romantic relationship? If so, with whom?"
+msgstr "Hai una relazione romantica? Se sì, con chi?"
+
+msgid "Do you belong to an organization, such as a guild or a religion? Are you still a member?"
+msgstr "Fai parte di un'organizzazione, come una gilda o una religione? Se sì, ne sei ancora membro?"
+
+msgid "What in your past inspired you to live a life of adventure?"
+msgstr "Quali elementi del tuo passato ti hanno ispirato a vivere un presente votato all'avventura?"
+
+msgid "Your Strength is below this armor's requirement: your speed is reduced by 10 ft."
+msgstr "La tua Forza è inferiore al requisito di questa armatura: la tua velocità è ridotta di 3 metri."
+
+msgid "This armor gives you disadvantage on Dexterity (Stealth) checks."
+msgstr "Questa armatura ti impone svantaggio alle prove di Destrezza (Furtività)."
+
+msgid "0 gp"
+msgstr "0 mo"
+
+msgid "You are not trained with %(kind)s armor: disadvantage on Strength and Dexterity d20 tests, and you can't cast spells."
+msgstr "Non hai competenza nelle armature %(kind)s: subisci svantaggio alle prove con d20 di Forza e Destrezza e non puoi lanciare incantesimi."
+
+msgid "Unarmored Defense"
+msgstr "Difesa senza armatura"
+
+msgid "No armor"
+msgstr "Nessuna armatura"
+
+msgid "%(n)d gp"
+msgstr "%(n)d mo"
+
+msgid "%(n)d sp"
+msgstr "%(n)d ma"
+
+msgid "%(n)d cp"
+msgstr "%(n)d mr"
+
+msgid "Standard array"
+msgstr "Serie standard"
+
+msgid "Roll"
+msgstr "Generazione casuale"
+
+msgid "Point buy"
+msgstr "Costo in punti"
+
+msgid "choose 1"
+msgstr "scegline 1"
+
+msgid "choose %(n)s"
+msgstr "scegline %(n)s"
+
+msgid "feat"
+msgstr "talento"
+
+msgid "cantrip"
+msgstr "trucchetto"
+
+msgid "level"
+msgstr "livello"
+
+msgid "always prepared"
+msgstr "sempre preparato"
+
+msgid "prepared"
+msgstr "preparato"
+
+msgid "Inventory"
+msgstr "Inventario"
+
+msgid "by %(name)s"
+msgstr "di %(name)s"
+
+msgid "Read"
+msgstr "Leggi"
+
+msgid "Armor Class"
+msgstr "Classe Armatura"
+
+msgid "Hit Points"
+msgstr "Punti ferita"
+
+msgid "Initiative"
+msgstr "Iniziativa"
+
+msgid "ft"
+msgstr "ft"
+
+msgid "Proficiency"
+msgstr "Competenza"
+
+msgid "Passive Perception"
+msgstr "Percezione passiva"
+
+msgid "Abilities and saving throws"
+msgstr "Caratteristiche e tiri salvezza"
+
+msgid "Score"
+msgstr "Punteggio"
+
+msgid "Mod"
+msgstr "Mod"
+
+msgid "Save"
+msgstr "TS"
+
+msgid "manual"
+msgstr "manuale"
+
+msgid "Weapons"
+msgstr "Armi"
+
+msgid "Attack"
+msgstr "Attacco"
+
+msgid "Damage"
+msgstr "Danni"
+
+msgid "Spellcasting"
+msgstr "Incantesimi"
+
+msgid "Steps"
+msgstr "Fasi"
+
+msgid "Discard this character?"
+msgstr "Scartare questo personaggio?"
+
+msgid "Discard this character"
+msgstr "Scarta questo personaggio"
+
+msgid "worn"
+msgstr "indossato"
+
+msgid "Nothing yet."
+msgstr "Ancora niente."
+
+msgid "%(gp)s gp, %(sp)s sp, %(cp)s cp"
+msgstr "%(gp)s mo, %(sp)s ma, %(cp)s mr"
+
+msgid "You will be guided through the steps of creating a level 1 character: class, origins, ability scores, alignment and details. Your progress is saved, so you can leave and come back."
+msgstr "Ti guideremo nella creazione di un personaggio di 1º livello: classe, origini, punteggi di caratteristica, allineamento e dettagli. I tuoi progressi vengono salvati, quindi puoi uscire e riprendere più tardi."
+
+msgid "Character name"
+msgstr "Nome del personaggio"
+
+msgid "Start"
+msgstr "Inizia"
+
+msgid "In creation"
+msgstr "In creazione"
+
+msgid "Resume creating this character"
+msgstr "Riprendi la creazione di questo personaggio"
+
+msgid "No characters yet. Tap + to create the first one."
+msgstr "Ancora nessun personaggio. Tocca + per crearne uno."
+
+msgid "Pick one, then answer whatever it asks below and save. Changing your pick forgets the answers that depended on it."
+msgstr "Sceglline uno, poi rispondi a ciò che viene chiesto qui sotto e salva. Cambiare la scelta cancella le risposte che ne dipendevano."
+
+msgid "Save and continue"
+msgstr "Salva e continua"
+
+msgid "Alignment is your character's moral compass: how they feel about good and evil, and about law and freedom. The rules assume player characters aren't evil - talk to your GM before playing one."
+msgstr "L'allineamento è la bussola morale del personaggio: il suo rapporto con il bene e il male, con la legge e la libertà. Le regole presuppongono che i personaggi giocanti non siano malvagi: parlane con il GM prima di crearne uno."
+
+msgid "Optional. Let your background and species inspire your character's past, and answer as if you were them."
+msgstr "Facoltativo. Lasciati ispirare dal background e dalla specie del personaggio per immaginarne il passato, e rispondi come se fossi lui."
+
+msgid "Appearance"
+msgstr "Aspetto"
+
+msgid "Notes"
+msgstr "Note"
+
+msgid "Generate six scores, assign them to the abilities (★ marks your class's primary ability), then add your background's bonus: +2 to one and +1 to another, or +1 to all three. No score can go above 20 here; you can adjust anything freely at the Review step."
+msgstr "Genera sei punteggi, assegnali alle caratteristiche (★ indica la caratteristica primaria della tua classe), poi aggiungi il bonus del background: +2 a una e +1 a un'altra, oppure +1 a tutte e tre. Qui nessun punteggio può superare 20; nel riepilogo puoi modificare tutto liberamente."
+
+msgid "Use each of 15, 14, 13, 12, 10, 8 once."
+msgstr "Usa ciascun valore tra 15, 14, 13, 12, 10, 8 una sola volta."
+
+msgid "Suggest for my class"
+msgstr "Suggerisci per la mia classe"
+
+msgid "Four d6 per score, keeping the three highest. One roll per character:"
+msgstr "Quattro d6 per ogni punteggio, tenendo i tre più alti. Un solo tiro per personaggio:"
+
+msgid "Roll the dice"
+msgstr "Tira i dadi"
+
+msgid "Ability"
+msgstr "Caratteristica"
+
+msgid "Bonus"
+msgstr "Bonus"
+
+msgid "Total"
+msgstr "Totale"
+
+msgid "You have %(budget)s points. Scores go from 8 (0 points) to 15 (9 points): 9=1, 10=2, 11=3, 12=4, 13=5, 14=7, 15=9."
+msgstr "Hai %(budget)s punti. I punteggi vanno da 8 (0 punti) a 15 (9 punti): 9=1, 10=2, 11=3, 12=4, 13=5, 14=7, 15=9."
+
+msgid "%(n)s/%(budget)s points spent."
+msgstr "%(n)s/%(budget)s punti spesi."
+
+msgid "Roll for me"
+msgstr "Tira per me"
+
+msgid "You know Common plus %(n)s more languages, chosen or rolled on the standard-languages table (1d12). A rolled language you already have is rolled again."
+msgstr "Conosci il Comune più altre %(n)s lingue, scelte o tirate sulla tabella Lingue standard (1d12). Una lingua già posseduta viene tirata di nuovo."
+
+msgid "Your class and your background each offer a starting equipment package (or its gold instead). A pack is added as individual items, and each stays listed under its pack."
+msgstr "Classe e background offrono ciascuno un equipaggiamento di partenza (oppure il suo valore in monete). Un kit viene aggiunto come singoli oggetti, e ciascuno resta elencato sotto il proprio kit."
+
+msgid "%(g)s: choose one"
+msgstr "%(g)s: scegline uno"
+
+msgid "Every adventurer belongs to a class. It sets your hit die, saving throws, armor and weapon training, and the features you start with. The ability shown is the class's primary ability."
+msgstr "Ogni avventuriero è membro di una classe. Determina il Dado Vita, i tiri salvezza, le competenze in armature e armi e i privilegi iniziali. La caratteristica indicata è la caratteristica primaria della classe."
+
+msgid "The choices your class asks for at level 1. Some lists appear only after an earlier choice (prepared spells come from your spellbook, for instance): save, and the next one shows up."
+msgstr "Le scelte richieste dalla classe al 1º livello. Alcune liste compaiono solo dopo una scelta precedente (gli incantesimi preparati vengono dal libro degli incantesimi, per esempio): salva e compare la successiva."
+
+msgid "Your class has nothing to choose here."
+msgstr "La tua classe non ha nulla da scegliere qui."
+
+msgid "This is your character. Nothing here is final until you press Finish."
+msgstr "Questo è il tuo personaggio. Niente è definitivo finché non premi Termina."
+
+msgid "Adjust by hand"
+msgstr "Modifica a mano"
+
+msgid "not proficient"
+msgstr "senza competenza"
+
+msgid "proficient"
+msgstr "competenza"
+
+msgid "expertise"
+msgstr "maestria"
+
+msgid "Save adjustments"
+msgstr "Salva le modifiche"
+
+msgid "Undo all adjustments"
+msgstr "Annulla tutte le modifiche"
+
+msgid "Finish"
+msgstr "Termina"
+
+msgid "You can override any ability score (%(lo)s-%(hi)s) and any skill, whatever your class, species or background say. Your adjustments are kept even if you go back and change something."
+msgstr "Puoi modificare qualsiasi punteggio di caratteristica (%(lo)s-%(hi)s) e qualsiasi abilità, a prescindere da ciò che dicono classe, specie o background. Le tue modifiche vengono mantenute anche se torni indietro e cambi qualcosa."

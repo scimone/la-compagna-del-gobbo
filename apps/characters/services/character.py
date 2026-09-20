@@ -20,7 +20,9 @@ from apps.characters.models import (
 
 
 def list_characters():
-    return Character.objects.all()
+    """Finished characters. A draft still being built by the creation wizard isn't a character
+    yet (and belongs to its owner alone), so it is left out."""
+    return Character.objects.filter(status=Character.STATUS_COMPLETE)
 
 
 def create_character(**data) -> Character:

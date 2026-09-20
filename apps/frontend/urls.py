@@ -1,10 +1,27 @@
 from django.urls import path
 
-from apps.frontend import views
+from apps.frontend import character_views, views
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path("characters/", views.characters_overview, name="characters-overview"),
+    path("characters/", character_views.characters_list, name="characters-overview"),
+    path("characters/new/", character_views.character_new, name="character-new"),
+    path("characters/<int:pk>/", character_views.character_detail, name="character-detail"),
+    path(
+        "characters/<int:pk>/create/finish/",
+        character_views.wizard_finish,
+        name="character-finish",
+    ),
+    path(
+        "characters/<int:pk>/create/discard/",
+        character_views.wizard_discard,
+        name="character-discard",
+    ),
+    path(
+        "characters/<int:pk>/create/<slug:step>/",
+        character_views.wizard,
+        name="character-wizard",
+    ),
     path("handbook/", views.handbook_overview, name="handbook-overview"),
     # Must come before `handbook/<slug:pk>/` below, or that catch-all would try to resolve
     # "rules-glossary" as a `HandbookSection` pk instead.

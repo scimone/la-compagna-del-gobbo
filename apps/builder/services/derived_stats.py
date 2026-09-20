@@ -70,7 +70,12 @@ def _armor_class(mods, worn_armor, worn_shield, has_feature):
         base, formula = 10 + dex, "unarmored"
     if worn_shield:
         base += worn_shield.ac or 2
-    best = {"value": base, "formula": formula, "shield": bool(worn_shield)}
+    best = {
+        "value": base,
+        "formula": formula,
+        "shield": bool(worn_shield),
+        "armor_id": worn_armor.id if worn_armor else None,
+    }
     if not worn_armor:
         for class_id, spec in CLASS_SPEC.items():
             if not spec.unarmored_defense or not has_feature(class_id):
@@ -85,6 +90,7 @@ def _armor_class(mods, worn_armor, worn_shield, has_feature):
                     "value": value,
                     "formula": f"unarmored defense ({ability})",
                     "shield": bool(worn_shield),
+                    "armor_id": None,
                 }
     return best
 

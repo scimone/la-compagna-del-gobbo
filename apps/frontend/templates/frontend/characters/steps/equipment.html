@@ -1,0 +1,61 @@
+{% extends "frontend/characters/wizard_base.html" %}
+{% load i18n %}
+{% block step_style %}
+  .eq-lines { margin: 0.3rem 0 0; padding-left: 1.1rem; font-size: 0.85rem; color: var(--muted); }
+  .eq-lines li { margin: 0.1rem 0; }
+  .eq-lines details { display: inline; }
+  .eq-lines summary { cursor: pointer; display: inline; color: var(--text); }
+  .eq-lines .pack-items { margin: 0.2rem 0 0.2rem 0.4rem; padding-left: 1rem; }
+  .opt.eq { align-items: flex-start; }
+  .opt.eq .text { gap: 0.1rem; }
+{% endblock %}
+{% block step %}
+  <p class="hint">{% translate "Your class and your background each offer a starting equipment package (or its gold instead). A pack is added as individual items, and each stays listed under its pack." %}</p>
+  <form method="post">
+    {% csrf_token %}
+    {% for source in sources %}
+      <fieldset class="picker">
+        <legend>{{ source.label }}</legend>
+        <ul class="opts">
+          {% for option in source.options %}
+            <li>
+              <label class="opt eq">
+                <input type="radio" name="{{ source.field }}" value="{{ option.letter }}"{% if option.selected %} checked{% endif %}>
+                <span class="text">
+                  <span class="name">{{ option.letter }}</span>
+                  <ul class="eq-lines">
+                    {% for line in option.lines %}
+                      {% if line.kind == "gold" %}
+                        <li>{{ line.text }}</li>
+                      {% elif line.kind == "group" %}
+                        <li>
+                          <select name="{{ line.field }}">
+                            <option value="">{% blocktranslate with g=line.group.name %}{{ g }}: choose one{% endblocktranslate %}</option>
+                            {% for item in line.choices %}<option value="{{ item.id }}"{% if item.id == line.selected %} selected{% endif %}>{{ item.name }}</option>{% endfor %}
+                          </select>
+                        </li>
+                      {% else %}
+                        <li>
+                          {% if line.contents %}
+                            <details><summary>{{ line.item.name }}</summary>
+                              <ul class="pack-items">{% for item, qty in line.contents %}<li>{{ item.name }}{% if qty > 1 %} × {{ qty }}{% endif %}</li>{% endfor %}</ul>
+                            </details>
+                          {% else %}
+                            {{ line.item.name }}{% if line.quantity > 1 %} × {{ line.quantity }}{% endif %}
+                          {% endif %}
+                        </li>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                </span>
+              </label>
+            </li>
+          {% endfor %}
+        </ul>
+        {% for path, message in issue_paths.items %}{% if path == source.field %}<p class="field-error">{{ message }}</p>{% endif %}{% endfor %}
+      </fieldset>
+    {% endfor %}
+    {% for path, message in issue_paths.items %}{% if "equipment.groups" in path %}<p class="field-error">{{ message }}</p>{% endif %}{% endfor %}
+    <div class="actions"><button type="submit" class="btn">{% translate "Save and continue" %}</button></div>
+  </form>
+{% endblock %}

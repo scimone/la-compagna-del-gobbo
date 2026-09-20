@@ -1,0 +1,25 @@
+{% load i18n %}
+{# One fieldset per `Picker` (see apps/builder/services/store.py): a <select> for a single pick, #}
+{# a limited checkbox group for "choose N". Same names the view reads with `read_values`.       #}
+{% for p in pickers %}
+  <fieldset class="picker"{% if not p.single %} data-count="{{ p.count }}"{% endif %}>
+    <legend>{{ p.label }}
+      <span class="count">{% if p.single %}{% translate "choose 1" %}{% else %}{% blocktranslate with n=p.count %}choose {{ n }}{% endblocktranslate %} · <span class="chosen"></span>{% endif %}</span>
+    </legend>
+    {% if p.single %}
+      <select name="{{ p.key }}">
+        <option value="">—</option>
+        {% for id, name in p.candidates %}
+          <option value="{{ id }}"{% if id in p.selected %} selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+      </select>
+    {% else %}
+      <div class="checks">
+        {% for id, name in p.candidates %}
+          <label><input type="checkbox" name="{{ p.key }}" value="{{ id }}"{% if id in p.selected %} checked{% endif %}> {{ name }}</label>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% for path, message in issue_paths.items %}{% if path == p.key %}<p class="field-error">{{ message }}</p>{% endif %}{% endfor %}
+  </fieldset>
+{% endfor %}

@@ -1,0 +1,30 @@
+{% extends "frontend/characters/wizard_base.html" %}
+{% load i18n %}
+{% block step_style %}{% include "frontend/characters/_sheet_style.html" %}{% endblock %}
+{% block content %}
+  <div class="wiz">
+    <p class="hint">
+      {{ character.species.name }}{% for c in character.classes.all %} · {{ c.klass.name }} {{ c.level }}{% endfor %}
+      {% if character.owner %} · {% blocktranslate with name=character.owner.get_username %}by {{ name }}{% endblocktranslate %}{% endif %}
+      {% if alignment_name %} · {{ alignment_name }}{% endif %}
+    </p>
+    {# A bare read-only summary: the full character sheet page comes later. #}
+    {% include "frontend/characters/_sheet.html" %}
+
+    <h3>{% translate "Features" %}</h3>
+    <ul class="opts">{% for f in features %}<li class="opt" style="cursor:default"><span class="name">{{ f.name }}</span></li>{% endfor %}
+      {% for f in feats %}<li class="opt" style="cursor:default"><span class="name">{{ f.feat.name }}</span><span class="detail">{% translate "feat" %}</span></li>{% endfor %}</ul>
+
+    {% if spells %}
+      <h3>{% translate "Spells" %}</h3>
+      <ul class="opts">{% for s in spells %}<li class="opt" style="cursor:default"><span class="name">{{ s.spell.name }}</span>
+        <span class="detail">{% if s.spell.level == 0 %}{% translate "cantrip" %}{% else %}{% translate "level" %} {{ s.spell.level }}{% endif %}{% if s.always_prepared %} · {% translate "always prepared" %}{% elif s.prepared and s.spell.level %} · {% translate "prepared" %}{% endif %}</span></li>{% endfor %}</ul>
+    {% endif %}
+
+    <h3>{% translate "Languages" %}</h3>
+    <p class="hint">{% for l in languages %}{{ l.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+
+    <h3>{% translate "Inventory" %}</h3>
+    {% include "frontend/characters/_inventory.html" %}
+  </div>
+{% endblock %}

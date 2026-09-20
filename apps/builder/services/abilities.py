@@ -131,6 +131,28 @@ def save(
     return problems
 
 
+def set_method(character: Character, method: str) -> None:
+    """Switch generation method. The old assignment is dropped (its numbers came from the old
+    method); the stored roll and the background bonus are kept."""
+    if method not in METHODS:
+        return
+    state = dict(Draft(character).get("abilities") or {})
+    if state.get("method") != method:
+        state.pop("base", None)
+    state["method"] = method
+    set_choice(character, "abilities", state)
+    effects.apply(character)
+
+
+def suggest_standard_array(character: Character) -> None:
+    """Assign the standard array the way the SRD suggests for the character's class."""
+    draft = Draft(character)
+    state = dict(draft.get("abilities") or {})
+    state |= {"method": "standard", "base": dict(tables.STANDARD_ARRAY_BY_CLASS[draft.klass.id])}
+    set_choice(character, "abilities", state)
+    effects.apply(character)
+
+
 def manual_issues(scores: dict) -> list[Issue]:
     low, high = tables.MANUAL_SCORE_RANGE
     return [

@@ -1,0 +1,15 @@
+{% extends "frontend/characters/wizard_base.html" %}
+{% load i18n %}
+{% block step %}
+  <p class="hint">{% translate "Alignment is your character's moral compass: how they feel about good and evil, and about law and freedom. The rules assume player characters aren't evil - talk to your GM before playing one." %}</p>
+  <form method="post">
+    {% csrf_token %}
+    <ul class="opts">
+      {% for code, name, abbr in alignments %}
+        <li><label class="opt"><input type="radio" name="alignment" value="{{ code }}"{% if code == selected %} checked{% endif %}>
+          <span class="text"><span class="name">{{ name }}</span></span><span class="detail">{{ abbr }}</span></label></li>
+      {% endfor %}
+    </ul>
+    <div class="actions"><button type="submit" class="btn">{% translate "Save and continue" %}</button></div>
+  </form>
+{% endblock %}

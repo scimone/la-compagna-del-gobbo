@@ -52,8 +52,9 @@ _GENERATED = (
 )
 
 
-def compute_grants(draft: Draft) -> Grants:
-    """Everything the draft's choices grant, manual skill overrides included. No writes."""
+def compute_grants(draft: Draft, *, manual: bool = True) -> Grants:
+    """Everything the draft's choices grant, manual skill overrides included unless
+    `manual=False` (what the rules alone give). No writes."""
     grants = Grants()
     grants.add_language(tables.COMMON_LANGUAGE_ID)
     for language_id in draft.get("languages", []):
@@ -61,7 +62,7 @@ def compute_grants(draft: Draft) -> Grants:
     class_grants(draft, grants)
     species_grants(draft, grants)
     background_grants(draft, grants)
-    for skill_id, state in (draft.get("manual.skills") or {}).items():
+    for skill_id, state in (draft.get("manual.skills") or {}).items() if manual else ():
         if state == "none":
             grants.proficiencies.pop(("skill", skill_id), None)
         else:

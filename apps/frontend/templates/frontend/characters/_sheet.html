@@ -1,0 +1,50 @@
+{% load i18n %}
+{# The computed numbers (SRD step 5). Read-only; the Review step's adjust form is separate.   #}
+<div class="sheet">
+  <div class="stat"><span class="k">{% translate "Armor Class" %}</span><span class="v">{{ stats.armor_class.value }}</span><span class="s">{{ ac_label }}</span></div>
+  <div class="stat"><span class="k">{% translate "Hit Points" %}</span><span class="v">{{ character.max_hit_points }}</span>
+    <span class="s">{% for die, hd in stats.hit_dice.items %}{{ hd.total }}{{ die }} {% endfor %}</span></div>
+  <div class="stat"><span class="k">{% translate "Initiative" %}</span><span class="v">{{ stats.initiative|stringformat:"+d" }}</span></div>
+  <div class="stat"><span class="k">{% translate "Speed" %}</span><span class="v">{{ speed_label }}</span></div>
+  <div class="stat"><span class="k">{% translate "Proficiency" %}</span><span class="v">{{ stats.proficiency_bonus|stringformat:"+d" }}</span></div>
+  <div class="stat"><span class="k">{% translate "Passive Perception" %}</span><span class="v">{{ stats.passive_perception }}</span></div>
+</div>
+
+{% if warning_texts %}<ul class="wiz-warnings">{% for w in warning_texts %}<li>{{ w }}</li>{% endfor %}</ul>{% endif %}
+
+<h3>{% translate "Abilities and saving throws" %}</h3>
+<table class="tbl">
+  <tr><th></th><th>{% translate "Score" %}</th><th>{% translate "Mod" %}</th><th>{% translate "Save" %}</th></tr>
+  {% for r in ability_rows %}
+    <tr><td>{{ r.name }}{% if r.manual %} <span class="tag">{% translate "manual" %}</span>{% endif %}</td>
+      <td>{{ r.score }}</td><td>{{ r.modifier|stringformat:"+d" }}</td>
+      <td>{{ r.save.modifier|stringformat:"+d" }}{% if r.save.proficient %} ●{% endif %}</td></tr>
+  {% endfor %}
+</table>
+
+<h3>{% translate "Skills" %}</h3>
+<table class="tbl">
+  {% for s in skill_rows %}
+    <tr><td>{{ s.name }} <span class="dim">({{ s.ability }})</span>{% if s.manual %} <span class="tag">{% translate "manual" %}</span>{% endif %}</td>
+      <td>{{ s.modifier|stringformat:"+d" }}</td>
+      <td>{% if s.state == "expertise" %}●●{% elif s.state == "proficient" %}●{% endif %}</td></tr>
+  {% endfor %}
+</table>
+
+{% if attack_rows %}
+  <h3>{% translate "Weapons" %}</h3>
+  <table class="tbl">
+    <tr><th></th><th>{% translate "Attack" %}</th><th>{% translate "Damage" %}</th></tr>
+    {% for a in attack_rows %}<tr><td>{{ a.name }}</td><td>{{ a.attack_bonus|stringformat:"+d" }}</td><td>{{ a.damage }} {{ a.damage_type }}</td></tr>{% endfor %}
+  </table>
+{% endif %}
+
+{% if stats.spellcasting %}
+  <h3>{% translate "Spellcasting" %}</h3>
+  <table class="tbl">
+    {% for c in stats.spellcasting %}
+      <tr><td>{{ c.source }} <span class="dim">({{ c.ability }})</span></td>
+        <td>{% translate "DC" %} {{ c.save_dc }}</td><td>{{ c.attack_bonus|stringformat:"+d" }}</td></tr>
+    {% endfor %}
+  </table>
+{% endif %}

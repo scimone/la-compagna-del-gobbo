@@ -608,11 +608,13 @@ leveling up works. Mounted under `/api/characters` too, since its routes nest un
 top-level resource. Owns little to no persistent state of its own; it reads/writes `characters`
 models by applying `rules` data.
 
-Unlike `rules`/`characters`, this app's endpoints are still unimplemented stubs. It's not an
-oversight - `rules`/`characters` are "implement the obvious CRUD/lookup for a fully-defined
-model" work, while builder is an actual rules engine (multiclass spell-slot math, per-class
-choice validation, prerequisite checking, ...) that needs its own deliberate design pass before
-writing endpoint bodies would mean anything.
+**Level-1 character creation is implemented** (see [Character creation](#character-creation)
+below); level-up, multiclass and prerequisites are not. The REST endpoints listed here are still
+unwired stubs - the frontend calls the services directly, like the World views call `rules`. It's not
+an oversight: builder is an actual rules engine (per-class choice validation, prerequisite checking,
+multiclass spell-slot math, ...) and was designed in
+[docs/character_creation_plan.md](docs/character_creation_plan.md) before any endpoint body would mean
+anything.
 
 **API** (`apps/builder/api/`), three tag folders, one file per endpoint:
 
@@ -628,8 +630,8 @@ writing endpoint bodies would mean anything.
 - `api/progression/` (tag `Character Progression`): `GET /{id}/builder/level-up`,
   `POST /{id}/builder/level-up/preview`, `POST /{id}/builder/level-up/commit`.
 
-**Services** (`apps/builder/services/`, currently docstring-only placeholders, one file per
-concern as laid out in the design doc):
+**Services** (`apps/builder/services/`; the ones marked ✅ are implemented, the rest are still the
+docstring-only placeholders from the design doc):
 
 | File | Will hold |
 |---|---|
@@ -646,7 +648,48 @@ one `rules` concept translates into grants on a character: `class_.py`, `species
 `background.py`, `feat.py`, `equipment.py`, `spell.py`, `proficiency.py`.
 
 **Schemas** (`apps/builder/schemas.py`) — currently a single placeholder file; will hold the
-Ninja schemas for builder state/choices/validation/progression responses once the services exist.
+Ninja schemas for builder state/choices/validation/progression responses once the endpoints are wired.
+
+#### Character creation
+
+Implements the SRD's "Creazione del personaggio" chapter for a level-1 character. The full design,
+the data audit (which `rules` data was insufficient and how it was fixed) and the phase-by-phase
+progress live in [docs/character_creation_plan.md](docs/character_creation_plan.md); this is the
+map of the code.
+
+- **Choices are the source of truth; grants are derived.** Everything the player picks is stored in
+  `characters.CharacterChoice` (JSON, dotted keys - the list is in `services/store.py`) plus
+  `Character.species/background/alignment` and the starting `CharacterClass`. `services/effects.py`
+  `apply()` deletes and rebuilds *every* generated row (proficiencies, features, feats, spells,
+  inventory, languages, senses, resources, ability rows) from those choices, so going back and
+  changing the background can't leave a stale grant. Only *drafts* (`Character.status ==
+  "draft"`) are recomputed; a finished character's rows are its own.
+- **`tables.py`** - the chapter's static tables/formulas (standard array and the per-class array,
+  point-buy costs, XP, proficiency bonus, hit points, the 1d12 languages, alignments, armor Dex
+  caps). They aren't in `db/`, and `rules` tables are wiped by `import_rules_data`, so they are code.
+- **`class_spec.py`** - what each class asks for at level 1 that `db/` only states in prose
+  (weapon-mastery count, expertise, spellbook size, Divine/Primal Order effects, always-prepared
+  spells, level-1 resources, unarmored defense). `tests/test_class_spec.py` fails if the imported
+  data stops agreeing with it.
+- **`resolvers/`** - pure "what does this grant" logic (`class_`, `species`, `background`, `feat`,
+  `equipment`, `spell`, `proficiency`, `held`, `abilities`) feeding a `Grants` object.
+- **Services** ✅ `store` (`Draft`, `Issue`, `Picker`), `origins` (class/background/species/languages/
+  equipment/alignment), `abilities`, `class_choices`, `effects`, `validation`, `creation` (start /
+  progress / details / finalize / discard), `derived_stats`. A `Picker` (how many, from which
+  candidates, what is selected) is the single description of a choice: the screens render it and
+  validation judges it, so they can't disagree.
+- **Rules worth knowing**: no picker offers a skill/tool the character already has (D6); the
+  ability-score roll is made once per character; a pack is stored as its individual items, each
+  row's `parent` pointing at the pack row; **ability scores and skills can be overridden by hand at
+  the Review step** (`manual.abilities` / `manual.skills`, applied last, only where they differ from
+  what the rules give), whatever class/species/background say.
+- **Derived stats** (`derived_stats.compute`) are computed from rows, never stored: AC (armor + Dex
+  cap, shield, Barbarian/Monk Unarmored Defense - best single calculation), saves, all skills,
+  passive Perception, attacks, spell DC/attack, warnings (untrained armor, Strength requirement).
+
+**Access** (`apps/characters/services/access.py`): every character is *visible* to every account
+(another account's *unfinished* one is not); only its owner edits or deletes it. `can_view(user,
+character, section)` is the single place to later hide sections of a character from other accounts.
 
 ### `apps/frontend/` — PWA shell
 
@@ -691,9 +734,18 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     `arrive()` recognises the `back_forward` navigation type and applies the same rule.
   - `TrackLastSectionUrlMiddleware`/`last_*_url` remain as the bottom nav links' `href`
     fallback (no JS, or a menu with nothing in this session's stack yet).
-- `GET /` (`index`) — three full-height nav buttons: **Characters** → `/characters/`,
-  **Handbook** → `/handbook/`, **World** → `/world/`. Characters is still a placeholder
-  "coming soon" page (`overview.html`); **Handbook and World are both built out** (see below).
+- `GET /` (`index`) — redirects to **Characters** (`/characters/`); the bottom nav also has
+  **Handbook** → `/handbook/` and **World** → `/world/`. **All three menus are built out.**
+- **Characters** (`character_views.py`, templates under `frontend/characters/`): `GET /characters/`
+  lists every finished character of every account (with its owner) plus the viewer's own
+  unfinished ones under "In creation"; the **`+`** button (`/characters/new/`, sign-in required)
+  asks for a name and starts the wizard at `/characters/<id>/create/<step>/` - steps `class →
+  background → species → languages → equipment → abilities → choices → alignment → details →
+  review`, each reachable from a progress bar once its prerequisites exist. Progress is saved on
+  every step (the draft is a real `Character` row), so leaving and coming back resumes. Finish and
+  Discard use `data-nav="root"` so the wizard leaves the Characters history and lands on the list.
+  `GET /characters/<id>/` is a bare read-only summary of a finished character (the full character
+  sheet is a later task). Trinkets are not in the wizard yet (see the plan's TODO).
 - `GET /handbook/` (`handbook_overview`) lists every `rules.HandbookSection` (a `list_page` like
   World's catalogs; it is the root of the Handbook menu, so it has no back button) - 12 rows (15 minus the 3 with no Italian text, see
 [Internationalization](#internationalization-i18n)), since the single source chapter is flattened

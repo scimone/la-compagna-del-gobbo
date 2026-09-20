@@ -105,7 +105,15 @@ def set_manual_skills(character: Character, states: dict[str, str]) -> list[Issu
             Issue("review", "manual_skill", _("Unknown skill or state."), f"manual.skills.{s}")
             for s in bad
         ]
-    set_choice(character, "manual.skills", dict(states))
+    # Only what differs from what the rules give is an override; an untouched skill keeps
+    # following the background/class/species if those change later.
+    generated = effects.compute_grants(Draft(character), manual=False).proficiencies
+    overrides = {
+        skill: state
+        for skill, state in states.items()
+        if state != generated.get(("skill", skill), "none")
+    }
+    set_choice(character, "manual.skills", overrides)
     effects.apply(character)
     return []
 

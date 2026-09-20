@@ -430,20 +430,6 @@ def world(request):
     return redirect("world-backgrounds")
 
 
-def _placeholder(request, title, back_url_name: str | None = None):
-    # No back button by default: `characters_overview` (the only caller) is the leftmost
-    # bottom-nav destination and `/` redirects straight to it, so there's no longer a
-    # meaningful "back" target - pointing one at `index` would just bounce straight back here.
-    context = {"page_title": _(title)}
-    if back_url_name:
-        context["back_url"] = reverse(back_url_name)
-    return render(request, "frontend/overview.html", context)
-
-
-def characters_overview(request):
-    return _placeholder(request, "Characters")
-
-
 def _index_letter(name: str) -> str:
     """The alphabet-index letter a list item files under: its first letter, accents stripped and
     uppercased ("Àmbito" -> "A"), or "#" for a name that doesn't start with a letter/digit.

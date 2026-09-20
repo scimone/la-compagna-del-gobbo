@@ -20,10 +20,18 @@ Updated after every completed phase (and committed with it). Legend: ✅ done ·
 | 2 — Tables + class spec | ✅ | `apps/builder/tables.py` (array, array-by-class, point buy, XP, PB, HP, 1d12 languages, alignments, armor dex caps) and `apps/builder/class_spec.py` (weapon mastery, fighting style, orders, expertise, spellbook, invocations, languages, always-prepared spells, tool picks, L1 resources, unarmored defense). 28 tests incl. cross-checks against the imported DB. **Findings:** (a) Monk's source lists two tool grants but the text says pick *one*; (b) "Staff"/"Wooden Staff" are focus-typed duplicates of the Quarterstaff, so the mastery weapon pool is `type in {m, r}` (39 weapons; Barbarian's "melee" = type `m`); (c) Rage/Second Wind recover one use on a short rest, all on a long one (`reset_on="other"`). **Deferred:** trinket table (100 entries, Italian only — D5) moves to Phase 5 (details screen); `HIGHER_LEVEL_EQUIPMENT` dropped for now (D4, level 1 only) |
 | 3 — Builder engine (level 1) | ✅ | Services `store` (Draft/Issue/choice keys), `origins` (class, background, species, languages, equipment, alignment), `abilities`, `class_choices` (a single `pickers()` description feeds both the screen and validation), `effects` (recompute-from-choices), `validation`, `creation` (start/state/details/manual layer/finalize/discard); resolvers `spell`, `proficiency`, `feat`, `equipment`, `held`, `abilities`, `class_`, `species`, `background`, `grants`. **All 12 classes** go through the full flow and finish; 51 tests (`test_creation_flow`, `test_creation_rules`). Design notes: (1) for a *draft*, `effects.apply()` deletes and rebuilds **all** generated rows rather than tagging them with a `source` (several tables have no `source` column); a *complete* character is never recomputed. (2) `CharacterProficiency.name` holds language-neutral ids (skill id, ability id, armor/weapon category, equipment id), the UI translates them. (3) Manual layer: `manual.abilities`/`manual.skills`, applied last, survives recomputes; the ability-sum invariant is kept with a `manual` delta row. (4) Rogue's filtered weapon grant is stored as e.g. `martial:f,l`. (5) The REST stubs in `apps/builder/api/` are **not** wired yet — the frontend calls the services directly, as planned |
 | 4 — Derived stats | ✅ | `services/derived_stats.compute(character)`: level/PB, modifiers, saves, all 18 skills (expertise = 2×PB; Thaumaturge/Magician Wisdom bonus, min +1), passive Perception, initiative, speed (lineage; −10 ft for unmet Str requirement), AC (armor + Dex cap, shield, Barbarian/Monk Unarmored Defense — best single calculation), hit dice, weapon attacks (finesse picks the better of Str/Dex, filtered Rogue/Monk proficiency, mastery only for the picked weapons), spellcasting DC/attack/slots/Pact Magic, warnings (armor not proficient, Str requirement, stealth). 22 tests incl. the SRD's worked example (Wis 15 + Perception → 14). **A test caught a real bug:** heavy armor applied a *negative* Dex modifier; fixed (heavy ignores Dex entirely). Full suite: 255 passing |
-| 5 — List + wizard UI | ⬜ | |
-| 6 — Finish + landing page | ⬜ | |
-| 6.5 — Optional shop | ⬜ | |
+| 5 — List + wizard UI | ✅ | `apps/frontend/character_views.py` + `templates/frontend/characters/`: list with `+` FAB, name page, the 10 wizard screens (one generic `_pickers.html` renders every `Picker`; a JS limiter for "choose N"), progress bar, Review with the manual-adjust form, per-step redirects for locked steps. **Verified in a real browser** (Playwright/Chromium at 400px): full run-through as Wizard/Sage/Elf, found and fixed a clipped ability table and stacked method buttons. Full Italian (159 new strings appended to `django.po`, `.mo` recompiled by hand — no `msgfmt`; speed is metric via `units.distance`). Choices made: another account's *drafts* are hidden from the list (everything finished is visible to all); Finish/Discard use `data-nav="root"`; abilities use selects (array/rolled/point-buy values) instead of +/- steppers, point-buy total is shown after saving (no live JS counter). 21 tests in `test_character_wizard.py` (HTTP flow, access, every screen for 6 classes, Italian) |
+| 6 — Finish + landing page | ✅ | `finalize()` refuses until every required step is complete, then flips `status` to `complete` (one last recompute); Finish returns to the list with the new character highlighted; `GET /characters/<id>/` is the bare read-only summary (stats, features/feats, spells, languages, inventory with packs as expandable lines). Anyone can view it; only the owner can edit |
+| 6.5 — Optional shop | ⬜ | not started — the SRD says you *can* spend starting gold immediately; nothing else depends on it |
 | 7 / 8 / 9 — higher level, multiclass, character page | ⬜ | deliberately later (D4) |
+
+### Not done yet (deliberately)
+- **Trinkets** (1d100 table): needs the 100 Italian entries transcribed from the SRD md (the table is
+  garbled across columns there) and the English text from you (D5). No wizard screen for it yet.
+- **Optional starting-gold shop** (6.5), **starting at a level above 1** (7), **level-up** and
+  **multiclass** (8), and the **full character page** (9).
+- The REST stubs under `apps/builder/api/` are not wired to the services.
+- Point-buy has no live points counter (the total is shown after saving).
 
 ### TODO for the project owner
 - **Trinkets (Monili):** the Italian table is in the SRD md; the English text is not in the repo.
@@ -489,6 +497,8 @@ likely to surprise; everything in between is deterministic rules code with high 
 ---
 
 ## 10. Decisions needed
+
+> **All answered on 2026-09-20 - see "Decisions taken" at the top of this file.** The table below is the original question list with my recommendations, kept for the record; where the answer differed (D1: everyone sees all characters; D3: both, with packs traceable; D5: Italian text for both languages), the top-of-file table wins.
 
 | # | Question | Recommendation |
 |---|---|---|

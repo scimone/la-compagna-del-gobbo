@@ -373,3 +373,73 @@ def test_a_finished_character_is_no_longer_recomputed(owner):
     effects.apply(c)  # ...but nothing is rebuilt for a complete character
 
     assert c.proficiencies.count() == before
+
+
+# --- overrides only where they differ; method switching; access ---
+
+
+def test_untouched_skills_keep_following_the_rules_only_real_edits_are_overrides(owner):
+    c = build_character(owner, "fighter", "soldier")
+    # Submit the whole skill list unchanged plus one real edit, exactly as the Review form does.
+    from apps.rules.models import Skill
+
+    states = {
+        s.id: dict(c.proficiencies.filter(category="skill").values_list("name", "level")).get(
+            s.id, "none"
+        )
+        for s in Skill.objects.all()
+    }
+    states["arcana"] = "expertise"
+    assert not creation.set_manual_skills(c, states)
+    assert Draft(c).get("manual.skills") == {"arcana": "expertise"}  # nothing else is "manual"
+
+    # Change the background: the Soldier's skills go away and the new background's come in,
+    # while the manual edit stays.
+    origins.select_background(c, "criminal")
+    skills = dict(c.proficiencies.filter(category="skill").values_list("name", "level"))
+    assert "athletics" not in skills or skills["athletics"] == "proficient"  # a class pick maybe
+    assert {"sleight-of-hand", "stealth"} <= set(skills)
+    assert skills["arcana"] == "expertise"
+
+
+def test_switching_the_ability_method_keeps_the_roll_and_bonus_but_drops_the_old_numbers(owner):
+    c = _setup(owner)
+    rolled = abilities.roll_scores(c)
+    base = {"str": 15, "dex": 14, "con": 13, "int": 12, "wis": 10, "cha": 8}
+    abilities.save(c, method="standard", base=base, bonus={"str": 2, "dex": 1})
+
+    abilities.set_method(c, "pointbuy")
+    state = Draft(c).get("abilities")
+    assert state["method"] == "pointbuy" and "base" not in state
+    assert state["rolled"] == rolled and state["bonus"] == {"str": 2, "dex": 1}
+
+    abilities.set_method(c, "nonsense")  # ignored
+    assert Draft(c).get("abilities")["method"] == "pointbuy"
+
+
+def test_suggested_array_matches_the_srd_table_for_the_class(owner):
+    from apps.builder.tables import STANDARD_ARRAY_BY_CLASS
+
+    c = _setup(owner)
+    abilities.suggest_standard_array(c)
+    assert Draft(c).get("abilities")["base"] == STANDARD_ARRAY_BY_CLASS["fighter"]
+
+
+def test_who_may_view_and_edit(owner, db):
+    from django.contrib.auth import get_user_model
+    from django.contrib.auth.models import AnonymousUser
+
+    from apps.characters.models import Character
+    from apps.characters.services import access
+
+    other = get_user_model().objects.create_user("bob")
+    mine = Character.objects.create(name="a", owner=owner, status=Character.STATUS_COMPLETE)
+    draft = Character.objects.create(name="b", owner=owner, status=Character.STATUS_DRAFT)
+    ownerless = Character.objects.create(name="c")
+
+    for viewer in (owner, other, AnonymousUser()):  # everyone sees every finished character
+        assert access.can_view(viewer, mine) and access.can_view(viewer, ownerless)
+    assert access.can_view(owner, draft) and not access.can_view(other, draft)
+    assert not access.can_view(AnonymousUser(), draft)
+    assert access.can_edit(owner, mine) and not access.can_edit(other, mine)
+    assert not access.can_edit(AnonymousUser(), mine) and not access.can_edit(owner, ownerless)

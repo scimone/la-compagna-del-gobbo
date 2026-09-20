@@ -1,0 +1,18 @@
+{% load i18n %}
+{# A pick-one list of catalog rows (class / background / species): radio card + link to the World page. #}
+<ul class="opts">
+  {% for o in options %}
+    <li>
+      <label class="opt">
+        <input type="radio" name="{{ field }}" value="{{ o.id }}"{% if o.selected %} checked{% endif %}>
+        {% if o.image %}<img src="{{ o.image }}" alt="">{% endif %}
+        <span class="text">
+          <span class="name">{{ o.name }}</span>
+          {% if o.detail %}<span class="detail">{{ o.detail }}</span>{% endif %}
+          {% if o.facts %}<span class="detail">{{ o.facts }}</span>{% endif %}
+        </span>
+        <a class="more" href="{{ o.url }}">{% translate "Read" %}</a>
+      </label>
+    </li>
+  {% endfor %}
+</ul>

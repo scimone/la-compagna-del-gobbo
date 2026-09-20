@@ -45,3 +45,12 @@ def test_pack_contents_are_traceable_and_die_with_their_pack(db):
 
     remaining = CharacterInventoryItem.objects.filter(character=character)
     assert remaining.count() == 1 and remaining.get().parent is None
+
+
+def test_the_api_list_leaves_out_unfinished_drafts(db):
+    from apps.characters.services import character as character_service
+
+    Character.objects.create(name="Done")
+    Character.objects.create(name="Wip", status=Character.STATUS_DRAFT)
+
+    assert [c.name for c in character_service.list_characters()] == ["Done"]

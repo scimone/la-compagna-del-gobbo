@@ -1,0 +1,20 @@
+{% extends "frontend/characters/wizard_base.html" %}
+{% load i18n %}
+{% block step %}
+  <p class="hint">{% blocktranslate with n=count %}You know Common plus {{ n }} more languages, chosen or rolled on the standard-languages table (1d12). A rolled language you already have is rolled again.{% endblocktranslate %}</p>
+  <form method="post">
+    {% csrf_token %}
+    <fieldset class="picker" data-count="{{ count }}">
+      <legend>{% translate "Languages" %} <span class="count">{% blocktranslate with n=count %}choose {{ n }}{% endblocktranslate %} · <span class="chosen"></span></span></legend>
+      <div class="checks">
+        {% for lang in languages %}
+          <label><input type="checkbox" name="languages" value="{{ lang.id }}"{% if lang.id in selected %} checked{% endif %}> {{ lang.name }}</label>
+        {% endfor %}
+      </div>
+    </fieldset>
+    <div class="actions">
+      <button type="submit" name="action" value="roll" class="btn secondary">{% translate "Roll for me" %}</button>
+      <button type="submit" name="action" value="save" class="btn">{% translate "Save and continue" %}</button>
+    </div>
+  </form>
+{% endblock %}
