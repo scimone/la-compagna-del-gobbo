@@ -658,90 +658,9 @@
       >{% translate "Spells" %}</a>
     </nav>
     {% endif %}
-    <form class="world-search" method="get" action="{{ request.path }}" data-nav="replace">
-      <div class="world-search-field">
-        <svg
-          class="world-search-icon"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <circle cx="11" cy="11" r="7"></circle>
-          <path d="m20 20-3.5-3.5"></path>
-        </svg>
-        <input
-          type="search"
-          name="q"
-          value="{{ search_query }}"
-          placeholder="{{ search_placeholder }}"
-          aria-label="{{ search_placeholder }}"
-        >
-      </div>
-      {% for filter in filters %}
-        {% if filter.kind == "radio" %}
-          <div class="world-pills world-pills-scroll" role="radiogroup" aria-label="{{ filter.label }}">
-            <label class="pill">
-              <input type="radio" name="{{ filter.name }}" value=""{% if not filter.value %} checked{% endif %}>
-              {{ filter.all_label }}
-            </label>
-            {% for value, label in filter.options %}
-              <label class="pill">
-                <input
-                  type="radio"
-                  name="{{ filter.name }}"
-                  value="{{ value }}"
-                  {% if value == filter.value %}checked{% endif %}
-                >
-                {{ label }}
-              </label>
-            {% endfor %}
-          </div>
-        {% endif %}
-      {% endfor %}
-      {% if filters %}
-        <div class="world-filter-buttons">
-          {% for filter in filters %}
-            {% if filter.kind == "checkbox" %}
-              {# `name="world-filter-popover"` groups every filter's `<details>` into one       #}
-              {# exclusive set - opening one closes whichever other was open, native behavior,  #}
-              {# no JS. The panel stays open across checkbox clicks (each just re-fetches live,  #}
-              {# see the script below) so several options can be picked in one visit.           #}
-              <details class="filter-popover" name="world-filter-popover">
-                <summary class="filter-button{% if filter.values %} active{% endif %}">
-                  {{ filter.label }}
-                  {% if filter.values %}
-                    <span class="filter-count">{{ filter.values|length }}</span>
-                  {% endif %}
-                </summary>
-                <div class="filter-popover-panel">
-                  {% for value, label in filter.options %}
-                    <label class="filter-option">
-                      <input
-                        type="checkbox"
-                        name="{{ filter.name }}"
-                        value="{{ value }}"
-                        {% if value in filter.values %}checked{% endif %}
-                      >
-                      {{ label }}
-                    </label>
-                  {% endfor %}
-                </div>
-              </details>
-            {% endif %}
-          {% endfor %}
-        </div>
-        {# JS intercepts every filter change into a live re-fetch (see the script at the        #}
-        {# bottom of this file) - this stays as the fallback submit control for a browser that   #}
-        {# never runs it, same spirit as the plain GET form search relies on above.              #}
-        <noscript>
-          <button type="submit" class="world-filters-apply">{% translate "Apply" %}</button>
-        </noscript>
-      {% endif %}
-    </form>
+    {% if not search_below_featured %}
+      {% include "frontend/_search_form.html" %}
+    {% endif %}
   {% elif tabs %}
     {# A detail page split into its own sub-tabs (e.g. a Class's About/Levels/Subclasses) -     #}
     {# same `.world-tabs` look and the same spot in the layout (flush under the header, outside #}

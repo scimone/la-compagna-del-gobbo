@@ -142,6 +142,16 @@ def _render_tag(tag: str, body: str, linker: _ReferenceLinker) -> str:
     return escape(display)
 
 
+def plain_text(text: str) -> str:
+    """One string as it reads on the page but without any HTML: the same metric conversion and
+    `{@tag ...}` display text as `_render_text()`, for matching a search query against what the
+    user actually sees (a "{@dc 10}" is searchable as "DC 10", "30 feet" as "9 metri").
+    """
+    return TAG_PATTERN.sub(
+        lambda m: _tag_display_text(m.group(1), m.group(2)), metricize_text(text)
+    )
+
+
 def render_entries(entries) -> SafeString:
     """Render an `entries`-shaped value (or a bare string/list) as safe HTML."""
     linker = _ReferenceLinker()
@@ -543,7 +553,11 @@ def render_starting_equipment(options) -> SafeString:
 
 def _render_table(node: dict, linker: _ReferenceLinker) -> str:
     caption = node.get("caption")
-    caption_html = f"<caption>{_render_text(caption, linker)}</caption>" if caption else ""
+    # A hand-translated table (see `handbook_source`) carries `self_translated` like a named block.
+    badge_html = self_translated_badge(bool(node.get("self_translated")))
+    caption_html = (
+        f"<caption>{_render_text(caption, linker)}{badge_html}</caption>" if caption else ""
+    )
 
     # Every table has a flat `colLabels` except one (so far): the handbook's "Travel Pace" table
     # instead uses `colLabelRows` (multiple header rows, for a spanning super-header above

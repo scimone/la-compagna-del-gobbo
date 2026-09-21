@@ -31,6 +31,7 @@ from apps.frontend.entries_render import (
     self_translated_badge,
 )
 from apps.frontend.forms import SignInForm
+from apps.frontend.handbook_search import find_hits, name_matches, query_pattern
 from apps.frontend.models import Bookmark
 from apps.rules.models import Ability, Class, Equipment, Feature, Subclass
 from apps.rules.services import background as background_service
@@ -497,6 +498,9 @@ def _list_page(
         "compact_thumbs": compact_thumbs,
         "alphabet": alphabet,
         "alphabet_letters": alphabet_letters,
+        # A search box over a featured block goes under it (the Handbook's Glossary button, then
+        # the search, then the chapters) instead of under the page header like everywhere else.
+        "search_below_featured": bool(featured_items and (world_tabs or searchable)),
     }
     if world_tabs or searchable:
         context["search_query"] = search_query or ""
@@ -706,15 +710,16 @@ def bookmark_toggle(request):
 # --- Handbook ----------------------------------------------------------------------------
 
 
-def handbook_overview(request):
-    # The Glossary sits first, ahead of every chapter - the source book's own "Rules Glossary"
-    # section is dropped entirely (see `HandbookSection`'s docstring/the README's i18n section: it
-    # has no Italian SRD source to translate it from), but its actual purpose - a named-rule/keyword
-    # index - is better served here anyway, by linking straight into the already-translated `Rule`
-    # catalog instead of untranslatable static prose. Below it, each `HandbookChapter` is a toggle
-    # heading over the buttons of its sections.
+def _handbook_glossary_button() -> list[dict]:
+    """The Glossary's button: the source book's own "Rules Glossary" section is dropped entirely
+    (see `HandbookSection`'s docstring/the README's i18n section: it has no Italian SRD source to
+    translate it from), but its actual purpose - a named-rule/keyword index - is better served by
+    linking straight into the already-translated `Rule` catalog instead of untranslatable static
+    prose. Featured: it sits above the search box and the chapters, in the contents and in the
+    search results alike (see `_list_page`).
+    """
     rule_count = rule_service.list_rules().count()
-    items = [
+    return [
         {
             "name": _("Glossary"),
             "detail": _("%(count)d named rules and keywords") % {"count": rule_count},
@@ -722,6 +727,14 @@ def handbook_overview(request):
             "featured": True,
         },
     ]
+
+
+def handbook_overview(request):
+    q = _search_query(request)
+    if q:
+        return _handbook_search(request, q)
+    # Below the Glossary button and the search box, each `HandbookChapter` is a toggle heading
+    # over the buttons of its sections.
     groups = [
         {
             "key": chapter.pk,
@@ -739,7 +752,74 @@ def handbook_overview(request):
         }
         for chapter in handbook_service.list_chapters()
     ]
-    return _list_page(request, "Handbook", items, groups=groups)
+    return _list_page(
+        request,
+        "Handbook",
+        _handbook_glossary_button(),
+        groups=groups,
+        searchable=True,
+        search_placeholder=_("Search the handbook"),
+    )
+
+
+def _handbook_search(request, q: str):
+    """The Handbook contents page while searching: the same chapter toggles, but holding only the
+    sections whose name or text contains `q` (each with snippets of where), followed by the
+    Glossary rules that match - under the same Glossary button and search box. See
+    `handbook_search`.
+    """
+    pattern = query_pattern(q)
+    groups = []
+    for chapter in handbook_service.list_chapters():
+        items = []
+        for section in chapter.sections.all():
+            snippets, total = find_hits(section.entries, pattern)
+            if not (snippets or name_matches(section, pattern)):
+                continue
+            more = total - len(snippets)
+            if more:
+                snippets.append(
+                    format_html(
+                        '<span class="hit">{}</span>', _("+%(count)d more") % {"count": more}
+                    )
+                )
+            items.append(
+                {
+                    "name": _badged_heading(section.name, _self_translated(section, "name")),
+                    "page": section.page,
+                    "detail": mark_safe("".join(snippets)),
+                    "url": reverse("handbook-section-detail", args=[section.pk]),
+                }
+            )
+        if items:
+            # Keys are prefixed so a chapter folded on the contents page doesn't start out folded
+            # here too (see the fold-state script in list.html).
+            groups.append({"key": f"search-{chapter.pk}", "name": chapter.name, "items": items})
+
+    rule_items = []
+    for rule in rule_service.list_rules():
+        snippets, _total = find_hits(rule.entries, pattern, limit=1)
+        if snippets or name_matches(rule, pattern):
+            rule_items.append(
+                {
+                    "name": _badged_heading(rule.name, _self_translated(rule, "name")),
+                    "page": rule.page,
+                    "detail": mark_safe("".join(snippets)),
+                    "url": reverse("world-rule-detail", args=[rule.pk]),
+                }
+            )
+    if rule_items:
+        groups.append({"key": "search-glossary", "name": _("Glossary"), "items": rule_items})
+
+    return _list_page(
+        request,
+        "Handbook",
+        _handbook_glossary_button(),
+        groups=groups,
+        searchable=True,
+        search_query=q,
+        search_placeholder=_("Search the handbook"),
+    )
 
 
 def handbook_rules_glossary(request):
@@ -764,7 +844,7 @@ def handbook_rules_glossary(request):
         back_url_name="handbook-overview",
         searchable=True,
         search_query=q,
-        search_placeholder=_("Search rules"),
+        search_placeholder=_("Search glossary"),
         alphabet=True,
         bookmark_kind="rule",
     )

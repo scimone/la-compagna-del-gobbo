@@ -28,8 +28,9 @@ so a partly translated section still renders as one complete tree, English filli
 has the text; whatever it doesn't cover was translated for this project and is flagged so the
 site can badge it "Traduzione": a section lists the fields it translated itself in
 `"_self": ["name", "entries"]` (stored as `HandbookSection.self_translated_fields`), and a single
-block inside `entries` is marked with `"self_translated": true` (the one key an Italian block may
-have that the English one lacks - it is kept in the stored tree and read by the renderer).
+block inside `entries` - a named block, or a table (badged on its caption) - is marked with
+`"self_translated": true` (the one key an Italian block may have that the English one lacks - it
+is kept in the stored tree and read by the renderer).
 
 **Untranslated parts are dropped from both languages.** Whatever the Italian text doesn't have
 (e.g. the chapter intro and the worked examples of "Playing the Game", which the SRD lacks) is

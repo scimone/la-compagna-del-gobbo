@@ -37,6 +37,27 @@
     border-bottom: 1px dashed var(--accent);
   }
 
+  /* The featured block plus the search box under its dividing line (`search_below_featured`):
+     a fixed header of the list, outside the scrolling results. The search form is drawn here as
+     just the input, without the full-width bar it is under the page header. */
+  .featured-top {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .featured-top .featured-list {
+    padding-bottom: 1rem;
+    margin-bottom: 0;
+  }
+
+  .featured-top .world-search {
+    padding: 0;
+    background: none;
+    border-bottom: 0;
+  }
+
   .item-list.bookmark-list li {
     background: var(--surface);
     background: color-mix(in srgb, var(--accent) 12%, var(--surface));
@@ -150,6 +171,26 @@
   }
 
 
+
+  /* Handbook search: where the query was found - a few snippets under the section's name, the
+     match itself highlighted. */
+  .item-list .item-detail .hit {
+    display: block;
+    margin-top: 0.2rem;
+    overflow-wrap: anywhere;
+  }
+
+  .item-list .item-detail .hit b {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .item-list .item-detail mark {
+    padding: 0 0.1em;
+    border-radius: 0.2em;
+    background: var(--accent);
+    color: var(--accent-text);
+  }
 
   /* A Handbook chapter: a toggle heading (open by default; see the script below) over the buttons
      of its sections. */
@@ -281,8 +322,20 @@
 {% endblock %}
 
 {% block content %}
+  {% if search_below_featured %}
+    {# The featured block (the Handbook's Glossary) stays put above the search box, which stays #}
+    {# put above the results: only `#search-results` below is swapped by live search.          #}
+    <div class="featured-top">
+      <ul class="item-list featured-list">
+        {% for item in featured_items %}
+          {% include "frontend/_list_item.html" %}
+        {% endfor %}
+      </ul>
+      {% include "frontend/_search_form.html" %}
+    </div>
+  {% endif %}
   <div id="search-results"{% if alphabet %} class="has-alpha"{% endif %}>
-    {% if items or bookmarked_items or featured_items or groups %}
+    {% if items or bookmarked_items or groups or featured_items and not search_below_featured %}
       {% if bookmark_kind %}
         {# One form for every bookmark button on the page (see `_list_item.html`) - inside #}
         {# `#search-results` so `next` always matches the URL this render came from.       #}
@@ -293,7 +346,7 @@
         </form>
       {% endif %}
       <div class="list-scroll">
-        {% if featured_items %}
+        {% if featured_items and not search_below_featured %}
           <ul class="item-list featured-list">
             {% for item in featured_items %}
               {% include "frontend/_list_item.html" %}

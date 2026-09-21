@@ -395,8 +395,17 @@ msgid "Remove bookmark"
 msgstr "Rimuovi segnalibro"
 
 #: apps/frontend/views.py
-msgid "Search rules"
-msgstr "Cerca regole"
+msgid "Search glossary"
+msgstr "Cerca nel glossario"
+
+#: apps/frontend/views.py
+msgid "Search the handbook"
+msgstr "Cerca nel manuale"
+
+#: apps/frontend/views.py
+#, python-format
+msgid "+%(count)d more"
+msgstr "+%(count)d altri"
 
 #: apps/frontend/templates/frontend/base.html
 #, python-format

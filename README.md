@@ -777,6 +777,20 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
   `Rule`/`Feat`/`Spell` detail page - one open "Description" section, with the section's named
   blocks as toggle headings. A section or block hand-translated for this project shows the
   "Traduzione" badge (Italian only), on the button, the page title and the block heading.
+  The contents page has a live search box (same `?q=` form as the World lists, but drawn *under
+  the Glossary button's dividing line* rather than under the page header - `_list_page` does that
+  for any searchable list with a `featured` block, see `search_below_featured` and
+  `_search_form.html`) that searches the **whole handbook** - every section's text, not just its
+  name, plus the Glossary's `Rule`s (name and text). While a query is set the Glossary button and
+  search box stay put and the chapter toggles below hold only the matching sections (a "Glossary"
+  toggle last, for matching rules), each button with up to three snippets (rules: one) of where it
+  matched - the enclosing headings as a bold breadcrumb, the match highlighted - and "+N more" for
+  the rest. Matching is a case- and **accent-insensitive** substring ("opportunita" finds
+  "opportunità", and the highlight keeps the original spelling) of the text *as displayed* (tags
+  resolved, metric units on the Italian site) in the active language; names are matched in both
+  languages, like the other lists. It is a plain Python scan over the (small) `entries` JSON in
+  `apps/frontend/handbook_search.py` (`fold()` is the length-preserving accent stripper), not a
+  database query. The other lists' searches are still plain case-insensitive `icontains`.
 - `GET /world/` (`world`) — five full-height nav buttons, one per browsable `rules` catalog:
   **Backgrounds**, **Classes**, **Species**, **Feats**, **Spells**. (Class Features and
   Subraces were dropped again after being tried - the former duplicated what's already on each
@@ -896,7 +910,11 @@ text for this part". The format is spelled out in `apps/rules/handbook_source.py
 the merge and raises with the exact path when the file drifts from the English source.
 The file also names the chapters (`{"007": {"name": "Come si gioca"}, ...}`, keyed by chapter id) and
 flags what was hand-translated: a row lists `"_self": ["name", "entries"]`, a single block inside
-`entries` carries `"self_translated": true` - the site badges those "Traduzione" (Italian only).
+`entries` carries `"self_translated": true` (a named block, badged on its heading, or a `table`,
+badged on its caption) - the site badges those "Traduzione" (Italian only). The same works in
+`db/it/rules.json` and the other catalog files. Where a gap has no heading of its own to carry the
+flag (a rule's unnamed intro paragraph and list - `action`, `area-of-effect`, `condition`), the
+row lists `"_self": ["entries"]` and its "Description" heading is badged instead.
 `{@tag ...}` markup is mirrored from the English text with the *English* lookup key kept and the
 Italian wording in the display slot - `{@skill Perception|XPHB|Percezione}`,
 `{@area Combattimento|06b|x}` - so the reference linker (which matches English catalog names)

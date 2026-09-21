@@ -13,23 +13,28 @@
  },
  "action": {
   "entries": [
-   null,
+   "Nel proprio turno, il personaggio può compiere un'azione. Deve scegliere quale azione compiere tra quelle elencate di seguito o tra le azioni speciali fornite dalle sue capacità. Queste azioni sono definite altrove in questo glossario:",
    {
     "items": [
-     null,
-     null,
-     null,
-     null,
-     null,
-     null,
-     null,
-     null,
-     null,
-     "Aiuto Influenza Prepararsi Schivata Attacco Magia {@action Search|XPHB|Ricerca} Studio Disimpegno Nascondersi Scatto Utilizzo"
+     "{@action Help|XPHB|Aiuto}",
+     "{@action Attack|XPHB|Attacco}",
+     "{@action Disengage|XPHB|Disimpegno}",
+     "{@action Influence|XPHB|Influenza}",
+     "{@action Magic|XPHB|Magia}",
+     "{@action Hide|XPHB|Nascondersi}",
+     "{@action Ready|XPHB|Prepararsi}",
+     "{@action Search|XPHB|Ricerca}",
+     "{@action Dash|XPHB|Scatto}",
+     "{@action Dodge|XPHB|Schivata}",
+     "{@action Study|XPHB|Studio}",
+     "{@action Utilize|XPHB|Utilizzo}"
     ]
    }
   ],
-  "name": "Azione"
+  "name": "Azione",
+  "_self": [
+   "entries"
+  ]
  },
  "advantage": {
   "entries": [
@@ -57,12 +62,24 @@
  },
  "area-of-effect": {
   "entries": [
-   null,
-   null,
+   "Le descrizioni di molti incantesimi e di altre capacità specificano che questi hanno un'area di effetto, che di norma ha una di sei forme. Queste forme sono definite altrove in questo glossario:",
+   {
+    "items": [
+     "{@variantrule Cylinder [Area of Effect]|XPHB|Cilindro}",
+     "{@variantrule Cone [Area of Effect]|XPHB|Cono}",
+     "{@variantrule Cube [Area of Effect]|XPHB|Cubo}",
+     "{@variantrule Emanation [Area of Effect]|XPHB|Emanazione}",
+     "{@variantrule Line [Area of Effect]|XPHB|Linea}",
+     "{@variantrule Sphere [Area of Effect]|XPHB|Sfera}"
+    ]
+   },
    "Ogni area di effetto ha un punto di origine da cui scaturisce l'energia dell'effetto. Le regole relative a ogni forma specificano dove posizionare il punto di origine. Se tutte le linee rette che si estendono dal punto di origine fino a un punto nell'area di effetto sono bloccate, tale punto non è incluso nell'area di effetto. Per bloccare una linea, un'ostruzione deve fornire {@variantrule Cover|XPHB|copertura} totale. Vedi anche \"Copertura\".",
    "Se il creatore di un'area di effetto posiziona l'area in un punto che non può vedere ed è presente un'ostruzione (come ad esempio un muro) tra il creatore e quel punto, il punto di origine si forma sul lato più vicino dell'ostruzione."
   ],
-  "name": "Area di effetto"
+  "name": "Area di effetto",
+  "_self": [
+   "entries"
+  ]
  },
  "armor-class": {
   "entries": [
@@ -103,15 +120,24 @@
  },
  "breaking-objects": {
   "entries": [
-   "È possibile danneggiare gli oggetti usando attacchi o alcuni incantesimi, facendo riferimento alle regole di seguito. Se un oggetto è estremamente fragile, il GM può consentire a una creatura di romperlo automaticamente con l'azione di {@action Attack|XPHB|Attacco} o di {@action Utilize|XPHB|Utilizzo}. Classe Armatura. La tabella \"Classe Armatura degli oggetti\" indica le CA di materiali diversi.",
+   "È possibile danneggiare gli oggetti usando attacchi o alcuni incantesimi, facendo riferimento alle regole di seguito. Se un oggetto è estremamente fragile, il GM può consentire a una creatura di romperlo automaticamente con l'azione di {@action Attack|XPHB|Attacco} o di {@action Utilize|XPHB|Utilizzo}.",
    {
     "entries": [
      {
-      "name": "Classe Armatura degli oggetti"
+      "name": "Classe Armatura",
+      "entries": [
+       "La tabella \"Classe Armatura degli oggetti\" indica le CA suggerite per materiali diversi."
+      ],
+      "self_translated": true
      }
     ]
    },
    {
+    "caption": "Classe Armatura degli oggetti",
+    "colLabels": [
+     "CA",
+     "Materiale"
+    ],
     "rows": [
      [
       "11",
@@ -124,8 +150,25 @@
      [
       "15",
       "Legno"
+     ],
+     [
+      "17",
+      "Pietra"
+     ],
+     [
+      "19",
+      "Ferro, acciaio"
+     ],
+     [
+      "21",
+      "Mithral"
+     ],
+     [
+      "23",
+      "Adamantio"
      ]
-    ]
+    ],
+    "self_translated": true
    },
    {
     "entries": [
@@ -182,7 +225,11 @@
       "name": "Soglia di danno"
      },
      {
-      "name": "Nessun punteggio di caratteristica"
+      "name": "Nessun punteggio di caratteristica",
+      "entries": [
+       "Un oggetto non possiede punteggi di caratteristica, a meno che una regola non glieli assegni. Senza punteggi di caratteristica, un oggetto non può effettuare prove di caratteristica e fallisce tutti i tiri salvezza."
+      ],
+      "self_translated": true
      }
     ]
    }
@@ -285,11 +332,32 @@
  },
  "condition": {
   "entries": [
-   null,
-   null,
+   "Una condizione è uno stato di gioco temporaneo. La definizione di una condizione specifica come influisce su chi la subisce, e varie regole indicano come porvi fine. Questo glossario definisce le seguenti condizioni:",
+   {
+    "items": [
+     "{@condition Blinded|XPHB|Accecato}",
+     "{@condition Charmed|XPHB|Affascinato}",
+     "{@condition Grappled|XPHB|Afferrato}",
+     "{@condition Deafened|XPHB|Assordato}",
+     "{@condition Poisoned|XPHB|Avvelenato}",
+     "{@condition Incapacitated|XPHB|Incapacitato}",
+     "{@condition Exhaustion|XPHB|Indebolimento}",
+     "{@condition Invisible|XPHB|Invisibile}",
+     "{@condition Paralyzed|XPHB|Paralizzato}",
+     "{@condition Petrified|XPHB|Pietrificato}",
+     "{@condition Unconscious|XPHB|Privo di sensi}",
+     "{@condition Prone|XPHB|Prono}",
+     "{@condition Frightened|XPHB|Spaventato}",
+     "{@condition Stunned|XPHB|Stordito}",
+     "{@condition Restrained|XPHB|Trattenuto}"
+    ]
+   },
    "Non è possibile accumulare più istanze di una condizione: chi ne è affetto o ce l'ha o non ce l'ha. La condizione \"{@condition Exhaustion|XPHB|indebolimento}\" costituisce l'eccezione alla regola."
   ],
-  "name": "Condizione"
+  "name": "Condizione",
+  "_self": [
+   "entries"
+  ]
  },
  "cone-area-of-effect": {
   "entries": [
@@ -586,10 +654,18 @@
       "name": "Condizione afferrato"
      },
      {
-      "name": "Una presa per ogni mano"
+      "name": "Una presa per ogni mano",
+      "entries": [
+       "Una creatura deve avere una mano libera per afferrare un'altra creatura. Alcune schede delle statistiche e alcuni effetti di gioco permettono a una creatura di afferrare usando un tentacolo, delle fauci o un'altra parte del corpo. Qualunque parte usi, chi afferra può afferrare una sola creatura alla volta con quella parte e non può usarla per prendere di mira un'altra creatura, a meno che non ponga fine alla presa."
+      ],
+      "self_translated": true
      },
      {
-      "name": "Sfuggire a una presa"
+      "name": "Sfuggire a una presa",
+      "entries": [
+       "Una creatura {@condition Grappled|XPHB|afferrata} può usare la propria azione per effettuare una prova di Forza ({@skill Athletics|XPHB|Atletica}) o di Destrezza ({@skill Acrobatics|XPHB|Acrobazia}) contro la CD di fuga della presa; se ha successo, pone fine alla {@variantrule Condition|XPHB|condizione} su di sé. La {@variantrule Condition|XPHB|condizione} termina anche se chi afferra ha la condizione {@condition Incapacitated|XPHB|incapacitato} o se la distanza tra il bersaglio afferrato e chi afferra supera la portata della presa. Inoltre, chi afferra può rilasciare il bersaglio in qualsiasi momento (senza bisogno di usare un'azione)."
+      ],
+      "self_translated": true
      }
     ]
    }
@@ -789,9 +865,11 @@
      {
       "entries": [
        {
+        "name": "Interruzioni del riposo",
         "entries": [
-         "interrotto dai seguenti eventi:"
-        ]
+         "Un riposo lungo viene interrotto dai seguenti eventi:"
+        ],
+        "self_translated": true
        }
       ]
      },
