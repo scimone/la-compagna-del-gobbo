@@ -34,7 +34,8 @@ def test_handbook_section_renders_in_english(client, handbook):
 
 def test_sections_without_italian_text_are_not_served_in_either_language(client, handbook):
     for language in ("it", "en"):
-        for section_id in ("007", "008", "009"):  # chapter intro, Rules Glossary, Player or DM?
+        # a chapter (never a section), "Rules Glossary" and "Player or DM?"
+        for section_id in ("007", "008", "009"):
             client.cookies["django_language"] = language
             assert client.get(f"/handbook/{section_id}/").status_code == 404
 
@@ -58,17 +59,106 @@ def test_handbook_overview_lists_the_same_sections_in_both_languages(client, han
         assert "Player or DM?" not in html
 
 
-def test_handbook_glossary_is_set_off_and_chapters_show_their_page_on_a_page_icon(client, handbook):
+def test_handbook_glossary_is_set_off_and_sections_show_their_page_on_a_page_icon(client, handbook):
     for language, name in (("it", "Glossario"), ("en", "Glossary")):
         html = _get(client, "/handbook/", language)
         before, featured_and_chapters = html.split('<ul class="item-list featured-list">', 1)
-        featured, chapters = featured_and_chapters.split('class="item-list main-list', 1)
+        featured, chapters = featured_and_chapters.split('<details class="chapter-group"', 1)
         # the Glossary alone sits above the dividing line, in its own list
         assert name in featured and featured.count("<li") == 1
-        # every chapter has a page icon carrying the number from its `page`, and no "Page N" line
+        # every section has a page icon carrying the number from its `page`, and no "Page N" line
         assert chapters.count('<span class="page-icon"') == chapters.count("<li")
         assert re.search(r'<span class="page-number">\d+</span>', chapters)
         assert "item-detail" not in chapters
+
+
+def test_handbook_overview_groups_the_sections_under_a_toggle_heading_per_chapter(client, handbook):
+    expected = {
+        "en": ["Playing the Game", "Character Origins", "Feats", "Equipment", "Spells"],
+        "it": [
+            "Come si gioca",
+            "Origini dei personaggi",
+            "Talenti",
+            "Equipaggiamento",
+            "Incantesimi",
+        ],
+    }
+    for language, names in expected.items():
+        html = _get(client, "/handbook/", language)
+
+        groups = re.findall(
+            r'<details class="chapter-group" data-chapter="(\w+)" open>\s*<summary>(.*?)</summary>'
+            r"(.*?)</details>",
+            html,
+            re.S,
+        )
+        assert [name for _key, name, _body in groups] == names
+        assert [key for key, _name, _body in groups] == ["007", "11d", "130", "133", "154"]
+        by_name = {name: body for _key, name, body in groups}
+        # each section's button sits under its own chapter's heading
+        assert 'href="/handbook/095/"' in by_name[names[0]]  # Damage and Healing
+        assert 'href="/handbook/136/"' in by_name[names[3]]  # Weapons
+        assert 'href="/handbook/158/"' in by_name[names[4]]  # Casting Spells
+        assert 'href="/handbook/136/"' not in by_name[names[0]]
+
+
+def test_the_srd_chapters_render_in_both_languages(client, handbook):
+    weapons_en = _get(client, "/handbook/136/", "en")
+    assert "Weapons" in weapons_en
+    assert "Mastery Properties" in weapons_en
+    assert "Cleave" in weapons_en
+    weapons_it = _get(client, "/handbook/136/", "it")
+    assert "Armi" in weapons_it
+    assert "Proprietà di padronanza" in weapons_it
+    assert "Doppio fendente" in weapons_it  # "Cleave"
+
+    coins_en = _get(client, "/handbook/134/", "en")
+    assert "Copper Piece (CP)" in coins_en and "Selling Equipment" in coins_en
+    coins_it = _get(client, "/handbook/134/", "it")
+    assert "Moneta di rame (mr)" in coins_it and "Vendere l&#x27;equipaggiamento" in coins_it
+
+    spells_it = _get(client, "/handbook/158/", "it")
+    assert "CD 15" in spells_it  # `{@dc 15}` in "Identifying an Ongoing Spell"
+    assert "DC 15" in _get(client, "/handbook/158/", "en")
+
+
+def test_spells_named_in_the_new_chapters_link_to_their_spell_page(client, db):
+    call_command("import_rules_data")
+
+    html = _get(client, "/handbook/158/", "it")
+
+    assert 'href="/world/spells/magic-missile/">dardo incantato</a>' in html
+    assert 'href="/world/spells/magic-missile/">Magic Missile</a>' in _get(
+        client, "/handbook/158/", "en"
+    )
+
+
+def test_hand_translated_classes_intro_carries_the_traduzione_badge_only_in_italian(
+    client, handbook
+):
+    italian = _get(client, "/handbook/12b/", "it")
+    title = italian.split("<h1", 1)[1].split("</h1>", 1)[0]
+    assert "Classi dei personaggi" in title and "Traduzione</span>" in title
+    # each of the four toggle headings is badged as well
+    summaries = re.findall(r"<summary>(.*?)</summary>", italian, re.S)
+    assert len(summaries) == 4
+    assert all("Traduzione</span>" in summary for summary in summaries)
+    assert "Caratteristica primaria" in summaries[0]
+
+    english = _get(client, "/handbook/12b/", "en")
+    assert "Character Classes" in english
+    assert "Traduzione</span>" not in english
+
+    # ... and the button on the overview
+    overview = _get(client, "/handbook/", "it")
+    assert re.search(r'Classi dei personaggi\s*<span class="self-translated-badge"', overview)
+    assert overview.count("Traduzione</span>") == 1
+    assert "Traduzione</span>" not in _get(client, "/handbook/", "en")
+
+
+def test_sections_taken_from_the_italian_srd_carry_no_traduzione_badge(client, handbook):
+    for section_id in ("136", "158", "125", "134", "095"):
+        assert "Traduzione</span>" not in _get(client, f"/handbook/{section_id}/", "it")
 
 
 def test_worked_examples_are_removed_in_both_languages(client, handbook):

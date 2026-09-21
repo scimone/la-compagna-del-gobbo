@@ -151,6 +151,50 @@
 
 
 
+  /* A Handbook chapter: a toggle heading (open by default; see the script below) over the buttons
+     of its sections. */
+  .chapter-group {
+    flex-shrink: 0;
+  }
+
+  .chapter-group + .chapter-group {
+    margin-top: 0.25rem;
+  }
+
+  .chapter-group > summary {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 0.2rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--accent);
+    list-style: none;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  .chapter-group > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .chapter-group > summary::before {
+    content: "▸";
+    flex-shrink: 0;
+    width: 1em;
+    line-height: 1;
+    text-align: center;
+    transition: transform 0.15s ease;
+  }
+
+  .chapter-group[open] > summary::before {
+    transform: rotate(90deg);
+  }
+
+  .chapter-group > .item-list {
+    padding-bottom: 0.4rem;
+  }
+
   /* A-Z jump strip on the right edge (Glossary): press or drag along it - the big letter
      popup (`.alpha-hud`, made by the script below) names the letter under the finger, and while
      it's held every entry not filed under that letter fades out (`.alpha-active`), so the matching
@@ -238,7 +282,7 @@
 
 {% block content %}
   <div id="search-results"{% if alphabet %} class="has-alpha"{% endif %}>
-    {% if items or bookmarked_items or featured_items %}
+    {% if items or bookmarked_items or featured_items or groups %}
       {% if bookmark_kind %}
         {# One form for every bookmark button on the page (see `_list_item.html`) - inside #}
         {# `#search-results` so `next` always matches the URL this render came from.       #}
@@ -263,11 +307,23 @@
             {% endfor %}
           </ul>
         {% endif %}
-        <ul class="item-list main-list{% if compact_thumbs %} compact-thumbs{% endif %}">
-          {% for item in items %}
-            {% include "frontend/_list_item.html" %}
-          {% endfor %}
-        </ul>
+        {% if items or not groups %}
+          <ul class="item-list main-list{% if compact_thumbs %} compact-thumbs{% endif %}">
+            {% for item in items %}
+              {% include "frontend/_list_item.html" %}
+            {% endfor %}
+          </ul>
+        {% endif %}
+        {% for group in groups %}
+          <details class="chapter-group" data-chapter="{{ group.key }}" open>
+            <summary>{{ group.name }}</summary>
+            <ul class="item-list">
+              {% for item in group.items %}
+                {% include "frontend/_list_item.html" %}
+              {% endfor %}
+            </ul>
+          </details>
+        {% endfor %}
       </div>
       {% if alphabet_letters %}
         <div class="alpha-index" aria-hidden="true">
@@ -284,6 +340,26 @@
       </div>
     {% endif %}
   </div>
+
+  {% if groups %}
+    <script>
+      // Remember which chapters were folded for the rest of the browser session, so coming back
+      // from a section (this page is fetched afresh every time) doesn't reopen or fold them all.
+      (function () {
+        function key(details) { return "handbook-chapter-" + details.dataset.chapter; }
+        Array.from(document.querySelectorAll(".chapter-group")).forEach(function (details) {
+          try {
+            if (sessionStorage.getItem(key(details)) === "closed") details.open = false;
+          } catch (error) {}
+          details.addEventListener("toggle", function () {
+            try {
+              sessionStorage.setItem(key(details), details.open ? "open" : "closed");
+            } catch (error) {}
+          });
+        });
+      })();
+    </script>
+  {% endif %}
 
   {% if bookmark_kind %}
     <script>

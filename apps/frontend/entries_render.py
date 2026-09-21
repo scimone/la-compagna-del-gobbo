@@ -342,16 +342,19 @@ def _render_dict(node: dict, linker: _ReferenceLinker) -> str:
     if node_type in ("entries", "section", "inset"):
         heading = node.get("name")
         body = _render_node(node.get("entries", []), linker)
+        # A handbook block whose Italian text was hand-translated carries `self_translated` (see
+        # `handbook_source`) - the badge sits on that specific heading, like on a Feature card.
+        badge_html = self_translated_badge(bool(node.get("self_translated")))
 
         if node_type == "entries" and heading and linker.toggle_entries:
             return (
                 f'<details class="level-group">'
-                f"<summary>{_render_text(heading, linker)}</summary>"
+                f"<summary>{_render_text(heading, linker)}{badge_html}</summary>"
                 f'<div class="toggle-body">{body}</div>'
                 f"</details>"
             )
 
-        heading_html = f"<h3>{_render_text(heading, linker)}</h3>" if heading else ""
+        heading_html = f"<h3>{_render_text(heading, linker)}{badge_html}</h3>" if heading else ""
         css_class = ' class="inset"' if node_type == "inset" else ""
         return f"<div{css_class}>{heading_html}{body}</div>"
 

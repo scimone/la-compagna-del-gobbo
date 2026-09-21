@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 
 from apps.rules.handbook_source import TranslationDataError, load_handbook
-from apps.rules.models import HandbookSection
+from apps.rules.models import HandbookChapter, HandbookSection
 from apps.rules.translation_sync import sync_catalogs
 
 
@@ -16,10 +16,16 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            english, italian = load_handbook()
+            chapters, english, italian = load_handbook()
             sync_catalogs(lambda message: self.stdout.write(message))
         except TranslationDataError as exc:
             raise CommandError(str(exc)) from exc
+
+        for chapter in chapters:
+            HandbookChapter.objects.update_or_create(
+                pk=chapter["id"],
+                defaults={"name_en": chapter["name"], "name_it": chapter["name_it"]},
+            )
 
         # Rows dropped from the source (e.g. a section with no Italian text yet) leave the
         # database too, so a re-run always leaves exactly what an import_rules_data would.
@@ -29,17 +35,20 @@ class Command(BaseCommand):
             HandbookSection.objects.update_or_create(
                 pk=row["id"],
                 defaults={
+                    "chapter_id": row["chapter"],
                     "page": row["page"],
                     "name_en": row["name"],
                     "entries_en": row["entries"],
                     "name_it": translated.get("name"),
                     "entries_it": translated.get("entries"),
+                    "self_translated_fields": translated.get("self_translated_fields", []),
                 },
             )
+        HandbookChapter.objects.exclude(pk__in=[chapter["id"] for chapter in chapters]).delete()
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"HandbookSection: {len(english)} sections ({len(italian)} with Italian text), "
-                f"{deleted} removed."
+                f"HandbookChapter: {len(chapters)}; HandbookSection: {len(english)} sections "
+                f"({len(italian)} with Italian text), {deleted} removed."
             )
         )

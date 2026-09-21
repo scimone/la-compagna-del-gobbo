@@ -13,6 +13,7 @@ from .equipment_property import EquipmentProperty
 from .equipment_type import EquipmentType
 from .feat import Feat
 from .feature import Feature
+from .handbook_chapter import HandbookChapter
 from .handbook_section import HandbookSection
 from .language import Language
 from .mastery import Mastery
@@ -42,6 +43,7 @@ __all__ = [
     "EquipmentType",
     "Feat",
     "Feature",
+    "HandbookChapter",
     "HandbookSection",
     "Language",
     "Mastery",

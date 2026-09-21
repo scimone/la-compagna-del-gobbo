@@ -3867,6 +3867,1041 @@
                     ]
                 }
             ]
+        },
+        {
+            "type": "section",
+            "name": "Character Origins",
+            "page": 178,
+            "id": "11d",
+            "entries": [
+                {
+                    "type": "section",
+                    "name": "Character Backgrounds",
+                    "page": 178,
+                    "id": "11e",
+                    "entries": [
+                        "Your character's background is a collection of characteristics that represent the place and occupation that were most formative before your character embarked on a life of adventure.",
+                        {
+                            "type": "entries",
+                            "name": "Parts of a Background",
+                            "id": "11f",
+                            "entries": [
+                                "A background includes the following parts.",
+                                {
+                                    "type": "entries",
+                                    "name": "Ability Scores",
+                                    "id": "120",
+                                    "entries": [
+                                        "A background lists three of your character's ability scores. Increase one by 2 and another one by 1, or increase all three by 1. None of these increases can raise a score above 20."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Feat",
+                                    "id": "121",
+                                    "entries": [
+                                        "A background gives your character a specified Origin feat (described in \"Feats\")."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Skill Proficiencies",
+                                    "id": "122",
+                                    "entries": [
+                                        "A background gives your character proficiency in two specified skills."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Tool Proficiency",
+                                    "id": "123",
+                                    "entries": [
+                                        "Each background gives a character proficiency with one tool—either a specific tool or one chosen from the Artisan's Tools category. Tools are detailed in \"Equipment.\""
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Equipment",
+                                    "id": "124",
+                                    "entries": [
+                                        "Each background offers a choice between a package of equipment and 50 GP."
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "name": "Character Species",
+                    "page": 186,
+                    "id": "125",
+                    "entries": [
+                        "When you choose your character's species, you determine whether your character is a human or a member of a fantastical species, such as dragonborn or gnome.",
+                        "The peoples of the multiverse hail from different worlds and include many kinds of sapient life forms. A player character's species is the set of game traits that an adventurer gains from being one of those life forms.",
+                        "Some species can trace their origin to a single world, plane of existence, or god, while other species first appeared in multiple realms at once. Whatever a species' genesis, its members have spread across the multiverse and contribute to many different cultures.",
+                        "Members of most species live for about 80 years, with exceptions noted in the text about the species in \"Character Origins.\" Regardless of life span, members of all species reach physical maturity at about the same age. Your character can be any age that isn't beyond their species' normal life span.",
+                        {
+                            "type": "entries",
+                            "name": "Parts of a Species",
+                            "id": "126",
+                            "entries": [
+                                "A species includes the following parts.",
+                                {
+                                    "type": "entries",
+                                    "name": "Creature Type",
+                                    "id": "127",
+                                    "entries": [
+                                        "A character's species determines the character's creature type, which is described in \"Rules Glossary.\" Every species in \"Character Origins\" is Humanoid; playable non-Humanoid species appear in other books."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Size",
+                                    "id": "128",
+                                    "entries": [
+                                        "Your character's species determines the character's size. Individuals within a species cover a wide range of heights, and some species include such diversity of size that you can choose whether your character is Small or Medium."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Speed",
+                                    "id": "129",
+                                    "entries": [
+                                        "Your character's species determines the character's Speed."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Special Traits",
+                                    "id": "12a",
+                                    "entries": [
+                                        "Each species gives a character special traits—unique characteristics based on the species' physiology or magical nature. When you choose a species, your character gets all the special traits listed for it. Some traits involve making a choice from a handful of options."
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "name": "Character Classes",
+                    "page": 50,
+                    "id": "12b",
+                    "entries": [
+                        "Each character class contains the rules elements described below.",
+                        {
+                            "type": "entries",
+                            "name": "Primary Ability",
+                            "id": "12c",
+                            "entries": [
+                                "The primary ability of a character class is foundational for some of the class's features, so when you create your character, that ability is a great place to put one of your highest scores. Similarly, whenever you gain the Ability Score Improvement feat, consider increasing your primary ability. Finally, to use the multiclassing rules, you must have a score of at least 13 in the primary ability of all your classes."
+                            ]
+                        },
+                        {
+                            "type": "entries",
+                            "name": "Creating a Member of a Class",
+                            "id": "12d",
+                            "entries": [
+                                "A character class's description includes a section on how to create a member of that class. That section tells you how to determine your Hit Points, which proficiencies and armor training you gain from the class, the equipment the class provides at 1st level, and how to use the multiclassing rules with the class."
+                            ]
+                        },
+                        {
+                            "type": "entries",
+                            "name": "Class Features",
+                            "id": "12e",
+                            "entries": [
+                                "Each character class grants special features at certain levels in the class. Those features are listed on the class's table and detailed in the class's description."
+                            ]
+                        },
+                        {
+                            "type": "entries",
+                            "name": "Subclass",
+                            "id": "12f",
+                            "entries": [
+                                "A character class's description is followed by a section dedicated to subclasses for that class. A subclass represents an area of specialization for a class, and the subclass grants special features at certain levels. When playtesting the new version of a class, you can use a subclass from an older source, such as the 2014 {@i Player's Handbook} or {@i Tasha's Cauldron of Everything}. If the older subclass offers features at levels that are different from the subclass levels in the class, follow the older subclass's level progression after the class lets you gain the subclass.",
+                                "You might find an older subclass doesn't fully work with the features in the playtest version of a class. If we publish the new version of the class, we'll resolve that discrepancy."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "section",
+            "name": "Feats",
+            "page": 200,
+            "id": "130",
+            "entries": [
+                {
+                    "type": "section",
+                    "name": "Feat Descriptions",
+                    "page": 200,
+                    "id": "131",
+                    "entries": [
+                        "The feats are organized by category—Origin, General, Fighting Style, or Epic Boon.",
+                        {
+                            "type": "entries",
+                            "name": "Parts of a Feat",
+                            "id": "132",
+                            "entries": [
+                                "The description of a feat contains the following parts, which are presented after the feat's name.",
+                                {
+                                    "type": "list",
+                                    "items": [
+                                        {
+                                            "type": "item",
+                                            "name": "Category.",
+                                            "entry": "A feat is a member of a category, which is noted in the feat. If you're instructed to choose a feat from a specific category, such as the Origin category, that category must appear under the feat's name. If you're instructed to choose a feat and no category is specified, you can choose from any category."
+                                        },
+                                        {
+                                            "type": "item",
+                                            "name": "Prerequisite.",
+                                            "entry": "To take a feat, you must meet any prerequisite in its description unless a feature allows you to take the feat without the prerequisite. If a prerequisite includes a class, you must have at least 1 level in that class to take the feat."
+                                        },
+                                        {
+                                            "type": "item",
+                                            "name": "Benefit.",
+                                            "entry": "The benefits of a feat are detailed after any prerequisites are listed. If you have a feat, you gain its benefits."
+                                        },
+                                        {
+                                            "type": "item",
+                                            "name": "Repeatable.",
+                                            "entry": "A feat can be taken only once unless its description states otherwise in a \"Repeatable\" subsection."
+                                        }
+                                    ],
+                                    "style": "list-no-bullets"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "section",
+            "name": "Equipment",
+            "page": 213,
+            "id": "133",
+            "entries": [
+                {
+                    "type": "section",
+                    "name": "Coins",
+                    "page": 213,
+                    "id": "134",
+                    "entries": [
+                        "Characters often find coins on their adventures and can spend those coins in shops, inns, and other businesses. Coins come in different denominations based on the relative worth of their material. The Coin Values table lists coins and how much they're worth relative to the Gold Piece, which is the game's main coin. For example, 100 Copper Pieces are worth 1 Gold Piece.",
+                        "A coin weighs about a third of an ounce, so fifty coins weigh a pound.",
+                        {
+                            "type": "table",
+                            "caption": "Coin Values",
+                            "colLabels": [
+                                "Coin",
+                                "Value in GP"
+                            ],
+                            "rows": [
+                                [
+                                    "Copper Piece (CP)",
+                                    "1/100"
+                                ],
+                                [
+                                    "Silver Piece (SP)",
+                                    "1/10"
+                                ],
+                                [
+                                    "Electrum Piece (EP)",
+                                    "1/2"
+                                ],
+                                [
+                                    "Gold Piece (GP)",
+                                    "1"
+                                ],
+                                [
+                                    "Platinum Piece (PP)",
+                                    "10"
+                                ]
+                            ]
+                        },
+                        {
+                            "type": "inset",
+                            "name": "Selling Equipment",
+                            "id": "135",
+                            "entries": [
+                                "Equipment fetches half its cost when sold. In contrast, trade goods and valuables—like gems and art objects—retain their full value in the marketplace. \"Magic Items\" has prices for magic items."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "name": "Weapons",
+                    "page": 213,
+                    "id": "136",
+                    "entries": [
+                        "The game's main weapons entries show the cost and weight of each weapon, as well as the following details:",
+                        {
+                            "type": "list",
+                            "items": [
+                                {
+                                    "type": "item",
+                                    "name": "Category.",
+                                    "entry": "Every weapon falls into a category: Simple or Martial. Weapon proficiencies are usually tied to one of these categories. For example, you might have proficiency with Simple weapons."
+                                },
+                                {
+                                    "type": "item",
+                                    "name": "Melee or Ranged.",
+                                    "entry": "A weapon is classified as either Melee or Ranged. A Melee weapon is used to attack a target within 5 feet, whereas a Ranged weapon is used to attack at a greater distance."
+                                },
+                                {
+                                    "type": "item",
+                                    "name": "Damage.",
+                                    "entry": "The table lists the amount of damage a weapon deals when an attacker hits with it as well as the type of that damage."
+                                },
+                                {
+                                    "type": "item",
+                                    "name": "Properties.",
+                                    "entry": "Any properties a weapon has are listed in the Properties column. Each property is defined in the \"Properties\" section."
+                                },
+                                {
+                                    "type": "item",
+                                    "name": "Mastery.",
+                                    "entry": "Each weapon has a mastery property, which is defined in the \"Mastery Properties\" section. To use that property, you must have a feature that lets you use it."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "entries",
+                            "name": "Weapon Proficiency",
+                            "id": "137",
+                            "entries": [
+                                "Anyone can wield a weapon, but you must have proficiency with it to add your Proficiency Bonus to an attack roll you make with it. A player character's features can provide weapon proficiencies. A monster is proficient with any weapon in its stat block."
+                            ]
+                        },
+                        {
+                            "type": "entries",
+                            "name": "Properties",
+                            "id": "138",
+                            "entries": [
+                                "Here are definitions of the properties in the Properties column of the Weapons table.",
+                                {
+                                    "type": "entries",
+                                    "name": "Ammunition",
+                                    "id": "139",
+                                    "entries": [
+                                        "You can use a weapon that has the Ammunition property to make a ranged attack only if you have ammunition to fire from it. The type of ammunition required is specified with the weapon's range. Each attack expends one piece of ammunition. Drawing the ammunition is part of the attack (you need a free hand to load a one-handed weapon). After a fight, you can spend 1 minute to recover half the ammunition (round down) you used in the fight; the rest is lost."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Finesse",
+                                    "id": "13a",
+                                    "entries": [
+                                        "When making an attack with a Finesse weapon, use your choice of your Strength or Dexterity modifier for the attack and damage rolls. You must use the same modifier for both rolls."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Heavy",
+                                    "id": "13b",
+                                    "entries": [
+                                        "You have Disadvantage on attack rolls with a Heavy weapon if it's a Melee weapon and your Strength score isn't at least 13 or if it's a Ranged weapon and your Dexterity score isn't at least 13."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Light",
+                                    "id": "13c",
+                                    "entries": [
+                                        "When you take the Attack action on your turn and attack with a Light weapon, you can make one extra attack as a Bonus Action later on the same turn. That extra attack must be made with a different Light weapon, and you don't add your ability modifier to the extra attack's damage unless that modifier is negative. For example, you can attack with a Shortsword in one hand and a Dagger in the other using the Attack action and a Bonus Action, but you don't add your Strength or Dexterity modifier to the damage roll of the Bonus Action unless that modifier is negative."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Loading",
+                                    "id": "13d",
+                                    "entries": [
+                                        "You can fire only one piece of ammunition from a Loading weapon when you use an action, a Bonus Action, or a Reaction to fire it, regardless of the number of attacks you can normally make."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Range",
+                                    "id": "13e",
+                                    "entries": [
+                                        "A Range weapon has a range in parentheses after the Ammunition or Thrown property. The range lists two numbers. The first is the weapon's normal range in feet, and the second is the weapon's long range. When attacking a target beyond normal range, you have Disadvantage on the attack roll. You can't attack a target beyond the long range."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Reach",
+                                    "id": "13f",
+                                    "entries": [
+                                        "A Reach weapon adds 5 feet to your reach when you attack with it, as well as when determining your reach for Opportunity Attacks with it."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Thrown",
+                                    "id": "140",
+                                    "entries": [
+                                        "If a weapon has the Thrown property, you can throw the weapon to make a ranged attack, and you can draw that weapon as part of the attack. If the weapon is a Melee weapon, use the same ability modifier for the attack and damage rolls that you use for a melee attack with that weapon."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Two-Handed",
+                                    "id": "141",
+                                    "entries": [
+                                        "A Two-Handed weapon requires two hands when you attack with it."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Versatile",
+                                    "id": "142",
+                                    "entries": [
+                                        "A Versatile weapon can be used with one or two hands. A damage value in parentheses appears with the property. The weapon deals that damage when used with two hands to make a melee attack."
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "entries",
+                            "name": "Mastery Properties",
+                            "id": "143",
+                            "entries": [
+                                "Each weapon has a mastery property, which is usable only by a character who has a feature, such as Weapon Mastery, that unlocks the property for the character. The properties are defined below.",
+                                {
+                                    "type": "inset",
+                                    "name": "Improvised Weapons",
+                                    "id": "144",
+                                    "entries": [
+                                        "If you use an object—such as a table leg, frying pan, or bottle—as a makeshift weapon, see \"Improvised Weapons\" in \"Rules Glossary.\" Also see those rules if you wield a weapon in an unusual way, such as using a Ranged weapon to make a melee attack."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Cleave",
+                                    "id": "145",
+                                    "entries": [
+                                        "If you hit a creature with a melee attack roll using this weapon, you can make a melee attack roll with the weapon against a second creature within 5 feet of the first that is also within your reach. On a hit, the second creature takes the weapon's damage, but don't add your ability modifier to that damage unless that modifier is negative. You can make this extra attack only once per turn."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Graze",
+                                    "id": "146",
+                                    "entries": [
+                                        "If your attack roll with this weapon misses a creature, you can deal damage to that creature equal to the ability modifier you used to make the attack roll. This damage is the same type dealt by the weapon, and the damage can be increased only by increasing the ability modifier."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Nick",
+                                    "id": "147",
+                                    "entries": [
+                                        "When you make the extra attack of the Light property, you can make it as part of the Attack action instead of as a Bonus Action. You can make this extra attack only once per turn."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Push",
+                                    "id": "148",
+                                    "entries": [
+                                        "If you hit a creature with this weapon, you can push the creature up to 10 feet straight away from yourself if it is Large or smaller."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Sap",
+                                    "id": "149",
+                                    "entries": [
+                                        "If you hit a creature with this weapon, that creature has Disadvantage on its next attack roll before the start of your next turn."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Slow",
+                                    "id": "14a",
+                                    "entries": [
+                                        "If you hit a creature with this weapon and deal damage to it, you can reduce its Speed by 10 feet until the start of your next turn. If the creature is hit more than once by weapons that have this property, the Speed reduction doesn't exceed 10 feet."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Topple",
+                                    "id": "14b",
+                                    "entries": [
+                                        "If you hit a creature with this weapon, you can force the creature to make a Constitution saving throw ({@dc 8} plus the ability modifier used to make the attack roll and your Proficiency Bonus). On a failed save, the creature has the Prone condition."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Vex",
+                                    "id": "14c",
+                                    "entries": [
+                                        "If you hit a creature with this weapon and deal damage to the creature, you have Advantage on your next attack roll against that creature before the end of your next turn."
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "name": "Armor",
+                    "page": 219,
+                    "id": "14d",
+                    "entries": [
+                        "The Armor entries list the game's main armor. Each entry includes the cost and weight of armor, as well as the following details:",
+                        {
+                            "type": "list",
+                            "items": [
+                                {
+                                    "type": "item",
+                                    "name": "Category.",
+                                    "entry": "Every type of armor falls into a category: Light, Medium, or Heavy. The category determines how long it takes to don or doff the armor (as shown in the table)."
+                                },
+                                {
+                                    "type": "item",
+                                    "name": "Armor Class (AC).",
+                                    "entry": "The table's Armor Class column tells you what your base AC is when you wear a type of armor. For example, if you wear Leather Armor, your base AC is 11 plus your Dexterity modifier, whereas your AC is 16 in Chain Mail."
+                                },
+                                {
+                                    "type": "item",
+                                    "name": "Strength.",
+                                    "entry": "If the table shows a Strength score in the Strength column for an armor type, that armor reduces the wearer's speed by 10 feet unless the wearer has a Strength score equal to or higher than the listed score."
+                                },
+                                {
+                                    "type": "item",
+                                    "name": "Stealth.",
+                                    "entry": "If the table shows \"Disadvantage\" in the Stealth column for an armor type, the wearer has Disadvantage on Dexterity (Stealth) checks."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "entries",
+                            "name": "Armor Training",
+                            "id": "14e",
+                            "entries": [
+                                "Anyone can don armor or hold a Shield, but only those with training can use them effectively, as explained below. A character's class and other features determine the character's armor training. A monster has training with any armor in its stat block.",
+                                {
+                                    "type": "entries",
+                                    "name": "Light, Medium, or Heavy Armor",
+                                    "id": "14f",
+                                    "entries": [
+                                        "If you wear Light, Medium, or Heavy armor and lack training with it, you have Disadvantage on any D20 Test that involves Strength or Dexterity, and you can't cast spells."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Shield",
+                                    "id": "150",
+                                    "entries": [
+                                        "You gain the Armor Class benefit of a Shield only if you have training with it."
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "entries",
+                            "name": "One at a Time",
+                            "id": "151",
+                            "entries": [
+                                "A creature can wear only one suit of armor at a time and wield only one Shield at a time."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "name": "Tools",
+                    "page": 220,
+                    "id": "152",
+                    "entries": [
+                        "A tool helps you make specialized ability checks, craft certain items, or both. A tool's description includes the tool's cost and weight, as well as the following entries:",
+                        {
+                            "type": "list",
+                            "items": [
+                                {
+                                    "type": "item",
+                                    "name": "Ability.",
+                                    "entry": "This entry lists the ability to use when making an ability check with the tool."
+                                },
+                                {
+                                    "type": "item",
+                                    "name": "Utilize.",
+                                    "entry": "This entry lists things you can do with the tool when you take the Utilize action. You can do one of those things each time you take the action. This entry also provides the DC for the action."
+                                },
+                                {
+                                    "type": "item",
+                                    "name": "Craft.",
+                                    "entry": "This entry lists what, if anything, you can craft with the tool. For crafting rules, see \"Crafting Nonmagical Items,\" \"Brewing Potions of Healing,\" and \"Scribing Spell Scrolls\" later in \"Equipment.\""
+                                },
+                                {
+                                    "type": "item",
+                                    "name": "Variants.",
+                                    "entry": "This entry appears if the tool has variants, which are listed. Each requires a separate proficiency."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "entries",
+                            "name": "Tool Proficiency",
+                            "id": "153",
+                            "entries": [
+                                "If you have proficiency with a tool, add your Proficiency Bonus to any ability check you make that uses the tool. If you have proficiency in a skill that's used with that check, you have Advantage on the check too.",
+                                "Your features might give you proficiency with a tool. A monster has proficiency with any tool in its stat block."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "section",
+            "name": "Spells",
+            "page": 236,
+            "id": "154",
+            "entries": [
+                {
+                    "type": "section",
+                    "name": "Gaining Spells",
+                    "page": 236,
+                    "id": "155",
+                    "entries": [
+                        "Before you can cast a spell, you must have the spell prepared in your mind or have access to the spell from a magic item, such as a {@item Spell Scroll|XPHB}. Your features specify which spells you have access to, if any; whether you always have certain spells prepared; and whether you can change the list of spells you have prepared.",
+                        {
+                            "type": "entries",
+                            "name": "Preparing Spells",
+                            "id": "156",
+                            "entries": [
+                                "If you have a list of level 1+ spells you prepare, your spellcasting feature specifies when you can change the list and the number of spells you can change, as summarized in the Spell Preparation by Class table.",
+                                {
+                                    "type": "table",
+                                    "caption": "Spell Preparation by Class",
+                                    "colLabels": [
+                                        "Class",
+                                        "Change When You…",
+                                        "Number of Spells"
+                                    ],
+                                    "rows": [
+                                        [
+                                            "Bard",
+                                            "Gain a level",
+                                            "One"
+                                        ],
+                                        [
+                                            "Cleric",
+                                            "Finish a Long Rest",
+                                            "Any"
+                                        ],
+                                        [
+                                            "Druid",
+                                            "Finish a Long Rest",
+                                            "Any"
+                                        ],
+                                        [
+                                            "Paladin",
+                                            "Finish a Long Rest",
+                                            "One"
+                                        ],
+                                        [
+                                            "Ranger",
+                                            "Finish a Long Rest",
+                                            "One"
+                                        ],
+                                        [
+                                            "Sorcerer",
+                                            "Gain a level",
+                                            "One"
+                                        ],
+                                        [
+                                            "Warlock",
+                                            "Gain a level",
+                                            "One"
+                                        ],
+                                        [
+                                            "Wizard",
+                                            "Finish a Long Rest",
+                                            "Any"
+                                        ]
+                                    ]
+                                },
+                                "Most spellcasting monsters don't change their lists of prepared spells, but the GM is free to alter them."
+                            ]
+                        },
+                        {
+                            "type": "entries",
+                            "name": "Always-Prepared Spells",
+                            "id": "157",
+                            "entries": [
+                                "Certain features might give you a spell that you always have prepared. If you also have a list of prepared spells that you can change, a spell that you always have prepared doesn't count against the number of spells on that list."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "name": "Casting Spells",
+                    "page": 237,
+                    "id": "158",
+                    "entries": [
+                        "Each spell description has a series of entries that provide the details needed to cast the spell. The following sections explain each of those entries, which follow a spell's name.",
+                        {
+                            "type": "inset",
+                            "name": "Casting in Armor",
+                            "id": "159",
+                            "entries": [
+                                "You must have training with any armor you are wearing to cast spells while wearing it. You are otherwise too hampered by the armor for spellcasting."
+                            ]
+                        },
+                        {
+                            "type": "entries",
+                            "name": "Spell Level",
+                            "id": "15a",
+                            "entries": [
+                                "Every spell has a level from 0 to 9, which is indicated in a spell's description. A spell's level is an indicator of how powerful it is. Cantrips—simple spells that can be cast almost by rote—are level 0. The rules for each spellcasting class say when its members gain access to spells of certain levels.",
+                                {
+                                    "type": "entries",
+                                    "name": "Spell Slots",
+                                    "id": "15b",
+                                    "entries": [
+                                        "Spellcasting is taxing, so a spellcaster can cast only a limited number of level 1+ spells before resting. Spell slots are the main way a spellcaster's magical potential is represented. Each spellcasting class gives its members a limited number of spell slots of certain spell levels. For example, a level 3 Wizard has four level 1 spell slots and two level 2 slots.",
+                                        "When you cast a spell, you expend a slot of that spell's level or higher, effectively \"filling\" a slot with the spell. Imagine a spell slot is a groove of a certain size—small for a level 1 slot and larger for a higher-level spell. A level 1 spell fits into a slot of any size, but a level 2 spell fits only into a slot that's at least level 2. So when a level 3 Wizard casts {@spell Magic Missile|XPHB}, a level 1 spell, that Wizard spends one of four level 1 slots and has three remaining.",
+                                        "Finishing a Long Rest restores any expended spell slots."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Casting without Slots",
+                                    "id": "15c",
+                                    "entries": [
+                                        "There are several ways to cast a spell without expending a spell slot:",
+                                        {
+                                            "type": "list",
+                                            "items": [
+                                                {
+                                                    "type": "item",
+                                                    "name": "Cantrips.",
+                                                    "entry": "A cantrip is cast without a spell slot."
+                                                },
+                                                {
+                                                    "type": "item",
+                                                    "name": "Rituals.",
+                                                    "entry": "Certain spells have the Ritual tag in the Casting Time entry. Such a spell can be cast following the normal rules for spellcasting, or it can be cast as a Ritual. The Ritual version of a spell takes 10 minutes longer to cast than normal, but it doesn't expend a spell slot. To cast a spell as a Ritual, a spellcaster must have it prepared."
+                                                },
+                                                {
+                                                    "type": "item",
+                                                    "name": "Special Abilities.",
+                                                    "entry": "Some characters and monsters have special abilities that allow them to cast specific spells without a spell slot. This casting is usually limited in another way, such as being able to cast the spell a limited number of times per day."
+                                                },
+                                                {
+                                                    "type": "item",
+                                                    "name": "Magic Items.",
+                                                    "entry": "{@item Spell Scroll|XPHB|Spell Scrolls} and some other magic items contain spells that can be cast without a spell slot. The description of such an item specifies how many times a spell can be cast from it."
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Using a Higher-Level Spell Slot",
+                                    "id": "15d",
+                                    "entries": [
+                                        "When a spellcaster casts a spell using a slot that is of a higher level than the spell, the spell takes on the higher level for that casting. For instance, if a Wizard casts {@spell Magic Missile|XPHB} using a level 2 slot, that {@spell Magic Missile|XPHB} is level 2. Effectively, the spell expands to fill the slot it is put into.",
+                                        "Some spells, such as {@spell Magic Missile|XPHB} and {@spell Cure Wounds|XPHB}, have more powerful effects when cast at a higher level, as detailed in a spell's description."
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "entries",
+                            "name": "School of Magic",
+                            "id": "15e",
+                            "entries": [
+                                "Each spell belongs to a school of magic. The schools are listed in the Schools of Magic table. These categories help describe spells but have no rules of their own, although some other rules refer to them.",
+                                {
+                                    "type": "table",
+                                    "caption": "Schools of Magic",
+                                    "colLabels": [
+                                        "School",
+                                        "Typical Effects"
+                                    ],
+                                    "rows": [
+                                        [
+                                            "Abjuration",
+                                            "Prevents or reverses harmful effects"
+                                        ],
+                                        [
+                                            "Conjuration",
+                                            "Transports creatures or objects"
+                                        ],
+                                        [
+                                            "Divination",
+                                            "Reveals information"
+                                        ],
+                                        [
+                                            "Enchantment",
+                                            "Influences minds"
+                                        ],
+                                        [
+                                            "Evocation",
+                                            "Channels energy to create effects that are often destructive"
+                                        ],
+                                        [
+                                            "Illusion",
+                                            "Deceives the mind or senses"
+                                        ],
+                                        [
+                                            "Necromancy",
+                                            "Manipulates life and death"
+                                        ],
+                                        [
+                                            "Transmutation",
+                                            "Transforms creatures or objects"
+                                        ]
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "entries",
+                            "name": "Class Spell Lists",
+                            "id": "15f",
+                            "entries": [
+                                "If a spell is on a class's spell list, the class's name appears in parentheses after the spell's school of magic. Some features add a spell to a character's spell list even if the character isn't a member of a class in the parentheses."
+                            ]
+                        },
+                        {
+                            "type": "entries",
+                            "name": "Casting Time",
+                            "id": "160",
+                            "entries": [
+                                "Most spells require the Magic action to cast, but some spells require a Bonus Action, a Reaction, or 1 minute or more. A spell's Casting Time entry specifies which of those is required.",
+                                {
+                                    "type": "entries",
+                                    "name": "One Spell with a Spell Slot per Turn",
+                                    "id": "161",
+                                    "entries": [
+                                        "On a turn, you can expend only one spell slot to cast a spell. This rule means you can't, for example, cast a spell with a spell slot using the Magic action and another one using a Bonus Action on the same turn."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Reaction and Bonus Action Triggers",
+                                    "id": "162",
+                                    "entries": [
+                                        "A spell that has a casting time of a Reaction is cast in response to a trigger that is defined in the spell's Casting Time entry. Some spells that have a casting time of a Bonus Action are also cast in response to a trigger defined in the spell."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Longer Casting Times",
+                                    "id": "163",
+                                    "entries": [
+                                        "Certain spells—including a spell cast as a Ritual—require more time to cast: minutes or even hours. While you cast a spell with a casting time of 1 minute or more, you must take the Magic action on each of your turns, and you must maintain Concentration (see \"Rules Glossary\") while you do so. If your Concentration is broken, the spell fails, but you don't expend a spell slot. To cast the spell again, you must start over."
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "entries",
+                            "name": "Range",
+                            "id": "164",
+                            "entries": [
+                                "A spell's range indicates how far from the spellcaster the spell's effect can originate, and the spell's description specifies which part of the effect is limited by the range.",
+                                "A range usually takes one of the following forms:",
+                                {
+                                    "type": "list",
+                                    "items": [
+                                        {
+                                            "type": "item",
+                                            "name": "Distance.",
+                                            "entry": "The range is expressed in feet."
+                                        },
+                                        {
+                                            "type": "item",
+                                            "name": "Touch.",
+                                            "entry": "The spell's effect originates on something, as defined by the spell, that the spellcaster must touch within their reach."
+                                        },
+                                        {
+                                            "type": "item",
+                                            "name": "Self.",
+                                            "entry": "The spell is cast on the spellcaster or emanates from them, as specified in the spell."
+                                        }
+                                    ]
+                                },
+                                "If a spell has movable effects, they aren't restricted by its range unless the spell's description says otherwise."
+                            ]
+                        },
+                        {
+                            "type": "entries",
+                            "name": "Components",
+                            "id": "165",
+                            "entries": [
+                                "A spell's components are physical requirements the spellcaster must meet to cast the spell. Each spell's description indicates whether it requires Verbal (V), Somatic (S), or Material (M) components. If the spellcaster can't provide one or more of a spell's components, the spellcaster can't cast the spell.",
+                                {
+                                    "type": "entries",
+                                    "name": "Verbal (V)",
+                                    "id": "166",
+                                    "entries": [
+                                        "A Verbal component is the chanting of esoteric words that sound like nonsense to the uninitiated. The words must be uttered in a normal speaking voice. The words themselves aren't the source of the spell's power; rather, the particular combination of sounds, with specific pitch and resonance, sets the threads of magic in motion. Thus, a creature who is gagged or in an area of magical silence can't cast a spell with a Verbal component."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Somatic (S)",
+                                    "id": "167",
+                                    "entries": [
+                                        "A Somatic component is a forceful gesticulation or an intricate set of gestures. A spellcaster must use at least one of their hands to perform these movements."
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Material (M)",
+                                    "id": "168",
+                                    "entries": [
+                                        "A Material component is a particular material used in a spell's casting, as specified in parentheses in the Components entry. These materials aren't consumed by the spell unless the spell's description states otherwise. The spellcaster must have a hand free to access them, but it can be the same hand used to perform Somatic components, if any.",
+                                        "If a spell doesn't consume its materials and doesn't specify a cost for them, a spellcaster can use a Component Pouch (see \"Equipment\") instead of providing the materials specified in the spell, or the spellcaster can substitute a Spellcasting Focus if the caster has a feature that allows that substitution. To use a Component Pouch, you must have a hand free to reach into it, and to use a Spellcasting Focus, you must hold it unless its description says otherwise (see \"Equipment\" for descriptions)."
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "entries",
+                            "name": "Duration",
+                            "id": "169",
+                            "entries": [
+                                "A spell's duration is the length of time the spell persists after it is cast. A duration typically takes one of the following forms:",
+                                {
+                                    "type": "list",
+                                    "items": [
+                                        {
+                                            "type": "item",
+                                            "name": "Concentration.",
+                                            "entry": "A duration that requires Concentration follows the Concentration rules (see \"Rules Glossary\")."
+                                        },
+                                        {
+                                            "type": "item",
+                                            "name": "Instantaneous.",
+                                            "entry": "An instantaneous duration means the spell's magic appears only for a moment and then disappears."
+                                        },
+                                        {
+                                            "type": "item",
+                                            "name": "Time Span.",
+                                            "entry": "A duration that provides a time span specifies how long the spell lasts in rounds, minutes, hours, or the like. For example, a Duration entry might say \"1 minute,\" meaning the spell ends after 1 minute has passed. While a time-span spell that you cast is ongoing, you can dismiss it (no action required) if you don't have the Incapacitated condition."
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "entries",
+                            "name": "Effects",
+                            "id": "16a",
+                            "entries": [
+                                "The effects of a spell are detailed after its duration entry. Those details present exactly what the spell does, which ignores mundane physical laws; any outcomes beyond those effects are under the GM's purview. Whatever the effects, they typically deal with targets, saving throws, attack rolls, or all three, each of which is detailed below.",
+                                {
+                                    "type": "entries",
+                                    "name": "Targets",
+                                    "id": "16b",
+                                    "entries": [
+                                        "A typical spell requires the caster to pick one or more targets to be affected by the spell's magic. A spell's description says whether the spell targets creatures, objects, or something else.",
+                                        {
+                                            "type": "list",
+                                            "items": [
+                                                {
+                                                    "type": "item",
+                                                    "name": "A Clear Path to the Target.",
+                                                    "entry": "To target something with a spell, a caster must have a clear path to it, so it can't be behind Total Cover."
+                                                },
+                                                {
+                                                    "type": "item",
+                                                    "name": "Targeting Yourself.",
+                                                    "entry": "If a spell targets a creature of your choice, you can choose yourself unless the creature must be Hostile or specifically a creature other than you."
+                                                },
+                                                {
+                                                    "type": "item",
+                                                    "name": "Areas of Effect.",
+                                                    "entry": "Some spells, such as {@spell Thunderwave|XPHB}, cover an area called an area of effect, which is defined in \"Rules Glossary.\" The area determines what the spell targets. The description of a spell specifies whether it has an area of effect, which is typically one of these shapes: Cone, Cube, Cylinder, Emanation, Line, or Sphere."
+                                                },
+                                                {
+                                                    "type": "item",
+                                                    "name": "Awareness of Being Targeted.",
+                                                    "entry": "Unless a spell has a perceptible effect, a creature doesn't know it was targeted by the spell. An effect like lightning is obvious, but a more subtle effect, such as an attempt to read thoughts, goes unnoticed unless a spell's description says otherwise."
+                                                },
+                                                {
+                                                    "type": "item",
+                                                    "name": "Invalid Targets.",
+                                                    "entry": [
+                                                        "If you cast a spell on someone or something that can't be affected by it, nothing happens to that target, but if you used a spell slot to cast the spell, the slot is still expended.",
+                                                        "If the spell normally has no effect on a target that succeeds on a saving throw, the invalid target appears to have succeeded on its saving throw, even though it didn't attempt one (giving no hint that the creature is an invalid target). Otherwise, you perceive that the spell did nothing to the target."
+                                                    ]
+                                                }
+                                            ],
+                                            "style": "list-no-bullets"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Saving Throws",
+                                    "id": "16c",
+                                    "entries": [
+                                        "Many spells specify that a target makes a saving throw to avoid some or all of a spell's effects. The spell specifies the ability that the target uses for the save and what happens on a success or failure. Here's how to calculate the DC for your spells:",
+                                        {
+                                            "type": "list",
+                                            "items": [
+                                                {
+                                                    "type": "item",
+                                                    "name": "Spell save DC",
+                                                    "entry": "= 8 + your spellcasting ability modifier + your Proficiency Bonus"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Attack Rolls",
+                                    "id": "16d",
+                                    "entries": [
+                                        "Some spells require the caster to make an attack roll to determine whether the spell hits a target. Here's how to calculate the attack modifier for your spells:",
+                                        {
+                                            "type": "list",
+                                            "items": [
+                                                {
+                                                    "type": "item",
+                                                    "name": "Spell attack modifier",
+                                                    "entry": "= your spellcasting ability modifier + your Proficiency Bonus"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "entries",
+                                    "name": "Combining Spell Effects",
+                                    "id": "16e",
+                                    "entries": [
+                                        "The effects of different spells add together while their durations overlap. In contrast, the effects of the same spell cast multiple times don't combine. Instead, the most potent effect—such as the highest bonus—from those castings applies while their durations overlap. The most recent effect applies if the castings are equally potent and their durations overlap. For example, if two Clerics cast {@spell Bless|XPHB} on the same target, that target gains the spell's benefit only once; the target doesn't receive two bonus dice. But if the durations of the spells overlap, the effect continues until the duration of the second {@spell Bless|XPHB} ends.",
+                                        {
+                                            "type": "inset",
+                                            "name": "Identifying an Ongoing Spell",
+                                            "id": "16f",
+                                            "entries": [
+                                                "You can try to identify a non-instantaneous spell by its observable effects if its duration is ongoing. To identify it, you must take the Study action and succeed on a {@dc 15} Intelligence (Arcana) check."
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

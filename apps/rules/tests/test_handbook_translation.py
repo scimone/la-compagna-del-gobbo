@@ -11,13 +11,15 @@ from apps.rules.handbook_source import (
     OMITTED_BLOCK_IDS,
     OMITTED_ROW_IDS,
     TranslationDataError,
+    english_chapters,
     english_rows,
+    italian_chapter_names,
     italian_rows,
     load_handbook,
     overlay_translation,
 )
 from apps.rules.management.commands.import_rules_data import Command as ImportCommand
-from apps.rules.models import HandbookSection, Spell
+from apps.rules.models import HandbookChapter, HandbookSection, Spell
 
 TAG = re.compile(r"\{@(\w+)\s+([^}]*)\}")
 
@@ -38,6 +40,16 @@ def test_overlay_inherits_language_neutral_keys():
         "name": "Nascondersi",
         "entries": ["Nasconditi."],
     }
+
+
+def test_overlay_lets_an_italian_block_flag_itself_as_hand_translated():
+    english = {"type": "entries", "id": "12c", "name": "Primary Ability", "entries": ["Text."]}
+    italian = {"id": "12c", "name": "Caratteristica primaria", "self_translated": True}
+
+    merged = overlay_translation(english, italian)
+
+    assert merged["self_translated"] is True
+    assert merged["entries"] == ["Text."]  # untouched English fills the gap
 
 
 def test_overlay_null_and_omitted_trailing_items_fall_back_to_english():
@@ -74,7 +86,7 @@ def _string_pairs(english, italian, path):
         return
     if isinstance(english, dict):
         for key, value in italian.items():
-            if key != "id":
+            if key not in ("id", "self_translated", "_self"):
                 yield from _string_pairs(english[key], value, f"{path}.{key}")
     elif isinstance(english, list) and path.endswith(".items") and _all_strings(english):
         # A plain list of references (senses, hazards, conditions) may be alphabetised in
@@ -112,6 +124,33 @@ def test_italian_handbook_file_lines_up_with_the_english_source():
     assert {"00c", "00e", "011", "01c", "01f", "036", "03e", "043", "04b"} <= set(italian)
     assert {"06b", "095", "0b5"} <= set(italian)
     assert italian["06b"]["name"] == "Combattimento"
+    # the SRD chapters added after "Playing the Game"
+    assert {"11e", "125", "12b", "131", "134", "136", "14d", "152", "155", "158"} <= set(italian)
+    assert italian["136"]["name"] == "Armi"
+
+
+def test_every_chapter_has_an_italian_name():
+    assert [c["id"] for c in english_chapters()] == ["007", "11d", "130", "133", "154"]
+    assert italian_chapter_names() == {
+        "007": "Come si gioca",
+        "11d": "Origini dei personaggi",
+        "130": "Talenti",
+        "133": "Equipaggiamento",
+        "154": "Incantesimi",
+    }
+
+
+def test_only_the_classes_intro_is_marked_as_hand_translated():
+    english = english_rows()
+    italian = italian_rows(english)
+
+    hand_translated = {rid for rid, fields in italian.items() if fields["self_translated_fields"]}
+    assert hand_translated == {"12b"}  # "Character Classes" - not in the Italian SRD
+    assert italian["12b"]["self_translated_fields"] == ["name", "entries"]
+
+    # ... and so are the four blocks of that section, each flagged on its own
+    blocks = [b for b in italian["12b"]["entries"] if isinstance(b, dict) and b.get("id")]
+    assert [b["self_translated"] for b in blocks] == [True] * 4
 
 
 def test_italian_handbook_tags_mirror_the_english_tags():
@@ -120,6 +159,8 @@ def test_italian_handbook_tags_mirror_the_english_tags():
 
     mismatches = []
     for row_id, translated in raw.items():
+        if row_id not in english_by_id:  # a chapter: just a name
+            continue
         english_row = english_by_id[row_id]
         for path, en, it in _string_pairs(english_row, translated, row_id):
             if _tags(en) != _tags(it):
@@ -135,15 +176,19 @@ def test_italian_handbook_tags_mirror_the_english_tags():
 
 @pytest.mark.django_db
 def test_section_reads_in_the_active_language_and_falls_back_to_english():
+    chapter = HandbookChapter.objects.create(id="c1", name_en="Chapter")
     HandbookSection.objects.create(
         id="x1",
+        chapter=chapter,
         page=1,
         name_en="Hiding",
         name_it="Nascondersi",
         entries_en=["Hide."],
         entries_it=["Nasconditi."],
     )
-    HandbookSection.objects.create(id="x2", page=1, name_en="Dice", entries_en=["Roll."])
+    HandbookSection.objects.create(
+        id="x2", chapter=chapter, page=1, name_en="Dice", entries_en=["Roll."]
+    )
 
     with translation.override("it"):
         translated = HandbookSection.objects.get(pk="x1")
@@ -160,12 +205,20 @@ def test_section_reads_in_the_active_language_and_falls_back_to_english():
 TRANSLATABLE_KEYS = ("name", "entries", "entry", "items", "rows", "caption", "colLabels")
 
 
+#: Text that is the same word in both languages (a class name, a weapon property).
+SAME_IN_ITALIAN = {"Ranger", "Warlock", "Versatile"}
+
+
 def _english_leftovers(english, italian, path=""):
     """Paths of text that is still English in the Italian tree (identical wording, with some
     real words in it once `{@tag}` markup - which keeps its English lookup key - is set aside).
     """
     if isinstance(english, str):
-        if english == italian and re.search(r"[A-Za-z]{4,}", TAG.sub("", english)):
+        if (
+            english == italian
+            and english not in SAME_IN_ITALIAN
+            and re.search(r"[A-Za-z]{4,}", TAG.sub("", english))
+        ):
             yield path
     elif isinstance(english, list):
         for i, (en, it) in enumerate(zip(english, italian, strict=True)):
@@ -192,7 +245,7 @@ def _block_ids(node):
 
 
 def test_omitted_parts_are_gone_from_both_languages():
-    rows, italian = load_handbook()
+    _chapters, rows, italian = load_handbook()
 
     assert not OMITTED_ROW_IDS & {row["id"] for row in rows}
     assert not OMITTED_ROW_IDS & set(italian)
@@ -203,7 +256,9 @@ def test_omitted_parts_are_gone_from_both_languages():
 
 
 def test_no_english_text_is_left_in_the_italian_handbook():
-    english, italian = load_handbook()
+    chapters, english, italian = load_handbook()
+
+    assert all(chapter["name_it"] and chapter["name_it"] != chapter["name"] for chapter in chapters)
 
     leftovers = []
     for row in english:
@@ -216,7 +271,7 @@ def test_no_english_text_is_left_in_the_italian_handbook():
 
 
 def test_english_wording_that_pointed_at_a_removed_example_is_trimmed():
-    english, _italian = load_handbook()
+    _chapters, english, _italian = load_handbook()
     social = next(row for row in english if row["id"] == "043")
 
     roleplaying = next(
@@ -235,8 +290,42 @@ def test_import_handbook_stores_both_languages_and_drops_the_omitted_rows():
     combat = HandbookSection.objects.get(pk="06b")
     assert combat.name_en == "Combat"
     assert combat.name_it == "Combattimento"
+    assert combat.chapter_id == "007"
     assert not HandbookSection.objects.filter(pk__in=OMITTED_ROW_IDS).exists()
     assert not HandbookSection.objects.filter(name_it__isnull=True).exists()
+
+
+@pytest.mark.django_db
+def test_import_handbook_stores_the_chapters_with_their_sections_in_reading_order():
+    ImportCommand()._import_handbook()
+
+    chapters = list(HandbookChapter.objects.all())
+    assert [c.name_en for c in chapters] == [
+        "Playing the Game",
+        "Character Origins",
+        "Feats",
+        "Equipment",
+        "Spells",
+    ]
+    assert [c.name_it for c in chapters] == [
+        "Come si gioca",
+        "Origini dei personaggi",
+        "Talenti",
+        "Equipaggiamento",
+        "Incantesimi",
+    ]
+    assert [s.name_en for s in chapters[1].sections.all()] == [
+        "Character Backgrounds",
+        "Character Species",
+        "Character Classes",
+    ]
+    assert [s.name_en for s in chapters[4].sections.all()] == ["Gaining Spells", "Casting Spells"]
+    # the whole book reads in order: chapter by chapter, section by section
+    assert [s.chapter_id for s in HandbookSection.objects.all()] == sorted(
+        s.chapter_id for s in HandbookSection.objects.all()
+    )
+    hand_translated = HandbookSection.objects.exclude(self_translated_fields=[])
+    assert [s.pk for s in hand_translated] == ["12b"]
 
 
 @pytest.mark.django_db
@@ -244,7 +333,11 @@ def test_import_translations_syncs_rows_without_wiping_anything_else():
     call_command("import_rules_data")
     HandbookSection.objects.filter(pk="06b").delete()  # a row that went missing
     HandbookSection.objects.update(name_it=None, entries_it=None)  # Italian never loaded
-    HandbookSection.objects.create(id="009", page=7, name_en="Player or DM?", entries_en=[])
+    HandbookSection.objects.create(
+        id="009", chapter_id="007", page=7, name_en="Player or DM?", entries_en=[]
+    )
+    HandbookChapter.objects.all().update(name_it=None)  # Italian chapter names never loaded
+    HandbookChapter.objects.create(id="zzz", name_en="Removed chapter")
     spells_before = Spell.objects.count()
 
     call_command("import_translations")
@@ -252,5 +345,7 @@ def test_import_translations_syncs_rows_without_wiping_anything_else():
     combat = HandbookSection.objects.get(pk="06b")
     assert (combat.name_en, combat.name_it) == ("Combat", "Combattimento")
     assert not HandbookSection.objects.filter(pk="009").exists()  # stale row removed
+    assert not HandbookChapter.objects.filter(pk="zzz").exists()  # stale chapter removed
+    assert HandbookChapter.objects.get(pk="154").name_it == "Incantesimi"
     assert not HandbookSection.objects.filter(name_it__isnull=True).exists()
     assert Spell.objects.count() == spells_before  # other catalogs left in place

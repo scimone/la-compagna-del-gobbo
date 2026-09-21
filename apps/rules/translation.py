@@ -19,6 +19,7 @@ from apps.rules.models import (
     EquipmentProperty,
     Feat,
     Feature,
+    HandbookChapter,
     HandbookSection,
     Language,
     Mastery,
@@ -30,6 +31,11 @@ from apps.rules.models import (
     Spell,
     Subclass,
 )
+
+
+@register(HandbookChapter)
+class HandbookChapterTranslationOptions(TranslationOptions):
+    fields = ("name",)
 
 
 @register(HandbookSection)

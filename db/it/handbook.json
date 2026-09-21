@@ -1772,5 +1772,883 @@
         ]
       }
     ]
+  },
+  "007": {
+    "name": "Come si gioca"
+  },
+  "11d": {
+    "name": "Origini dei personaggi"
+  },
+  "130": {
+    "name": "Talenti"
+  },
+  "133": {
+    "name": "Equipaggiamento"
+  },
+  "154": {
+    "name": "Incantesimi"
+  },
+  "11e": {
+    "name": "Background dei personaggi",
+    "entries": [
+      "Il background è un insieme di caratteristiche che rappresentano il luogo e l'occupazione più importanti nella formazione del tuo personaggio prima che decidesse di intraprendere una vita d'avventura.",
+      {
+        "id": "11f",
+        "name": "Elementi di un background",
+        "entries": [
+          "Il background è composto dai seguenti elementi.",
+          {
+            "id": "120",
+            "name": "Punteggi di caratteristica",
+            "entries": [
+              "In un background sono elencati tre punteggi di caratteristica del personaggio. Puoi aumentarne uno di 2 e uno di 1, oppure tutti e tre di 1. Nessuno di questi incrementi può far salire il punteggio al di sopra di 20."
+            ]
+          },
+          {
+            "id": "121",
+            "name": "Talento",
+            "entries": [
+              "Un background fornisce al tuo personaggio un determinato talento delle origini (come descritto nel capitolo \"Talenti\")."
+            ]
+          },
+          {
+            "id": "122",
+            "name": "Competenze nelle abilità",
+            "entries": [
+              "Un background fornisce al tuo personaggio competenza in due abilità specifiche."
+            ]
+          },
+          {
+            "id": "123",
+            "name": "Competenza negli strumenti",
+            "entries": [
+              "Ciascun background fornisce al personaggio competenza in uno strumento specifico o a scelta dalla categoria degli strumenti da artigiano. Gli strumenti sono descritti nel capitolo \"Strumenti\"."
+            ]
+          },
+          {
+            "id": "124",
+            "name": "Equipaggiamento",
+            "entries": [
+              "Ciascun background offre una scelta tra una dotazione di equipaggiamento e 50 mo."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "125": {
+    "name": "Specie dei personaggi",
+    "entries": [
+      "Il tuo personaggio può essere un umano o appartenere a un'altra specie fantastica, come i dragonidi o gli gnomi.",
+      "I popoli del multiverso di provengono da mondi diversi e includono una grande varietà di forme di vita senzienti. Come parte di una determinata specie, il personaggio ottiene dei tratti che può sfruttare nel gioco.",
+      "Alcune specie possono ricondurre le proprie origini a un unico mondo, piano di esistenza o divinità, mentre altre sono apparse per la prima volta contemporaneamente in più regni. A prescindere dalla loro genesi, i membri di ciascuna specie si sono diffusi in tutto il multiverso, contribuendo alla creazione di svariate culture.",
+      "La maggior parte di queste creature vive per circa 80 anni, con determinate eccezioni elencate in \"Origini dei personaggi\". Al di là della propria aspettativa di vita, tutte loro raggiungono la maturità fisica più o meno alla stessa età. Per il tuo personaggio puoi scegliere l'età che preferisci, purché non superi la normale longevità della specie selezionata.",
+      {
+        "id": "126",
+        "name": "Elementi di una specie",
+        "entries": [
+          "I seguenti elementi sono ciò che caratterizza una specie:",
+          {
+            "id": "127",
+            "name": "Tipo di creatura",
+            "entries": [
+              "La specie di un personaggio determina il tipo di creatura, come descritto nel \"Glossario delle regole\". Tutte le specie in \"Origini dei personaggi\" sono umanoidi, mentre potrai trovare quelle non umanoidi in altri libri."
+            ]
+          },
+          {
+            "id": "128",
+            "name": "Taglia",
+            "entries": [
+              "La specie del personaggio determina la sua taglia. All'interno di una specie, l'altezza di ciascun individuo può variare, ma ne esistono alcune in cui la differenza è tale da conferirti la possibilità di scegliere tra la taglia Piccola e quella Media."
+            ]
+          },
+          {
+            "id": "129",
+            "name": "Velocità",
+            "entries": [
+              "La specie del personaggio ne determina la velocità."
+            ]
+          },
+          {
+            "id": "12a",
+            "name": "Tratti speciali",
+            "entries": [
+              "Ciascuna specie conferisce al personaggio dei tratti speciali, ovvero caratteristiche uniche basate sulla fisionomia o sulla natura magica della specie stessa. Quando selezioni una specie, il tuo personaggio ottiene tutti i suoi tratti speciali, con alcuni che richiedono di effettuare una scelta tra una manciata di opzioni."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "12b": {
+    "name": "Classi dei personaggi",
+    "entries": [
+      "Ogni classe di personaggio contiene gli elementi di regole descritti di seguito.",
+      {
+        "id": "12c",
+        "name": "Caratteristica primaria",
+        "entries": [
+          "La caratteristica primaria di una classe di personaggio è alla base di alcuni dei privilegi della classe, quindi quando crei il tuo personaggio è un ottimo posto dove mettere uno dei tuoi punteggi più alti. Allo stesso modo, ogni volta che ottieni il talento Aumento dei punteggi di caratteristica, valuta la possibilità di aumentare la tua caratteristica primaria. Infine, per usare le regole sulla multiclasse, devi avere un punteggio di almeno 13 nella caratteristica primaria di tutte le tue classi."
+        ],
+        "self_translated": true
+      },
+      {
+        "id": "12d",
+        "name": "Creare un membro di una classe",
+        "entries": [
+          "La descrizione di una classe di personaggio include una sezione su come creare un membro di quella classe. Tale sezione spiega come determinare i tuoi punti ferita, quali competenze e quali competenze nelle armature ottieni dalla classe, l'equipaggiamento che la classe fornisce al 1º livello e come usare le regole sulla multiclasse con la classe."
+        ],
+        "self_translated": true
+      },
+      {
+        "id": "12e",
+        "name": "Privilegi di classe",
+        "entries": [
+          "Ogni classe di personaggio concede privilegi speciali a determinati livelli della classe. Tali privilegi sono elencati nella tabella della classe e descritti nel dettaglio nella descrizione della classe."
+        ],
+        "self_translated": true
+      },
+      {
+        "id": "12f",
+        "name": "Sottoclasse",
+        "entries": [
+          "La descrizione di una classe di personaggio è seguita da una sezione dedicata alle sottoclassi di quella classe. Una sottoclasse rappresenta un'area di specializzazione della classe e concede privilegi speciali a determinati livelli. Quando fai un playtest della nuova versione di una classe, puoi usare una sottoclasse di una fonte precedente, come il {@i Manuale del Giocatore} del 2014 o {@i Il calderone omnicomprensivo di Tasha}. Se la sottoclasse precedente offre privilegi a livelli diversi da quelli della sottoclasse presente nella classe, segui la progressione di livello della sottoclasse precedente dopo che la classe ti permette di ottenere la sottoclasse.",
+          "Potresti scoprire che una sottoclasse precedente non funziona del tutto con i privilegi della versione di playtest di una classe. Se pubblicheremo la nuova versione della classe, risolveremo tale discrepanza."
+        ],
+        "self_translated": true
+      }
+    ],
+    "_self": [
+      "name",
+      "entries"
+    ]
+  },
+  "131": {
+    "name": "Descrizioni dei talenti",
+    "entries": [
+      "I talenti sono organizzati per categoria (Origini, Generale, Stile di combattimento o Dono epico).",
+      {
+        "id": "132",
+        "name": "Elementi di un talento",
+        "entries": [
+          "La descrizione di un talento contiene le seguenti componenti elencate dopo il suo nome.",
+          {
+            "items": [
+              {
+                "name": "Categoria.",
+                "entry": "Ciascun talento appartiene a una determinata categoria contrassegnata nella sua descrizione. Se devi scegliere un talento da una specifica categoria, come Origini, questa deve comparire sotto al nome del talento. Se invece devi selezionare un talento senza che ne sia specificata la categoria, puoi optare per quello che preferisci."
+              },
+              {
+                "name": "Prerequisito.",
+                "entry": "Per ottenere un talento, il personaggio deve soddisfare i prerequisiti indicati nella sua descrizione, a meno che un privilegio non ti permetta di ottenerlo senza i prerequisiti. Se fra i prerequisiti è inclusa una classe, il personaggio deve avere almeno il livello 1 in tale classe per poter ottenere il talento."
+              },
+              {
+                "name": "Beneficio.",
+                "entry": "I benefici di un talento sono indicati dopo eventuali prerequisiti. Se il personaggio dispone di un talento, ottiene anche i suoi benefici."
+              },
+              {
+                "name": "Ripetibile.",
+                "entry": "I talenti possono essere ottenuti solo una volta, salvo diversamente indicato nella sua descrizione tramite la sottosezione \"Ripetibile\"."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "134": {
+    "name": "Monete",
+    "entries": [
+      "Spesso i personaggi trovano monete durante le loro avventure e possono spenderle in negozi, locande e altre attività commerciali. Le monete hanno diverse denominazioni in base al valore del materiale di cui sono composte. Nella tabella Valore della moneta sono elencati i tipi di monete e il relativo valore in monete d'oro, ovvero la valuta principale del gioco. Per esempio, 100 monete di rame equivalgono a 1 moneta d'oro.",
+      "Una moneta pesa circa dieci grammi, quindi cinquanta monete pesano circa mezzo chilogrammo.",
+      {
+        "caption": "Valore della moneta",
+        "colLabels": [
+          "Moneta",
+          "Valore in mo"
+        ],
+        "rows": [
+          [
+            "Moneta di rame (mr)",
+            "1/100"
+          ],
+          [
+            "Moneta d'argento (ma)",
+            "1/10"
+          ],
+          [
+            "Moneta di electrum (me)",
+            "1/2"
+          ],
+          [
+            "Moneta d'oro (mo)",
+            "1"
+          ],
+          [
+            "Moneta di platino (mp)",
+            "10"
+          ]
+        ]
+      },
+      {
+        "id": "135",
+        "name": "Vendere l'equipaggiamento",
+        "entries": [
+          "L'equipaggiamento può essere rivenduto a metà del suo prezzo d'acquisto originale. Al contrario, merci e oggetti di valore (come pietre preziose e opere d'arte) preservano il loro valore di mercato. In \"Oggetti magici\" sono indicati i prezzi degli oggetti magici."
+        ]
+      }
+    ]
+  },
+  "136": {
+    "name": "Armi",
+    "entries": [
+      "Ogni arma ha un costo e peso, oltre ai seguenti dettagli:",
+      {
+        "items": [
+          {
+            "name": "Categoria.",
+            "entry": "Ogni arma rientra in una categoria: semplice o da guerra. Le competenze nelle armi sono solitamente legate a una di queste categorie; ad esempio, il personaggio potrebbe avere competenza con le armi semplici."
+          },
+          {
+            "name": "Da mischia o a distanza.",
+            "entry": "Ogni arma è classificata come arma da mischia o arma a distanza. Un'arma da mischia è usata per attaccare un bersaglio entro 1,5 metri, mentre un'arma a distanza permette di attaccare da una distanza maggiore."
+          },
+          {
+            "name": "Danni.",
+            "entry": "La tabella elenca la quantità di danni che un'arma infligge quando un attaccante la usa per sferrare un attacco, così come la tipologia di danno inferto."
+          },
+          {
+            "name": "Proprietà.",
+            "entry": "Nella colonna Proprietà sono elencate eventuali proprietà che un'arma potrebbe avere. Ciascuna di esse viene spiegata nell'apposita sezione Proprietà."
+          },
+          {
+            "name": "Padronanza.",
+            "entry": "Ogni arma possiede una proprietà di padronanza, spiegata nella sezione \"Proprietà di padronanza\". Per utilizzare tale proprietà, il personaggio deve prima disporre del privilegio necessario."
+          }
+        ]
+      },
+      {
+        "id": "137",
+        "name": "Competenza nelle armi",
+        "entries": [
+          "Chiunque può impugnare un'arma, ma il personaggio deve avere competenza con essa per aggiungere il suo bonus di competenza a un tiro per colpire che ne faccia uso. La competenza in varie armi viene fornita dai privilegi del personaggio. I mostri hanno competenza con qualsiasi arma elencata nella propria scheda delle statistiche."
+        ]
+      },
+      {
+        "id": "138",
+        "name": "Proprietà",
+        "entries": [
+          "Di seguito sono riportate le definizioni delle proprietà presenti nella colonna Proprietà della tabella Armi.",
+          {
+            "id": "139",
+            "name": "Munizioni",
+            "entries": [
+              "Il personaggio può effettuare un attacco a distanza usando un'arma dotata della proprietà Munizioni solo se possiede delle munizioni da utilizzare. La tipologia di munizioni richiesta è specificata insieme alla gittata dell'arma. Ogni attacco consuma una certa quantità di munizioni. Estrarre la munizione è considerato parte dell'attacco (il personaggio ha bisogno di una mano libera per caricare un'arma a una mano). Dopo un combattimento, il personaggio può impiegare 1 minuto per recuperare metà delle munizioni (arrotondate per difetto) utilizzate nel combattimento. Il resto è considerato irrecuperabile."
+            ]
+          },
+          {
+            "id": "13a",
+            "name": "Accurata",
+            "entries": [
+              "Quando un personaggio effettua un attacco con un'arma accurata, può scegliere se usare il modificatore di Forza o di Destrezza per il tiro per colpire e il tiro per i danni. Deve usare lo stesso modificatore per entrambi i tiri."
+            ]
+          },
+          {
+            "id": "13b",
+            "name": "Pesante",
+            "entries": [
+              "Il personaggio ha svantaggio ai tiri per colpire se utilizza un'arma pesante da mischia e il suo punteggio di Forza è inferiore a 13 o se usa un'arma pesante a distanza e il suo punteggio di Destrezza è inferiore a 13."
+            ]
+          },
+          {
+            "id": "13c",
+            "name": "Leggera",
+            "entries": [
+              "Quando il personaggio utilizza un'azione di Attacco nel suo turno per attaccare con un'arma leggera, durante lo stesso turno può sferrare un attacco extra come azione bonus. Tuttavia, deve essere eseguito con un'arma leggera diversa e non puoi sommarci il modificatore di caratteristica del personaggio, a meno che non sia di valore negativo. Per esempio, il personaggio può attaccare con una spada corta in una mano e un pugnale in un'altra utilizzando l'azione di Attacco e l'azione bonus, ma non può aggiungere il suo modificatore di Forza o Destrezza al tiro per i danni dell'azione bonus, a meno che non sia di valore negativo."
+            ]
+          },
+          {
+            "id": "13d",
+            "name": "Ricarica",
+            "entries": [
+              "Il personaggio può scagliare una sola munizione da un'arma con la proprietà ricarica quando usa un'azione, un'azione bonus o una reazione per fare fuoco, a prescindere dal numero di attacchi che potrebbe normalmente effettuare."
+            ]
+          },
+          {
+            "id": "13e",
+            "name": "Gittata",
+            "entries": [
+              "Un'arma a distanza presenta una gittata scritta tra parentesi dopo la proprietà munizioni o lancio. La gittata riporta due numeri. Il primo è la gittata normale dell'arma in metri, il secondo è la gittata lunga dell'arma. Quando un personaggio attacca un bersaglio oltre la gittata normale, subisce svantaggio al tiro per colpire. Non è possibile attaccare un bersaglio oltre la gittata lunga."
+            ]
+          },
+          {
+            "id": "13f",
+            "name": "Portata",
+            "entries": [
+              "Aggiunge 1,5 metri alla portata del personaggio quando la usa per attaccare e per determinare la portata di possibili attacchi di opportunità."
+            ]
+          },
+          {
+            "id": "140",
+            "name": "Lancio",
+            "entries": [
+              "Se un'arma possiede la proprietà da lancio, il personaggio può lanciarla per effettuare un attacco a distanza ed estrarla come parte dell'attacco. Se è un'arma da mischia, il personaggio applica al tiro per colpire e al tiro per i danni lo stesso modificatore di caratteristica che userebbe per un attacco in mischia effettuato con quell'arma."
+            ]
+          },
+          {
+            "id": "141",
+            "name": "A due mani",
+            "entries": [
+              "Quest'arma richiede di essere impugnata a due mani quando il personaggio la usa per attaccare."
+            ]
+          },
+          {
+            "id": "142",
+            "name": "Versatile",
+            "entries": [
+              "Un'arma versatile può essere usata a una o due mani. Insieme alla proprietà viene visualizzato un valore del danno tra parentesi: questo è il danno inflitto dall'arma se utilizzata a due mani per eseguire un attacco in mischia."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "143",
+        "name": "Proprietà di padronanza",
+        "entries": [
+          "Ogni arma è dotata di una proprietà di padronanza utilizzabile solo da un personaggio provvisto del relativo privilegio (come Padronanza d'armi). Di seguito sono descritte le proprietà.",
+          {
+            "id": "144",
+            "name": "Armi improvvisate",
+            "entries": [
+              "Se il personaggio usa un'arma di fortuna (ad esempio la gamba di un tavolo, una padella o una bottiglia), vedi la sezione \"Armi improvvisate\" nel \"Glossario delle regole\". Consultala anche qualora il personaggio impugnasse un'arma in un modo particolare, per esempio sferrando un attacco in mischia con un'arma a distanza."
+            ]
+          },
+          {
+            "id": "145",
+            "name": "Doppio fendente",
+            "entries": [
+              "Se il personaggio colpisce una creatura con un tiro per colpire in mischia usando quest'arma, può effettuarne un altro con la stessa arma contro un altro bersaglio entro 1,5 metri dal primo che sia a portata. Se il colpo va a segno, la seconda creatura subisce i danni inferti dall'arma, ma non puoi aggiungere il modificatore di caratteristica del personaggio al danno a meno che questo non sia di valore negativo. L'attacco extra può essere eseguito solo una volta per turno."
+            ]
+          },
+          {
+            "id": "146",
+            "name": "Colpo di striscio",
+            "entries": [
+              "Se il tiro per colpire con quest'arma non va a segno contro una creatura, il personaggio può infliggere una quantità di danni alla creatura pari al modificatore di caratteristica utilizzato per il tiro per colpire. Il danno è della stessa tipologia dell'arma e può essere aumentato solo incrementando il modificatore di caratteristica."
+            ]
+          },
+          {
+            "id": "147",
+            "name": "Graffio",
+            "entries": [
+              "Quando il personaggio effettua l'attacco extra della proprietà leggera, può renderlo parte dell'azione di Attacco invece che dell'azione bonus. L'attacco extra può essere eseguito solo una volta per turno."
+            ]
+          },
+          {
+            "id": "148",
+            "name": "Spinta",
+            "entries": [
+              "Se il personaggio colpisce una creatura con quest'arma, può spingerla via da sé di almeno 3 metri se è di taglia Grande o inferiore."
+            ]
+          },
+          {
+            "id": "149",
+            "name": "Fiaccare",
+            "entries": [
+              "Se il personaggio colpisce una creatura con quest'arma, la creatura avrà svantaggio al prossimo tiro per colpire prima dell'inizio del prossimo turno del personaggio."
+            ]
+          },
+          {
+            "id": "14a",
+            "name": "Lentezza",
+            "entries": [
+              "Se il personaggio colpisce una creatura con quest'arma e le infligge dei danni, può ridurne la velocità di 3 metri fino all'inizio del turno successivo del personaggio. Se la creatura viene colpita più di una volta da armi con questa proprietà, la riduzione di velocità non supera i 3 metri."
+            ]
+          },
+          {
+            "id": "14b",
+            "name": "Rovesciamento",
+            "entries": [
+              "Se il personaggio colpisce una creatura con quest'arma, può costringerla a effettuare un tiro salvezza su Costituzione ({@dc 8} più il modificatore di caratteristica utilizzato per il tiro per colpire e il bonus di competenza del personaggio). Se lo fallisce, cade a terra prona."
+            ]
+          },
+          {
+            "id": "14c",
+            "name": "Vessazione",
+            "entries": [
+              "Se il personaggio colpisce una creatura con quest'arma e le infligge dei danni, avrà vantaggio al prossimo tiro per colpire eseguito contro la creatura prima del termine del proprio turno successivo."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "14d": {
+    "name": "Armature",
+    "entries": [
+      "Nella lista delle armature sono elencate le informazioni come il costo e il peso dell'armatura, oltre ai seguenti dettagli:",
+      {
+        "items": [
+          {
+            "name": "Categoria.",
+            "entry": "Ogni tipo di armatura rientra in una categoria: leggera, media o pesante. La categoria determina quanto tempo occorre per indossare o togliere l'armatura (come illustrato nella tabella)."
+          },
+          {
+            "name": "Classe Armatura (CA).",
+            "entry": "La colonna Classe Armatura della tabella mostra qual è la tua CA di base quando il personaggio indossa un determinato tipo di armatura. Ad esempio, se indossa un'armatura di cuoio, la sua CA è 11 più il modificatore di Destrezza, mentre la CA è 16 se indossa una cotta di maglia."
+          },
+          {
+            "name": "Forza.",
+            "entry": "Se la tabella indica un punteggio di Forza nella colonna \"Forza\" relativa a un certo tipo di armatura, quell'armatura riduce la velocità del portatore di 3 metri, a meno che il portatore non possieda un punteggio di Forza pari o superiore a quello elencato."
+          },
+          {
+            "name": "Furtività.",
+            "entry": "Se la tabella riporta la voce Svantaggio nella colonna Furtività, chi la indossa subisce svantaggio alle prove di Destrezza (Furtività)."
+          }
+        ]
+      },
+      {
+        "id": "14e",
+        "name": "Competenza nelle armature",
+        "entries": [
+          "Chiunque può indossare un'armatura o impugnare uno scudo, ma solo chi ne possiede la competenza può farlo in maniera efficiente, come spiegato sotto. La classe di un personaggio e altri privilegi determinano la sua competenza nelle armature. Un mostro ha competenza in qualunque armatura menzionata nella sua scheda delle statistiche.",
+          {
+            "id": "14f",
+            "name": "Leggera, media o pesante",
+            "entries": [
+              "Se il personaggio indossa un'armatura leggera, media o pesante senza avere la competenza per farlo, subisce svantaggio a tutte le prove con d20 relative a Forza o Destrezza, e non può lanciare incantesimi."
+            ]
+          },
+          {
+            "id": "150",
+            "name": "Scudo",
+            "entries": [
+              "Il personaggio ottiene il beneficio alla Classe Armatura di uno scudo solo se possiede competenza negli scudi."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "151",
+        "name": "Una alla volta",
+        "entries": [
+          "Una creatura può indossare solo un'armatura alla volta e impugnare un solo scudo alla volta."
+        ]
+      }
+    ]
+  },
+  "152": {
+    "name": "Strumenti",
+    "entries": [
+      "Uno strumento aiuta il personaggio a effettuare prove di caratteristica specifiche, creare oggetti particolari o fare entrambe le cose. Nella descrizione di un oggetto sono indicati costo e peso, così come le seguenti voci:",
+      {
+        "items": [
+          {
+            "name": "Caratteristica.",
+            "entry": "Questa voce indica la caratteristica da utilizzare quando si esegue una relativa prova con l'oggetto."
+          },
+          {
+            "name": "Utilizzo.",
+            "entry": "Questa voce indica cosa si può fare con l'oggetto attraverso l'azione di Utilizzo. Puoi selezionare una delle due opzioni ogni volta che il personaggio esegue tale azione. In questa voce è menzionata anche la CD dell'azione."
+          },
+          {
+            "name": "Creazioni.",
+            "entry": "Questa voce indica cosa è possibile realizzare con lo strumento. Per le regole sulla creazione, vedi \"Creare oggetti non magici\", \"Realizzare pozioni di guarigione\" e \"Trascrivere pergamene magiche\" più avanti in \"Equipaggiamento\"."
+          },
+          {
+            "name": "Varianti.",
+            "entry": "Questa voce indica le eventuali varianti possibili dello strumento. Ciascuna di esse richiede una competenza a parte."
+          }
+        ]
+      },
+      {
+        "id": "153",
+        "name": "Competenza negli strumenti",
+        "entries": [
+          "Se il personaggio ha competenza in uno strumento, puoi aggiungere il suo bonus di competenza a qualsiasi prova di caratteristica che effettua utilizzandolo. Se è dotato di competenza nell'abilità utilizzata per quella prova, effettuerà la prova con vantaggio.",
+          "Il personaggio potrebbe ottenere competenza in uno strumento attraverso i privilegi. I mostri hanno competenza con qualsiasi strumento indicato nella loro scheda delle statistiche."
+        ]
+      }
+    ]
+  },
+  "155": {
+    "name": "Ottenere incantesimi",
+    "entries": [
+      "Prima che un personaggio possa lanciare un incantesimo, deve averlo preparato e ben chiaro in mente, oppure deve avere accesso all'incantesimo in questione custodito in un oggetto magico, come una {@item Spell Scroll|XPHB|pergamena magica}. I privilegi del personaggio determinano il tipo di incantesimi a cui ha accesso (se presenti), se ha alcuni incantesimi sempre preparati e se può modificare la lista di incantesimi che ha preparato.",
+      {
+        "id": "156",
+        "name": "Preparare gli incantesimi",
+        "entries": [
+          "Se il personaggio possiede una lista di incantesimi di 1º livello o superiore da preparare, il suo privilegio Incantesimi specifica quando può modificare la lista e il numero di incantesimi che può cambiare, come riepilogato nella tabella Preparazione degli incantesimi per classe.",
+          {
+            "caption": "Preparazione degli incantesimi per classe",
+            "colLabels": [
+              "Classe",
+              "Modifica quando...",
+              "Numero di incantesimi"
+            ],
+            "rows": [
+              [
+                "Bardo",
+                "Acquisisce un livello",
+                "Uno"
+              ],
+              [
+                "Chierico",
+                "Completa un riposo lungo",
+                "Qualsiasi"
+              ],
+              [
+                "Druido",
+                "Completa un riposo lungo",
+                "Qualsiasi"
+              ],
+              [
+                "Mago",
+                "Completa un riposo lungo",
+                "Qualsiasi"
+              ],
+              [
+                "Paladino",
+                "Completa un riposo lungo",
+                "Uno"
+              ],
+              [
+                "Ranger",
+                "Completa un riposo lungo",
+                "Uno"
+              ],
+              [
+                "Stregone",
+                "Acquisisce un livello",
+                "Uno"
+              ],
+              [
+                "Warlock",
+                "Acquisisce un livello",
+                "Uno"
+              ]
+            ]
+          },
+          "Quasi tutti i mostri in grado di lanciare incantesimi non modificano la loro lista di incantesimi preparati, ma il GM ha la libertà di ritoccare le liste."
+        ]
+      },
+      {
+        "id": "157",
+        "name": "Incantesimi sempre preparati",
+        "entries": [
+          "Certi privilegi possono fornire al personaggio un incantesimo sempre preparato. Se il personaggio ha anche una lista di incantesimi preparati che può modificare, il suo incantesimo sempre preparato non viene conteggiato nel numero di incantesimi sulla lista."
+        ]
+      }
+    ]
+  },
+  "158": {
+    "name": "Lanciare gli incantesimi",
+    "entries": [
+      "La descrizione di ogni incantesimo contiene una serie di voci con i dettagli necessari al lancio. Le sezioni che seguono spiegano ciascuna delle voci elencate dopo il nome dell'incantesimo.",
+      {
+        "id": "159",
+        "name": "Lanciare incantesimi in armatura",
+        "entries": [
+          "Un incantatore deve essere competente nell'armatura che indossa per poter lanciare un incantesimo mentre la indossa. In caso contrario, sarà troppo ostacolato dalla sua armatura per poter lanciare incantesimi."
+        ]
+      },
+      {
+        "id": "15a",
+        "name": "Livello dell'incantesimo",
+        "entries": [
+          "Ogni incantesimo ha un livello compreso tra 0 e 9, indicato nella relativa descrizione. Il livello di un incantesimo è un indicatore della sua potenza. I trucchetti, semplici incantesimi che possono essere lanciati quasi automaticamente, sono di livello 0. Le regole per ogni classe da incantatore indicano quando i membri di tali classi ottengono accesso a incantesimi di determinati livelli.",
+          {
+            "id": "15b",
+            "name": "Slot incantesimo",
+            "entries": [
+              "Lanciare incantesimi è faticoso, quindi un incantatore può lanciare solo un numero limitato di incantesimi di livello pari o superiore al 1º prima di riposare. Gli slot incantesimo sono il modo in cui viene rappresentato il potenziale magico di un incantatore. Ogni classe da incantatore fornisce ai suoi membri un numero limitato di slot incantesimo di determinati livelli di incantesimo. Ad esempio, un mago di 3º livello ha quattro slot incantesimo di 1º livello e due slot incantesimo di 2º livello.",
+              "Quando un personaggio lancia un incantesimo, consuma uno slot incantesimo di livello pari o superiore a quell'incantesimo, a tutti gli effetti \"riempiendo\" uno slot con l'incantesimo. Uno slot incantesimo è paragonabile a un solco di un dato spessore: piccolo nel caso di uno slot incantesimo di 1º livello, più grande nel caso di un incantesimo di livello superiore. Un incantesimo di 1º livello può entrare in uno slot di qualsiasi dimensione, ma un incantesimo di 2º livello entrerà solo in uno slot di 2º livello o superiore. Quindi, quando un mago di 3º livello lancia {@spell Magic Missile|XPHB|dardo incantato} (incantesimo di 1º livello), spende uno dei suoi quattro slot incantesimo di 1º livello e gliene rimangono tre.",
+              "Completare un riposo lungo ripristina tutti gli slot incantesimo spesi."
+            ]
+          },
+          {
+            "id": "15c",
+            "name": "Lanciare un incantesimo senza slot",
+            "entries": [
+              "Esistono diversi modi per lanciare un incantesimo senza spendere uno slot incantesimo:",
+              {
+                "items": [
+                  {
+                    "name": "Trucchetti.",
+                    "entry": "I trucchetti vengono lanciati senza usare uno slot incantesimo."
+                  },
+                  {
+                    "name": "Rituali.",
+                    "entry": "Alcuni incantesimi hanno il descrittore rituale alla voce Tempo di lancio. Un tale incantesimo può essere lanciato seguendo le normali regole di lancio degli incantesimi, oppure può essere lanciato come rituale. La versione rituale di un incantesimo richiede 10 minuti in più rispetto alla norma per essere lanciata, ma non consuma uno slot incantesimo. Per lanciare un incantesimo come rituale, un incantatore deve averlo preparato."
+                  },
+                  {
+                    "name": "Capacità speciali.",
+                    "entry": "Alcuni personaggi e mostri hanno capacità speciali che consentono loro di lanciare incantesimi specifici senza uno slot incantesimo. Di norma, questo lancio subisce restrizioni di altra natura, come la possibilità di lanciare l'incantesimo per un numero limitato di volte al giorno."
+                  },
+                  {
+                    "name": "Oggetti magici.",
+                    "entry": "Le {@item Spell Scroll|XPHB|pergamene magiche} e alcuni altri oggetti magici contengono incantesimi che possono essere lanciati senza uno slot incantesimo. La descrizione di questi oggetti specifica quante volte essi possono lanciare un incantesimo."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "15d",
+            "name": "Utilizzo di uno slot incantesimo di livello superiore",
+            "entries": [
+              "Quando un incantatore lancia un incantesimo usando uno slot di livello superiore rispetto a quello dell'incantesimo, l'incantesimo assume il livello superiore per quel lancio. Ad esempio, se un mago lancia {@spell Magic Missile|XPHB|dardo incantato} usando uno slot incantesimo di 2º livello, quel {@spell Magic Missile|XPHB|dardo incantato} è di 2º livello. In altre parole, l'incantesimo si espande per occupare lo slot in cui viene inserito.",
+              "Alcuni incantesimi, quali {@spell Magic Missile|XPHB|dardo incantato} e {@spell Cure Wounds|XPHB|cura ferite}, hanno effetti più potenti quando vengono lanciati a un livello superiore, come indicato nella loro descrizione."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "15e",
+        "name": "Scuola di magia",
+        "entries": [
+          "Ogni incantesimo appartiene a una scuola di magia. Le scuole sono elencate nella tabella Scuole di magia. Le scuole di magia contribuiscono a descrivere gli incantesimi ma non prevedono regole proprie, malgrado altre regole possano farvi riferimento.",
+          {
+            "caption": "Scuole di magia",
+            "colLabels": [
+              "Scuola",
+              "Effetti tipici"
+            ],
+            "rows": [
+              [
+                "Abiurazione",
+                "Previene o inverte gli effetti dannosi"
+              ],
+              [
+                "Ammaliamento",
+                "Influenza la mente altrui"
+              ],
+              [
+                "Divinazione",
+                "Rivela informazioni"
+              ],
+              [
+                "Evocazione",
+                "Trasporta creature od oggetti"
+              ],
+              [
+                "Illusione",
+                "Inganna la mente o i sensi"
+              ],
+              [
+                "Invocazione",
+                "Canalizza l'energia per creare effetti spesso distruttivi"
+              ],
+              [
+                "Necromanzia",
+                "Manipola la vita e la morte"
+              ],
+              [
+                "Trasmutazione",
+                "Trasforma creature od oggetti"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "15f",
+        "name": "Liste di incantesimi per classe",
+        "entries": [
+          "Se un incantesimo è nella lista di incantesimi di una classe, il nome della classe compare tra parentesi dopo l'indicazione della scuola di magia dell'incantesimo. Alcuni privilegi consentono a un personaggio di aggiungere un incantesimo alla sua lista di incantesimi anche se il personaggio non appartiene a una classe indicata tra parentesi."
+        ]
+      },
+      {
+        "id": "160",
+        "name": "Tempo di lancio",
+        "entries": [
+          "La maggior parte degli incantesimi richiede una singola azione di Magia. Tuttavia, alcuni incantesimi richiedono un'azione bonus, una reazione, 1 minuto o un periodo di tempo più lungo, come specificato alla voce Tempo di lancio.",
+          {
+            "id": "161",
+            "name": "Un incantesimo e uno slot incantesimo per turno",
+            "entries": [
+              "In un turno, si può spendere un solo slot per lanciare un incantesimo. Questa regola implica che non si può, ad esempio, lanciare un incantesimo con uno slot incantesimo usando l'azione di Magia e un altro usando un'azione bonus nello stesso turno."
+            ]
+          },
+          {
+            "id": "162",
+            "name": "Inneschi, reazione e azione bonus",
+            "entries": [
+              "Un incantesimo con il tempo di lancio di una reazione viene lanciato in risposta a un innesco indicato alla voce Tempo di lancio dell'incantesimo. Alcuni incantesimi che hanno un tempo di lancio di un'azione bonus vengono lanciati anche in risposta a un innesco definito nell'incantesimo."
+            ]
+          },
+          {
+            "id": "163",
+            "name": "Tempi di lancio superiori",
+            "entries": [
+              "Per lanciare certi incantesimi, inclusi gli incantesimi lanciati come rituale, è necessario più tempo: minuti o addirittura ore. Mentre il personaggio lancia un incantesimo che ha un tempo di lancio di 1 minuto o più, deve effettuare un'azione di Magia in ogni turno e, allo stesso tempo, deve mantenere la concentrazione (vedi \"Glossario delle regole\"). Se la sua concentrazione viene interrotta, l'incantesimo fallisce, ma il personaggio non consuma uno slot incantesimo. Per lanciare nuovamente l'incantesimo, deve ricominciare da capo."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "164",
+        "name": "Gittata",
+        "entries": [
+          "La gittata di un incantesimo indica quanto lontano dall'incantatore può avere origine il suo effetto e la descrizione dell'incantesimo specifica quale parte dell'effetto viene limitata dalla gittata.",
+          "La gittata, di solito, prende una tra le seguenti forme:",
+          {
+            "items": [
+              {
+                "name": "Distanza.",
+                "entry": "La gittata è espressa in metri."
+              },
+              {
+                "name": "Contatto.",
+                "entry": "L'effetto dell'incantesimo ha origine su qualcosa che l'incantatore deve toccare entro la sua portata, come definito dall'incantesimo stesso."
+              },
+              {
+                "name": "Incantatore.",
+                "entry": "L'incantesimo viene lanciato sull'incantatore o si irradia dall'incantatore stesso, come indicato nella descrizione dell'incantesimo."
+              }
+            ]
+          },
+          "Se un incantesimo ha effetti mobili, questi non sono limitati dalla gittata, a meno che la descrizione non specifichi altrimenti."
+        ]
+      },
+      {
+        "id": "165",
+        "name": "Componenti",
+        "entries": [
+          "Le componenti di un incantesimo sono i requisiti fisici che un incantatore deve soddisfare al fine di lanciare l'incantesimo. La descrizione di ogni incantesimo indica se richiede componenti verbali (V), somatiche (S) o materiali (M). Se l'incantatore non può fornire una o più componenti di un incantesimo, questo non può essere lanciato.",
+          {
+            "id": "166",
+            "name": "Verbale (V)",
+            "entries": [
+              "Una componente verbale è la cantilena di parole esoteriche che, alle orecchie dei profani, non hanno senso. La cantilena deve essere pronunciata con voce normale. Le parole vere e proprie non sono la fonte del potere dell'incantesimo: è invece quella particolare combinazione di suoni, tonalità e riverbero ad attivare il flusso della magia. Pertanto, una creatura imbavagliata o sita in un'area di silenzio magico non può lanciare un incantesimo con una componente verbale."
+            ]
+          },
+          {
+            "id": "167",
+            "name": "Somatica (S)",
+            "entries": [
+              "Una componente somatica richiede di gesticolare energicamente o compiere elaborate sequenze di movimenti. L'incantatore deve usare almeno una delle mani per eseguire questi movimenti."
+            ]
+          },
+          {
+            "id": "168",
+            "name": "Materiale (M)",
+            "entries": [
+              "Una componente materiale è un materiale particolare utilizzato nel lancio di un incantesimo, come indicato tra parentesi alla voce Componenti. Questi materiali non vengono consumati dall'incantesimo, a meno che la descrizione dell'incantesimo non indichi diversamente. L'incantatore deve avere una mano libera per accedervi, ma può essere la stessa mano usata per eseguire componenti somatiche, se presenti.",
+              "Se un incantesimo non consuma materiali e non specifica un costo per essi, l'incantatore può usare una borsa per componenti (vedi capitolo \"Equipaggiamento\") invece che fornire i materiali specificati dall'incantesimo. Oppure, in sostituzione, può usare un focus da incantatore se ha un privilegio che lo consente. Per utilizzare una borsa per componenti è necessario avere una mano libera per prendere le componenti al suo interno, mentre per utilizzare un focus da incantatore è necessario tenerlo in mano, a meno che la sua descrizione non specifichi altrimenti (vedi capitolo \"Equipaggiamento\" per le descrizioni)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "169",
+        "name": "Durata",
+        "entries": [
+          "La durata di un incantesimo è il periodo di tempo in cui l'incantesimo persiste dopo essere stato lanciato. La durata, di norma, assume una tra le seguenti forme:",
+          {
+            "items": [
+              {
+                "name": "Concentrazione.",
+                "entry": "Una durata che richiede concentrazione segue le regole di concentrazione (vedi \"Glossario delle regole\")."
+              },
+              {
+                "name": "Istantanea.",
+                "entry": "Una durata istantanea indica che l'incantesimo appare solo per un momento e poi scompare."
+              },
+              {
+                "name": "Intervallo di tempo.",
+                "entry": "Una durata che fornisce un intervallo di tempo specifica la durata dell'incantesimo in round, minuti, ore o altre unità di tempo simili. Ad esempio, una voce Durata potrebbe indicare \"1 minuto\", il che significa che l'incantesimo termina una volta trascorso 1 minuto. Se un incantesimo con un intervallo di tempo è in corso, il personaggio può interromperlo (nessuna azione richiesta) se non è incapacitato."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "16a",
+        "name": "Effetti",
+        "entries": [
+          "Gli effetti di un incantesimo sono indicati dopo la voce Durata. Le informazioni indicano cosa fa esattamente l'incantesimo, che ignora le normali leggi della fisica. Qualsiasi risultato al di là di questi effetti è a discrezione del GM. Qualunque siano gli effetti di un incantesimo, solitamente sono legati ai bersagli, ai tiri salvezza, ai tiri per colpire o a tutti e tre. Questi tre elementi sono descritti di seguito.",
+          {
+            "id": "16b",
+            "name": "Bersagli",
+            "entries": [
+              "Un tipico incantesimo prevede che l'incantatore scelga uno o più bersagli che saranno influenzati dalla sua magia. La descrizione di un incantesimo indica se esso ha come bersaglio creature, oggetti o qualcos'altro.",
+              {
+                "items": [
+                  {
+                    "name": "Percorso libero fino al bersaglio.",
+                    "entry": "Per bersagliare qualcosa con un incantesimo, l'incantatore deve avere un percorso libero fino al bersaglio, che quindi non deve trovarsi dietro copertura totale."
+                  },
+                  {
+                    "name": "Bersagliare se stessi.",
+                    "entry": "Se un incantesimo bersaglia una creatura a scelta dell'incantatore, questi può scegliere se stesso, a meno che la creatura non debba essere ostile o non sia specificato che deve trattarsi di una creatura diversa."
+                  },
+                  {
+                    "name": "Aree di effetto.",
+                    "entry": "Alcuni incantesimi, come {@spell Thunderwave|XPHB|onda tonante}, coprono un'area chiamata area di effetto, definita nel \"Glossario delle regole\". L'area determina quali sono i bersagli colpiti dall'incantesimo. Nella sua descrizione è indicato se l'incantesimo ha un'area di effetto che, in genere, può avere una di queste forme: cono, cubo, cilindro, emanazione, linea o sfera."
+                  },
+                  {
+                    "name": "Accorgersi di essere un bersaglio.",
+                    "entry": "A meno che un incantesimo non abbia un effetto percettibile, una creatura potrebbe persino non accorgersi di essere stata bersagliata da esso. Effetti come i fulmini sono evidenti, ma un effetto più subdolo, come un tentativo di leggere i pensieri di una creatura, passa inosservato a meno che la descrizione dell'incantesimo non specifichi altrimenti."
+                  },
+                  {
+                    "name": "Bersagli non validi.",
+                    "entry": [
+                      "Se il personaggio lancia un incantesimo su qualcuno o qualcosa che non può subirne gli effetti, non accadrà nulla a quel bersaglio; tuttavia, se il personaggio ha usato uno slot incantesimo per lanciare l'incantesimo, lo slot viene consumato.",
+                      "Di norma, un incantesimo non ha effetto su un bersaglio che supera un tiro salvezza. Per i bersagli non validi, sembrerà che il bersaglio abbia superato il tiro salvezza anche se, in realtà, non l'ha effettuato (non dando quindi alcun indizio sul fatto che la creatura sia un bersaglio non valido). Altrimenti, il personaggio capirebbe che l'incantesimo non ha avuto effetto sul bersaglio."
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "16c",
+            "name": "Tiri salvezza",
+            "entries": [
+              "Molti incantesimi specificano che un bersaglio effettua un tiro salvezza per evitare tutti gli effetti dell'incantesimo o parte di essi. L'incantesimo specifica la caratteristica che il bersaglio usa per il tiro salvezza e cosa succede in caso di successo o fallimento. Ecco come calcolare la CD degli incantesimi:",
+              {
+                "items": [
+                  {
+                    "name": "CD del tiro salvezza sull'incantesimo",
+                    "entry": "= 8 + il modificatore di caratteristica da incantatore dell'incantatore + il bonus di competenza"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "16d",
+            "name": "Tiri per colpire",
+            "entries": [
+              "Alcuni incantesimi richiedono che l'incantatore effettui un tiro per colpire per determinare se l'effetto dell'incantesimo colpirà il bersaglio desiderato. Ecco come calcolare il modificatore di attacco degli incantesimi:",
+              {
+                "items": [
+                  {
+                    "name": "Modificatore di attacco dell'incantesimo",
+                    "entry": "= il modificatore di caratteristica da incantatore dell'incantatore + il bonus di competenza"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "16e",
+            "name": "Combinare gli effetti degli incantesimi",
+            "entries": [
+              "Gli effetti di diversi incantesimi si sommano fintantoché le rispettive durate si sovrappongono. Di contro, però, gli effetti dello stesso incantesimo lanciato più volte non si combinano: viene infatti applicato solo il loro effetto più potente, come ad esempio il bonus più alto, mentre le durate degli incantesimi si sovrappongono. Si applica l'effetto più recente se gli incantesimi sono ugualmente potenti e le loro durate si sovrappongono. Ad esempio, se due chierici lanciano {@spell Bless|XPHB|benedizione} sullo stesso bersaglio, quel bersaglio ottiene il beneficio dell'incantesimo solo una volta, senza ricevere due dadi bonus. Ma se le durate degli incantesimi si sovrappongono, l'effetto continua fino a che non termina la durata del secondo incantesimo {@spell Bless|XPHB|benedizione}.",
+              {
+                "id": "16f",
+                "name": "Identificare un incantesimo in corso",
+                "entries": [
+                  "L'incantatore può cercare di identificare un incantesimo non istantaneo la cui durata è in corso in base ai suoi effetti osservabili. Per identificarlo, deve effettuare l'azione di Studio e superare una prova di Intelligenza (Arcano) con {@dc 15}."
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 }

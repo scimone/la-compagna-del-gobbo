@@ -180,7 +180,8 @@ before the first real `Character` exists** — after that, re-running `import_ru
 
 ### 3.3 Static tables from the chapter that exist nowhere in `db/`
 
-`db/handbook.json` holds only chapter 1 ("Playing the Game"). [verified] None of the following
+`db/handbook.json` holds chapter 1 ("Playing the Game") plus the SRD's Character Origins, Feats,
+Equipment and Spells rules text - not "Creating a Character". [verified] None of the following
 is in any `db/` file; each becomes a code constant in a new module `apps/builder/tables.py`
 (tested pure-Python; **not** rules-table rows, because `import_rules_data` wipes the `rules`
 tables and there is no source JSON to reload them from):

@@ -177,7 +177,8 @@ kept on `db/handbook.json` copied verbatim from `db_old/`).
 | `Feature` | Defined | `db/classes.json`, `db/species.json`, `db/feats.json` | 695 rows (271 class, 261 subclass, 41 species, 122 feat). Class/subclass feature resolution now walks `refClassFeature`/`refSubclassFeature` pointers recursively (a class/subclass's own feature-list field doesn't always enumerate every feature - some are only reachable via a pointer inside a sibling feature's `entries`, e.g. Cleric's Divine Order choice or a subclass's granting-level wrapper) rather than reading one flat list - see `docs/data_migration_2025.md` §3.6. A pointer target marked with a `header` field (5etools' own "this is a sub-entry, not standalone" marker) is inlined into whichever feature points at it instead of becoming its own row - see [Known data-import issues](#known-data-import-issues) Issue 6. `consumes_resource_name` is new, same as `OptionalFeature`'s |
 | `Effect` | Partly defined | derived from `Feature.entries` | 2094 rows (independently cross-checked against the pre-migration verified-correct count) |
 | `ChoiceDefinition` | Partly defined | `db/species.json`, `db/backgrounds.json`, `db/classes.json`, `db/feats.json` | 85 rows (up from 27) - the source's own `{"choose": {"from": [...], "count"|"amount"|"weighted": ...}}` idiom replaced the old regex-over-free-text approach and extends to far more of the data (species racial choices, feat ability/skill/save choices, not just the two cases the old format could reliably pattern-match) |
-| `HandbookSection` | Defined | `db/handbook.json` (`data`) | 12 rows (15 in the source; "Playing the Game" root, "Rules Glossary" and "Player or DM?" are left out - see the i18n section): the new `db/` drop ships no replacement for this file at all, so it's copied verbatim from `db_old/handbook.json` rather than re-sourced - a deliberate exception, same as `Spell.classes`/`subclasses`. Otherwise unchanged: the source has exactly one chapter, so rather than model chapters as their own grouping, its root block and each of its direct named children ("Rules Glossary", "Player or DM?", "Dice", ...) are flattened into one row each - see the model docstring. `entries` holds each one's own content (arbitrarily nested headings/lists/tables/insets), rendered the same way as every other `entries`-shaped field. **First translated model** - `name`/`entries` also have `_en`/`_it` columns, the Italian side loaded from `db/it/handbook.json` (see [Internationalization](#internationalization-i18n)). Surfaced two edge cases in `entries_render.py` itself - see [Known data-import issues](#known-data-import-issues), Issue 3 |
+| `HandbookChapter` | Defined | `db/handbook.json` (`data`, level-1 items) | 5 rows - "Playing the Game", then the SRD chapters "Character Origins", "Feats", "Equipment" and "Spells" (`db/handbook.json` gained four level-1 items from `handbook_extended.md`, the SRD 5.2.1 rules text of those chapters). Holds just the chapter's name (`name`/`name_en`/`name_it`, Italian from the SRD's own chapter titles) - the Handbook menu shows it as a toggle heading over its sections. A chapter's own unnamed leading text (the "Playing the Game" intro narrative, no Italian source) is not imported |
+| `HandbookSection` | Defined | `db/handbook.json` (`data`) | 22 rows: each chapter's direct named children (12 for "Playing the Game" - 15 in the source, "Rules Glossary" and "Player or DM?" are left out, see the i18n section; then Character Backgrounds / Species / Classes, Feat Descriptions, Coins / Weapons / Armor / Tools, Gaining Spells / Casting Spells), each pointing at its `chapter`. The "Playing the Game" part of the file is copied verbatim from `db_old/handbook.json` (the new `db/` drop ships no replacement) - a deliberate exception, same as `Spell.classes`/`subclasses`; the SRD chapters were added later, converted from the PDF-extracted text (page numbers of those sections are the XPHB pages inferred from the other `db/` files, e.g. the weapon-property and mastery pages, so a couple are best estimates). `entries` holds each one's own content (arbitrarily nested headings/lists/tables/insets), rendered the same way as every other `entries`-shaped field. **First translated model** - `name`/`entries` also have `_en`/`_it` columns, the Italian side loaded from `db/it/handbook.json` (see [Internationalization](#internationalization-i18n)); `self_translated_fields` marks the part hand-translated for this project ("Character Classes", which the SRD lacks). Surfaced two edge cases in `entries_render.py` itself - see [Known data-import issues](#known-data-import-issues), Issue 3 |
 
 `Species.lore`/`Background.lore`/`Class.lore` are populated from `db/fluff-species.json`/
 `fluff-backgrounds.json`/`fluff-classes.json` (added after the initial 2025 migration - all 10/16/
@@ -510,6 +511,7 @@ assets) and `otherVersions` (cross-references to non-XPHB printings — we only 
 | `Language` | A language (e.g. Common, Elvish) |
 | `Spell` | A spell definition |
 | `OptionalFeature` | An optional class feature a player can pick (Eldritch Invocation, Maneuver, Metamagic) |
+| `HandbookChapter` | A chapter of the player's handbook ("Playing the Game", "Spells", ...) - the heading its sections are grouped under |
 | `HandbookSection` | A named topic of the player's handbook (rules text, not catalog data) |
 
 **API** (`apps/rules/api/rules/`, tag `Rules`, mounted at `/api/rules`) — one file per endpoint,
@@ -765,14 +767,16 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     six "past and present" questions above it as a writing guide.
   `GET /characters/<id>/` is a bare read-only summary of a finished character (the full character
   sheet is a later task). Trinkets are not in the wizard yet (see the plan's TODO).
-- `GET /handbook/` (`handbook_overview`) lists every `rules.HandbookSection` (a `list_page` like
-  World's catalogs; it is the root of the Handbook menu, so it has no back button) - 12 rows (15 minus the 3 with no Italian text, see
-[Internationalization](#internationalization-i18n)), since the single source chapter is flattened
-  one level into one row per named topic rather than modeled as its own grouping (see
-  `HandbookSection`'s docstring for why). Each links to `GET /handbook/<id>/`
-  (`handbook_section_detail`), which renders exactly like a `Rule`/`Feat`/`Spell` detail page -
-  one open "Description" section, no per-page collapsing needed now that each page covers one
-  topic instead of the whole chapter.
+- `GET /handbook/` (`handbook_overview`) is the root of the Handbook menu (no back button): the
+  Glossary button on top, then one toggle heading per `rules.HandbookChapter` ("Playing the Game",
+  "Character Origins", "Feats", "Equipment", "Spells") over the buttons of its `HandbookSection`s -
+  22 in all (see [Internationalization](#internationalization-i18n) for what is left out). The
+  headings are open by default; folding one is remembered for the browser session
+  (`sessionStorage`, in `list.html`), so coming back from a section keeps the layout. Each button
+  links to `GET /handbook/<id>/` (`handbook_section_detail`), which renders exactly like a
+  `Rule`/`Feat`/`Spell` detail page - one open "Description" section, with the section's named
+  blocks as toggle headings. A section or block hand-translated for this project shows the
+  "Traduzione" badge (Italian only), on the button, the page title and the block heading.
 - `GET /world/` (`world`) — five full-height nav buttons, one per browsable `rules` catalog:
   **Backgrounds**, **Classes**, **Species**, **Feats**, **Spells**. (Class Features and
   Subraces were dropped again after being tried - the former duplicated what's already on each
@@ -890,6 +894,9 @@ that mirrors the English row's tree (same nesting and list positions, block `id`
 alignment check, language-neutral keys inherited); `null` or a trailing omission means "no Italian
 text for this part". The format is spelled out in `apps/rules/handbook_source.py`, which also does
 the merge and raises with the exact path when the file drifts from the English source.
+The file also names the chapters (`{"007": {"name": "Come si gioca"}, ...}`, keyed by chapter id) and
+flags what was hand-translated: a row lists `"_self": ["name", "entries"]`, a single block inside
+`entries` carries `"self_translated": true` - the site badges those "Traduzione" (Italian only).
 `{@tag ...}` markup is mirrored from the English text with the *English* lookup key kept and the
 Italian wording in the display slot - `{@skill Perception|XPHB|Percezione}`,
 `{@area Combattimento|06b|x}` - so the reference linker (which matches English catalog names)
@@ -897,14 +904,25 @@ still resolves them.
 
 **The handbook shows the same content in both languages.** It's translated from the Italian SRD
 5.2.1 (`IT_SRD_CC_v5.2.1.md`) plus `missing_text.md`, which covers everything the SRD chapter
-has; what neither has - the chapter intro, "Rules Glossary", "Player or DM?", the three worked
-examples and two small boxes - is listed in `OMITTED_ROW_IDS` / `OMITTED_BLOCK_IDS` in
-`handbook_source.py` and dropped from the *English* handbook as well, at import time
-(`db/handbook.json` is never edited), rather than Italian pages showing English text. To bring a
-part back: translate it in `db/it/handbook.json`, take its id off the omit list, and re-run
-`import_translations`. A test guarantees no English text survives in the Italian handbook. (The
-model-level English fallback still exists for any future translated field that's only partly
-filled in.) `{@dc 10}` renders "DC 10" / "CD 10" via `gettext`.
+has; what neither has - the "Playing the Game" intro, "Rules Glossary", "Player or DM?", the three
+worked examples and two small boxes - is listed in `OMITTED_ROW_IDS` / `OMITTED_BLOCK_IDS` in
+`handbook_source.py` and dropped from the *English* handbook as well, at import time, rather than
+Italian pages showing English text. To bring a part back: translate it in `db/it/handbook.json`,
+take its id off the omit list, and re-run `import_translations`. A test guarantees no English text
+survives in the Italian handbook. (The model-level English fallback still exists for any future
+translated field that's only partly filled in.) `{@dc 10}` renders "DC 10" / "CD 10" via
+`gettext`.
+
+The SRD chapters added after "Playing the Game" (Character Origins, Feats, Equipment and Spells
+rules text, from `handbook_extended.md`) are Italian-complete: the text comes straight from the
+Italian SRD, except **"Character Classes"** (the class-chapter intro - not in the SRD), which was
+translated for this project and is flagged `self_translated`. Both texts were PDF extractions with
+the same layout defects (page footers cutting sentences, sidebars and the spell "Range" entry
+printed in the wrong place, Italian weapon properties alphabetised); they were repaired while
+converting, so the two languages line up block for block. Two consequences to know: the Italian
+weapon properties/masteries follow the English order (the overlay is positional), and the
+"Selling Equipment" sidebar sits at the end of "Coins". The weapon and armor *tables* are not part
+of it - they live in the `Equipment` catalog.
 
 **The other catalogs** (`Spell`, `Feat`, `Rule`, `Species`, `Background`, `Class`, `Subclass`,
 `Feature`, `Equipment`, ... - all registered in `apps/rules/translation.py`) work the same way but,

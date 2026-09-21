@@ -1,13 +1,20 @@
-"""Reads the handbook's source JSON into one dict per `HandbookSection` row - the English
-`db/handbook.json`, and its Italian counterpart `db/it/handbook.json` merged onto it.
+"""Reads the handbook's source JSON into `HandbookChapter`/`HandbookSection`-shaped dicts - the
+English `db/handbook.json`, and its Italian counterpart `db/it/handbook.json` merged onto it.
 
 Shared by `import_rules_data` (wipe + reload, English and Italian together) and
 `import_translations` (Italian only, into rows that already exist), so both see the same rows.
+
+**`db/handbook.json` shape.** `data` holds one level-1 item per chapter ("Playing the Game",
+"Character Origins", "Feats", "Equipment", "Spells"), each a `section` whose named children are
+the handbook's sections ("Dice", "Character Backgrounds", "Weapons", ...) - one
+`HandbookSection` row each, with everything nested deeper staying inside its `entries`.
 
 **`db/it/handbook.json` format.** A sparse overlay, keyed by `HandbookSection` id, mirroring the
 English row's shape:
 
     {"095": {"name": "Danni e guarigione", "entries": [ ...translated tree... ]}}
+
+A chapter is keyed by its own id and only has a name: `{"007": {"name": "Come si gioca"}}`.
 
 Inside `entries` the tree has the same shape as the English one - same nesting, same list
 positions, and each named block repeats its `id` so a misalignment fails loudly instead of
@@ -15,15 +22,23 @@ silently attaching text to the wrong block. Only translatable keys need appearin
 `entries`, `entry`, `items`, `rows`, `caption`, `colLabels`, ...); everything language-neutral
 (`type`, `page`, `style`, `columns`, images, ...) is inherited from the English node. A `null`
 anywhere means "not translated yet - keep the English here", and trailing `null`s may be left out,
-so a partly translated section (this file only has the pages that were available so far) still
-renders as one complete tree, English filling the gaps.
+so a partly translated section still renders as one complete tree, English filling the gaps.
 
-**Untranslated parts are dropped from both languages.** Whatever the Italian source doesn't have
-(it comes from the SRD, which lacks e.g. the chapter intro and the worked examples) is listed in
-`OMITTED_ROW_IDS` / `OMITTED_BLOCK_IDS` below and removed from the English handbook too, so the two
-languages always show the same content instead of Italian pages falling back to English text. The
-omit lists are the only place to touch: translate a part, take its id off the list, and it
-reappears in both languages. `db/handbook.json` itself is never edited.
+**Hand-translated text.** The Italian file is taken from the official Italian SRD wherever that
+has the text; whatever it doesn't cover was translated for this project and is flagged so the
+site can badge it "Traduzione": a section lists the fields it translated itself in
+`"_self": ["name", "entries"]` (stored as `HandbookSection.self_translated_fields`), and a single
+block inside `entries` is marked with `"self_translated": true` (the one key an Italian block may
+have that the English one lacks - it is kept in the stored tree and read by the renderer).
+
+**Untranslated parts are dropped from both languages.** Whatever the Italian text doesn't have
+(e.g. the chapter intro and the worked examples of "Playing the Game", which the SRD lacks) is
+listed in `OMITTED_ROW_IDS` / `OMITTED_BLOCK_IDS` below and removed from the English handbook too,
+so the two languages always show the same content instead of Italian pages falling back to
+English text. The omit lists are the only place to touch: translate a part, take its id off the
+list, and it reappears in both languages. The chapters' own leading text is never imported (see
+`HandbookChapter`). `db/handbook.json` is edited only to add content (the SRD chapters after
+"Playing the Game"), never to remove it.
 
 `{@tag ...}` markup in the Italian text mirrors the English tag, keeping the English lookup key and
 putting the Italian wording in the display slot - `{@skill Perception|XPHB|Percezione}`,
@@ -38,10 +53,11 @@ from django.conf import settings
 
 DB_DIR = Path(settings.BASE_DIR) / "db"
 ITALIAN_HANDBOOK = DB_DIR / "it" / "handbook.json"
+#: Marks a block of the Italian tree as hand-translated - see the module docstring.
+SELF_TRANSLATED_KEY = "self_translated"
 
-#: Whole `HandbookSection` rows with no Italian text: the chapter root (its intro and example
-#: dialogue), "Rules Glossary" and "Player or DM?".
-OMITTED_ROW_IDS = {"007", "008", "009"}
+#: Whole `HandbookSection` rows with no Italian text: "Rules Glossary" and "Player or DM?".
+OMITTED_ROW_IDS = {"008", "009"}
 #: Named blocks inside otherwise translated rows, with no Italian text: the three worked examples
 #: (Exploration, Social Interaction, Combat and Damage - each with all its sidebars) and the
 #: "Skills with Different Abilities" / "What Would Your Character Do?" boxes.
@@ -62,39 +78,38 @@ def _load_json(path: Path):
         return json.load(f)
 
 
-def english_rows() -> list[dict]:
-    """The English handbook, flattened one level into `HandbookSection`-shaped dicts
-    (`id`, `name`, `page`, `entries`) - see `HandbookSection`'s docstring for why: the chapter's
-    own root block becomes one row (its `entries` trimmed to just its own leading content, not the
-    nested sections' content too, which becomes their own rows), and each of its direct named
-    children ("Rules Glossary", "Player or DM?", "Dice", ...) becomes one more.
-
-    db/handbook.json uses a top-level "data" key (one item per chapter), unlike every other
+def _chapters_source() -> list[dict]:
+    """db/handbook.json uses a top-level "data" key (one item per chapter), unlike every other
     db/*.json file's type-named key - a different dump format from a different source pass (see
-    docs/data_migration_2025.md - this file is copied verbatim from db_old/, unchanged).
+    docs/data_migration_2025.md - the "Playing the Game" chapter is copied verbatim from
+    db_old/, unchanged; the SRD chapters after it were appended later).
     """
-    chapter = _load_json(DB_DIR / "handbook.json")["data"][0]
-    leading_entries = [e for e in chapter["entries"] if not (isinstance(e, dict) and e.get("name"))]
-    named_children = [e for e in chapter["entries"] if isinstance(e, dict) and e.get("name")]
+    return _load_json(DB_DIR / "handbook.json")["data"]
 
-    rows = [
-        {
-            "id": chapter["id"],
-            "name": chapter["name"],
-            "page": chapter["page"],
-            "entries": leading_entries,
-        }
-    ]
-    rows.extend(
+
+def english_chapters() -> list[dict]:
+    """The handbook's chapters, `{"id", "name"}` each, in document order."""
+    return [{"id": chapter["id"], "name": chapter["name"]} for chapter in _chapters_source()]
+
+
+def english_rows() -> list[dict]:
+    """The English handbook's sections as `HandbookSection`-shaped dicts (`id`, `chapter`, `name`,
+    `page`, `entries`): each chapter's direct named children ("Rules Glossary", "Player or DM?",
+    "Dice", ... / "Character Backgrounds", "Weapons", ...), with the chapter's own unnamed leading
+    content left out - see `HandbookChapter` for why.
+    """
+    return [
         {
             "id": child["id"],
+            "chapter": chapter["id"],
             "name": child["name"],
             "page": child["page"],
             "entries": child["entries"],
         }
-        for child in named_children
-    )
-    return rows
+        for chapter in _chapters_source()
+        for child in chapter["entries"]
+        if isinstance(child, dict) and child.get("name")
+    ]
 
 
 def overlay_translation(english, italian, path: str = ""):
@@ -115,6 +130,9 @@ def overlay_translation(english, italian, path: str = ""):
         merged = dict(english)
         for key, value in italian.items():
             if key == "id":
+                continue
+            if key == SELF_TRANSLATED_KEY:
+                merged[key] = bool(value)
                 continue
             if key not in english:
                 raise TranslationDataError(f"{path}: {key!r} doesn't exist on the English block")
@@ -141,23 +159,39 @@ def overlay_translation(english, italian, path: str = ""):
     raise TranslationDataError(f"{path}: can't translate a {type(english).__name__} value")
 
 
+def _italian_source() -> dict:
+    return _load_json(ITALIAN_HANDBOOK) if ITALIAN_HANDBOOK.exists() else {}
+
+
+def italian_chapter_names() -> dict[str, str]:
+    """`{chapter id: Italian name}` for every chapter the Italian file names."""
+    chapter_ids = {chapter["id"] for chapter in english_chapters()}
+    return {
+        key: value["name"]
+        for key, value in _italian_source().items()
+        if key in chapter_ids and value.get("name")
+    }
+
+
 def italian_rows(english: list[dict]) -> dict[str, dict]:
-    """`{row id: {"name": str | None, "entries": list | None}}` for every row the Italian file
-    covers - `entries` already merged onto the English tree, `None` where the file has no text for
-    that field (so the column stays NULL and the site falls back to English wholesale). Empty when
-    `db/it/handbook.json` doesn't exist.
+    """`{row id: {"name", "entries", "self_translated_fields"}}` for every section the Italian
+    file covers - `entries` already merged onto the English tree, `None` where the file has no text
+    for that field (so the column stays NULL and the site falls back to English wholesale). Empty
+    when `db/it/handbook.json` doesn't exist. Chapter entries of the file are ignored here, see
+    `italian_chapter_names()`.
     """
-    if not ITALIAN_HANDBOOK.exists():
-        return {}
-    source = _load_json(ITALIAN_HANDBOOK)
+    source = _italian_source()
+    chapter_ids = {chapter["id"] for chapter in english_chapters()}
 
     by_id = {row["id"]: row for row in english}
-    unknown = sorted(set(source) - set(by_id))
+    unknown = sorted(set(source) - set(by_id) - chapter_ids)
     if unknown:
         raise TranslationDataError(f"db/it/handbook.json: unknown handbook section ids {unknown}")
 
     result = {}
     for row_id, translated in source.items():
+        if row_id in chapter_ids:
+            continue
         english_row = by_id[row_id]
         entries = translated.get("entries")
         result[row_id] = {
@@ -167,6 +201,7 @@ def italian_rows(english: list[dict]) -> dict[str, dict]:
                 if entries is not None
                 else None
             ),
+            "self_translated_fields": list(translated.get("_self") or []),
         }
     return result
 
@@ -198,13 +233,19 @@ def _fix_english_text(node, applied: set):
     return node
 
 
-def load_handbook() -> tuple[list[dict], dict[str, dict]]:
-    """`(english rows, {row id: italian fields})` exactly as they should be stored: the Italian
-    overlay merged onto the *full* English tree first (so its list positions line up with the
-    source), then the omitted rows/blocks pruned from both languages.
+def load_handbook() -> tuple[list[dict], list[dict], dict[str, dict]]:
+    """`(chapters, English rows, {row id: Italian fields})` exactly as they should be stored: the
+    Italian overlay merged onto the *full* English tree first (so its list positions line up with
+    the source), then the omitted rows/blocks pruned from both languages. A chapter is
+    `{"id", "name", "name_it"}` (`name_it` `None` without Italian text).
     """
     english = english_rows()
     italian = italian_rows(english)
+    chapter_names = italian_chapter_names()
+
+    chapters = [
+        {**chapter, "name_it": chapter_names.get(chapter["id"])} for chapter in english_chapters()
+    ]
 
     rows = []
     applied: set = set()
@@ -223,7 +264,7 @@ def load_handbook() -> tuple[list[dict], dict[str, dict]]:
             continue
         entries = fields["entries"]
         kept[row_id] = {
-            "name": fields["name"],
+            **fields,
             "entries": _prune(entries) if entries is not None else None,
         }
-    return rows, kept
+    return chapters, rows, kept

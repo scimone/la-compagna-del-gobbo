@@ -25,6 +25,7 @@ from apps.rules.models import (
     EquipmentType,
     Feat,
     Feature,
+    HandbookChapter,
     HandbookSection,
     Language,
     Mastery,
@@ -668,6 +669,7 @@ class Command(BaseCommand):
             OptionalFeature,
             Spell,
             HandbookSection,
+            HandbookChapter,
         ]:
             model.objects.all().delete()
 
@@ -1381,28 +1383,35 @@ class Command(BaseCommand):
         self.stdout.write(f"  ChoiceDefinition: {ChoiceDefinition.objects.count()}")
 
     def _import_handbook(self):
-        # The source's shape (one chapter, flattened one level into rows), the Italian overlay
-        # merge and the parts dropped for having no Italian text all live in
+        # The source's shape (chapters, each flattened into one row per named section), the
+        # Italian overlay merge and the parts dropped for having no Italian text all live in
         # `apps.rules.handbook_source`, shared with `import_translations`.
         try:
-            english, italian = load_handbook()
+            chapters, english, italian = load_handbook()
         except TranslationDataError as exc:
             raise CommandError(str(exc)) from exc
 
+        HandbookChapter.objects.bulk_create(
+            HandbookChapter(id=chapter["id"], name_en=chapter["name"], name_it=chapter["name_it"])
+            for chapter in chapters
+        )
         rows = [
             HandbookSection(
                 id=row["id"],
+                chapter_id=row["chapter"],
                 name_en=row["name"],
                 entries_en=row["entries"],
                 name_it=italian.get(row["id"], {}).get("name"),
                 entries_it=italian.get(row["id"], {}).get("entries"),
+                self_translated_fields=italian.get(row["id"], {}).get("self_translated_fields", []),
                 page=row["page"],
             )
             for row in english
         ]
         HandbookSection.objects.bulk_create(rows)
         self.stdout.write(
-            f"  HandbookSection: {HandbookSection.objects.count()} "
+            f"  HandbookChapter: {HandbookChapter.objects.count()}; "
+            f"HandbookSection: {HandbookSection.objects.count()} "
             f"({len(italian)} with Italian text)"
         )
 

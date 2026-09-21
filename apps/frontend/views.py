@@ -455,6 +455,7 @@ def _list_page(
     searchable=False,
     alphabet=False,
     bookmark_kind: str | None = None,
+    groups=(),
 ):
     """A list page is a root of its navigation menu (a World tab, the Handbook's contents), so it
     has no back button unless `back_url_name` names a parent (only the Glossary, which sits
@@ -463,7 +464,9 @@ def _list_page(
     adds the right-hand A-Z jump strip (each item then needs a `letter`, see `_index_letter()`).
     `bookmark_kind` (a `BOOKMARK_MODELS` key) gives every item with a `pk` a bookmark button, and
     moves the bookmarked ones out of `items` into `bookmarked_items`, shown as a highlighted block
-    at the top of the list (only while signed in - see `account()`).
+    at the top of the list (only while signed in - see `account()`). `groups` (the Handbook's
+    chapters, each `{"key", "name", "items"}`) replaces the plain list with one toggle heading per
+    group over that group's buttons.
     """
     # Letters (and their jump targets) come from every entry, bookmarked or not.
     alphabet_letters = list(dict.fromkeys(item["letter"] for item in items)) if alphabet else []
@@ -486,6 +489,7 @@ def _list_page(
         "items": items,
         "featured_items": featured_items,
         "bookmarked_items": bookmarked_items,
+        "groups": groups,
         "bookmark_kind": bookmark_kind,
         "world_tabs": world_tabs,
         "searchable": searchable,
@@ -703,11 +707,12 @@ def bookmark_toggle(request):
 
 
 def handbook_overview(request):
-    # The Glossary sits first, ahead of every chapter section - the source book's own
-    # "Rules Glossary" section is dropped entirely (see `HandbookSection`'s docstring/the
-    # README's i18n section: it has no Italian SRD source to translate it from), but its actual
-    # purpose - a named-rule/keyword index - is better served here anyway, by linking straight
-    # into the already-translated `Rule` catalog instead of untranslatable static prose.
+    # The Glossary sits first, ahead of every chapter - the source book's own "Rules Glossary"
+    # section is dropped entirely (see `HandbookSection`'s docstring/the README's i18n section: it
+    # has no Italian SRD source to translate it from), but its actual purpose - a named-rule/keyword
+    # index - is better served here anyway, by linking straight into the already-translated `Rule`
+    # catalog instead of untranslatable static prose. Below it, each `HandbookChapter` is a toggle
+    # heading over the buttons of its sections.
     rule_count = rule_service.list_rules().count()
     items = [
         {
@@ -716,16 +721,25 @@ def handbook_overview(request):
             "url": reverse("handbook-rules-glossary"),
             "featured": True,
         },
-    ] + [
-        {
-            "name": section.name,
-            # Drawn as a page icon with the number on top (`_list_item.html`), not as a detail line.
-            "page": section.page,
-            "url": reverse("handbook-section-detail", args=[section.pk]),
-        }
-        for section in handbook_service.list_sections()
     ]
-    return _list_page(request, "Handbook", items)
+    groups = [
+        {
+            "key": chapter.pk,
+            "name": chapter.name,
+            "items": [
+                {
+                    "name": _badged_heading(section.name, _self_translated(section, "name")),
+                    # Drawn as a page icon with the number on top (`_list_item.html`), not as a
+                    # detail line.
+                    "page": section.page,
+                    "url": reverse("handbook-section-detail", args=[section.pk]),
+                }
+                for section in chapter.sections.all()
+            ],
+        }
+        for chapter in handbook_service.list_chapters()
+    ]
+    return _list_page(request, "Handbook", items, groups=groups)
 
 
 def handbook_rules_glossary(request):
@@ -760,7 +774,8 @@ def handbook_section_detail(request, pk):
     section = handbook_service.get_section(pk)
     facts = [(_("Page"), section.page)]
     body = render_handbook_section(section.entries)
-    return _detail_page(request, section.name, "handbook-overview", facts, body=body)
+    title = _badged_heading(section.name, _self_translated(section, "name"))
+    return _detail_page(request, title, "handbook-overview", facts, body=body)
 
 
 # --- Backgrounds --------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 """Static tables and formulas from the SRD's "Creazione del personaggio" chapter.
 
-None of this exists in `db/` (the handbook there only covers chapter 1), and it is not modelled
+None of this exists in `db/` (the handbook there covers chapter 1 and the SRD's Character
+Origins/Feats/Equipment/Spells rules text, not "Creating a Character"), and it is not modelled
 as `rules` rows either: `import_rules_data` wipes every `rules` table and there is no source JSON
 to reload them from. So they are plain constants here - pure Python, no database, no Django
 models - which makes them trivially testable. `docs/character_creation_plan.md` section 3.3 lists
