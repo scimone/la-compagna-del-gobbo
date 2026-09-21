@@ -1,0 +1,85 @@
+{% load i18n %}
+{# The pouch and the toolbar stay put at the top while the gear scrolls under them. The gear is one #}
+{# list like the Features and Spellbook ones: tap a row (chevron on the right) to unfold it. Packs  #}
+{# are not listed - their contents are, each saying which pack it came from.                        #}
+<div class="cs-sticky">
+  <div class="cs-purse" aria-label="{% translate 'Coins' %}">
+    {% for c in inventory.coins %}
+      <label class="coin coin-{{ c.key }}" title="{{ c.label }}">
+        <span class="disc" aria-hidden="true">{{ c.abbr }}</span>
+        {% if can_edit %}
+          <input type="number" min="0" inputmode="numeric" value="{{ c.amount }}" data-act="coin" data-coin="{{ c.key }}" data-bind="coins.{{ c.key }}"
+                 aria-label="{{ c.label }}">
+        {% else %}
+          <b>{{ c.amount }}</b><span class="sr">{{ c.label }}</span>
+        {% endif %}
+      </label>
+    {% endfor %}
+  </div>
+  <div class="cs-invbar">
+    <span class="cs-weight">{% if inventory.total_weight %}{% translate "Carrying" %} <b>{{ inventory.total_weight }}</b>{% endif %}</span>
+    {% if can_edit %}<button type="button" class="cs-add-btn" data-add-open="cs-add">+ {% translate "Add item" %}</button>{% endif %}
+  </div>
+</div>
+
+<div class="cs-scroll">
+{% if inventory.warning_texts %}
+  <ul class="cs-warnings">{% for w in inventory.warning_texts %}<li>{{ w }}</li>{% endfor %}</ul>
+{% endif %}
+
+{% for sec in inventory.sections %}
+  <section class="cs-group">
+    <h3>{{ sec.label }} <span class="dim">{{ sec.cards|length }}</span></h3>
+    <ul class="cs-list">
+      {% for c in sec.cards %}
+        <li data-key="{{ c.key }}"{% if c.equipped %} class="worn"{% endif %}>
+          <div class="cs-line">
+            <button type="button" class="cs-row{% if c.wearable %} has-equip{% endif %}"{% if c.describe %} data-describe="{{ c.describe }}"{% else %} data-toggle{% endif %} aria-expanded="false">
+              <span class="item-text">
+                <span class="item-name">{{ c.name }}{% if c.quantity > 1 %} <span class="qty">×{{ c.quantity }}</span>{% endif %}</span>
+                {% if c.detail %}<span class="item-detail">{{ c.detail }}</span>{% endif %}
+              </span>
+              <span class="chev" aria-hidden="true"></span>
+            </button>
+            {% if c.wearable %}
+              <button type="button" class="equip{% if c.equipped %} on{% endif %}" data-act="equip" data-item="{{ c.id }}"
+                      data-value="{% if c.equipped %}0{% else %}1{% endif %}" aria-pressed="{% if c.equipped %}true{% else %}false{% endif %}"
+                      {% if not can_edit %} disabled{% endif %}>{% if c.equipped %}{% translate "Equipped" %}{% else %}{% translate "Equip" %}{% endif %}</button>
+            {% endif %}
+          </div>
+          <div class="desc" hidden>
+            {# The catalog description is loaded here the first time the row is opened. #}
+            <div class="desc-body">{% if c.description %}<p>{{ c.description|linebreaksbr }}</p>{% endif %}</div>
+            {% if can_edit %}
+              <div class="item-tools">
+                <div class="qty-edit">
+                  <span>{% translate "Quantity" %}</span>
+                  <button type="button" class="step" data-act="item_qty" data-kind="{{ c.kind }}" data-item="{{ c.id }}" data-delta="-1" aria-label="{% translate 'One less' %}">−</button>
+                  <input type="number" min="1" inputmode="numeric" value="{{ c.quantity }}" data-act="item_qty" data-kind="{{ c.kind }}" data-item="{{ c.id }}"
+                         aria-label="{% translate 'Quantity' %}">
+                  <button type="button" class="step" data-act="item_qty" data-kind="{{ c.kind }}" data-item="{{ c.id }}" data-delta="1" aria-label="{% translate 'One more' %}">+</button>
+                </div>
+                <div class="item-buttons">
+                  {% if c.sell_one %}
+                    <button type="button" class="btn-sell" data-act="item_sell" data-kind="{{ c.kind }}" data-item="{{ c.id }}" data-quantity="1">{% blocktranslate with price=c.sell_one %}Sell one for {{ price }}{% endblocktranslate %}</button>
+                  {% endif %}
+                  {% if c.sell_all %}
+                    <button type="button" class="btn-sell" data-act="item_sell" data-kind="{{ c.kind }}" data-item="{{ c.id }}" data-quantity="{{ c.quantity }}">{% blocktranslate with price=c.sell_all %}Sell all for {{ price }}{% endblocktranslate %}</button>
+                  {% endif %}
+                  <button type="button" class="btn-remove" data-act="item_remove" data-kind="{{ c.kind }}" data-item="{{ c.id }}"
+                          data-confirm="{% translate 'Remove this item?' %}">{% translate "Remove" %}</button>
+                </div>
+                {% if c.sell_one %}
+                  <p class="hint">{% if c.full_value %}{% translate "Trade goods and valuables sell for their full value." %}{% else %}{% translate "Equipment sells for half its cost." %}{% endif %}</p>
+                {% endif %}
+              </div>
+            {% endif %}
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+{% empty %}
+  <p class="cs-empty">{% translate "Nothing yet." %}</p>
+{% endfor %}
+</div>

@@ -1,0 +1,834 @@
+"""A finished character's page and the endpoint its script posts to, driven over HTTP."""
+
+import re
+from io import BytesIO
+
+import pytest
+from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.utils.html import escape
+from PIL import Image
+
+from apps.builder.services import creation
+from apps.builder.tests.conftest import build_character
+from apps.characters.models import Character, CharacterInventoryItem
+
+pytestmark = pytest.mark.usefixtures("imported_rules")
+
+
+@pytest.fixture
+def alice(db):
+    return get_user_model().objects.create_user("alice")
+
+
+@pytest.fixture
+def bob(db):
+    return get_user_model().objects.create_user("bob")
+
+
+@pytest.fixture
+def signed_in(client, alice):
+    client.force_login(alice)
+    return client
+
+
+def finished(owner, class_id, background="acolyte", species="human", name="Test"):
+    character = build_character(owner, class_id, background, species, name)
+    creation.finalize(character)
+    character.refresh_from_db()
+    return character
+
+
+def act(client, character, **data):
+    return client.post(f"/characters/{character.pk}/act/", data)
+
+
+def panel(html: str, name: str) -> str:
+    """The markup of one tab's panel (everything up to the next panel or the end of the page)."""
+    chunks = html.split('role="tabpanel" data-panel="')[1:]
+    for chunk in chunks:
+        if chunk.startswith(f'{name}"'):
+            return chunk
+    raise AssertionError(f"no {name} panel")
+
+
+# --- the page ----------------------------------------------------------------------------------
+
+
+def test_the_header_has_the_portrait_the_name_and_level_and_who_the_character_is(signed_in, alice):
+    cleric = finished(alice, "cleric", name="Bruno")
+
+    html = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
+
+    top = html[html.index('<div class="cs-top">') : html.index('role="tabpanel"')]
+    id_row, tabbar = top.split('<div class="cs-tabbar">')
+    assert 'class="cs-name"' in id_row and 'value="Bruno"' in id_row  # editable name...
+    assert '<span class="cs-level">Level 1</span>' in id_row  # ...with the level next to it
+    assert id_row.index('class="cs-pic"') < id_row.index('class="cs-name"')  # picture on the left
+    # Class, species, background and size are written in the header (in the part that folds)...
+    details = id_row.split('class="cs-class cs-detail"')[1]
+    for fact in ("Cleric", "Human", "Acolyte", "Medium"):
+        assert fact in details
+    assert len(re.findall(r'class="[^"]*\bcs-detail\b', id_row)) == 2 and "cs-fold" in id_row
+    # ...and the numbers of the Stats tab are not.
+    for gone in ("Armor Class", "Hit Points", "Death Saves", "Experience"):
+        assert gone not in id_row
+    tabs = re.findall(r'<button type="button" role="tab" data-tab="(\w+)"', tabbar)
+    assert tabs == [
+        "stats",
+        "abilities",
+        "features",
+        "spellbook",
+        "inventory",
+        "proficiencies",
+        "biography",
+    ]
+
+
+def test_a_multiclass_headers_class_line_lists_every_class_with_its_level(signed_in, alice):
+    from apps.characters.models import CharacterClass
+    from apps.rules.models import Class
+
+    fighter = finished(alice, "fighter", background="soldier")
+    CharacterClass.objects.create(character=fighter, klass=Class.objects.get(pk="wizard"), level=1)
+
+    top = signed_in.get(f"/characters/{fighter.pk}/").content.decode().split('role="tabpanel"')[0]
+
+    line = re.search(r'class="cs-class cs-detail">(.*?)</span>\s*</div>', top, re.S).group(1)
+    assert "Fighter</a> 1" in line and "Wizard</a> 1" in line and " / " in line
+
+
+def test_the_stats_tab_holds_every_number_that_changes_during_play(signed_in, alice):
+    cleric = finished(alice, "cleric")
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "stats")
+
+    for card in (
+        "Experience Points",
+        "Armor Class",
+        "Initiative",
+        "Speed",
+        "Passive Perception",
+        "Hit Points",
+        "Temp HP",
+        "Heroic Inspiration",
+        "Hit Dice",
+        "Death Saves",
+    ):
+        assert card in html
+    assert 'data-act="xp"' in html and 'data-act="hp_set"' in html
+    assert html.count('data-death="successes"') == 1 and html.count('class="box ') == 6
+    assert html.count('<div class="cs-scroll">') == 1
+
+
+def test_hit_points_sit_right_above_the_hit_dice_and_death_saves_which_share_a_line(
+    signed_in, alice
+):
+    cleric = finished(alice, "cleric")
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "stats")
+
+    order = [
+        html.index(name)
+        for name in ("Armor Class", "Passive Perception", "Hit Points", "Hit Dice", "Death Saves")
+    ]
+    assert order == sorted(order)  # hit points come after the combat numbers, then the resources
+    # Two half-width cards, so they sit on one line:
+    assert re.search(r'class="cs-card half">\s*<span class="k">Hit Dice', html)
+    assert re.search(r'class="cs-card half cs-death">\s*<span class="k">Death Saves', html)
+
+
+def test_the_stats_tab_shows_progress_bars_and_one_pip_per_hit_die(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    act(signed_in, cleric, action="xp", value="150")
+    act(signed_in, cleric, action="hp_delta", delta="-3")
+    act(signed_in, cleric, action="hit_dice", die="d8", delta="1")
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "stats")
+
+    assert 'aria-valuenow="50"' in html  # 150 of the 300 XP the first level takes
+    max_hp = cleric.max_hit_points
+    assert f'data-hp-bar style="--pct: {round((max_hp - 3) / max_hp * 100)}%"' in html
+    row = html.split('data-hd="d8"')[1].split("</div>")[0]
+    assert row.count('class="pip-btn') == 1 and 'class="pip-btn on' not in row  # spent
+    assert row.count('data-delta="-1"') == 1  # tapping the empty pip recovers the die
+
+
+def test_hit_dice_pips_spend_and_recover_over_http(signed_in, alice):
+    cleric = finished(alice, "cleric")
+
+    spent = act(signed_in, cleric, action="hit_dice", die="d8", delta="1").json()
+    back = act(signed_in, cleric, action="hit_dice", die="d8", delta="-1").json()
+
+    assert spent["state"]["hit_dice"]["d8"] == {"total": 1, "spent": 1}
+    assert back["state"]["hit_dice"]["d8"] == {"total": 1, "spent": 0}
+
+
+def test_changing_the_xp_asks_for_a_redraw_so_the_progress_bar_follows(signed_in, alice):
+    cleric = finished(alice, "cleric")
+
+    assert act(signed_in, cleric, action="xp", value="10").json()["refresh"] is True
+
+
+def test_what_must_stay_in_view_is_outside_the_scrolling_part_of_its_panel(signed_in, alice):
+    cleric = finished(alice, "cleric")
+
+    html = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
+
+    assert html.count('<div class="cs-scroll">') == 7  # every panel scrolls on its own
+    for tab, fixed in (
+        ("abilities", "cs-pb"),  # the proficiency bonus is in the fixed part too...
+        ("abilities", "cs-abilities"),
+        ("spellbook", "data-casting"),
+        ("inventory", "cs-purse"),
+    ):
+        before_scroll = panel(html, tab).split('<div class="cs-scroll">')[0]
+        assert '<div class="cs-sticky">' in before_scroll and fixed in before_scroll
+    fixed = panel(html, "abilities").split('<div class="cs-scroll">')[0]
+    assert '<h3 class="cs-subhead">Skills</h3>' in fixed  # the skills heading stays in view too
+    skills = panel(html, "abilities").split('<div class="cs-scroll">')[1]
+    assert "cs-skills" in skills and "cs-abilities" not in skills and "cs-pb" not in skills
+    assert "Skills</h3>" not in skills
+
+
+def test_the_requested_tab_is_the_one_shown_first(signed_in, alice):
+    cleric = finished(alice, "cleric")
+
+    def hidden_panels(query):
+        html = signed_in.get(f"/characters/{cleric.pk}/{query}").content.decode()
+        return re.findall(r'data-panel="(\w+)" hidden', html)
+
+    assert "spellbook" not in hidden_panels("?tab=spellbook") and "stats" in hidden_panels(
+        "?tab=spellbook"
+    )
+    assert "stats" not in hidden_panels("?tab=nonsense")  # falls back to the first tab, Stats
+    assert "stats" not in hidden_panels("")
+
+
+def test_abilities_are_six_boxes_with_saves_and_the_skills_follow(signed_in, alice):
+    cleric = finished(alice, "cleric")
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "abilities")
+
+    assert html.count('class="cs-ab"') == 6
+    saves = re.findall(r'<i class="pip( proficient)?"></i>\s*Save', html)
+    assert len(saves) == 6 and saves.count(" proficient") == 2  # a cleric saves on Wis and Cha
+    assert len(re.findall(r'<li>\s*<i class="pip ', html)) == 18
+    assert '<span class="dim">DEX</span>' in html and '<span class="dim">dex</span>' not in html
+
+
+def test_features_lists_species_traits_class_features_and_feats(signed_in, alice):
+    cleric = finished(alice, "cleric")
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "features")
+
+    for heading in ("Species Traits", "Class Features", "Feats"):
+        assert heading in html
+    assert "Divine Order" in html and "Magic Initiate" in html
+    assert 'data-describe="/characters/describe/feature/' in html
+
+
+def test_spellbook_shows_the_casting_numbers_the_slots_and_the_spells(signed_in, alice):
+    cleric = finished(alice, "cleric")
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
+
+    sticky = html.split('<div class="cs-sticky">')[1].split('<div class="cs-scroll">')[0]
+    assert "Wisdom" in sticky and "data-casting-dc" in sticky
+    assert "My Spells" not in html
+    assert 'name="q"' in sticky and "filter-popover" in sticky  # metrics, search and filters stick
+    assert 'data-slot="1"' in html and html.count('class="pip-btn on"') == 2  # two 1st-level slots
+    assert 'name="q"' in html and "filter-popover" in html  # the World's search and filters
+    assert html.count("data-search=") == cleric.spells.count()
+
+
+def test_the_spellbooks_fixed_part_has_an_add_spell_button_even_without_spells(
+    signed_in, client, alice, bob
+):
+    fighter = finished(alice, "fighter", background="soldier")
+    assert not fighter.spells.exists()
+
+    html = panel(signed_in.get(f"/characters/{fighter.pk}/").content.decode(), "spellbook")
+
+    sticky = html.split('<div class="cs-sticky">')[1].split('<div class="cs-scroll">')[0]
+    assert 'data-add-open="cs-add-spell"' in sticky and "Add spell" in sticky
+    assert "Spells <b>0</b>" in sticky
+    client.force_login(bob)
+    theirs = panel(client.get(f"/characters/{fighter.pk}/").content.decode(), "spellbook")
+    assert "data-add-open" not in theirs
+
+
+def test_a_warlock_has_pact_slots(signed_in, alice):
+    warlock = finished(alice, "warlock", background="charlatan")
+
+    html = panel(signed_in.get(f"/characters/{warlock.pk}/").content.decode(), "spellbook")
+
+    assert 'data-slot="pact"' in html and "Pact Magic" in html
+
+
+def test_inventory_has_a_fixed_pouch_and_one_list_style_with_details_on_one_line(signed_in, alice):
+    cleric = finished(alice, "cleric")
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "inventory")
+
+    sticky = html.split('<div class="cs-sticky">')[1].split('<div class="cs-scroll">')[0]
+    for coin in ("copper", "silver", "gold", "platinum"):
+        assert f'data-coin="{coin}"' in sticky
+    assert "data-add-open" in sticky and "Carrying" in sticky  # the toolbar is fixed too
+    for section in ("Weapons", "Armor", "Misc Items"):
+        assert f"<h3>{section}" in html
+    assert "data-view" not in html and "Grid" not in html  # the list is the only layout
+    mace = re.search(
+        r'<div class="cs-line">\s*<button[^>]*data-describe="[^"]*mace/"[^>]*>(.*?)</button>',
+        html,
+        re.S,
+    )
+    detail = re.search(r'class="item-detail">([^<]*)<', mace.group(1)).group(1)
+    assert (
+        detail.startswith("1d6") and "lb." in detail and "gp" in detail
+    )  # one line: damage, weight, cost
+    assert 'class="chev"' in mace.group(1)  # the arrow is on the row, like Features and Spells
+
+
+def test_a_pack_is_not_listed_but_its_contents_are_and_say_where_they_came_from(signed_in, alice):
+    cleric = finished(alice, "cleric")  # starts with a Priest's Pack
+    pack = cleric.inventory_items.filter(contents__isnull=False).first()
+    inside = pack.contents.select_related("equipment").first()
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "inventory")
+
+    names = re.findall(r'<span class="item-name">([^<]*?)(?: <span|</span>)', html)
+    assert escape(pack.equipment.name) not in names and escape(inside.equipment.name) in names
+    row = html.split(f'data-key="catalog-{inside.pk}"')[1].split("</li>")[0]
+    assert f"from {escape(pack.equipment.name)}" in row
+
+
+def test_items_can_be_edited_sold_and_removed_from_the_row_that_lists_them(signed_in, alice):
+    cleric = finished(alice, "cleric")
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "inventory")
+
+    tools = html.split('data-key="catalog-')[1].split("</li>")[0]
+    for control in ('data-act="item_qty"', 'data-act="item_sell"', 'data-act="item_remove"'):
+        assert control in tools
+    assert "Equipment sells for half its cost." in html
+
+
+def test_a_monks_light_martial_weapons_are_listed_but_not_the_other_martial_ones(signed_in, alice):
+    monk = finished(alice, "monk", background="guide", species="elf")
+
+    html = panel(signed_in.get(f"/characters/{monk.pk}/").content.decode(), "proficiencies")
+
+    assert "Simple weapons" in html and "Martial weapons with the Light property" in html
+    weapons = html.split("<h3>Weapon Proficiencies</h3>")[1].split("<h3>Weapon Masteries</h3>")[0]
+    assert "Shortsword" in weapons and "Scimitar" in weapons and "Dagger" in weapons
+    assert "Greatsword" not in weapons and "Longsword" not in weapons
+
+
+def test_a_fighters_weapon_masteries_and_tools_open_their_descriptions(signed_in, alice):
+    fighter = finished(alice, "fighter", background="soldier")
+
+    html = panel(signed_in.get(f"/characters/{fighter.pk}/").content.decode(), "proficiencies")
+
+    masteries = html.split("<h3>Weapon Masteries</h3>")[1].split("<h3>")[0]
+    assert len(re.findall(r'data-describe="/characters/describe/mastery/', masteries)) == 3
+    assert "Gaming Sets" in html and "Languages" in html
+    for url in re.findall(r'data-describe="(/characters/describe/[^"]+)"', masteries):
+        assert signed_in.get(url).status_code == 200
+
+
+def test_tools_are_one_section_called_tool_proficiencies_and_there_is_no_other_tools(
+    signed_in, alice
+):
+    from apps.characters.models import CharacterProficiency
+
+    rogue = finished(alice, "rogue")
+    CharacterProficiency.objects.get_or_create(
+        character=rogue, category="tool", name="thieves-tools"
+    )
+
+    html = panel(signed_in.get(f"/characters/{rogue.pk}/").content.decode(), "proficiencies")
+
+    assert "<h3>Tool Proficiencies</h3>" in html
+    assert "Artisan&#x27;s Tools" not in html and "Other Tools" not in html
+    tools = html.split("<h3>Tool Proficiencies</h3>")[1].split("<h3>")[0]
+    assert "Thieves&#x27; Tools" in tools  # what used to be under "Other Tools" is not lost
+
+
+def test_describe_serves_features_and_masteries(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    feature = cleric.features.first().feature
+
+    assert signed_in.get(f"/characters/describe/feature/{feature.pk}/").status_code == 200
+    assert signed_in.get("/characters/describe/mastery/sap/").status_code == 200
+    assert signed_in.get("/characters/describe/feature/0/").status_code == 404
+
+
+def test_biography_has_the_alignment_and_only_the_backstory_to_edit(client, alice, bob):
+    cleric = finished(alice, "cleric")
+    cleric.backstory = "Raised by monks."
+    cleric.save()
+
+    client.force_login(bob)
+    others = panel(client.get(f"/characters/{cleric.pk}/").content.decode(), "biography")
+    assert "Raised by monks." in others and "<textarea" not in others
+    assert "Alignment" in others
+    for moved in ("Acolyte", "Cleric", "Human", "Medium", "Background", "Species", "Size"):
+        assert moved not in others  # they are written in the header now
+
+    client.force_login(alice)
+    mine = panel(client.get(f"/characters/{cleric.pk}/").content.decode(), "biography")
+    assert '<textarea class="cs-text"' in mine and "Raised by monks." in mine
+    assert mine.count("<textarea") == 1 and "Appearance" not in mine and "Notes" not in mine
+
+
+def test_another_account_sees_the_sheet_without_any_controls(client, alice, bob):
+    cleric = finished(alice, "cleric")
+    client.force_login(bob)
+
+    html = client.get(f"/characters/{cleric.pk}/").content.decode()
+
+    assert 'data-act="hp_delta"' not in html and 'data-act="name"' not in html
+    for control in re.findall(r'<button[^>]*data-act="(?:hit_dice|death_toggle)"[^>]*>', html):
+        assert " disabled" in control  # the pips and boxes are there to look at only
+    assert "by alice" in html and "data-portrait-file" not in html
+    assert "cs-name" in html and "Level 1" in html
+
+
+def test_the_sheet_is_in_italian_and_metric(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    signed_in.cookies["django_language"] = "it"
+
+    html = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
+
+    for word in ("Ispirazione eroica", "Dadi Vita", "Tiri salvezza contro morte", "Privilegi"):
+        assert word in html
+    for word in ("Statistiche", "Punti esperienza", "Cambia immagine"):
+        assert word in html
+    assert "Caratteristiche" in html and "ft." not in html
+
+
+def test_a_draft_is_not_a_sheet(signed_in, alice):
+    draft = creation.start_draft(alice, "Wip")
+
+    assert signed_in.get(f"/characters/{draft.pk}/").status_code == 302
+
+
+# --- the endpoint ------------------------------------------------------------------------------
+
+
+def test_only_the_owner_may_post_changes(client, alice, bob):
+    cleric = finished(alice, "cleric")
+
+    assert act(client, cleric, action="inspiration", value="1").status_code == 403  # signed out
+    client.force_login(bob)
+    assert act(client, cleric, action="inspiration", value="1").status_code == 403
+    cleric.refresh_from_db()
+    assert cleric.inspiration is False
+
+
+def test_a_draft_cannot_be_changed_through_the_sheet(signed_in, alice):
+    draft = creation.start_draft(alice, "Wip")
+
+    assert act(signed_in, draft, action="xp", value="10").status_code == 403
+
+
+def test_hit_points_death_saves_inspiration_and_xp(signed_in, alice):
+    cleric = finished(alice, "cleric")
+
+    response = act(signed_in, cleric, action="hp_delta", delta="-3")
+    assert (
+        response.status_code == 200 and response.json()["state"]["hp"] == cleric.max_hit_points - 3
+    )
+    assert act(signed_in, cleric, action="hp_set", value="1").json()["state"]["hp"] == 1
+    assert act(signed_in, cleric, action="temp_hp", value="4").json()["state"]["temp_hp"] == 4
+    state = act(signed_in, cleric, action="hp_delta", delta="-2").json()["state"]
+    assert (state["temp_hp"], state["hp"]) == (2, 1)  # temporary hit points took the damage
+    state = act(signed_in, cleric, action="death_toggle", kind="failures", index="2").json()[
+        "state"
+    ]
+    assert state["death_failures"] == 2
+    assert act(signed_in, cleric, action="inspiration", value="1").json()["state"]["inspiration"]
+    assert act(signed_in, cleric, action="xp", value="350").json()["state"]["xp"] == 350
+    cleric.refresh_from_db()
+    assert (cleric.death_save_failures, cleric.inspiration) == (2, True)
+
+
+def test_hit_dice_are_spent_and_recovered_within_the_pool(signed_in, alice):
+    fighter = finished(alice, "fighter", background="soldier")
+
+    spent = act(signed_in, fighter, action="hit_dice", die="d10", delta="1").json()["state"]
+    assert spent["hit_dice"]["d10"] == {"total": 1, "spent": 1}
+    again = act(signed_in, fighter, action="hit_dice", die="d10", delta="1").json()["state"]
+    assert again["hit_dice"]["d10"]["spent"] == 1  # only one die to spend
+    back = act(signed_in, fighter, action="hit_dice", die="d10", delta="-1").json()["state"]
+    assert back["hit_dice"]["d10"]["spent"] == 0
+    assert act(signed_in, fighter, action="hit_dice", die="d20", delta="1").status_code == 400
+
+
+def test_spell_slots_are_spent_and_recovered(signed_in, alice):
+    wizard = finished(alice, "wizard", background="sage", species="elf")
+
+    state = act(signed_in, wizard, action="slots", key="1", delta="1").json()["state"]
+    assert state["slots"]["1"] == {"max": 2, "spent": 1}
+    act(signed_in, wizard, action="slots", key="1", delta="1")
+    assert (
+        act(signed_in, wizard, action="slots", key="1", delta="1").json()["state"]["slots"]["1"][
+            "spent"
+        ]
+        == 2
+    )  # never more than the character has
+    assert (
+        act(signed_in, wizard, action="slots", key="1", delta="-1").json()["state"]["slots"]["1"][
+            "spent"
+        ]
+        == 1
+    )
+    assert (
+        act(signed_in, wizard, action="slots", key="7", delta="1").json()["state"]["slots"].get("7")
+        is None
+    )  # no 7th-level slots: nothing stored
+    html = panel(signed_in.get(f"/characters/{wizard.pk}/").content.decode(), "spellbook")
+    assert html.count('class="pip-btn on"') == 1  # the page draws the saved state
+
+
+def test_the_shield_toggle_changes_ac_and_asks_for_a_redraw(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    shield = cleric.inventory_items.get(equipment_id="shield")
+    assert shield.equipped
+
+    response = act(signed_in, cleric, action="equip", item=str(shield.pk), value="0")
+
+    assert response.json()["refresh"] is True
+    html = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
+    assert re.search(r'data-bind="ac">12<', html)  # chain shirt 13 - 1 Dex, without the shield's +2
+    act(signed_in, cleric, action="equip", item=str(shield.pk), value="1")
+    html = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
+    assert re.search(r'data-bind="ac">14<', html)
+
+
+def test_equipping_armor_that_is_not_yours_or_not_wearable_is_refused(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    other = finished(alice, "wizard", background="sage", species="elf", name="Other")
+    theirs = other.inventory_items.first()
+    rope = CharacterInventoryItem.objects.create(character=cleric, equipment_id="rope", quantity=1)
+
+    assert act(signed_in, cleric, action="equip", item=str(theirs.pk), value="1").status_code == 400
+    assert act(signed_in, cleric, action="equip", item=str(rope.pk), value="1").status_code == 400
+
+
+def test_coins_name_and_text_are_saved(signed_in, alice):
+    cleric = finished(alice, "cleric")
+
+    state = act(signed_in, cleric, action="coin", coin="platinum", value="3").json()["state"]
+    assert state["coins"]["platinum"] == 3
+    assert act(signed_in, cleric, action="name", value="Brother Bruno").json()["state"]["name"] == (
+        "Brother Bruno"
+    )
+    act(signed_in, cleric, action="text", field="backstory", value="Owes the innkeeper 5 gp.")
+    cleric.refresh_from_db()
+    assert cleric.backstory == "Owes the innkeeper 5 gp." and cleric.name == "Brother Bruno"
+    assert act(signed_in, cleric, action="name", value=" ").status_code == 400
+
+
+def test_bad_requests_are_refused_without_changing_anything(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    before = Character.objects.values().get(pk=cleric.pk)
+
+    assert act(signed_in, cleric, action="teleport").status_code == 400
+    assert act(signed_in, cleric, action="hp_delta", delta="lots").status_code == 400
+    assert act(signed_in, cleric, action="coin", coin="doubloons", value="1").status_code == 400
+    assert act(signed_in, cleric, action="text", field="owner", value="1").status_code == 400
+    assert act(signed_in, cleric, action="text", field="notes", value="x").status_code == 400
+    assert signed_in.get(f"/characters/{cleric.pk}/act/").status_code == 405
+
+    after = Character.objects.values().get(pk=cleric.pk)
+    assert after == before
+
+
+# --- items ---------------------------------------------------------------------------------------
+
+
+def test_adding_a_catalog_item_stacks_and_says_what_was_added(signed_in, alice):
+    cleric = finished(alice, "cleric")
+
+    first = act(signed_in, cleric, action="item_add", equipment="longsword").json()
+    act(signed_in, cleric, action="item_add", equipment="longsword")
+
+    assert first["refresh"] is True and first["message"] == "Added Longsword"
+    assert cleric.inventory_items.get(equipment_id="longsword", parent=None).quantity == 2
+    assert act(signed_in, cleric, action="item_add", equipment="nope").status_code == 400
+
+
+def test_a_custom_item_is_listed_in_its_section_and_sold_at_its_own_price(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    gold_before = cleric.currency.gold
+
+    response = act(
+        signed_in, cleric, action="custom_add", name="Ruby", section="misc", quantity="2",
+        weight="0.5", cost="50", valuable="1", description="Blood red.",
+    )  # fmt: skip
+
+    assert response.status_code == 200 and response.json()["message"] == "Added Ruby"
+    ruby = cleric.custom_items.get()
+    assert (ruby.quantity, ruby.weight, ruby.value, ruby.valuable) == (2, 0.5, 5000, True)
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "inventory")
+    assert "Ruby" in html and "Blood red." in html
+    assert "Trade goods and valuables sell for their full value." in html
+
+    sold = act(
+        signed_in, cleric, action="item_sell", kind="custom", item=str(ruby.pk), quantity="1"
+    )
+    assert sold.json()["message"] == "Sold for 50 gp"  # a valuable: the full 50 gp, not 25
+    cleric.currency.refresh_from_db()
+    assert cleric.currency.gold == gold_before + 50 and cleric.custom_items.get().quantity == 1
+
+
+def test_a_custom_item_needs_a_name_and_sane_numbers(signed_in, alice):
+    cleric = finished(alice, "cleric")
+
+    assert act(signed_in, cleric, action="custom_add", name=" ").status_code == 400
+    assert act(signed_in, cleric, action="custom_add", name="x", cost="cheap").status_code == 400
+    assert act(signed_in, cleric, action="custom_add", name="x", section="ship").status_code == 400
+    assert not cleric.custom_items.exists()
+
+
+def test_custom_weight_is_typed_in_kilograms_on_the_italian_site(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    signed_in.cookies["django_language"] = "it"
+
+    act(signed_in, cleric, action="custom_add", name="Sasso", weight="1,5")
+
+    assert cleric.custom_items.get().weight == 3.0  # 1.5 kg is 3 lb
+    assert "Peso (kg)" in signed_in.get(f"/characters/{cleric.pk}/items/").content.decode()
+
+
+def test_quantity_removal_and_selling_over_http(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    mace = cleric.inventory_items.get(equipment_id="mace")
+
+    args = {"kind": "catalog", "item": str(mace.pk)}
+    assert act(signed_in, cleric, action="item_qty", value="3", **args).status_code == 200
+    assert act(signed_in, cleric, action="item_qty", delta="-9", **args).status_code == 200
+    mace.refresh_from_db()
+    assert mace.quantity == 1  # never below one
+    sold = act(signed_in, cleric, action="item_sell", quantity="1", **args).json()
+    assert sold["message"] == "Sold for 2 gp 5 sp"  # half of a mace's 5 gp
+    assert not cleric.inventory_items.filter(pk=mace.pk).exists()
+    gone = act(signed_in, cleric, action="item_remove", **args)
+    assert gone.status_code == 400  # it is already gone
+    assert act(signed_in, cleric, action="item_sell", kind="boat", item="1").status_code == 400
+
+
+def test_removing_and_selling_only_touch_the_owners_own_items(signed_in, client, alice, bob):
+    cleric = finished(alice, "cleric")
+    stack = cleric.inventory_items.get(equipment_id="mace")
+    client.force_login(bob)
+
+    for action in ("item_remove", "item_sell", "item_qty", "item_add", "custom_add"):
+        response = act(client, cleric, action=action, kind="catalog", item=str(stack.pk), value="2")
+        assert response.status_code == 403
+    assert cleric.inventory_items.filter(pk=stack.pk).exists()
+
+
+def test_the_add_item_sheet_lists_the_whole_catalog_with_filters_and_a_custom_form(
+    signed_in, alice
+):
+    from apps.rules.models import Equipment
+
+    cleric = finished(alice, "cleric")
+
+    html = signed_in.get(f"/characters/{cleric.pk}/items/").content.decode()
+
+    assert html.count("data-equipment=") == Equipment.objects.count()
+    assert 'name="q"' in html and "filter-popover" in html  # the World's search + filters
+    for label in ("Category", "Properties", "Mastery"):
+        assert label in html  # a filter button each
+    assert "data-custom-form" in html and 'name="valuable"' in html
+    assert 'data-category="martial"' in html and 'data-mastery="sap"' in html
+    assert "Carrying" not in html
+
+
+def test_the_add_item_sheet_starts_with_pills_for_the_main_type_and_the_rest_waits_for_one(
+    signed_in, alice
+):
+    cleric = finished(alice, "cleric")
+
+    html = signed_in.get(f"/characters/{cleric.pk}/items/").content.decode()
+
+    pills = re.findall(r'<input\s+type="radio"\s+name="section"\s+value="(\w*)"([^>]*)>', html)
+    assert [value for value, _checked in pills] == ["", "weapons", "armor", "tools", "misc"]
+    assert ["checked" in checked for _value, checked in pills] == [True, False, False, False, False]
+    # Every other filter belongs to one pill and is hidden until it is picked...
+    filters = re.findall(r'<details class="filter-popover"([^>]*)>', html)
+    assert filters and all("data-only=" in f and "hidden" in f for f in filters)
+    # ...and only the weapons have the weapon-only ones.
+    only = {
+        label: re.findall(r'data-only="(\w+)"[^>]*>\s*<summary[^>]*>\s*' + label, html)
+        for label in ("Category", "Properties", "Mastery", "Type")
+    }
+    assert only["Category"] == only["Properties"] == only["Mastery"] == ["weapons"]
+    assert only["Type"] == ["weapons", "armor", "tools", "misc"]
+    # Every row says which pill it belongs to.
+    assert 'data-section="weapons"' in html and 'data-section="armor"' in html
+    assert 'data-section="tools"' in html and 'data-section="misc"' in html
+
+
+def test_the_types_offered_under_a_pill_are_that_pills_own(signed_in, alice):
+    cleric = finished(alice, "cleric")
+
+    html = signed_in.get(f"/characters/{cleric.pk}/items/").content.decode()
+
+    armor = html.split('data-only="armor"')[1].split("</details>")[0]
+    assert "Light Armor" in armor and "Heavy Armor" in armor and "Shield" in armor
+    assert "Melee Weapon" not in armor and "Adventuring Gear" not in armor
+    weapons = html.split('data-only="weapons"')[1].split("</details>")[0]
+    assert "Melee Weapon" in weapons and "Ranged Weapon" in weapons
+
+
+def test_the_add_spell_sheet_lists_every_spell_with_the_worlds_filters(signed_in, alice):
+    from apps.rules.models import Spell
+
+    cleric = finished(alice, "cleric")
+    known = cleric.spells.first().spell
+
+    html = signed_in.get(f"/characters/{cleric.pk}/spells/").content.decode()
+
+    assert html.count('data-act="spell_add"') == Spell.objects.count()
+    assert 'name="q"' in html and "filter-popover" in html
+    for label in ("Level", "Class", "School", "Range", "Casting Time", "Saving Throw"):
+        assert label in html  # a filter button each
+    assert 'data-level="3"' in html and 'data-school="' in html and 'data-class="' in html
+    row = html.split(f'data-spell="{known.pk}"')[1].split("</li>")[0]
+    assert " disabled" in row.split(">")[0] and "Added" in row  # one it already has
+    other = html.split('data-spell="fireball"')[1].split("</li>")[0]
+    assert " disabled" not in other.split(">")[0]
+
+
+def test_the_add_spell_sheet_is_for_the_owner_only(client, alice, bob):
+    cleric = finished(alice, "cleric")
+
+    assert client.get(f"/characters/{cleric.pk}/spells/").status_code == 403
+    client.force_login(bob)
+    assert client.get(f"/characters/{cleric.pk}/spells/").status_code == 403
+    assert 'id="cs-add-spell"' not in client.get(f"/characters/{cleric.pk}/").content.decode()
+
+
+def test_adding_and_removing_a_spell_over_http(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    before = cleric.spells.count()
+
+    added = act(signed_in, cleric, action="spell_add", spell="fireball")
+
+    assert added.status_code == 200 and added.json()["refresh"] is True
+    assert added.json()["message"] == "Added Fireball"
+    assert cleric.spells.count() == before + 1
+    assert act(signed_in, cleric, action="spell_add", spell="fireball").status_code == 400
+    assert act(signed_in, cleric, action="spell_add", spell="nope").status_code == 400
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
+    assert html.count('data-act="spell_remove"') == 1  # only the one added by hand
+    assert f"Spells <b>{before + 1}</b>" in html
+    assert act(signed_in, cleric, action="spell_remove", spell="fireball").status_code == 200
+    granted = cleric.spells.exclude(source="sheet").first()
+    assert act(signed_in, cleric, action="spell_remove", spell=granted.spell_id).status_code == 400
+    assert cleric.spells.count() == before
+
+
+def test_only_the_owner_adds_or_removes_spells(signed_in, client, alice, bob):
+    cleric = finished(alice, "cleric")
+    client.force_login(bob)
+
+    for action in ("spell_add", "spell_remove"):
+        assert act(client, cleric, action=action, spell="fireball").status_code == 403
+    assert not cleric.spells.filter(spell_id="fireball").exists()
+
+
+def test_the_add_item_sheet_is_for_the_owner_only(client, alice, bob):
+    cleric = finished(alice, "cleric")
+
+    assert client.get(f"/characters/{cleric.pk}/items/").status_code == 403
+    client.force_login(bob)
+    assert client.get(f"/characters/{cleric.pk}/items/").status_code == 403
+    page = client.get(f"/characters/{cleric.pk}/").content.decode()
+    assert "data-add-open" not in page and 'id="cs-add"' not in page
+
+
+# --- the portrait ------------------------------------------------------------------------------
+
+
+@pytest.fixture
+def media(settings, tmp_path):
+    settings.MEDIA_ROOT = tmp_path
+
+
+def upload(client, character, size=(300, 400), name="me.png", **extra):
+    out = BytesIO()
+    Image.new("RGB", size, "teal").save(out, "PNG")
+    data = {"file": SimpleUploadedFile(name, out.getvalue()), **extra}
+    return client.post(f"/characters/{character.pk}/portrait/", data)
+
+
+def test_the_owner_uploads_a_portrait_and_everyone_sees_it_in_the_header(
+    signed_in, client, media, alice, bob
+):
+    cleric = finished(alice, "cleric")
+    before = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
+    assert 'class="cs-pic"' in before and "<img" not in before.split('role="tabpanel"')[0]
+
+    response = upload(signed_in, cleric)
+
+    assert response.status_code == 200 and response.json() == {"ok": True, "refresh": True}
+    cleric.refresh_from_db()
+    top = signed_in.get(f"/characters/{cleric.pk}/").content.decode().split('role="tabpanel"')[0]
+    assert f'<img src="/characters/{cleric.pk}/portrait/?v={cleric.portrait.name}"' in top
+    assert "data-portrait-remove" in top and "data-portrait-file" in top
+
+    picture = signed_in.get(f"/characters/{cleric.pk}/portrait/")
+    assert picture.status_code == 200 and picture["Content-Type"] == "image/webp"
+    assert picture.content[:4] == b"RIFF"
+
+    client.force_login(bob)  # another account sees it, but has no way to change it
+    theirs = client.get(f"/characters/{cleric.pk}/").content.decode().split('role="tabpanel"')[0]
+    assert "<img" in theirs and "data-portrait-file" not in theirs
+    assert client.get(f"/characters/{cleric.pk}/portrait/").status_code == 200
+
+
+def test_without_a_portrait_there_is_nothing_to_serve(signed_in, alice):
+    cleric = finished(alice, "cleric")
+
+    assert signed_in.get(f"/characters/{cleric.pk}/portrait/").status_code == 404
+
+
+def test_only_the_owner_changes_the_portrait(signed_in, client, media, alice, bob):
+    cleric = finished(alice, "cleric")
+    upload(signed_in, cleric)
+    cleric.refresh_from_db()
+    kept = cleric.portrait.name
+
+    client.force_login(bob)
+    assert upload(client, cleric).status_code == 403
+    assert client.post(f"/characters/{cleric.pk}/portrait/", {"remove": "1"}).status_code == 403
+    client.logout()
+    assert upload(client, cleric).status_code == 403
+    cleric.refresh_from_db()
+    assert cleric.portrait.name == kept
+
+
+def test_a_bad_upload_says_why_and_removing_goes_back_to_the_placeholder(signed_in, media, alice):
+    cleric = finished(alice, "cleric")
+
+    not_a_picture = signed_in.post(
+        f"/characters/{cleric.pk}/portrait/",
+        {"file": SimpleUploadedFile("me.png", b"<html>")},
+    )
+    nothing = signed_in.post(f"/characters/{cleric.pk}/portrait/", {})
+    assert not_a_picture.status_code == 400 and "not a picture" in not_a_picture.json()["error"]
+    assert nothing.status_code == 400 and not cleric.portrait
+
+    upload(signed_in, cleric)
+    removed = signed_in.post(f"/characters/{cleric.pk}/portrait/", {"remove": "1"})
+    cleric.refresh_from_db()
+    assert removed.status_code == 200 and not cleric.portrait
+    assert signed_in.get(f"/characters/{cleric.pk}/portrait/").status_code == 404
+    assert signed_in.put(f"/characters/{cleric.pk}/portrait/").status_code == 405

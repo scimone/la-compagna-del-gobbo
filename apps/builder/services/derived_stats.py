@@ -43,7 +43,7 @@ class Derived:
     warnings: list[str] = field(default_factory=list)
 
 
-def _weapon_proficiency(names) -> WeaponProficiency:
+def weapon_proficiency(names) -> WeaponProficiency:
     """Rebuild the weapon proficiency from stored names: `simple`, `martial`, `martial:f,l`
     (a filtered grant), `improvised`."""
     proficiency = WeaponProficiency()
@@ -168,7 +168,7 @@ def compute(character: Character) -> Derived:
     if worn_armor and worn_armor.stealth_disadvantage:
         warnings.append("stealth_disadvantage")
 
-    weapons = _weapon_proficiency(n for c, n in held if c == "weapon")
+    weapons = weapon_proficiency(n for c, n in held if c == "weapon")
     attacks = []
     for item in items:
         eq = item.equipment

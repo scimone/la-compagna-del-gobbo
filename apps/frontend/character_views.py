@@ -1,4 +1,6 @@
-"""The Characters menu: the list, the creation wizard, and the finished character's page.
+"""The Characters menu: the list and the creation wizard.
+
+A finished character's page is `character_sheet`.
 
 Views only translate between HTTP and `apps.builder.services` - every rule (what may be chosen,
 what a choice grants, what is still missing) lives there. A wizard step is a function that handles
@@ -49,6 +51,8 @@ from apps.rules.models import (
     Class,
     Equipment,
     Feat,
+    Feature,
+    Mastery,
     OptionalFeature,
     Skill,
     Species,
@@ -549,7 +553,18 @@ def _describe_equipment(pk):
     return facts, sections
 
 
+def _describe_feature(pk):
+    return [], [render_entries(get_object_or_404(Feature, pk=pk).entries)]
+
+
+def _describe_mastery(pk):
+    mastery = get_object_or_404(Mastery, pk=pk)
+    return [], [render_entries(mastery.entries)]
+
+
 _DESCRIBERS = {
+    "feature": _describe_feature,
+    "mastery": _describe_mastery,
     "spell": _describe_spell,
     "feat": _describe_feat,
     "invocation": _describe_invocation,
@@ -875,30 +890,3 @@ _HANDLERS = {
     "story": _story_step,
     "review": _review_step,
 }
-
-
-# --- a character's page ------------------------------------------------------------------------
-
-
-def character_detail(request, pk):
-    character = get_object_or_404(Character, pk=pk)
-    if not access.can_view(request.user, character):
-        raise Http404
-    if character.status == Character.STATUS_DRAFT:
-        return redirect(_step_url(character, creation.get_state(character)["current"]))
-    response = render(
-        request,
-        "frontend/characters/detail.html",
-        {
-            "page_title": character.name,
-            "back_url": reverse("characters-overview"),
-            "character": character,
-            "can_edit": access.can_edit(request.user, character),
-            "alignment_name": next(
-                (name for code, name, _abbr in tables.ALIGNMENTS if code == character.alignment), ""
-            ),
-            **_review_context(character),
-        },
-    )
-    add_never_cache_headers(response)
-    return response

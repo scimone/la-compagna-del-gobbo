@@ -66,7 +66,7 @@ _RANGE_LABEL_ORDER = ["Self", "Touch", "Sight"]
 _RANGE_UNIT_ORDER = ["feet", "foot", "mile", "miles"]
 
 
-def _range_sort_key(label: str) -> tuple:
+def range_sort_key(label: str) -> tuple:
     amount, _, unit = label.partition(" ")
     if amount.isdigit() and unit in _RANGE_UNIT_ORDER:
         return (1, _RANGE_UNIT_ORDER.index(unit) // 2, int(amount), label)
@@ -81,7 +81,7 @@ def list_range_kinds() -> list[str]:
     `Unlimited`) rather than alphabetically.
     """
     kinds = {range_kind(spell) for spell in Spell.objects.all()}
-    return sorted(kinds - {""}, key=_range_sort_key)
+    return sorted(kinds - {""}, key=range_sort_key)
 
 
 # Every `(number, unit)` pair `Spell.casting_time` entries actually use, in the order they
@@ -119,13 +119,18 @@ def casting_time_keys(spell: Spell) -> list[str]:
     return [f"{entry.get('number')}|{entry.get('unit')}" for entry in spell.casting_time or []]
 
 
-def list_casting_times() -> list[tuple[str, str]]:
-    """`[(key, label), ...]` for every casting time actually present, for the World > Spells
-    casting time checklist filter - `key` matches what `casting_time_keys()` produces.
-    """
-    present = {key for spell in Spell.objects.all() for key in casting_time_keys(spell)}
+def casting_time_options(spells) -> list[tuple[str, str]]:
+    """`[(key, label), ...]` for every casting time `spells` actually use, in display order -
+    `key` matches what `casting_time_keys()` produces."""
+    present = {key for spell in spells for key in casting_time_keys(spell)}
     return [
         (f"{number}|{unit}", _CASTING_TIME_LABELS[(number, unit)])
         for number, unit in _CASTING_TIME_ORDER
         if f"{number}|{unit}" in present
     ]
+
+
+def list_casting_times() -> list[tuple[str, str]]:
+    """The options of the World > Spells casting time checklist filter: every casting time any
+    spell has."""
+    return casting_time_options(Spell.objects.all())

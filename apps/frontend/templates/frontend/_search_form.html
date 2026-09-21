@@ -54,7 +54,7 @@
           {# exclusive set - opening one closes whichever other was open, native behavior,  #}
           {# no JS. The panel stays open across checkbox clicks (each just re-fetches live,  #}
           {# see the script below) so several options can be picked in one visit.           #}
-          <details class="filter-popover" name="world-filter-popover">
+          <details class="filter-popover" name="world-filter-popover"{% if filter.only %} data-only="{{ filter.only }}" hidden{% endif %}>
             <summary class="filter-button{% if filter.values %} active{% endif %}">
               {{ filter.label }}
               {% if filter.values %}

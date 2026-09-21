@@ -1,0 +1,53 @@
+{% load i18n %}
+{# The "add an item" sheet (fetched into the overlay on first use): the catalog as a filterable  #}
+{# list in the World's list design - same search box and filter buttons as the World's lists -  #}
+{# and a small form for an item of the player's own.                                            #}
+<div class="cs-sticky">
+  <div class="cs-seg" role="tablist">
+    <button type="button" role="tab" data-add-tab="catalog" aria-selected="true" class="active">{% translate "Catalog" %}</button>
+    <button type="button" role="tab" data-add-tab="custom" aria-selected="false">{% translate "Custom item" %}</button>
+  </div>
+  <div data-add-pane="catalog" data-filter-list="cs-catalog" data-filter-empty="cs-catalog-empty">
+    {% translate "Search items" as search_placeholder %}
+    {% include "frontend/_search_form.html" with search_query="" search_placeholder=search_placeholder %}
+  </div>
+</div>
+
+<div class="cs-scroll" data-add-pane="catalog">
+  <ul class="cs-list" id="cs-catalog">
+    {% for e in items %}
+      <li data-search="{{ e.search }}" data-section="{{ e.section }}" data-type="{{ e.type }}" data-category="{{ e.category }}" data-property="{{ e.property }}" data-mastery="{{ e.mastery }}">
+        <div class="cs-line">
+          <button type="button" class="cs-row has-equip" data-describe="{{ e.describe }}" aria-expanded="false">
+            <span class="item-text">
+              <span class="item-name">{{ e.name }}</span>
+              {% if e.detail %}<span class="item-detail">{{ e.detail }}</span>{% endif %}
+            </span>
+            <span class="chev" aria-hidden="true"></span>
+          </button>
+          <button type="button" class="equip add" data-act="item_add" data-equipment="{{ e.id }}">{% translate "Add" %}</button>
+        </div>
+        <div class="desc" hidden><div class="desc-body"></div></div>
+      </li>
+    {% endfor %}
+  </ul>
+  <p class="cs-empty" id="cs-catalog-empty" hidden>{% translate "No items match." %}</p>
+</div>
+
+<div class="cs-scroll" data-add-pane="custom" hidden>
+  <p class="hint">{% translate "An item of your own: it is only listed, counted, weighed and sold - it has no game rules." %}</p>
+  <div class="cs-form" data-custom-form>
+    <label>{% translate "Name" %}<input type="text" name="name" maxlength="200" autocomplete="off"></label>
+    <label>{% translate "Category" %}
+      <select name="section">{% for key, label in sections %}<option value="{{ key }}"{% if key == "misc" %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+    </label>
+    <div class="cs-form-row">
+      <label>{% translate "Quantity" %}<input type="number" name="quantity" min="1" value="1" inputmode="numeric"></label>
+      <label>{% if weight_unit == "kg" %}{% translate "Weight (kg)" %}{% else %}{% translate "Weight (lb)" %}{% endif %}<input type="number" name="weight" min="0" step="any" inputmode="decimal"></label>
+      <label>{% translate "Cost (gp)" %}<input type="number" name="cost" min="0" step="any" inputmode="decimal"></label>
+    </div>
+    <label class="check"><input type="checkbox" name="valuable" value="1"> {% translate "Trade good or valuable (sells for its full value)" %}</label>
+    <label>{% translate "Description" %}<textarea name="description" rows="3"></textarea></label>
+    <button type="button" class="btn-primary" data-custom-add>{% translate "Add to inventory" %}</button>
+  </div>
+</div>

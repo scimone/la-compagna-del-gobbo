@@ -3,6 +3,7 @@ from .character_ability_score_increase import CharacterAbilityScoreIncrease
 from .character_choice import CharacterChoice
 from .character_class import CharacterClass
 from .character_currency import CharacterCurrency
+from .character_custom_item import CharacterCustomItem
 from .character_feat import CharacterFeat
 from .character_feature import CharacterFeature
 from .character_inventory_item import CharacterInventoryItem
@@ -19,6 +20,7 @@ __all__ = [
     "CharacterChoice",
     "CharacterClass",
     "CharacterCurrency",
+    "CharacterCustomItem",
     "CharacterFeat",
     "CharacterFeature",
     "CharacterInventoryItem",

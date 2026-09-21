@@ -1,0 +1,25 @@
+{% load i18n %}
+<div class="cs-scroll">
+{# Tap a row to read what it does (fetched once from the describe endpoint, then just shown/hidden). #}
+{% for g in feature_groups %}
+  <section class="cs-group">
+    <h3>{{ g.title }}{% if g.subtitle %} <span class="dim">· {{ g.subtitle }}</span>{% endif %}</h3>
+    <ul class="cs-list">
+      {% for r in g.rows %}
+        <li>
+          <button type="button" class="cs-row" data-describe="{{ r.describe }}" aria-expanded="false">
+            <span class="item-text">
+              <span class="item-name">{{ r.name }}</span>
+              {% if r.detail %}<span class="item-detail">{{ r.detail }}</span>{% endif %}
+            </span>
+            <span class="chev" aria-hidden="true"></span>
+          </button>
+          <div class="desc" hidden></div>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+{% empty %}
+  <p class="cs-empty">{% translate "No features yet." %}</p>
+{% endfor %}
+</div>

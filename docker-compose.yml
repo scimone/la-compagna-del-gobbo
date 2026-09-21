@@ -12,6 +12,8 @@ services:
         condition: service_healthy
     env_file:
       - .env
+    volumes:
+      - ./media:/app/media
     restart: unless-stopped
 
   dnd-db:

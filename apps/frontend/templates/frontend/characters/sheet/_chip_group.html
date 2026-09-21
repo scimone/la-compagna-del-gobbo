@@ -1,0 +1,12 @@
+{# A row of chips (`chips`: {name, describe}); a chip with a `describe` URL opens its description #}
+{# in the panel right under the row (see `character_sheet.js`).                                    #}
+<div class="cs-chips" data-panel-group>
+  {% for c in chips %}
+    {% if c.describe %}
+      <button type="button" class="chip" data-describe="{{ c.describe }}" data-label="{{ c.name }}">{{ c.name }}</button>
+    {% else %}
+      <span class="chip plain">{{ c.name }}</span>
+    {% endif %}
+  {% endfor %}
+</div>
+<div class="chip-panel desc" hidden></div>

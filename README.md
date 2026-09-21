@@ -36,7 +36,7 @@ docker compose up -d --build
 
 This builds `dnd-web` (the Dockerfile installs deps with `uv sync`, then runs
 `collectstatic --noinput` at build time - see `STORAGES`/WhiteNoise below) and starts it
-alongside `dnd-db` (Postgres 16, `postgres_data/` bind-mounted for persistence). `dnd-web` waits
+alongside `dnd-db` (Postgres 16, `postgres_data/` bind-mounted for persistence; `dnd-web` gets `./media` bind-mounted the same way, for the pictures players upload). `dnd-web` waits
 for `dnd-db` to report healthy (`pg_isready`) before starting, and its startup command runs
 `manage.py migrate --noinput` automatically before uvicorn. `import_rules_data` does **not**
 run automatically (see the warning below) - do it once, manually:
@@ -172,7 +172,7 @@ kept on `db/handbook.json` copied verbatim from `db_old/`).
 | `SubclassLevel` | Defined | `db/classes.json` (`subclassFeature`) | A pure level marker - no `features` field of its own; its features are the `Feature` rows FK'd back to it |
 | `Spell` | Defined | `db/spells.json` | `casting_time`/`range`/`duration`/`components` are structured `JSONField`s now (the source gives nested objects, not display strings). `saving_throw_abilities` is new (a M2M - up to 3 spells name more than one ability, verified against all 391). `classes`/`subclasses` are a deliberate exception: the new source dropped this data with no replacement anywhere, so these two fields are still populated from `db_old/spells.json` by exact name match — see `docs/data_migration_2025.md` §2/§3.4 |
 | `Language` | Defined | `db/languages.json` | |
-| `OptionalFeature` | Defined | `db/optionalfeatures.json` | `prerequisite` is structured JSON now, same treatment as `Feat.prerequisite`. `consumes_resource_name` is new (names the resource a pick spends, e.g. "Superiority Die" - relevant to the "Open design question" below) |
+| `OptionalFeature` | Defined | `db/optionalfeatures.json` | `prerequisite` is structured JSON now, same treatment as `Feat.prerequisite`. `consumes_resource_name` is new (names the resource a pick spends, e.g. "Superiority Die" - relevant to spending a resource, see `characters.services.play` and CLAUDE.md "Where spending lives") |
 | `Proficiency` | Defined | `db/classes.json`, `db/backgrounds.json` | 47 rows - `Background.skills` moved off this model entirely (a real M2M now, see `Background`). `choice_data` is new: the two previously-excluded tool-proficiency choices (Bard's/Monk's) are now included, since the source gives them as real JSON instead of unparseable "Choose N ..." prose |
 | `Feature` | Defined | `db/classes.json`, `db/species.json`, `db/feats.json` | 695 rows (271 class, 261 subclass, 41 species, 122 feat). Class/subclass feature resolution now walks `refClassFeature`/`refSubclassFeature` pointers recursively (a class/subclass's own feature-list field doesn't always enumerate every feature - some are only reachable via a pointer inside a sibling feature's `entries`, e.g. Cleric's Divine Order choice or a subclass's granting-level wrapper) rather than reading one flat list - see `docs/data_migration_2025.md` §3.6. A pointer target marked with a `header` field (5etools' own "this is a sub-entry, not standalone" marker) is inlined into whichever feature points at it instead of becoming its own row - see [Known data-import issues](#known-data-import-issues) Issue 6. `consumes_resource_name` is new, same as `OptionalFeature`'s |
 | `Effect` | Partly defined | derived from `Feature.entries` | 2094 rows (independently cross-checked against the pre-migration verified-correct count) |
@@ -555,7 +555,7 @@ inventory item, currency, a resource — with no constraint violations).
 
 | Model | Represents |
 |---|---|
-| `Character` | A player character. Ability scores are plain fields (current totals), not a separate one-row-per-ability table — see `CharacterAbilityScoreIncrease` below for why. AC/HP-max-aside/initiative/passive Perception etc. are deliberately *not* fields: they're derived from everything else and belong in `builder.services.derived_stats`, not persisted (a stored value can silently go stale when a feature/item changes; a computed one can't) |
+| `Character` | A player character. Ability scores are plain fields (current totals), not a separate one-row-per-ability table — see `CharacterAbilityScoreIncrease` below for why. AC/HP-max-aside/initiative/passive Perception etc. are deliberately *not* fields: they're derived from everything else and belong in `builder.services.derived_stats`, not persisted (a stored value can silently go stale when a feature/item changes; a computed one can't). The play-state the sheet edits is stored, though: `current_hit_points`/`temporary_hit_points`, `inspiration`, `death_save_successes`/`death_save_failures`, and `spell_slots_spent` (`{"<slot level>": n, "pact": n}` - only what is *spent*; the maximum is derived from the class levels, so it can't go stale). Spent Hit Dice live on `CharacterClass.hit_dice_spent`. `portrait` is the uploaded picture (an `ImageField` under `MEDIA_ROOT`, see the character sheet section) |
 | `CharacterClass` | A class/subclass + level a `Character` has (one row per class — multiple rows is how multiclassing is represented) |
 | `CharacterAbilityScoreIncrease` | Renamed from the doc's `CharacterAbilityScore` — it's one line of ability-score *history* ("+2 Wisdom from Background", "+1 Constitution from an ASI at level 4"), not "the current score" (that's the plain field on `Character`) |
 | `CharacterChoice` | A resolved builder choice, keyed by an arbitrary string (e.g. `"fighter.level_8.feat"`) — not FK'd to `rules.ChoiceDefinition`, which only covers ~27 choices reliably parseable from prose; most real choices (subclass, known spells, expertise, invocations, "A or B" starting equipment) have no such catalog row and never will |
@@ -566,6 +566,7 @@ inventory item, currency, a resource — with no constraint violations).
 | `CharacterProficiency` | Armor/weapon/tool/skill/saving-throw proficiency. Not exclusively FK'd to `rules.Proficiency` (that catalog misses species/feat-granted proficiencies entirely) — `category`/`name` are stored directly, with an optional provenance link back to the catalog row when there is one |
 | `CharacterSense` | A `rules.Sense` grant with its range in feet (the range varies by source, e.g. a species trait vs. a feat, so it lives on the grant, not on `rules.Sense` itself) |
 | `CharacterInventoryItem` | An `Equipment` stack a `Character` owns, with `equipped`/`attuned`/`quantity` |
+| `CharacterCustomItem` | **New** - an item the player made up (name, quantity, weight, cost in copper, "trade good or valuable" flag, inventory section, description); sheet-only, see the character sheet section |
 | `CharacterCurrency` | The coin purse — a true 1:1 with `Character` (`character` is both the FK and the primary key) |
 | `CharacterSpell` | A spell a `Character` knows/has access to, with `prepared`/`always_prepared` flags |
 | `CharacterResource` | A limited-use resource (Rage, Sorcery Points, Superiority Dice, ...) with `max_uses`/`current_uses`/`reset_on` |
@@ -600,7 +601,7 @@ initiative/passive Perception/etc., since those need rules resolution that doesn
 **Services** (`apps/characters/services/`, one file per domain): `character.py` (CRUD + the
 sheet aggregator), `classes.py`, `feats.py`, `features.py`, `languages.py`,
 `optional_features.py`, `proficiencies.py`, `senses.py`, `resources.py`, `choices.py`,
-`inventory.py`, `currency.py`, `spells.py`.
+`inventory.py`, `currency.py`, `spells.py`, and `play.py` - what the character sheet's owner ticks while playing (HP with temporary-HP absorption, death saves, Hit Dice, spell slots, coins, worn gear, free text, and the items carried: add, count, remove, sell; and the spells added by hand). **This is where spending a resource lives** (the "open design question" this project had): `characters` owns play-state, `rules` stays read-only and `builder` stays creation/leveling. Each function clamps/validates and raises `ValueError` on nonsense. Rests (short/long, which would restore what is spent) are still not implemented.
 
 ### `apps/builder/` — character creation/leveling engine
 
@@ -738,7 +739,7 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     fallback (no JS, or a menu with nothing in this session's stack yet).
 - `GET /` (`index`) — redirects to **Characters** (`/characters/`); the bottom nav also has
   **Handbook** → `/handbook/` and **World** → `/world/`. **All three menus are built out.**
-- **Characters** (`character_views.py`, templates under `frontend/characters/`): `GET /characters/`
+- **Characters** (`character_views.py` for the list and the wizard, `character_sheet.py` for the finished character's page; templates under `frontend/characters/`): `GET /characters/`
   lists every finished character of every account (with its owner) plus the viewer's own
   unfinished ones under "In creation"; the **`+`** button (`/characters/new/`, sign-in required)
   asks for a name and starts the wizard at `/characters/<id>/create/<step>/` - steps `class →
@@ -765,8 +766,114 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     recompute, and the step shows the choice as still to do.
   - **Background story** (`story`) is one free-text field (`Character.backstory`) with the SRD's
     six "past and present" questions above it as a writing guide.
-  `GET /characters/<id>/` is a bare read-only summary of a finished character (the full character
-  sheet is a later task). Trinkets are not in the wizard yet (see the plan's TODO).
+  - **The character sheet** (`GET /characters/<id>/`, `character_sheet.py`, templates under
+    `frontend/characters/sheet/`, script `static/js/character_sheet.js`). One page holding every tab;
+    `?tab=stats|abilities|features|spellbook|inventory|proficiencies|biography` only picks the one shown
+    first (Stats when there is none; the script switches tabs without reloading and keeps the query string current, so a
+    reload or a language switch returns to it). Each tab has a `_<tab>()` function that turns rows
+    plus `derived_stats.compute()` into plain dicts, so the templates hold no logic. The top block
+    never scrolls (only the panels below it do), so it is sticky without `position: sticky`:
+    - *Header*: the portrait on the left; beside it the editable name, the Level badge and, unfolded,
+      the class (with level and subclass; a multiclass lists each, `Fighter 1 / Wizard 2`) and three
+      small labelled facts - species, background, size (the links go to the World pages; another
+      account's sheet also says "by <owner>"). A chevron next to the name folds the class and the
+      facts and shrinks the portrait, leaving name and level; the choice is remembered in
+      `localStorage` (the class `folded` sits on `#cs`, so it survives the redraws, and a tiny inline
+      script applies it before the first paint). Then the tab strip. Background, class, species and
+      size used to be in the Biography, which now has only the alignment and the backstory.
+    - *Stats* (the default tab): a dashboard of cards on a 12-column grid, top to bottom: Experience
+      Points (the field, the next level's threshold and a progress bar; changing it redraws the page
+      so the bar follows); Armor Class (an emblem, with a **Shield** pill that equips/unequips the
+      character's shield, so AC and the Inventory follow), Initiative and Speed; Passive Perception
+      and Heroic Inspiration (a tile that toggles); **Hit Points**, the centrepiece (a big editable
+      number, big -/+ buttons - damage eats temporary HP first - the Temp HP field and a bar); and,
+      right under it and on one line, **Hit Dice** (one pip per die, the Spellbook's slot pips: tap
+      a full one to spend it, an empty one to recover it) and Death Saves (3 + 3 boxes; on a phone
+      their labels shrink to a tick and a cross to fit). Everything is read-only for anyone but the
+      owner (no controls are rendered, and the endpoint answers 403).
+    - *Portrait*: the owner taps the picture (a "+" badge marks it) to choose a file, and an "x"
+      badge removes it. `POST /characters/<id>/portrait/` takes the multipart `file` (or `remove=1`);
+      `GET` of the same URL serves it to anyone who may see the character (`?v=<file name>` in the
+      page's `<img>` busts the cache, because every upload gets a new name). The upload is decoded,
+      turned upright, shrunk to fit 600 x 800 and stored again as a WebP under `MEDIA_ROOT`
+      (`characters.services.portrait`): a JPEG/PNG/WebP/GIF of at most 10 MB is accepted, anything
+      else is refused, and nothing the user sent is ever served as it came. It is
+      `Character.portrait`, an `ImageField` (needs Pillow). `MEDIA_ROOT` is `media/` (git- and
+      docker-ignored, or `DJANGO_MEDIA_ROOT`); docker-compose bind-mounts `./media` into the
+      container so a redeploy keeps the pictures. There is no `MEDIA_URL`: files go through the view.
+    - *Abilities*: the proficiency bonus and six boxes in a 2 x 3 grid (modifier, score, save with a
+      proficiency pip) that stay in view, then the "Skills" heading (also fixed, on the page colour),
+      with the skills (none / proficient / expertise pips) scrolling beneath it.
+    - *Features*: species traits, class and subclass features grouped by class, feats, and options
+      (invocations, maneuvers...). A row unfolds its description.
+    - *Spellbook*: a fixed block (`.cs-sticky`) holds the casting ability select (one entry per
+      casting source) with Mod/DC/Atk, a toolbar (the spell count and, for the owner, an **Add spell**
+      button - shown even for a character with no spells), **and the World's own search box and filter buttons**
+      (`_search_form.html`, same look) over the character's spells, filtered in the browser with the
+      filters limited to what those spells use. Below it scroll the slot pips (tap a filled pip to
+      spend, an empty one to recover; Pact Magic separately; a multiclass caster gets the SRD's
+      combined table) and the spells; a row unfolds the spell. A spell the player added by hand has a
+      **Remove** button in its unfolded row (spells a class, species or feat gave cannot be removed).
+    - *Add spell* (`GET /characters/<id>/spells/`, owner only, a second full-screen overlay loaded on
+      first use, like *Add item*): every spell as a list in the World's list design with **the
+      World's own search box and filter buttons** (Level, Class, School, Range, Casting Time, Saving
+      Throw), each row with an Add pill (the spells the character has are marked "Added"; the sheet
+      stays open, so several can be added) and a chevron for the description. An added spell is a
+      `CharacterSpell` with `prepared=True` and `source="sheet"` (`play.add_spell`, which is also how
+      `play.remove_spell` knows what may be removed).
+    - *Inventory*: a fixed top part with the coin pouch (copper/silver/gold/platinum, electrum only
+      if owned; editable), the carried weight and an **Add item** button, then Weapons / Armor /
+      Tools / Misc as one list in the Features/Spellbook row style: name, one detail line (damage
+      or AC, weight, cost, attunement, and "from <pack>") and a chevron on the right that unfolds
+      the description under the row. **Packs are not listed**: their contents are, as ordinary items
+      saying which pack they came from (the pack row stays in the database as the parent, and is
+      deleted by `play.remove_item` once its last item is gone). Weapons and armor have an Equip
+      pill just left of the chevron (wearing body armor takes off the armor already worn). An
+      unfolded item (for the owner) has a quantity editor (-/+ or type), **Sell** buttons and
+      **Remove**. Selling pays half the cost (rounded down) into the purse - trade goods and
+      valuables their full value (`play.sale_price`; the catalog has none, so that applies to custom
+      items flagged "trade good or valuable") - and an item with no cost cannot be sold. The
+      unfolded rows stay open across the redraw an action causes. There is no rarity: every catalog
+      item's `rarity` is `none` in `db/`.
+    - *Add item* (`GET /characters/<id>/items/`, owner only, loaded into a full-screen overlay the
+      first time): the whole catalog as a list in the World's list design with **the World's own
+      search box**, a row of **pills for the main type** (All / Weapons / Armor / Tools / Misc
+      Items - the same sections the Inventory uses) and, only once a pill other than All is
+      picked, the filter buttons that mean something for it: Type for each, plus Category,
+      Properties and Mastery for the weapons (a `filter` with `only` in `_search_form.html`; the
+      filters of a pill that is left are cleared; everything is filtered in the browser), each row with an Add pill (adds one, onto the loose stack of the same item if
+      there is one; the sheet stays open, so several can be added) and a chevron for the
+      description; and a **Custom item** tab (name, category, quantity, weight, cost in gp, "trade
+      good or valuable", description). On the Italian site the weight is typed in kilograms.
+      Custom items are `characters.CharacterCustomItem` rows (a separate model: the catalog is
+      `rules` data, read-only and wiped by `import_rules_data`, so they cannot be `Equipment` rows).
+      They have no game rules - they are listed, counted, weighed and sold - and, like the rest of
+      the sheet's play-state, are not part of the REST API.
+    - *Proficiencies*: armor proficiencies, weapon proficiencies, weapon masteries, tool
+      proficiencies (artisan's tools and the other tools together), gaming sets, musical
+      instruments and languages. A weapon grant is spelled out as the weapons it really
+      covers ("martial weapons with the Light property" lists exactly those), through the same
+      `WeaponProficiency` rules `derived_stats` uses. Masteries, tools, weapons and armor open their
+      description in a panel under their group.
+    - *Biography*: the alignment and the backstory (editable in place by the owner, saved when the field loses focus).
+      `Character.appearance`/`notes` still exist but the sheet no longer shows them.
+    A panel is a fixed part (`.cs-sticky`: the ability boxes, the casting numbers + search + filters,
+    the coin pouch) above its own scrolling part (`.cs-scroll`). The fixed part has the tab strip's
+    colour (and the line between them goes), so it reads as part of the menu. Nothing is `position: sticky` - an
+    earlier version was, and jittered while scrolling on phones - the fixed part just isn't inside
+    the scroller.
+    Descriptions come from `GET /characters/describe/<kind>/<id>/`, the wizard's endpoint, which now
+    also serves `feature` (a `rules.Feature`) and `mastery`.
+  - **`POST /characters/<id>/act/`** is the one endpoint the sheet posts to (form fields `action` +
+    parameters; owner only, completed characters only). Actions: `name`, `xp`, `hp_delta`, `hp_set`,
+    `temp_hp`, `death_toggle`, `inspiration`, `hit_dice`, `slots`, `coin`, `equip`, `text` (backstory only),
+    `item_add`, `custom_add`, `item_qty`, `item_remove`, `item_sell`, `spell_add`, `spell_remove` (the picture has its own
+    endpoint, above). It answers
+    `{ok, refresh, message, state}` (`message` is a note for a toast, e.g. "Sold for 2 gp 5 sp"); the script redraws from `state`, or - when `refresh` is true because
+    something derived changed (`equip`: AC, warnings; the item actions: the lists) - re-fetches the page and swaps
+    `#cs-swap`. Requests are sent one at a time, in order. The rules for each live in
+    `characters.services.play`.
+  Trinkets are not in the wizard yet (see the plan's TODO).
 - `GET /handbook/` (`handbook_overview`) is the root of the Handbook menu (no back button): the
   Glossary button on top, then one toggle heading per `rules.HandbookChapter` ("Playing the Game",
   "Character Origins", "Feats", "Equipment", "Spells") over the buttons of its `HandbookSection`s -

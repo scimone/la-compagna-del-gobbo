@@ -1,0 +1,18 @@
+{% load i18n %}
+<div class="cs-scroll">
+{# Background, class, species and size are in the header now. #}
+<dl class="cs-bio">
+  <dt>{% translate "Alignment" %}</dt>
+  <dd>{{ biography.alignment|default:"—" }}</dd>
+</dl>
+
+{# The player's own words. The owner edits them in place (saved when the field loses focus). #}
+<section class="cs-group">
+  <h3>{% translate "Backstory" %}</h3>
+  {% if can_edit %}
+    <textarea class="cs-text" rows="8" data-act="text" data-field="backstory" aria-label="{% translate 'Backstory' %}">{{ character.backstory }}</textarea>
+  {% else %}
+    <p class="cs-prose">{{ character.backstory|linebreaksbr|default:"—" }}</p>
+  {% endif %}
+</section>
+</div>

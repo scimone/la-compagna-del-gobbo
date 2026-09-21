@@ -1,0 +1,33 @@
+{% load i18n %}
+{# The "add a spell" sheet (fetched into the overlay on first use): every spell as a filterable list #}
+{# in the World's list design - the same search box and filter buttons as the World's Spells list.   #}
+<div class="cs-sticky">
+  <div data-filter-list="cs-spell-catalog" data-filter-empty="cs-spell-catalog-empty">
+    {% translate "Search spells" as search_placeholder %}
+    {% include "frontend/_search_form.html" with search_query="" search_placeholder=search_placeholder %}
+  </div>
+</div>
+
+<div class="cs-scroll">
+  <ul class="cs-list" id="cs-spell-catalog">
+    {% for s in spells %}
+      <li data-search="{{ s.search }}" data-level="{{ s.level }}" data-class="{{ s.classes }}" data-school="{{ s.school }}"
+          data-range="{{ s.range }}" data-time="{{ s.times }}" data-save="{{ s.saves }}">
+        <div class="cs-line">
+          <button type="button" class="cs-row has-equip" data-describe="{{ s.describe }}" aria-expanded="false">
+            {% if s.image %}<img class="thumb" src="{{ s.image }}" alt="" loading="lazy">{% endif %}
+            <span class="item-text">
+              <span class="item-name">{{ s.name }}</span>
+              <span class="item-detail">{{ s.detail }}</span>
+            </span>
+            <span class="chev" aria-hidden="true"></span>
+          </button>
+          {# The spells the character already has are marked, and the ones added here are once the add went through. #}
+          <button type="button" class="equip add" data-act="spell_add" data-spell="{{ s.id }}" data-done="{% translate 'Added' %}"{% if s.known %} disabled{% endif %}>{% if s.known %}{% translate "Added" %}{% else %}{% translate "Add" %}{% endif %}</button>
+        </div>
+        <div class="desc" hidden><div class="desc-body"></div></div>
+      </li>
+    {% endfor %}
+  </ul>
+  <p class="cs-empty" id="cs-spell-catalog-empty" hidden>{% translate "No spells match." %}</p>
+</div>

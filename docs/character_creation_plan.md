@@ -518,7 +518,7 @@ likely to surprise; everything in between is deterministic rules code with high 
 ## 11. Out of scope / later
 
 - The character sheet page, editing an existing character, resource spending and rest recovery
-  (CLAUDE.md "Open design question" — unchanged; creation only creates resources at full).
+  (CLAUDE.md "Where spending lives" — creation only creates resources at full; the character sheet spends HP, slots and Hit Dice in `characters.services.play`).
 - Bonus 20th-level feats ("one feat per 30,000 XP past 355,000"), combat, Epic Boon selection UI
   beyond the level-19 pick.
 - Magic-item catalog; Homebrew backgrounds ("the GM may offer more backgrounds").

@@ -1,0 +1,45 @@
+{% load i18n %}
+{# The proficiency bonus and the six boxes stay in view while the skills scroll under them. #}
+<div class="cs-sticky">
+  <p class="cs-pb"><span>{% translate "Proficiency Bonus" %}</span> <b>{{ abilities.proficiency_bonus|stringformat:"+d" }}</b></p>
+  <div class="cs-abilities">
+    {% for a in abilities.abilities %}
+      <div class="cs-ab">
+        <span class="cs-ab-name" title="{{ a.abbr }}">{{ a.name }}</span>
+        <span class="cs-ab-mod">{{ a.modifier|stringformat:"+d" }}</span>
+        <div class="cs-ab-foot">
+          <span class="cs-ab-score">{{ a.score }}</span>
+          <span class="cs-ab-save">
+            <i class="pip{% if a.save.proficient %} proficient{% endif %}"></i>
+            {% translate "Save" %} <b>{{ a.save.modifier|stringformat:"+d" }}</b>
+            {% if a.save.proficient %}<span class="sr">({% translate "proficient" %})</span>{% endif %}
+          </span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{# The heading of the list stays in view too (it is outside the scrolling part, on the page colour). #}
+<h3 class="cs-subhead">{% translate "Skills" %}</h3>
+<div class="cs-scroll">
+<section class="cs-group">
+<ul class="cs-skills">
+  {% for s in abilities.skills %}
+    <li>
+      <i class="pip {{ s.state }}"></i>
+      <span class="n">{{ s.name }}</span>
+      <span class="dim">{{ s.ability }}</span>
+      <b>{{ s.modifier|stringformat:"+d" }}</b>
+      {% if s.state == "expertise" %}<span class="sr">({% translate "expertise" %})</span>
+      {% elif s.state == "proficient" %}<span class="sr">({% translate "proficient" %})</span>{% endif %}
+    </li>
+  {% endfor %}
+</ul>
+</section>
+<p class="cs-legend">
+  <span><i class="pip"></i> {% translate "Not proficient" %}</span>
+  <span><i class="pip proficient"></i> {% translate "Proficient" %}</span>
+  <span><i class="pip expertise"></i> {% translate "Expertise" %}</span>
+</p>
+</div>

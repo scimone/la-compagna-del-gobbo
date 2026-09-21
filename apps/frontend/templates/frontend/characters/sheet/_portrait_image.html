@@ -1,0 +1,10 @@
+{# The portrait picture, or a silhouette while there is none. #}
+{% load i18n %}
+{% if header.portrait %}
+  <img src="{{ header.portrait }}" alt="">
+{% else %}
+  <svg viewBox="0 0 90 120" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <circle cx="45" cy="44" r="17"/>
+    <path d="M11 121c0-27 14-43 34-43s34 16 34 43z"/>
+  </svg>
+{% endif %}

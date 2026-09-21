@@ -1,30 +1,59 @@
-{% extends "frontend/characters/wizard_base.html" %}
-{% load i18n %}
-{% block step_style %}{% include "frontend/characters/_sheet_style.html" %}{% endblock %}
+{% extends "frontend/base.html" %}
+{% load i18n static %}
+{# A finished character's sheet. One page holding every tab; `static/js/character_sheet.js`     #}
+{# switches between the panels, posts the play-state changes and redraws what they touch.      #}
+{# Everything inside `#cs-swap` is what the script re-fetches and swaps after a change that    #}
+{# alters derived numbers (AC, attacks); `#cs` itself (and its CSRF token) stays put.          #}
+{% block extra_style %}{% include "frontend/characters/sheet/style.html" %}{% endblock %}
 {% block content %}
-  <div class="wiz">
-    <p class="hint">
-      {{ character.species.name }}{% for c in character.classes.all %} · {{ c.klass.name }} {{ c.level }}{% endfor %}
-      {% if character.owner %} · {% blocktranslate with name=character.owner.get_username %}by {{ name }}{% endblocktranslate %}{% endif %}
-      {% if alignment_name %} · {{ alignment_name }}{% endif %}
-    </p>
-    {# A bare read-only summary: the full character sheet page comes later. #}
-    {% include "frontend/characters/_sheet.html" %}
-
-    <h3>{% translate "Features" %}</h3>
-    <ul class="opts">{% for f in features %}<li class="opt" style="cursor:default"><span class="name">{{ f.name }}</span></li>{% endfor %}
-      {% for f in feats %}<li class="opt" style="cursor:default"><span class="name">{{ f.feat.name }}</span><span class="detail">{% translate "feat" %}</span></li>{% endfor %}</ul>
-
-    {% if spells %}
-      <h3>{% translate "Spells" %}</h3>
-      <ul class="opts">{% for s in spells %}<li class="opt" style="cursor:default"><span class="name">{{ s.spell.name }}</span>
-        <span class="detail">{% if s.spell.level == 0 %}{% translate "cantrip" %}{% else %}{% translate "level" %} {{ s.spell.level }}{% endif %}{% if s.always_prepared %} · {% translate "always prepared" %}{% elif s.prepared and s.spell.level %} · {% translate "prepared" %}{% endif %}</span></li>{% endfor %}</ul>
+  <div id="cs" data-act-url="{% url 'character-act' character.pk %}" data-portrait-url="{% url 'character-portrait' character.pk %}" data-editable="{% if can_edit %}1{% else %}0{% endif %}"
+       data-error="{% translate 'Could not save that change.' %}">
+    {% csrf_token %}
+    <div id="cs-swap">
+      {% include "frontend/characters/sheet/_top.html" %}
+      <div class="cs-body" id="cs-body">
+        <section class="cs-panel" role="tabpanel" data-panel="stats"{% if sheet_tab != "stats" %} hidden{% endif %}>
+          {% include "frontend/characters/sheet/_stats.html" %}
+        </section>
+        <section class="cs-panel" role="tabpanel" data-panel="abilities"{% if sheet_tab != "abilities" %} hidden{% endif %}>
+          {% include "frontend/characters/sheet/_abilities.html" %}
+        </section>
+        <section class="cs-panel" role="tabpanel" data-panel="features"{% if sheet_tab != "features" %} hidden{% endif %}>
+          {% include "frontend/characters/sheet/_features.html" %}
+        </section>
+        <section class="cs-panel" role="tabpanel" data-panel="spellbook"{% if sheet_tab != "spellbook" %} hidden{% endif %}>
+          {% include "frontend/characters/sheet/_spellbook.html" %}
+        </section>
+        <section class="cs-panel" role="tabpanel" data-panel="inventory"{% if sheet_tab != "inventory" %} hidden{% endif %}>
+          {% include "frontend/characters/sheet/_inventory.html" %}
+        </section>
+        <section class="cs-panel" role="tabpanel" data-panel="proficiencies"{% if sheet_tab != "proficiencies" %} hidden{% endif %}>
+          {% include "frontend/characters/sheet/_proficiencies.html" %}
+        </section>
+        <section class="cs-panel" role="tabpanel" data-panel="biography"{% if sheet_tab != "biography" %} hidden{% endif %}>
+          {% include "frontend/characters/sheet/_biography.html" %}
+        </section>
+      </div>
+    </div>
+    {% if can_edit %}
+      {# The "add an item" and "add a spell" sheets: outside #cs-swap, so they survive the redraws their own adds cause. #}
+      <div id="cs-add" class="cs-overlay" role="dialog" aria-modal="true" aria-label="{% translate 'Add item' %}" hidden data-url="{% url 'character-items' character.pk %}">
+        <div class="cs-overlay-head">
+          <h3>{% translate "Add item" %}</h3>
+          <button type="button" class="cs-overlay-close" data-add-close>{% translate "Done" %}</button>
+        </div>
+        <div class="cs-overlay-body"></div>
+      </div>
+      <div id="cs-add-spell" class="cs-overlay" role="dialog" aria-modal="true" aria-label="{% translate 'Add spell' %}" hidden data-url="{% url 'character-spells' character.pk %}">
+        <div class="cs-overlay-head">
+          <h3>{% translate "Add spell" %}</h3>
+          <button type="button" class="cs-overlay-close" data-add-close>{% translate "Done" %}</button>
+        </div>
+        <div class="cs-overlay-body"></div>
+      </div>
     {% endif %}
-
-    <h3>{% translate "Languages" %}</h3>
-    <p class="hint">{% for l in languages %}{{ l.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
-
-    <h3>{% translate "Inventory" %}</h3>
-    {% include "frontend/characters/_inventory.html" %}
+    <p id="cs-toast" class="cs-toast" role="alert" hidden></p>
   </div>
+  <noscript><style>.cs-panel[hidden] { display: block; }</style></noscript>
+  <script src="{% static 'js/character_sheet.js' %}" defer></script>
 {% endblock %}

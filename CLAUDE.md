@@ -83,15 +83,13 @@ UI strings. `rules` game content is translated separately, with `django-modeltra
 `import_rules_data` / `import_translations`) - handbook, feats, spells and rules so far; see the README's
 i18n section for the format and why the two are separate problems.
 
-## Open design question
+## Where spending lives
 
-Where *spending* a `CharacterResource` (using a Rage/Sorcery Point/spell slot) and rest recovery
-(short/long rest restoring resources) belongs isn't decided. It doesn't fit any of the three
-apps as currently scoped — `rules` is read-only, `builder` is creation/leveling (not
-turn-by-turn play), and `characters` is passive state. A rest isn't combat (out of scope), so
-it probably belongs in `characters` as a service function mutating
-`CharacterResource.current_uses` — but that's a call worth making deliberately, not backing
-into while implementing something else.
+*Spending* a resource during play (HP, death saves, Hit Dice, spell slots) lives in
+`apps/characters/services/play.py`, called by the character sheet's `POST /characters/<id>/act/`
+(see the README). `rules` stays read-only, `builder` stays creation/leveling. Not decided yet:
+short/long **rests** restoring what is spent, and spending a `CharacterResource` (Rage, Sorcery
+Points - the sheet doesn't show those); both would most naturally be more functions in `play.py`.
 
 ## Environment gotchas
 

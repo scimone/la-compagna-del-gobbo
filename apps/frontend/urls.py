@@ -1,6 +1,6 @@
 from django.urls import path
 
-from apps.frontend import character_views, views
+from apps.frontend import character_sheet, character_views, views
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -11,7 +11,15 @@ urlpatterns = [
         character_views.describe,
         name="character-describe",
     ),
-    path("characters/<int:pk>/", character_views.character_detail, name="character-detail"),
+    path("characters/<int:pk>/", character_sheet.character_detail, name="character-detail"),
+    path("characters/<int:pk>/act/", character_sheet.character_act, name="character-act"),
+    path("characters/<int:pk>/items/", character_sheet.character_items, name="character-items"),
+    path("characters/<int:pk>/spells/", character_sheet.character_spells, name="character-spells"),
+    path(
+        "characters/<int:pk>/portrait/",
+        character_sheet.character_portrait,
+        name="character-portrait",
+    ),
     path(
         "characters/<int:pk>/create/finish/",
         character_views.wizard_finish,

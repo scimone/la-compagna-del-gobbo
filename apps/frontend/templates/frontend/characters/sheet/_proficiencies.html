@@ -1,0 +1,48 @@
+{% load i18n %}
+<div class="cs-scroll">
+{# Every chip with a description opens it under its row: the same describe endpoint the wizard's #}
+{# Read buttons use. A grant like "martial weapons with the Light property" is spelled out as the #}
+{# weapons it really covers.                                                                      #}
+<section class="cs-group">
+  <h3>{% translate "Armor Proficiencies" %}</h3>
+  {% for g in proficiencies.armor %}
+    <h4>{{ g.title }}</h4>
+    {% include "frontend/characters/sheet/_chip_group.html" with chips=g.chips %}
+  {% empty %}<p class="cs-empty">{% translate "None" %}</p>{% endfor %}
+</section>
+
+<section class="cs-group">
+  <h3>{% translate "Weapon Proficiencies" %}</h3>
+  {% for g in proficiencies.weapons %}
+    <h4>{{ g.title }}</h4>
+    {% if g.chips %}{% include "frontend/characters/sheet/_chip_group.html" with chips=g.chips %}{% endif %}
+  {% empty %}<p class="cs-empty">{% translate "None" %}</p>{% endfor %}
+</section>
+
+<section class="cs-group">
+  <h3>{% translate "Weapon Masteries" %}</h3>
+  {% if proficiencies.masteries %}
+    <div class="cs-chips" data-panel-group>
+      {% for m in proficiencies.masteries %}
+        <button type="button" class="chip" data-describe="{{ m.describe }}" data-label="{{ m.detail }}">{{ m.name }} <small>{{ m.detail }}</small></button>
+      {% endfor %}
+    </div>
+    <div class="chip-panel desc" hidden></div>
+  {% else %}<p class="cs-empty">{% translate "None" %}</p>{% endif %}
+</section>
+
+{% for g in proficiencies.tool_groups %}
+  <section class="cs-group">
+    <h3>{{ g.title }}</h3>
+    {% if g.chips %}{% include "frontend/characters/sheet/_chip_group.html" with chips=g.chips %}
+    {% else %}<p class="cs-empty">{% translate "None" %}</p>{% endif %}
+  </section>
+{% endfor %}
+
+<section class="cs-group">
+  <h3>{% translate "Languages" %}</h3>
+  {% if proficiencies.languages %}
+    <div class="cs-chips">{% for l in proficiencies.languages %}<span class="chip plain">{{ l }}</span>{% endfor %}</div>
+  {% else %}<p class="cs-empty">{% translate "None" %}</p>{% endif %}
+</section>
+</div>

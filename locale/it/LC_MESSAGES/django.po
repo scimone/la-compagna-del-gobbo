@@ -971,3 +971,424 @@ msgstr "Scegli una classe. Determina il Dado Vita, i tiri salvezza, le competenz
 #: apps/frontend/entries_render.py
 msgid "Not part of the official 2024 rules"
 msgstr "Non fa parte delle regole ufficiali 2024"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Abilities"
+msgstr "Caratteristiche"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Proficiencies"
+msgstr "Competenze"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Biography"
+msgstr "Biografia"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Armor"
+msgstr "Armature"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Misc Items"
+msgstr "Oggetti vari"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Artisan's Tools"
+msgstr "Strumenti da artigiano"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Gaming Sets"
+msgstr "Set da gioco"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Musical Instruments"
+msgstr "Strumenti musicali"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Other Tools"
+msgstr "Altri strumenti"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Copper"
+msgstr "Rame"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Silver"
+msgstr "Argento"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Gold"
+msgstr "Oro"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Platinum"
+msgstr "Platino"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Electrum"
+msgstr "Electro"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Successes"
+msgstr "Successi"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Failures"
+msgstr "Fallimenti"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Species Traits"
+msgstr "Tratti della specie"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Class Features"
+msgstr "Privilegi di classe"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Subclass Features"
+msgstr "Privilegi di sottoclasse"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Options"
+msgstr "Opzioni"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Pact Magic (level %(level)s)"
+msgstr "Magia del patto (livello %(level)s)"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Always prepared"
+msgstr "Sempre preparato"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Prepared"
+msgstr "Preparato"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "In spellbook"
+msgstr "Nel libro degli incantesimi"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "AC"
+msgstr "CA"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "%(category)s weapons"
+msgstr "Armi %(category)s"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid " or "
+msgstr " o "
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "%(category)s weapons with the %(property)s property"
+msgstr "Armi %(category)s con la proprietà %(property)s"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Could not save that change."
+msgstr "Impossibile salvare la modifica."
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Not proficient"
+msgstr "Senza competenza"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Proficient"
+msgstr "Competente"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Backstory"
+msgstr "Storia del personaggio"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "No features yet."
+msgstr "Ancora nessun privilegio."
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Coins"
+msgstr "Monete"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Carrying"
+msgstr "Peso trasportato"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "items"
+msgstr "oggetti"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Attunement"
+msgstr "Sintonia"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Equipped"
+msgstr "Equipaggiato"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Equip"
+msgstr "Equipaggia"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "None"
+msgstr "Nessuno"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Weapon Masteries"
+msgstr "Padronanza delle armi"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Atk"
+msgstr "Att"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Spell slot"
+msgstr "Slot incantesimo"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "No spells match."
+msgstr "Nessun incantesimo corrisponde."
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "No spells yet."
+msgstr "Ancora nessun incantesimo."
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Show or hide details"
+msgstr "Mostra o nascondi i dettagli"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "XP"
+msgstr "PE"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Experience points"
+msgstr "Punti esperienza"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Quick stats"
+msgstr "Statistiche rapide"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Shield"
+msgstr "Scudo"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Heroic Inspiration"
+msgstr "Ispirazione eroica"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Temp HP"
+msgstr "PF temporanei"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Lose 1 hit point"
+msgstr "Perdi 1 punto ferita"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Current hit points"
+msgstr "Punti ferita attuali"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Regain 1 hit point"
+msgstr "Recupera 1 punto ferita"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Hit Dice"
+msgstr "Dadi Vita"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Spend a Hit Die"
+msgstr "Spendi un Dado Vita"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Recover a Hit Die"
+msgstr "Recupera un Dado Vita"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Death Saves"
+msgstr "Tiri salvezza contro morte"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
+msgid "Character sections"
+msgstr "Sezioni del personaggio"
+
+#: apps/frontend/character_sheet.py
+msgctxt "character sheet tab"
+msgid "Features"
+msgstr "Privilegi"
+
+#: apps/frontend/templates/frontend/characters/sheet/_top.html
+msgid "Character portrait"
+msgstr "Ritratto del personaggio"
+
+#: apps/frontend/templates/frontend/characters/sheet/_top.html
+msgid "Next level at %(xp)s XP"
+msgstr "Prossimo livello a %(xp)s PE"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "Add"
+msgstr "Aggiungi"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "Add item"
+msgstr "Aggiungi oggetto"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "Add to inventory"
+msgstr "Aggiungi all'inventario"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "Added %(name)s"
+msgstr "Aggiunto: %(name)s"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "An item of your own: it is only listed, counted, weighed and sold - it has no game rules."
+msgstr "Un oggetto tutto tuo: viene solo elencato, contato, pesato e venduto, non ha regole di gioco."
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "Catalog"
+msgstr "Catalogo"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "Cost (gp)"
+msgstr "Costo (mo)"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "Custom item"
+msgstr "Oggetto personalizzato"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "Done"
+msgstr "Fatto"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "Equipment sells for half its cost."
+msgstr "L'equipaggiamento si vende a metà del suo costo."
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "No items match."
+msgstr "Nessun oggetto corrisponde."
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "One less"
+msgstr "Uno in meno"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "One more"
+msgstr "Uno in più"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "Quantity"
+msgstr "Quantità"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "Remove"
+msgstr "Rimuovi"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "Remove this item?"
+msgstr "Rimuovere questo oggetto?"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "Search items"
+msgstr "Cerca oggetti"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "Sell all for %(price)s"
+msgstr "Vendi tutto per %(price)s"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "Sell one for %(price)s"
+msgstr "Vendine uno per %(price)s"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "Sold for %(price)s"
+msgstr "Venduto per %(price)s"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "Trade good or valuable (sells for its full value)"
+msgstr "Merce di scambio o oggetto di valore (si vende per intero)"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "Trade goods and valuables sell for their full value."
+msgstr "Le merci di scambio e gli oggetti di valore si vendono per intero."
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "Weight (kg)"
+msgstr "Peso (kg)"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "Weight (lb)"
+msgstr "Peso (lb)"
+
+#: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
+msgid "from %(pack)s"
+msgstr "da %(pack)s"
+
+#: apps/frontend/character_sheet.py
+msgid "Stats"
+msgstr "Statistiche"
+
+#: apps/frontend/templates/frontend/characters/sheet/_stats.html
+msgid "Experience Points"
+msgstr "Punti esperienza"
+
+#: apps/frontend/templates/frontend/characters/sheet/_stats.html
+msgid "for the next level"
+msgstr "per il livello successivo"
+
+#: apps/frontend/templates/frontend/characters/sheet/_top.html
+msgid "Character"
+msgstr "Personaggio"
+
+#: apps/frontend/templates/frontend/characters/sheet/_top.html
+msgid "Change picture"
+msgstr "Cambia immagine"
+
+#: apps/frontend/templates/frontend/characters/sheet/_top.html
+msgid "Upload a picture"
+msgstr "Carica un'immagine"
+
+#: apps/frontend/templates/frontend/characters/sheet/_top.html
+msgid "Remove picture"
+msgstr "Rimuovi immagine"
+
+#: apps/frontend/templates/frontend/characters/sheet/_top.html
+msgid "Remove the picture?"
+msgstr "Rimuovere l'immagine?"
+
+#: apps/characters/services/portrait.py
+msgid "That picture is too big (10 MB at most)."
+msgstr "Questa immagine è troppo grande (massimo 10 MB)."
+
+#: apps/characters/services/portrait.py
+msgid "Use a JPEG, PNG, WebP or GIF picture."
+msgstr "Usa un'immagine JPEG, PNG, WebP o GIF."
+
+#: apps/characters/services/portrait.py
+msgid "That picture is too big."
+msgstr "Questa immagine è troppo grande."
+
+#: apps/characters/services/portrait.py
+msgid "That file is not a picture."
+msgstr "Questo file non è un'immagine."
+
+#: apps/frontend/character_sheet.py
+msgid "Choose a picture."
+msgstr "Scegli un'immagine."
+
+#: apps/frontend/templates/frontend/characters/sheet/_stats.html
+msgid "Progress to the next level"
+msgstr "Avanzamento verso il livello successivo"
+
+#: apps/frontend/templates/frontend/characters/sheet/_spellbook.html apps/frontend/templates/frontend/characters/detail.html
+msgid "Add spell"
+msgstr "Aggiungi incantesimo"
+
+#: apps/frontend/templates/frontend/characters/sheet/_add_spell.html
+msgid "Added"
+msgstr "Aggiunto"
+
+#: apps/frontend/templates/frontend/characters/sheet/_spellbook.html
+msgid "Remove this spell?"
+msgstr "Rimuovere questo incantesimo?"

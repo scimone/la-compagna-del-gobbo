@@ -55,6 +55,9 @@ class Character(models.Model):
     #: the field as a writing guide; the answers are not stored separately.
     backstory = models.TextField(blank=True, default="")
     appearance = models.TextField(blank=True, default="")
+    #: The picture the owner uploaded for the sheet (already shrunk and re-encoded by
+    #: `characters.services.portrait`), stored under `settings.MEDIA_ROOT`.
+    portrait = models.ImageField(upload_to="portraits/", blank=True, default="")
     notes = models.TextField(blank=True, default="")
 
     strength = models.PositiveSmallIntegerField(default=10)
@@ -69,6 +72,11 @@ class Character(models.Model):
     temporary_hit_points = models.PositiveSmallIntegerField(default=0)
 
     inspiration = models.BooleanField(default=False)
+    death_save_successes = models.PositiveSmallIntegerField(default=0)
+    death_save_failures = models.PositiveSmallIntegerField(default=0)
+    #: Spell slots used since the last long rest, `{"<slot level>": n, "pact": n}`. Only what is
+    #: *spent* is stored: the maximum is derived from the class levels, so it can never go stale.
+    spell_slots_spent = models.JSONField(default=dict, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

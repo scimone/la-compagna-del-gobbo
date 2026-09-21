@@ -1,0 +1,64 @@
+{% load i18n %}
+{# The part of the sheet that never scrolls away: the portrait, the name and level, who the       #}
+{# character is (class, species, background, size) and the tab strip. The numbers that change      #}
+{# during play are in the Stats tab. The class and the facts fold away (`#cs.folded`, see the      #}
+{# script) and the portrait shrinks with them.                                                      #}
+<div class="cs-top">
+  <section class="cs-id" aria-label="{% translate 'Character' %}">
+    <div class="cs-pic">
+      {% if can_edit %}
+        {# The picture is a button for the file chooser; the input inside is what `character_sheet.js` reads. #}
+        <label class="cs-portrait" title="{% translate 'Change picture' %}">
+          {% include "frontend/characters/sheet/_portrait_image.html" %}
+          <input class="sr" type="file" accept="image/jpeg,image/png,image/webp,image/gif" data-portrait-file
+                 aria-label="{% translate 'Upload a picture' %}">
+          <span class="cs-pic-add" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 6v12M6 12h12"/></svg></span>
+        </label>
+        {% if header.portrait %}
+          <button type="button" class="cs-pic-x" data-portrait-remove data-confirm="{% translate 'Remove the picture?' %}"
+                  aria-label="{% translate 'Remove picture' %}" title="{% translate 'Remove picture' %}">×</button>
+        {% endif %}
+      {% else %}
+        <div class="cs-portrait" role="img" aria-label="{% translate 'Character portrait' %}">
+          {% include "frontend/characters/sheet/_portrait_image.html" %}
+        </div>
+      {% endif %}
+    </div>
+    <div class="cs-who">
+      <div class="cs-name-row">
+        {% if can_edit %}
+          <input class="cs-name" type="text" maxlength="100" value="{{ character.name }}" data-act="name" data-bind="name"
+                 aria-label="{% translate 'Character name' %}">
+        {% else %}
+          <h2 class="cs-name">{{ character.name }}</h2>
+        {% endif %}
+        {# Folds the details under the name (and shrinks the picture); the choice is remembered. #}
+        <button type="button" class="cs-fold" aria-expanded="true" aria-label="{% translate 'Show or hide details' %}"><span class="chev" aria-hidden="true"></span></button>
+      </div>
+      <div class="cs-lvl">
+        <span class="cs-level">{% translate "Level" %} {{ header.level }}</span>
+        {% if character.owner and not can_edit %}
+          <span class="cs-owner">{% blocktranslate with name=character.owner.get_username %}by {{ name }}{% endblocktranslate %}</span>
+        {% endif %}
+        <span class="cs-class cs-detail">
+          {% for c in identity.classes %}<a href="{{ c.url }}">{{ c.name }}</a>{% if identity.multiclass %} {{ c.level }}{% endif %}{% if c.subclass %} <span class="dim">· {{ c.subclass }}</span>{% endif %}{% if not forloop.last %} / {% endif %}{% endfor %}
+        </span>
+      </div>
+      <dl class="cs-facts cs-detail">
+        <div><dt>{% translate "Species" %}</dt><dd>{% if identity.species %}<a href="{% url 'world-species-detail' identity.species.pk %}">{{ identity.species.name }}</a>{% else %}—{% endif %}</dd></div>
+        <div><dt>{% translate "Background" %}</dt><dd>{% if identity.background %}<a href="{% url 'world-background-detail' identity.background.pk %}">{{ identity.background.name }}</a>{% else %}—{% endif %}</dd></div>
+        <div><dt>{% translate "Size" %}</dt><dd>{{ identity.size|default:"—" }}</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="cs-tabbar">
+    <nav class="cs-tabs" role="tablist" aria-label="{% translate 'Character sections' %}">
+      {% for key, label in sheet_tabs %}
+        <button type="button" role="tab" data-tab="{{ key }}" class="{% if key == sheet_tab %}active{% endif %}"
+                aria-selected="{% if key == sheet_tab %}true{% else %}false{% endif %}">{{ label }}</button>
+      {% endfor %}
+    </nav>
+  </div>
+  <script>try { if (window.localStorage.getItem("cs-folded") === "1") { var root = document.getElementById("cs"); root.classList.add("folded"); root.querySelector(".cs-fold").setAttribute("aria-expanded", "false"); } } catch (e) {}</script>
+</div>

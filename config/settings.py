@@ -120,6 +120,11 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
+# Files the players upload (character portraits). Kept outside the image: docker-compose mounts a
+# host folder here, so a redeploy does not lose them. Served by a view, never by URL - see
+# `character_portrait` - so it has no MEDIA_URL.
+MEDIA_ROOT = Path(os.environ.get("DJANGO_MEDIA_ROOT", BASE_DIR / "media"))
+
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
