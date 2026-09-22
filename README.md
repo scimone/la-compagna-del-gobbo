@@ -601,7 +601,7 @@ initiative/passive Perception/etc., since those need rules resolution that doesn
 **Services** (`apps/characters/services/`, one file per domain): `character.py` (CRUD + the
 sheet aggregator), `classes.py`, `feats.py`, `features.py`, `languages.py`,
 `optional_features.py`, `proficiencies.py`, `senses.py`, `resources.py`, `choices.py`,
-`inventory.py`, `currency.py`, `spells.py`, and `play.py` - what the character sheet's owner ticks while playing (HP with temporary-HP absorption, death saves, Hit Dice, spell slots, coins, worn gear, free text, and the items carried: add, count, remove, sell; and the spells added by hand). **This is where spending a resource lives** (the "open design question" this project had): `characters` owns play-state, `rules` stays read-only and `builder` stays creation/leveling. Each function clamps/validates and raises `ValueError` on nonsense. Rests (short/long, which would restore what is spent) are still not implemented.
+`inventory.py`, `currency.py`, `spells.py`, and `play.py` - what the character sheet's owner ticks while playing (HP with temporary-HP absorption, death saves, Hit Dice, spell slots, coins, worn gear, free text, and the items carried: add, buy, count, remove, sell; and the spells added by hand). **This is where spending a resource lives** (the "open design question" this project had): `characters` owns play-state, `rules` stays read-only and `builder` stays creation/leveling. Each function clamps/validates and raises `ValueError` on nonsense. Rests (short/long, which would restore what is spent) are still not implemented.
 
 ### `apps/builder/` — character creation/leveling engine
 
@@ -772,15 +772,9 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     first (Stats when there is none; the script switches tabs without reloading and keeps the query string current, so a
     reload or a language switch returns to it). Each tab has a `_<tab>()` function that turns rows
     plus `derived_stats.compute()` into plain dicts, so the templates hold no logic. The top block
-    never scrolls (only the panels below it do), so it is sticky without `position: sticky`:
-    - *Header*: the portrait on the left; beside it the editable name, the Level badge and, unfolded,
-      the class (with level and subclass; a multiclass lists each, `Fighter 1 / Wizard 2`) and three
-      small labelled facts - species, background, size (the links go to the World pages; another
-      account's sheet also says "by <owner>"). A chevron next to the name folds the class and the
-      facts and shrinks the portrait, leaving name and level; the choice is remembered in
-      `localStorage` (the class `folded` sits on `#cs`, so it survives the redraws, and a tiny inline
-      script applies it before the first paint). Then the tab strip. Background, class, species and
-      size used to be in the Biography, which now has only the alignment and the backstory.
+    never scrolls (only the panels below it do), so it is sticky without `position: sticky` - it
+    holds only the tab strip; who the character is (portrait, name, level, class, species,
+    background, size) lives in the Biography tab, not a page header (see *Biography* below).
     - *Stats* (the default tab): a dashboard of cards on a 12-column grid, top to bottom: Experience
       Points (the field, the next level's threshold and a progress bar; changing it redraws the page
       so the bar follows); Armor Class (an emblem, with a **Shield** pill that equips/unequips the
@@ -791,8 +785,9 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
       a full one to spend it, an empty one to recover it) and Death Saves (3 + 3 boxes; on a phone
       their labels shrink to a tick and a cross to fit). Everything is read-only for anyone but the
       owner (no controls are rendered, and the endpoint answers 403).
-    - *Portrait*: the owner taps the picture (a "+" badge marks it) to choose a file, and an "x"
-      badge removes it. `POST /characters/<id>/portrait/` takes the multipart `file` (or `remove=1`);
+    - *Portrait* (in the Biography tab): the owner taps the picture (a "+" badge marks it) to choose
+      a file, and an "x" badge removes it. `POST /characters/<id>/portrait/` takes the multipart
+      `file` (or `remove=1`);
       `GET` of the same URL serves it to anyone who may see the character (`?v=<file name>` in the
       page's `<img>` busts the cache, because every upload gets a new name). The upload is decoded,
       turned upright, shrunk to fit 600 x 800 and stored again as a WebP under `MEDIA_ROOT`
@@ -802,8 +797,9 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
       docker-ignored, or `DJANGO_MEDIA_ROOT`); docker-compose bind-mounts `./media` into the
       container so a redeploy keeps the pictures. There is no `MEDIA_URL`: files go through the view.
     - *Abilities*: the proficiency bonus and six boxes in a 2 x 3 grid (modifier, score, save with a
-      proficiency pip) that stay in view, then the "Skills" heading (also fixed, on the page colour),
-      with the skills (none / proficient / expertise pips) scrolling beneath it.
+      proficiency pip) that stay in view, then the "Skills" heading with the pip legend (not
+      proficient / proficient / expertise) next to it (also fixed, on the page colour), with the
+      skills (none / proficient / expertise pips) scrolling beneath it.
     - *Features*: species traits, class and subclass features grouped by class, feats, and options
       (invocations, maneuvers...). A row unfolds its description.
     - *Spellbook*: a fixed block (`.cs-sticky`) holds the casting ability select (one entry per
@@ -828,35 +824,49 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
       the description under the row. **Packs are not listed**: their contents are, as ordinary items
       saying which pack they came from (the pack row stays in the database as the parent, and is
       deleted by `play.remove_item` once its last item is gone). Weapons and armor have an Equip
-      pill just left of the chevron (wearing body armor takes off the armor already worn). An
-      unfolded item (for the owner) has a quantity editor (-/+ or type), **Sell** buttons and
-      **Remove**. Selling pays half the cost (rounded down) into the purse - trade goods and
-      valuables their full value (`play.sale_price`; the catalog has none, so that applies to custom
-      items flagged "trade good or valuable") - and an item with no cost cannot be sold. The
-      unfolded rows stay open across the redraw an action causes. There is no rarity: every catalog
-      item's `rarity` is `none` in `db/`.
+      pill just left of the chevron (wearing body armor takes off the armor already worn); a
+      sellable item also gets a small round quick-**Sell** button there (confirms the price first,
+      then sells one - `play.sell_item` again). An unfolded item (for the owner) still has its own
+      quantity editor (-/+ or type), **Sell** buttons (one/all) and **Remove** besides. Selling pays
+      half the cost (rounded down) into the purse - trade goods and valuables their full value
+      (`play.sale_price`; the catalog has none, so that applies to custom items flagged "trade good
+      or valuable") - and an item with no cost cannot be sold. The unfolded rows stay open across
+      the redraw an action causes. There is no rarity: every catalog item's `rarity` is `none` in
+      `db/`.
     - *Add item* (`GET /characters/<id>/items/`, owner only, loaded into a full-screen overlay the
-      first time): the whole catalog as a list in the World's list design with **the World's own
-      search box**, a row of **pills for the main type** (All / Weapons / Armor / Tools / Misc
-      Items - the same sections the Inventory uses) and, only once a pill other than All is
-      picked, the filter buttons that mean something for it: Type for each, plus Category,
-      Properties and Mastery for the weapons (a `filter` with `only` in `_search_form.html`; the
-      filters of a pill that is left are cleared; everything is filtered in the browser), each row with an Add pill (adds one, onto the loose stack of the same item if
-      there is one; the sheet stays open, so several can be added) and a chevron for the
-      description; and a **Custom item** tab (name, category, quantity, weight, cost in gp, "trade
-      good or valuable", description). On the Italian site the weight is typed in kilograms.
-      Custom items are `characters.CharacterCustomItem` rows (a separate model: the catalog is
-      `rules` data, read-only and wiped by `import_rules_data`, so they cannot be `Equipment` rows).
-      They have no game rules - they are listed, counted, weighed and sold - and, like the rest of
-      the sheet's play-state, are not part of the REST API.
+      first time): a sticky coin purse (read-only, the same pouch as the Inventory tab's, kept live
+      by the same `data-bind`s) on top, then the whole catalog as a list in the World's list design
+      with **the World's own search box**, a row of **pills for the main type** (All / Weapons /
+      Armor / Tools / Misc Items - the same sections the Inventory uses) and, only once a pill other
+      than All is picked, the filter buttons that mean something for it: Type for each, plus
+      Category, Properties and Mastery for the weapons (a `filter` with `only` in
+      `_search_form.html`; the filters of a pill that is left are cleared; everything is filtered in
+      the browser), each row with an Add pill (adds one for free, onto the loose stack of the same
+      item if there is one), a **Buy** pill beside it when the item has a price (pays for it out of
+      the purse - `play.buy_item` - after a confirmation with the price and what will be left; that
+      arithmetic runs in `character_sheet.js` against the live purse, not a string rendered once at
+      load time, because this overlay is fetched once and never re-fetched, so a static "you'll have
+      X left" could go stale after an earlier buy), and a chevron for the description; and a
+      **Custom item** tab (name, category, quantity, weight, cost in gp, "trade good or valuable",
+      description - added for free regardless of that cost field). On the Italian site the weight is
+      typed in kilograms. Custom items are `characters.CharacterCustomItem` rows (a separate model:
+      the catalog is `rules` data, read-only and wiped by `import_rules_data`, so they cannot be
+      `Equipment` rows). They have no game rules - they are listed, counted, weighed and sold - and,
+      like the rest of the sheet's play-state, are not part of the REST API. This overlay (and *Add
+      spell*'s) covers the page's own header, so each carries its own language switch.
     - *Proficiencies*: armor proficiencies, weapon proficiencies, weapon masteries, tool
       proficiencies (artisan's tools and the other tools together), gaming sets, musical
       instruments and languages. A weapon grant is spelled out as the weapons it really
       covers ("martial weapons with the Light property" lists exactly those), through the same
       `WeaponProficiency` rules `derived_stats` uses. Masteries, tools, weapons and armor open their
       description in a panel under their group.
-    - *Biography*: the alignment and the backstory (editable in place by the owner, saved when the field loses focus).
-      `Character.appearance`/`notes` still exist but the sheet no longer shows them.
+    - *Biography*: who the character is, moved here from the old header - the portrait on the left
+      (see *Portrait* above) and, on the right, properties: the editable name, the Level badge
+      (another account's sheet says "by <owner>" instead), the class (with level and subclass; a
+      multiclass lists each, `Fighter 1 / Wizard 2`), and species/background/size/alignment as small
+      labelled facts (the species/background links go to the World pages). Below that, the backstory
+      (editable in place by the owner, saved when the field loses focus). `Character.appearance`/
+      `notes` still exist but the sheet does not show them.
     A panel is a fixed part (`.cs-sticky`: the ability boxes, the casting numbers + search + filters,
     the coin pouch) above its own scrolling part (`.cs-scroll`). The fixed part has the tab strip's
     colour (and the line between them goes), so it reads as part of the menu. Nothing is `position: sticky` - an
@@ -867,7 +877,7 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
   - **`POST /characters/<id>/act/`** is the one endpoint the sheet posts to (form fields `action` +
     parameters; owner only, completed characters only). Actions: `name`, `xp`, `hp_delta`, `hp_set`,
     `temp_hp`, `death_toggle`, `inspiration`, `hit_dice`, `slots`, `coin`, `equip`, `text` (backstory only),
-    `item_add`, `custom_add`, `item_qty`, `item_remove`, `item_sell`, `spell_add`, `spell_remove` (the picture has its own
+    `item_add`, `item_buy`, `custom_add`, `item_qty`, `item_remove`, `item_sell`, `spell_add`, `spell_remove` (the picture has its own
     endpoint, above). It answers
     `{ok, refresh, message, state}` (`message` is a note for a toast, e.g. "Sold for 2 gp 5 sp"); the script redraws from `state`, or - when `refresh` is true because
     something derived changed (`equip`: AC, warnings; the item actions: the lists) - re-fetches the page and swaps

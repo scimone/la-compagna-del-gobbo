@@ -7,7 +7,9 @@
 {% block extra_style %}{% include "frontend/characters/sheet/style.html" %}{% endblock %}
 {% block content %}
   <div id="cs" data-act-url="{% url 'character-act' character.pk %}" data-portrait-url="{% url 'character-portrait' character.pk %}" data-editable="{% if can_edit %}1{% else %}0{% endif %}"
-       data-error="{% translate 'Could not save that change.' %}">
+       data-error="{% translate 'Could not save that change.' %}"
+       data-fmt-gp="{{ buy_fmt.gp }}" data-fmt-sp="{{ buy_fmt.sp }}" data-fmt-cp="{{ buy_fmt.cp }}"
+       data-fmt-buy-confirm="{{ buy_fmt.confirm }}" data-fmt-buy-left="{{ buy_fmt.left }}">
     {% csrf_token %}
     <div id="cs-swap">
       {% include "frontend/characters/sheet/_top.html" %}
@@ -36,18 +38,37 @@
       </div>
     </div>
     {% if can_edit %}
-      {# The "add an item" and "add a spell" sheets: outside #cs-swap, so they survive the redraws their own adds cause. #}
+      {% get_current_language as CURRENT_LANGUAGE %}
+      {# The "add an item" and "add a spell" sheets: outside #cs-swap, so they survive the redraws  #}
+      {# their own adds cause. They cover the whole screen (base.html's language switch included),  #}
+      {# so each carries its own - the same form as base.html's, kept in sync with it by hand.       #}
       <div id="cs-add" class="cs-overlay" role="dialog" aria-modal="true" aria-label="{% translate 'Add item' %}" hidden data-url="{% url 'character-items' character.pk %}">
         <div class="cs-overlay-head">
           <h3>{% translate "Add item" %}</h3>
-          <button type="button" class="cs-overlay-close" data-add-close>{% translate "Done" %}</button>
+          <div class="cs-overlay-actions">
+            <form action="{% url 'set_language' %}" method="post" class="lang-switcher" data-nav="replace">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ request.get_full_path }}">
+              {% if CURRENT_LANGUAGE == "it" %}<button type="submit" name="language" value="en">English</button>
+              {% else %}<button type="submit" name="language" value="it">Italiano</button>{% endif %}
+            </form>
+            <button type="button" class="cs-overlay-close" data-add-close>{% translate "Done" %}</button>
+          </div>
         </div>
         <div class="cs-overlay-body"></div>
       </div>
       <div id="cs-add-spell" class="cs-overlay" role="dialog" aria-modal="true" aria-label="{% translate 'Add spell' %}" hidden data-url="{% url 'character-spells' character.pk %}">
         <div class="cs-overlay-head">
           <h3>{% translate "Add spell" %}</h3>
-          <button type="button" class="cs-overlay-close" data-add-close>{% translate "Done" %}</button>
+          <div class="cs-overlay-actions">
+            <form action="{% url 'set_language' %}" method="post" class="lang-switcher" data-nav="replace">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ request.get_full_path }}">
+              {% if CURRENT_LANGUAGE == "it" %}<button type="submit" name="language" value="en">English</button>
+              {% else %}<button type="submit" name="language" value="it">Italiano</button>{% endif %}
+            </form>
+            <button type="button" class="cs-overlay-close" data-add-close>{% translate "Done" %}</button>
+          </div>
         </div>
         <div class="cs-overlay-body"></div>
       </div>

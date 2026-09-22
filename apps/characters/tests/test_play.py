@@ -208,6 +208,46 @@ def test_adding_catalog_gear_stacks_onto_the_loose_stack_but_not_onto_a_packs_co
         play.add_item(hero, "no-such-item")
 
 
+def test_buying_pays_for_the_item_and_adds_it_stacking_like_add_item(hero):
+    play.set_coin(hero, "gold", 20)
+
+    item, price = play.buy_item(hero, "rope")  # 1 gp
+    again, _price = play.buy_item(hero, "rope")
+
+    assert price == 100 and item.pk == again.pk
+    again.refresh_from_db()
+    assert again.quantity == 2
+    hero.refresh_from_db()
+    assert hero.currency.gold == 18
+
+
+def test_buying_spends_the_purse_breaking_only_the_coin_it_needs_to(hero):
+    play.set_coin(hero, "platinum", 2)  # 2000 cp, nothing else
+
+    play.buy_item(hero, "rope")  # 1 gp = 100 cp, out of 2000
+
+    hero.refresh_from_db()
+    # 1900 cp left: one platinum piece kept whole, the rest re-minted as gold (never electrum -
+    # the purse never had any) since a purchase only ever breaks what it must.
+    assert (hero.currency.platinum, hero.currency.electrum, hero.currency.gold) == (1, 0, 9)
+
+
+def test_buying_without_enough_money_or_a_price_is_refused_and_nothing_changes(hero):
+    play.set_coin(hero, "gold", 0)
+
+    with pytest.raises(ValueError):
+        play.buy_item(hero, "rope")
+    assert not hero.inventory_items.exists()
+
+    play.set_coin(hero, "gold", 99)
+    Equipment.objects.filter(pk="rope").update(value=0)
+    with pytest.raises(ValueError):
+        play.buy_item(hero, "rope")
+    assert not hero.inventory_items.exists()
+    hero.refresh_from_db()
+    assert hero.currency.gold == 99  # untouched by the refused purchase
+
+
 def test_custom_items_are_validated_and_stored_in_copper(hero):
     item = play.add_custom_item(
         hero, name="  Lucky coin ", section="misc", value=250, weight=0.1, valuable=True

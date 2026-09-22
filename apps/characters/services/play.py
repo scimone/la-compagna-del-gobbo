@@ -152,6 +152,29 @@ def set_coin(character: Character, coin: str, amount: int) -> None:
     purse.save(update_fields=[coin])
 
 
+def _purse_copper(purse: CharacterCurrency) -> int:
+    """The whole purse, in copper."""
+    return (
+        purse.copper
+        + purse.silver * 10
+        + purse.electrum * 50
+        + purse.gold * 100
+        + purse.platinum * 1000
+    )
+
+
+def _set_purse_copper(purse: CharacterCurrency, total: int) -> None:
+    """Re-mint `total` copper into coins. Platinum and electrum are kept only if the purse
+    already uses them - like `sell_item`, a purchase never introduces a denomination the player
+    never had."""
+    remaining = total
+    purse.platinum, remaining = divmod(remaining, 1000) if purse.platinum else (0, remaining)
+    purse.electrum, remaining = divmod(remaining, 50) if purse.electrum else (0, remaining)
+    purse.gold, remaining = divmod(remaining, 100)
+    purse.silver, purse.copper = divmod(remaining, 10)
+    purse.save(update_fields=["copper", "silver", "electrum", "gold", "platinum"])
+
+
 @transaction.atomic
 def set_equipped(character: Character, item_id: int, equipped: bool) -> None:
     """Wear or take off one item. Wearing body armor takes off the armor already worn, and a shield
@@ -209,6 +232,25 @@ def add_item(character: Character, equipment_id: str, quantity: int = 1) -> Char
     stack.quantity = _clamp(stack.quantity + quantity, 1, MAX_QUANTITY)
     stack.save(update_fields=["quantity"])
     return stack
+
+
+@transaction.atomic
+def buy_item(
+    character: Character, equipment_id: str, quantity: int = 1
+) -> tuple[CharacterInventoryItem, int]:
+    """Pay catalog gear's cost out of the coin purse, then add it like `add_item`. Returns the
+    item stack and the copper paid; an item with no price, or a purse that cannot afford it,
+    refuses (nothing is charged or added)."""
+    equipment = Equipment.objects.get(pk=equipment_id)
+    quantity = _clamp(quantity, 1, MAX_QUANTITY)
+    if not equipment.value:
+        raise ValueError("this item has no price to buy it at")
+    price = equipment.value * quantity
+    purse, _created = CharacterCurrency.objects.get_or_create(character=character)
+    if price > _purse_copper(purse):
+        raise ValueError("not enough money to buy this")
+    _set_purse_copper(purse, _purse_copper(purse) - price)
+    return add_item(character, equipment_id, quantity), price
 
 
 def add_custom_item(

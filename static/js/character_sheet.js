@@ -12,8 +12,6 @@
  *    (inside `data-panel-group`) show it in the panel that follows their group.
  *  - the spellbook's search and filter buttons filter the rows on the spot; so do those of the
  *    "add an item" and "add a spell" overlays, which are fetched the first time they are opened.
- *  - folding: the chevron in the header folds its details (`#cs.folded`, remembered in localStorage;
- *    the class sits on #cs so it survives the swap below).
  *  - the portrait: choosing a file (or removing it) posts to its own endpoint (`data-portrait-url`).
  *
  * Nothing here is a rule: the numbers come from the server.
@@ -27,16 +25,6 @@
   var csrf = csrfInput ? csrfInput.value : "";
   var toast = document.getElementById("cs-toast");
   var descriptions = {}; // url -> Promise<html>
-
-  function store(key, value) {
-    try {
-      if (value === undefined) return window.localStorage.getItem(key);
-      window.localStorage.setItem(key, value);
-    } catch (error) {
-      // storage blocked: the preference just isn't remembered
-    }
-    return null;
-  }
 
   // ---- tabs ------------------------------------------------------------------------------
 
@@ -94,11 +82,44 @@
 
   function paramsOf(el) {
     var params = { action: el.dataset.act };
+    var skip = ["act", "bind", "describe", "label", "toggle", "tab", "confirm", "done", "buy", "cost"];
     Object.keys(el.dataset).forEach(function (key) {
-      if (["act", "bind", "describe", "label", "toggle", "tab", "confirm", "done"].indexOf(key) === -1) params[key] = el.dataset[key];
+      if (skip.indexOf(key) === -1) params[key] = el.dataset[key];
     });
     if (el.matches("input, textarea, select")) params.value = el.value;
     return params;
+  }
+
+  // ---- buying: the purse total, read live (the coin purse's own `data-bind` elements, not a  ----
+  // ---- number fetched from the server - so it is right even after other coins changed) -------
+
+  function coinAmount(key) {
+    var el = root.querySelector('[data-bind="coins.' + key + '"]');
+    if (!el) return 0;
+    return Number(el.matches("input") ? el.value : el.textContent) || 0;
+  }
+
+  function purseCopper() {
+    return (
+      coinAmount("copper") +
+      coinAmount("silver") * 10 +
+      coinAmount("electrum") * 50 +
+      coinAmount("gold") * 100 +
+      coinAmount("platinum") * 1000
+    );
+  }
+
+  // gp/sp/cp only, like the server's own `_gold_label` (platinum and electrum are never spent on
+  // a purchase, so they never show up in a price or a balance).
+  function copperLabel(copper) {
+    var gold = Math.floor(copper / 100);
+    var silver = Math.floor((copper % 100) / 10);
+    var cp = copper % 10;
+    var parts = [];
+    if (gold) parts.push(root.dataset.fmtGp.replace("%(n)d", gold));
+    if (silver) parts.push(root.dataset.fmtSp.replace("%(n)d", silver));
+    if (cp) parts.push(root.dataset.fmtCp.replace("%(n)d", cp));
+    return parts.length ? parts.join(" ") : root.dataset.fmtGp.replace("%(n)d", 0);
   }
 
   // Post an action. Resolves to true when the server accepted it (after any redraw it asked for).
@@ -222,7 +243,19 @@
     var button = event.target.closest("button[data-act]");
     if (button && !button.disabled) {
       event.preventDefault();
-      if (button.dataset.confirm && !window.confirm(button.dataset.confirm)) return;
+      if (button.dataset.buy) {
+        // The price and what is left afterwards, both worked out from the purse as it stands right
+        // now (this sheet is fetched once and never refreshed, so a static confirmation could go
+        // stale after an earlier buy).
+        var cost = Number(button.dataset.cost) || 0;
+        var confirmText =
+          root.dataset.fmtBuyConfirm.replace("%(price)s", copperLabel(cost)) +
+          "\n" +
+          root.dataset.fmtBuyLeft.replace("%(left)s", copperLabel(Math.max(0, purseCopper() - cost)));
+        if (!window.confirm(confirmText)) return;
+      } else if (button.dataset.confirm && !window.confirm(button.dataset.confirm)) {
+        return;
+      }
       send(paramsOf(button)).then(function (accepted) {
         if (accepted && button.dataset.done) {
           button.textContent = button.dataset.done;
@@ -249,13 +282,6 @@
   root.addEventListener("click", function (event) {
     var tab = event.target.closest(".cs-tabs button[data-tab]");
     if (tab) showTab(tab.dataset.tab, true);
-
-    var foldButton = event.target.closest(".cs-fold");
-    if (foldButton) {
-      var folded = root.classList.toggle("folded");
-      foldButton.setAttribute("aria-expanded", folded ? "false" : "true");
-      store("cs-folded", folded ? "1" : "0");
-    }
   });
 
   // ---- descriptions -----------------------------------------------------------------------
@@ -531,9 +557,6 @@
   function setup() {
     var current = root.querySelector(".cs-tabs button.active");
     if (current) centreTab(current);
-    // A swapped-in header has a fresh button; the class on #cs is what says whether it is folded.
-    var foldButton = root.querySelector(".cs-fold");
-    if (foldButton) foldButton.setAttribute("aria-expanded", root.classList.contains("folded") ? "false" : "true");
   }
 
   setup();

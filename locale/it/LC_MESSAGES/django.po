@@ -529,7 +529,7 @@ msgid "Cantrips"
 msgstr "Trucchetti"
 
 msgid "Spellbook"
-msgstr "Libro degli incantesimi"
+msgstr "Incantesimi"
 
 msgid "Prepared spells"
 msgstr "Incantesimi preparati"
@@ -1392,3 +1392,31 @@ msgstr "Aggiunto"
 #: apps/frontend/templates/frontend/characters/sheet/_spellbook.html
 msgid "Remove this spell?"
 msgstr "Rimuovere questo incantesimo?"
+
+#: apps/frontend/templates/frontend/characters/sheet/_add_item.html
+msgid "Buy"
+msgstr "Compra"
+
+#: apps/frontend/character_sheet.py
+#, python-format
+msgid "Buy for %(price)s?"
+msgstr "Comprare per %(price)s?"
+
+#: apps/frontend/character_sheet.py
+#, python-format
+msgid "You will have %(left)s left."
+msgstr "Ti rimarranno %(left)s."
+
+#: apps/frontend/character_sheet.py
+#, python-format
+msgid "Bought %(name)s for %(price)s"
+msgstr "Comprato %(name)s per %(price)s"
+
+#: apps/frontend/templates/frontend/characters/sheet/_inventory.html
+msgid "Sell"
+msgstr "Vendi"
+
+#: apps/frontend/templates/frontend/characters/sheet/_inventory.html
+#, python-format
+msgid "Sell this for %(price)s?"
+msgstr "Vendere questo per %(price)s?"

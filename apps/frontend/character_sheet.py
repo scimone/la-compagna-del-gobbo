@@ -526,6 +526,16 @@ def _inventory(character: Character, stats) -> dict:
         sections[card["section"]]["cards"].append(card)
     for section in sections.values():
         section["cards"].sort(key=lambda c: c["name"].lower())
+    return {
+        "coins": _coins(character),
+        "sections": [s for s in sections.values() if s["cards"]],
+        "total_weight": _weight_text(total_weight) if total_weight else "",
+        "warning_texts": [_warning_text(w) for w in stats.warnings],
+    }
+
+
+def _coins(character: Character) -> list[dict]:
+    """The coin purse: the Inventory tab's pouch, and the "add an item" sheet's sticky one."""
     purse = getattr(character, "currency", None)
     coins = [
         {"key": key, "label": label, "abbr": abbr, "amount": getattr(purse, key, 0) if purse else 0}
@@ -541,12 +551,7 @@ def _inventory(character: Character, stats) -> dict:
                 "amount": purse.electrum,
             },
         )
-    return {
-        "coins": coins,
-        "sections": [s for s in sections.values() if s["cards"]],
-        "total_weight": _weight_text(total_weight) if total_weight else "",
-        "warning_texts": [_warning_text(w) for w in stats.warnings],
-    }
+    return coins
 
 
 # --- proficiencies -----------------------------------------------------------------------------
@@ -729,6 +734,16 @@ def character_detail(request, pk):
             "proficiencies": _proficiencies(character),
             "identity": _identity(character, classes),
             "biography": _biography(character),
+            # The "add an item" sheet's Buy confirmation is built client-side (its purse total has
+            # to stay live across several buys, so it can't be a string rendered once at page load,
+            # like the Sell ones are) - these are the pieces `character_sheet.js` fills in.
+            "buy_fmt": {
+                "gp": _("%(n)d gp"),
+                "sp": _("%(n)d sp"),
+                "cp": _("%(n)d cp"),
+                "confirm": _("Buy for %(price)s?"),
+                "left": _("You will have %(left)s left."),
+            },
         },
     )
     add_never_cache_headers(response)
@@ -819,6 +834,16 @@ def _act_item_add(character, post):
     return {"refresh": True, "message": _("Added %(name)s") % {"name": item.equipment.name}}
 
 
+def _act_item_buy(character, post):
+    quantity = int(_number(post, "quantity") or 1)
+    item, price = play.buy_item(character, post.get("equipment", ""), quantity)
+    return {
+        "refresh": True,
+        "message": _("Bought %(name)s for %(price)s")
+        % {"name": item.equipment.name, "price": _gold_label(price)},
+    }
+
+
 def _act_custom_add(character, post):
     weight = _number(post, "weight")
     if weight is not None and units.is_metric():  # typed in kilograms, stored in pounds
@@ -860,6 +885,7 @@ def _act_item_sell(character, post):
 
 _ACTIONS["equip"] = _act_equip
 _ACTIONS["item_add"] = _act_item_add
+_ACTIONS["item_buy"] = _act_item_buy
 _ACTIONS["custom_add"] = _act_custom_add
 _ACTIONS["item_qty"] = _act_item_qty
 _ACTIONS["item_remove"] = _act_item_remove
@@ -970,6 +996,8 @@ def character_items(request, pk):
             "category": e.weapon_category,
             "property": " ".join(p.pk for p in e.properties.all()),
             "mastery": " ".join(m.pk for m in e.masteries.all()),
+            # In copper; the "Buy" button pays this out of the purse instead of adding it for free.
+            "cost": e.value or 0,
         }
         for e in catalog
     ]
@@ -1047,6 +1075,7 @@ def character_items(request, pk):
             "filters": filters,
             "sections": [(key, label) for key, label, _types in _INVENTORY_SECTIONS],
             "weight_unit": "kg" if units.is_metric() else "lb",
+            "coins": _coins(character),
         },
     )
 

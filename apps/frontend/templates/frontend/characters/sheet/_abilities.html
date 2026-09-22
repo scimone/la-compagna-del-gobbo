@@ -20,8 +20,16 @@
   </div>
 </div>
 
-{# The heading of the list stays in view too (it is outside the scrolling part, on the page colour). #}
-<h3 class="cs-subhead">{% translate "Skills" %}</h3>
+{# The heading of the list stays in view too (it is outside the scrolling part, on the page colour), #}
+{# with the legend (what the pips mean) right next to it. #}
+<div class="cs-subhead">
+  <h3>{% translate "Skills" %}</h3>
+  <p class="cs-legend">
+    <span><i class="pip"></i> {% translate "Not proficient" %}</span>
+    <span><i class="pip proficient"></i> {% translate "Proficient" %}</span>
+    <span><i class="pip expertise"></i> {% translate "Expertise" %}</span>
+  </p>
+</div>
 <div class="cs-scroll">
 <section class="cs-group">
 <ul class="cs-skills">
@@ -37,9 +45,4 @@
   {% endfor %}
 </ul>
 </section>
-<p class="cs-legend">
-  <span><i class="pip"></i> {% translate "Not proficient" %}</span>
-  <span><i class="pip proficient"></i> {% translate "Proficient" %}</span>
-  <span><i class="pip expertise"></i> {% translate "Expertise" %}</span>
-</p>
 </div>

@@ -1,8 +1,17 @@
 {% load i18n %}
 {# The "add an item" sheet (fetched into the overlay on first use): the catalog as a filterable  #}
 {# list in the World's list design - same search box and filter buttons as the World's lists -  #}
-{# and a small form for an item of the player's own.                                            #}
+{# and a small form for an item of the player's own. The coin purse stays visible on top, since  #}
+{# it is what a Buy weighs against.                                                              #}
 <div class="cs-sticky">
+  <div class="cs-purse" aria-label="{% translate 'Coins' %}">
+    {% for c in coins %}
+      <label class="coin coin-{{ c.key }}" title="{{ c.label }}">
+        <span class="disc" aria-hidden="true">{{ c.abbr }}</span>
+        <b data-bind="coins.{{ c.key }}">{{ c.amount }}</b><span class="sr">{{ c.label }}</span>
+      </label>
+    {% endfor %}
+  </div>
   <div class="cs-seg" role="tablist">
     <button type="button" role="tab" data-add-tab="catalog" aria-selected="true" class="active">{% translate "Catalog" %}</button>
     <button type="button" role="tab" data-add-tab="custom" aria-selected="false">{% translate "Custom item" %}</button>
@@ -18,14 +27,21 @@
     {% for e in items %}
       <li data-search="{{ e.search }}" data-section="{{ e.section }}" data-type="{{ e.type }}" data-category="{{ e.category }}" data-property="{{ e.property }}" data-mastery="{{ e.mastery }}">
         <div class="cs-line">
-          <button type="button" class="cs-row has-equip" data-describe="{{ e.describe }}" aria-expanded="false">
+          <button type="button" class="cs-row has-buy" data-describe="{{ e.describe }}" aria-expanded="false">
             <span class="item-text">
               <span class="item-name">{{ e.name }}</span>
               {% if e.detail %}<span class="item-detail">{{ e.detail }}</span>{% endif %}
             </span>
             <span class="chev" aria-hidden="true"></span>
           </button>
-          <button type="button" class="equip add" data-act="item_add" data-equipment="{{ e.id }}">{% translate "Add" %}</button>
+          <div class="cs-actions">
+            {% if e.cost %}
+              {# The price pays for itself: `character_sheet.js` builds the confirmation (with what #}
+              {# is left after) from the purse it can see live, since this sheet is never re-fetched. #}
+              <button type="button" class="equip buy" data-buy data-act="item_buy" data-equipment="{{ e.id }}" data-cost="{{ e.cost }}">{% translate "Buy" %}</button>
+            {% endif %}
+            <button type="button" class="equip add" data-act="item_add" data-equipment="{{ e.id }}">{% translate "Add" %}</button>
+          </div>
         </div>
         <div class="desc" hidden><div class="desc-body"></div></div>
       </li>

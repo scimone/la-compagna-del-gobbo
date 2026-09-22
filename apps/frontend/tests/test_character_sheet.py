@@ -55,24 +55,14 @@ def panel(html: str, name: str) -> str:
 # --- the page ----------------------------------------------------------------------------------
 
 
-def test_the_header_has_the_portrait_the_name_and_level_and_who_the_character_is(signed_in, alice):
+def test_the_top_holds_only_the_tab_strip(signed_in, alice):
     cleric = finished(alice, "cleric", name="Bruno")
 
     html = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
 
     top = html[html.index('<div class="cs-top">') : html.index('role="tabpanel"')]
-    id_row, tabbar = top.split('<div class="cs-tabbar">')
-    assert 'class="cs-name"' in id_row and 'value="Bruno"' in id_row  # editable name...
-    assert '<span class="cs-level">Level 1</span>' in id_row  # ...with the level next to it
-    assert id_row.index('class="cs-pic"') < id_row.index('class="cs-name"')  # picture on the left
-    # Class, species, background and size are written in the header (in the part that folds)...
-    details = id_row.split('class="cs-class cs-detail"')[1]
-    for fact in ("Cleric", "Human", "Acolyte", "Medium"):
-        assert fact in details
-    assert len(re.findall(r'class="[^"]*\bcs-detail\b', id_row)) == 2 and "cs-fold" in id_row
-    # ...and the numbers of the Stats tab are not.
-    for gone in ("Armor Class", "Hit Points", "Death Saves", "Experience"):
-        assert gone not in id_row
+    assert "cs-name" not in top and "cs-pic" not in top and "Bruno" not in top
+    tabbar = top.split('<div class="cs-tabbar">')[1]
     tabs = re.findall(r'<button type="button" role="tab" data-tab="(\w+)"', tabbar)
     assert tabs == [
         "stats",
@@ -85,16 +75,34 @@ def test_the_header_has_the_portrait_the_name_and_level_and_who_the_character_is
     ]
 
 
-def test_a_multiclass_headers_class_line_lists_every_class_with_its_level(signed_in, alice):
+def test_the_biography_tab_has_the_portrait_the_name_and_level_and_who_the_character_is(
+    signed_in, alice
+):
+    cleric = finished(alice, "cleric", name="Bruno")
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "biography")
+
+    id_row = html.split('class="cs-identity"')[1].split("</section>")[0]
+    assert 'class="cs-name"' in id_row and 'value="Bruno"' in id_row  # editable name...
+    assert '<span class="cs-level">Level 1</span>' in id_row  # ...with the level next to it
+    assert id_row.index('class="cs-pic"') < id_row.index('class="cs-who"')  # picture on the left
+    for fact in ("Cleric", "Human", "Acolyte", "Medium"):
+        assert fact in id_row
+    # the numbers of the Stats tab are not here
+    for gone in ("Armor Class", "Hit Points", "Death Saves", "Experience"):
+        assert gone not in id_row
+
+
+def test_a_multiclass_characters_class_line_lists_every_class_with_its_level(signed_in, alice):
     from apps.characters.models import CharacterClass
     from apps.rules.models import Class
 
     fighter = finished(alice, "fighter", background="soldier")
     CharacterClass.objects.create(character=fighter, klass=Class.objects.get(pk="wizard"), level=1)
 
-    top = signed_in.get(f"/characters/{fighter.pk}/").content.decode().split('role="tabpanel"')[0]
+    html = panel(signed_in.get(f"/characters/{fighter.pk}/").content.decode(), "biography")
 
-    line = re.search(r'class="cs-class cs-detail">(.*?)</span>\s*</div>', top, re.S).group(1)
+    line = re.search(r'class="cs-class">(.*?)</span>\s*</div>', html, re.S).group(1)
     assert "Fighter</a> 1" in line and "Wizard</a> 1" in line and " / " in line
 
 
@@ -185,7 +193,10 @@ def test_what_must_stay_in_view_is_outside_the_scrolling_part_of_its_panel(signe
         before_scroll = panel(html, tab).split('<div class="cs-scroll">')[0]
         assert '<div class="cs-sticky">' in before_scroll and fixed in before_scroll
     fixed = panel(html, "abilities").split('<div class="cs-scroll">')[0]
-    assert '<h3 class="cs-subhead">Skills</h3>' in fixed  # the skills heading stays in view too
+    assert (
+        '<div class="cs-subhead">' in fixed and "<h3>Skills</h3>" in fixed
+    )  # heading stays in view
+    assert "cs-legend" in fixed and "Not proficient" in fixed  # the legend sits next to it
     skills = panel(html, "abilities").split('<div class="cs-scroll">')[1]
     assert "cs-skills" in skills and "cs-abilities" not in skills and "cs-pb" not in skills
     assert "Skills</h3>" not in skills
@@ -314,6 +325,24 @@ def test_items_can_be_edited_sold_and_removed_from_the_row_that_lists_them(signe
     assert "Equipment sells for half its cost." in html
 
 
+def test_a_sellable_item_also_gets_a_quick_sell_button_right_on_its_row(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    mace = cleric.inventory_items.get(equipment_id="mace")
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "inventory")
+
+    row = html.split(f'data-key="catalog-{mace.pk}"')[1].split("</li>")[0]
+    line = row.split('<div class="desc"')[0]  # before the description panel, i.e. on the row itself
+    assert 'class="btn-sell-row"' in line and 'data-act="item_sell"' in line
+    assert 'data-quantity="1"' in line and "data-confirm=" in line  # asks first, and says the price
+    # The description still has its own "sell one" too (there's only one mace, so no "sell all") -
+    # this doesn't replace it.
+    assert (
+        row.count('data-act="item_sell"') == 2
+    )  # the quick one, and "sell one" in the description
+    assert "Sell one for" in row
+
+
 def test_a_monks_light_martial_weapons_are_listed_but_not_the_other_martial_ones(signed_in, alice):
     monk = finished(alice, "monk", background="guide", species="elf")
 
@@ -364,7 +393,9 @@ def test_describe_serves_features_and_masteries(signed_in, alice):
     assert signed_in.get("/characters/describe/feature/0/").status_code == 404
 
 
-def test_biography_has_the_alignment_and_only_the_backstory_to_edit(client, alice, bob):
+def test_biography_has_who_the_character_is_the_alignment_and_the_backstory_to_edit(
+    client, alice, bob
+):
     cleric = finished(alice, "cleric")
     cleric.backstory = "Raised by monks."
     cleric.save()
@@ -373,13 +404,15 @@ def test_biography_has_the_alignment_and_only_the_backstory_to_edit(client, alic
     others = panel(client.get(f"/characters/{cleric.pk}/").content.decode(), "biography")
     assert "Raised by monks." in others and "<textarea" not in others
     assert "Alignment" in others
-    for moved in ("Acolyte", "Cleric", "Human", "Medium", "Background", "Species", "Size"):
-        assert moved not in others  # they are written in the header now
+    for fact in ("Acolyte", "Cleric", "Human", "Medium"):
+        assert fact in others  # class, species, background and size moved here from the header
+    assert 'data-act="name"' not in others and "data-portrait-file" not in others  # read-only
 
     client.force_login(alice)
     mine = panel(client.get(f"/characters/{cleric.pk}/").content.decode(), "biography")
     assert '<textarea class="cs-text"' in mine and "Raised by monks." in mine
     assert mine.count("<textarea") == 1 and "Appearance" not in mine and "Notes" not in mine
+    assert 'data-act="name"' in mine and "data-portrait-file" in mine  # the owner can edit both
 
 
 def test_another_account_sees_the_sheet_without_any_controls(client, alice, bob):
@@ -560,6 +593,80 @@ def test_adding_a_catalog_item_stacks_and_says_what_was_added(signed_in, alice):
     assert act(signed_in, cleric, action="item_add", equipment="nope").status_code == 400
 
 
+def test_buying_a_catalog_item_pays_for_it_out_of_the_purse(signed_in, alice):
+    from apps.rules.models import Equipment
+
+    cleric = finished(alice, "cleric")
+    cleric.currency.gold, cleric.currency.silver, cleric.currency.copper = 20, 0, 0
+    cleric.currency.save()
+    price = Equipment.objects.get(pk="longsword").value  # 15 gp, in copper
+
+    response = act(signed_in, cleric, action="item_buy", equipment="longsword")
+
+    assert response.status_code == 200 and response.json()["refresh"] is True
+    assert response.json()["message"] == "Bought Longsword for 15 gp"
+    cleric.currency.refresh_from_db()
+    assert cleric.currency.gold * 100 + cleric.currency.silver * 10 + cleric.currency.copper == (
+        2000 - price
+    )
+    assert cleric.inventory_items.get(equipment_id="longsword", parent=None).quantity == 1
+
+
+def test_buying_without_enough_money_is_refused_and_nothing_changes(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    cleric.currency.gold = cleric.currency.silver = cleric.currency.copper = 0
+    cleric.currency.save()
+
+    response = act(signed_in, cleric, action="item_buy", equipment="longsword")
+
+    assert response.status_code == 400
+    cleric.currency.refresh_from_db()
+    assert (cleric.currency.gold, cleric.currency.silver, cleric.currency.copper) == (0, 0, 0)
+    assert not cleric.inventory_items.filter(equipment_id="longsword").exists()
+    # An item with no price at all cannot be bought either.
+    free = cleric.inventory_items.exclude(equipment__value__gt=0).first()
+    if free:
+        assert (
+            act(signed_in, cleric, action="item_buy", equipment=free.equipment_id).status_code
+            == 400
+        )
+
+
+def test_only_the_owner_buys_items(signed_in, client, alice, bob):
+    cleric = finished(alice, "cleric")
+    client.force_login(bob)
+
+    assert act(client, cleric, action="item_buy", equipment="longsword").status_code == 403
+    assert not cleric.inventory_items.filter(equipment_id="longsword").exists()
+
+
+def test_the_add_item_sheets_purse_and_buy_buttons_are_visible_without_opening_a_row(
+    signed_in, alice
+):
+    cleric = finished(alice, "cleric")
+    cleric.currency.gold = 100
+    cleric.currency.save()
+
+    html = signed_in.get(f"/characters/{cleric.pk}/items/").content.decode()
+
+    purse = html.split('<div class="cs-purse"')[1].split("</div>")[0]
+    assert 'data-bind="coins.gold"' in purse and ">100<" in purse
+    row = html.split('data-equipment="longsword"')[0]
+    assert 'data-act="item_buy"' in row.rsplit("<li ", 1)[-1] or 'data-act="item_buy"' in html
+
+
+def test_the_add_item_and_add_spell_overlays_have_their_own_language_switch(signed_in, alice):
+    cleric = finished(alice, "cleric")
+
+    html = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
+
+    assert html.count('class="lang-switcher"') == 3  # base.html's own, plus one per overlay
+    for overlay_id in ("cs-add", "cs-add-spell"):
+        head = html.split(f'id="{overlay_id}"')[1].split("cs-overlay-body")[0]
+        assert "lang-switcher" in head and "Italiano" in head
+    assert act(signed_in, cleric, action="item_add", equipment="nope").status_code == 400
+
+
 def test_a_custom_item_is_listed_in_its_section_and_sold_at_its_own_price(signed_in, alice):
     cleric = finished(alice, "cleric")
     gold_before = cleric.currency.gold
@@ -640,13 +747,18 @@ def test_the_add_item_sheet_lists_the_whole_catalog_with_filters_and_a_custom_fo
 
     html = signed_in.get(f"/characters/{cleric.pk}/items/").content.decode()
 
-    assert html.count("data-equipment=") == Equipment.objects.count()
+    assert html.count('data-act="item_add"') == Equipment.objects.count()  # one Add each...
+    assert (
+        0 < html.count('data-act="item_buy"') < Equipment.objects.count()
+    )  # ...and Buy where priced
     assert 'name="q"' in html and "filter-popover" in html  # the World's search + filters
     for label in ("Category", "Properties", "Mastery"):
         assert label in html  # a filter button each
     assert "data-custom-form" in html and 'name="valuable"' in html
     assert 'data-category="martial"' in html and 'data-mastery="sap"' in html
-    assert "Carrying" not in html
+    assert "Carrying" not in html  # (that's the inventory tab's own toolbar)
+    for coin in ("copper", "silver", "gold", "platinum"):
+        assert f'data-bind="coins.{coin}"' in html  # the purse is sticky on top
 
 
 def test_the_add_item_sheet_starts_with_pills_for_the_main_type_and_the_rest_waits_for_one(
@@ -769,27 +881,27 @@ def upload(client, character, size=(300, 400), name="me.png", **extra):
     return client.post(f"/characters/{character.pk}/portrait/", data)
 
 
-def test_the_owner_uploads_a_portrait_and_everyone_sees_it_in_the_header(
+def test_the_owner_uploads_a_portrait_and_everyone_sees_it_in_the_biography_tab(
     signed_in, client, media, alice, bob
 ):
     cleric = finished(alice, "cleric")
-    before = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
-    assert 'class="cs-pic"' in before and "<img" not in before.split('role="tabpanel"')[0]
+    before = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "biography")
+    assert 'class="cs-pic"' in before and "<img" not in before
 
     response = upload(signed_in, cleric)
 
     assert response.status_code == 200 and response.json() == {"ok": True, "refresh": True}
     cleric.refresh_from_db()
-    top = signed_in.get(f"/characters/{cleric.pk}/").content.decode().split('role="tabpanel"')[0]
-    assert f'<img src="/characters/{cleric.pk}/portrait/?v={cleric.portrait.name}"' in top
-    assert "data-portrait-remove" in top and "data-portrait-file" in top
+    bio = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "biography")
+    assert f'<img src="/characters/{cleric.pk}/portrait/?v={cleric.portrait.name}"' in bio
+    assert "data-portrait-remove" in bio and "data-portrait-file" in bio
 
     picture = signed_in.get(f"/characters/{cleric.pk}/portrait/")
     assert picture.status_code == 200 and picture["Content-Type"] == "image/webp"
     assert picture.content[:4] == b"RIFF"
 
     client.force_login(bob)  # another account sees it, but has no way to change it
-    theirs = client.get(f"/characters/{cleric.pk}/").content.decode().split('role="tabpanel"')[0]
+    theirs = panel(client.get(f"/characters/{cleric.pk}/").content.decode(), "biography")
     assert "<img" in theirs and "data-portrait-file" not in theirs
     assert client.get(f"/characters/{cleric.pk}/portrait/").status_code == 200
 
