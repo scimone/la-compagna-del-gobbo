@@ -29,33 +29,11 @@
 
   /* Bookmarked entries of the current (searched/filtered) list, pinned above the rest: no
      heading, just visibly different (accent border and tint) from a regular entry. */
-  .bookmark-list,
-  .featured-list {
+  .bookmark-list {
     flex-shrink: 0;
     padding-bottom: 0.75rem;
     margin-bottom: 0.25rem;
     border-bottom: 1px dashed var(--accent);
-  }
-
-  /* The featured block plus the search box under its dividing line (`search_below_featured`):
-     a fixed header of the list, outside the scrolling results. The search form is drawn here as
-     just the input, without the full-width bar it is under the page header. */
-  .featured-top {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .featured-top .featured-list {
-    padding-bottom: 1rem;
-    margin-bottom: 0;
-  }
-
-  .featured-top .world-search {
-    padding: 0;
-    background: none;
-    border-bottom: 0;
   }
 
   .item-list.bookmark-list li {
@@ -96,43 +74,9 @@
     color: var(--accent);
   }
 
-  /* An entry that isn't one of its list's regular items (the Handbook's Glossary): solid
-     accent block with an icon, so it reads as a different kind of thing from the chapters below,
-     which it is also separated from by a dividing line (`.featured-list`, above). */
-  .item-list li.featured {
-    background: var(--accent);
-    border-color: var(--accent);
-  }
-
-  .item-list li.featured a {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    padding: 0.8rem 0.9rem;
-    color: var(--accent-text);
-  }
-
-  .item-list li.featured a:active {
-    background: var(--accent-strong);
-  }
-
-  .item-list li.featured .item-name {
-    font-size: 1.05rem;
-    font-weight: 700;
-  }
-
-  .item-list li.featured .item-detail {
-    color: inherit;
-    opacity: 0.85;
-  }
-
-  .featured-icon {
-    flex-shrink: 0;
-    width: 2.7rem;
-    height: auto;
-  }
-
-  /* A Handbook chapter's page: a sheet of paper with its number on top of it. */
+  /* A Handbook chapter section's page, or a Glossary entry's page: same box either way
+     (`_list_item.html` puts the paper-sheet icon in it, or the Glossary's own AZ icon), the page
+     number itself given as a "Page N" text line instead (`.item-detail`), like any other detail. */
   .item-list a.page-row {
     display: flex;
     align-items: center;
@@ -141,7 +85,6 @@
   }
 
   .page-icon {
-    position: relative;
     flex-shrink: 0;
     width: 2.6rem;
     height: 2.6rem;
@@ -153,24 +96,6 @@
     width: 100%;
     height: 100%;
   }
-
-  /* Centred on the sheet's body, just below its folded corner. */
-  .page-number {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    transform: translateY(-38%);
-    text-align: center;
-    font-size: 0.8rem;
-    font-weight: 800;
-    -webkit-text-stroke: 0.3px currentColor; /* system fonts often have no weight above bold */
-    line-height: 1;
-    color: inherit;
-    font-variant-numeric: tabular-nums;
-  }
-
-
 
   /* Handbook search: where the query was found - a few snippets under the section's name, the
      match itself highlighted. */
@@ -322,20 +247,8 @@
 {% endblock %}
 
 {% block content %}
-  {% if search_below_featured %}
-    {# The featured block (the Handbook's Glossary) stays put above the search box, which stays #}
-    {# put above the results: only `#search-results` below is swapped by live search.          #}
-    <div class="featured-top">
-      <ul class="item-list featured-list">
-        {% for item in featured_items %}
-          {% include "frontend/_list_item.html" %}
-        {% endfor %}
-      </ul>
-      {% include "frontend/_search_form.html" %}
-    </div>
-  {% endif %}
   <div id="search-results"{% if alphabet %} class="has-alpha"{% endif %}>
-    {% if items or bookmarked_items or groups or featured_items and not search_below_featured %}
+    {% if items or bookmarked_items or groups %}
       {% if bookmark_kind %}
         {# One form for every bookmark button on the page (see `_list_item.html`) - inside #}
         {# `#search-results` so `next` always matches the URL this render came from.       #}
@@ -346,13 +259,6 @@
         </form>
       {% endif %}
       <div class="list-scroll">
-        {% if featured_items and not search_below_featured %}
-          <ul class="item-list featured-list">
-            {% for item in featured_items %}
-              {% include "frontend/_list_item.html" %}
-            {% endfor %}
-          </ul>
-        {% endif %}
         {% if bookmarked_items %}
           <ul class="item-list bookmark-list{% if compact_thumbs %} compact-thumbs{% endif %}" aria-label="{% translate 'Bookmarks' %}">
             {% for item in bookmarked_items %}

@@ -27,6 +27,7 @@ def _html(client, url):
     [
         "/characters/",
         "/handbook/",
+        "/handbook/rules-glossary/",
         "/world/backgrounds/",
         "/world/classes/",
         "/world/species/",
@@ -35,16 +36,14 @@ def _html(client, url):
     ],
 )
 def test_menu_roots_have_no_back_arrow(client, db, url):
-    # Back at a menu's root does nothing, so there is no arrow to press.
+    # Back at a menu's root does nothing, so there is no arrow to press. The Glossary is a root
+    # too now, a tab alongside Chapters rather than a page nested under it.
     assert 'id="back-btn"' not in _html(client, url)
 
 
 def test_nested_pages_link_to_their_parent(client, feats):
     detail = _html(client, "/world/feats/alert/")
     assert re.search(r'id="back-btn" class="back-btn" href="/world/feats/"', detail)
-
-    glossary = _html(client, "/handbook/rules-glossary/")
-    assert re.search(r'id="back-btn" class="back-btn" href="/handbook/"', glossary)
 
 
 def test_language_switch_returns_to_the_same_url_including_the_query(client, feats):
@@ -74,6 +73,27 @@ def test_tab_switches_and_search_replace_the_history_entry(client, feats):
     ):
         assert re.search(rf'data-nav="replace"\s+href="{re.escape(url)}"', html), url
     assert re.search(r'<form class="world-search"[^>]*data-nav="replace"', html)
+
+
+def test_handbook_tabs_switch_between_chapters_and_glossary(client, db):
+    chapters = _html(client, "/handbook/")
+    assert re.search(
+        r'<a\s+data-nav="replace"\s+href="/handbook/"\s+class="active"\s*>\s*Chapters\s*</a>',
+        chapters,
+    )
+    assert re.search(
+        r'<a\s+data-nav="replace"\s+href="/handbook/rules-glossary/"\s+class=""\s*>\s*Glossary\s*</a>',
+        chapters,
+    )
+
+    glossary = _html(client, "/handbook/rules-glossary/")
+    assert re.search(
+        r'<a\s+data-nav="replace"\s+href="/handbook/"\s+class=""\s*>\s*Chapters\s*</a>', glossary
+    )
+    assert re.search(
+        r'<a\s+data-nav="replace"\s+href="/handbook/rules-glossary/"\s+class="active"\s*>\s*Glossary\s*</a>',
+        glossary,
+    )
 
 
 def test_bottom_nav_items_declare_their_menu_and_the_script_is_loaded(client, db):

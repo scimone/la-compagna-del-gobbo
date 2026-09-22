@@ -1,6 +1,6 @@
 {# The list pages' search box (+ filters) - a plain GET form that the live-search script at the #}
-{# bottom of base.html turns into a live search. Rendered under the header (base.html), or, for a #}
-{# list with a `featured` block on top (the Handbook), under that block (list.html).            #}
+{# bottom of base.html turns into a live search. Rendered under the header, below the tabs when #}
+{# the page has any (base.html). #}
 {% load i18n %}
 <form class="world-search" method="get" action="{{ request.path }}" data-nav="replace">
   <div class="world-search-field">

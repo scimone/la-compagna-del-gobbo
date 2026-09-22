@@ -297,10 +297,11 @@
       background: var(--bg);
     }
 
-    /* Secondary nav row for browsing the World catalog's categories - shown only on pages that
-       opt in via `world_tabs` (the World hub itself, and each category's list page), not on
-       every page the way `.bottom-nav` is. Horizontally scrollable rather than shrinking tabs
-       to fit, so adding a 6th category later doesn't need a redesign. */
+    /* Secondary nav row for browsing a catalog's categories - shown only on pages that opt in via
+       `world_tabs` (the World hub itself, and each category's list page) or `handbook_tabs` (the
+       Handbook's Chapters/Glossary), not on every page the way `.bottom-nav` is. Horizontally
+       scrollable rather than shrinking tabs to fit, so adding another category later doesn't need
+       a redesign. Also reused, unrelated to either, by a detail page's own `tabs` further below. */
     .world-tabs {
       display: flex;
       flex-shrink: 0;
@@ -628,7 +629,7 @@
     </div>
   </header>
 
-  {% if world_tabs or searchable %}
+  {% if world_tabs or handbook_tabs or searchable %}
     {% if world_tabs %}
     <nav class="world-tabs">
       <a
@@ -657,10 +658,21 @@
         class="{% if '/world/spells/' in request.path %}active{% endif %}"
       >{% translate "Spells" %}</a>
     </nav>
+    {% elif handbook_tabs %}
+    <nav class="world-tabs">
+      <a
+        data-nav="replace"
+        href="{% url 'handbook-overview' %}"
+        class="{% if '/handbook/rules-glossary/' not in request.path %}active{% endif %}"
+      >{% translate "Chapters" %}</a>
+      <a
+        data-nav="replace"
+        href="{% url 'handbook-rules-glossary' %}"
+        class="{% if '/handbook/rules-glossary/' in request.path %}active{% endif %}"
+      >{% translate "Glossary" %}</a>
+    </nav>
     {% endif %}
-    {% if not search_below_featured %}
-      {% include "frontend/_search_form.html" %}
-    {% endif %}
+    {% include "frontend/_search_form.html" %}
   {% elif tabs %}
     {# A detail page split into its own sub-tabs (e.g. a Class's About/Levels/Subclasses) -     #}
     {# same `.world-tabs` look and the same spot in the layout (flush under the header, outside #}

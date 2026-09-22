@@ -83,9 +83,8 @@ def test_search_finds_a_section_by_text_that_is_not_in_its_name(client, handbook
     assert 'href="/handbook/095/"' in html  # Damage and Healing
     assert "<mark>Death Saving</mark>" in html
     assert 'href="/handbook/136/"' not in html  # Weapons doesn't mention it
-    # the search box keeps the query, and the plain contents (Glossary button) are gone
+    # the search box keeps the query
     assert 'value="death saving"' in _search(client, "death saving")
-    assert "featured" not in html
 
 
 def test_search_matches_the_section_name_alone(client, handbook):
@@ -180,21 +179,15 @@ def test_search_finds_accented_italian_text_typed_without_accents(client, handbo
     assert "<mark>opportunità</mark>" in html
 
 
-def test_the_search_box_sits_under_the_glossary_button_and_above_the_results(client, handbook):
+def test_the_search_box_sits_under_the_tabs_and_above_the_results(client, handbook):
     for q in ("", "death"):
         html = _search(client, q)
 
         before_main, main = html.split("<main>", 1)
-        # not under the page header any more, but in the page itself...
-        assert 'class="world-search"' not in before_main
-        assert main.count('class="world-search"') == 1
-        # ...below the Glossary's dividing line, above the (swapped-in) results
-        glossary, rest = main.split('class="world-search"', 1)
-        assert (
-            'class="item-list featured-list"' in glossary and 'id="search-results"' not in glossary
-        )
-        assert 'id="search-results"' in rest
-        assert "featured" not in _results(html)  # live search never replaces the Glossary button
+        # under the header, alongside the Chapters/Glossary tabs - not swapped by live search
+        assert "world-tabs" in before_main and 'class="world-search"' in before_main
+        assert 'class="world-search"' not in main
+        assert 'id="search-results"' in main
 
 
 def test_the_other_search_pages_keep_the_search_box_under_the_header(client, db):

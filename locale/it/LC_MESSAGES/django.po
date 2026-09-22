@@ -78,13 +78,13 @@ msgstr "Talento"
 msgid "Page"
 msgstr "Pagina"
 
-#: apps/frontend/views.py
+#: apps/frontend/templates/frontend/base.html apps/frontend/views.py
 msgid "Glossary"
 msgstr "Glossario"
 
-#: apps/frontend/views.py
-msgid "%(count)d named rules and keywords"
-msgstr "%(count)d regole e termini"
+#: apps/frontend/templates/frontend/base.html
+msgid "Chapters"
+msgstr "Capitoli"
 
 #: apps/frontend/views.py
 msgid "Equipment"

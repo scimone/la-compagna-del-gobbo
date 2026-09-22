@@ -713,9 +713,9 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
   (entries are `{u: url, p: static parent, y: scroll offset}`):
   - **Back** - the header arrow *and* the phone's back button - goes one step back inside the
     active menu, never into another menu visited on the way. At a menu's root nothing happens
-    (root pages - World's five tabs, the Handbook contents - have no arrow). A deep link with an
-    otherwise empty stack falls back to the page's static parent (the arrow's `href`). Scroll
-    position is restored on the way back.
+    (root pages - World's five tabs, the Handbook's Chapters/Glossary tabs - have no arrow). A deep
+    link with an otherwise empty stack falls back to the page's static parent (the arrow's `href`).
+    Scroll position is restored on the way back.
   - **The active menu changes only through the bottom nav** (which resumes another menu on the page
     it was left on), not by URL: the Glossary (Handbook) links into `/world/rules/...`, and
     back from there returns to the Glossary. The bottom nav highlights the active menu, not the
@@ -874,30 +874,34 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     `#cs-swap`. Requests are sent one at a time, in order. The rules for each live in
     `characters.services.play`.
   Trinkets are not in the wizard yet (see the plan's TODO).
-- `GET /handbook/` (`handbook_overview`) is the root of the Handbook menu (no back button): the
-  Glossary button on top, then one toggle heading per `rules.HandbookChapter` ("Playing the Game",
-  "Character Origins", "Feats", "Equipment", "Spells") over the buttons of its `HandbookSection`s -
-  22 in all (see [Internationalization](#internationalization-i18n) for what is left out). The
-  headings are open by default; folding one is remembered for the browser session
-  (`sessionStorage`, in `list.html`), so coming back from a section keeps the layout. Each button
-  links to `GET /handbook/<id>/` (`handbook_section_detail`), which renders exactly like a
-  `Rule`/`Feat`/`Spell` detail page - one open "Description" section, with the section's named
-  blocks as toggle headings. A section or block hand-translated for this project shows the
-  "Traduzione" badge (Italian only), on the button, the page title and the block heading.
-  The contents page has a live search box (same `?q=` form as the World lists, but drawn *under
-  the Glossary button's dividing line* rather than under the page header - `_list_page` does that
-  for any searchable list with a `featured` block, see `search_below_featured` and
-  `_search_form.html`) that searches the **whole handbook** - every section's text, not just its
-  name, plus the Glossary's `Rule`s (name and text). While a query is set the Glossary button and
-  search box stay put and the chapter toggles below hold only the matching sections (a "Glossary"
-  toggle last, for matching rules), each button with up to three snippets (rules: one) of where it
-  matched - the enclosing headings as a bold breadcrumb, the match highlighted - and "+N more" for
-  the rest. Matching is a case- and **accent-insensitive** substring ("opportunita" finds
-  "opportunità", and the highlight keeps the original spelling) of the text *as displayed* (tags
-  resolved, metric units on the Italian site) in the active language; names are matched in both
-  languages, like the other lists. It is a plain Python scan over the (small) `entries` JSON in
-  `apps/frontend/handbook_search.py` (`fold()` is the length-preserving accent stripper), not a
-  database query. The other lists' searches are still plain case-insensitive `icontains`.
+- The Handbook menu has two root tabs, **Chapters** and **Glossary** (`handbook_tabs=True`, same
+  look and spot as World's own tab strip - `_list_page`/`base.html`; no back button on either).
+  - `GET /handbook/` (`handbook_overview`, the Chapters tab) shows one toggle heading per
+    `rules.HandbookChapter` ("Playing the Game", "Character Origins", "Feats", "Equipment",
+    "Spells") over the buttons of its `HandbookSection`s - 22 in all (see
+    [Internationalization](#internationalization-i18n) for what is left out). The headings are
+    open by default; folding one is remembered for the browser session (`sessionStorage`, in
+    `list.html`), so coming back from a section keeps the layout. Each button links to
+    `GET /handbook/<id>/` (`handbook_section_detail`), which renders exactly like a
+    `Rule`/`Feat`/`Spell` detail page - one open "Description" section, with the section's named
+    blocks as toggle headings. A section or block hand-translated for this project shows the
+    "Traduzione" badge (Italian only), on the button, the page title and the block heading.
+    The tab has a live search box (same `?q=` form as the World lists, drawn under the tab strip -
+    `_list_page(handbook_tabs=True)`) that searches the **whole handbook** - every section's text,
+    not just its name, plus the Glossary's `Rule`s (name and text). While a query is set the tabs
+    and search box stay put and the chapter toggles below hold only the matching sections (a
+    "Glossary" toggle last, for matching rules), each button with up to three snippets (rules: one)
+    of where it matched - the enclosing headings as a bold breadcrumb, the match highlighted - and
+    "+N more" for the rest. Matching is a case- and **accent-insensitive** substring ("opportunita"
+    finds "opportunità", and the highlight keeps the original spelling) of the text *as displayed*
+    (tags resolved, metric units on the Italian site) in the active language; names are matched in
+    both languages, like the other lists. It is a plain Python scan over the (small) `entries` JSON
+    in `apps/frontend/handbook_search.py` (`fold()` is the length-preserving accent stripper), not
+    a database query. The other lists' searches are still plain case-insensitive `icontains`.
+  - `GET /handbook/rules-glossary/` (`handbook_rules_glossary`, the Glossary tab) is the `Rule`
+    catalog index - its label is just "Glossary", not the source book's "Rules Glossary" section,
+    which stays dropped (see [Internationalization](#internationalization-i18n)) - every `Rule`
+    linking to `world-rule-detail`. See **Bookmarks**/**Alphabet index** below.
 - `GET /world/` (`world`) — five full-height nav buttons, one per browsable `rules` catalog:
   **Backgrounds**, **Classes**, **Species**, **Feats**, **Spells**. (Class Features and
   Subraces were dropped again after being tried - the former duplicated what's already on each
@@ -916,9 +920,9 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     art. Rows without artwork (e.g. Aasimar) fall back to a plain text row like every other list.
   - **Search** (World tabs and the Glossary) is live from the first typed letter: the
     plain GET form is enhanced by a script in `base.html` that re-fetches the page and swaps
-    just `#search-results`. `_list_page(searchable=True)` shows the search box without World's
-    category tabs (`world_tabs=True` shows both) - the Handbook's **Glossary**
-    (`GET /handbook/rules-glossary/`, every `Rule`, each linking to `world-rule-detail`) uses it.
+    just `#search-results`. `_list_page(searchable=True)` shows the search box without any tab
+    strip (`world_tabs=True`/`handbook_tabs=True` show one above it) - the Handbook's Chapters and
+    Glossary tabs both use it.
   - **Alphabet index** (`_list_page(alphabet=True)`, Glossary only): a right-edge A-Z strip -
     press or drag along it and a big letter popup names the letter under the finger, every entry
     not filed under it (`_index_letter()`: first letter, accents stripped) fades out, and the list
@@ -947,13 +951,10 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     first letter of the name (accent-coloured); signed out it reads "Login" and is shaped exactly
     like the language button. Nothing else is per-account yet:
     `characters` still has no ownership.
-  - The Handbook's **Glossary** row (the `Rule` catalog index - its label is just "Glossary", not
-    the source book's "Rules Glossary" section, which stays dropped) is `featured`: a solid accent
-    block with an open-book A-Z icon. `_list_page()` lifts every `featured` item out of `items`
-    into its own `featured_items` list, drawn above everything else and set off by the same dashed
-    accent divider as the bookmarked block. The chapters below it have no detail line: an item
-    with a `page` gets a page icon (a sheet of paper, the number on top in the icon's colour,
-    bold) instead.
+  - `_list_item.html` gives an item with a `page` a small icon plus a "Page N" detail line: a
+    Handbook chapter section's is a sheet-of-paper icon, a Glossary `Rule`'s (`glossary_icon` on
+    the item) the same open-book A-Z icon the Chapters/Glossary tabs would otherwise need a legend
+    for - so the two lists read as the same kind of row, just with a different icon.
   - `apps/frontend/entries_render.py` turns the raw 5etools `entries` JSON blobs (used by
     `Background`/`Species`/`Class`/`Feat`/`Spell`/`Rule`) into safe HTML: nested
     headings/lists/tables/insets/"choose N" groups, and - via `_ReferenceLinker` - turns any

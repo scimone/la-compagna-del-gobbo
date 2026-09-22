@@ -101,14 +101,17 @@ def test_a_list_with_only_bookmarked_entries_still_renders_them(client, feats):
     assert "Alert" in html and "Tough" in html and "No entries" not in html
 
 
-def test_handbook_glossary_entry_stands_out_from_the_chapters(client, db):
+def test_handbook_glossary_entries_carry_the_az_icon_the_chapters_dont(client, rules):
     html = client.get("/handbook/").content.decode()
-    assert '<li class="featured">' in html and html.count('class="featured"') == 1
+    assert '<svg viewBox="0 0 36 26"' not in html  # no glossary entries on the Chapters tab
+
+    glossary = client.get("/handbook/rules-glossary/").content.decode()
+    assert '<svg viewBox="0 0 36 26"' in glossary
 
 
 def test_glossary_searches_live_from_the_first_letter_and_indexes_by_letter(client, rules):
     html = client.get("/handbook/rules-glossary/").content.decode()
-    assert 'class="world-search"' in html and "world-tabs" not in html.split("<body>")[1]
+    assert 'class="world-search"' in html
     assert '<li data-letter="A">' in html
     strip = html.split('class="alpha-index"')[1].split("</div>")[0]
     assert [f'data-letter="{letter}"' in strip for letter in "ABC"] == [True, True, True]

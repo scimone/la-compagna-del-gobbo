@@ -59,17 +59,17 @@ def test_handbook_overview_lists_the_same_sections_in_both_languages(client, han
         assert "Player or DM?" not in html
 
 
-def test_handbook_glossary_is_set_off_and_sections_show_their_page_on_a_page_icon(client, handbook):
+def test_handbook_chapters_and_glossary_sit_in_tabs_and_sections_show_their_page(client, handbook):
     for language, name in (("it", "Glossario"), ("en", "Glossary")):
         html = _get(client, "/handbook/", language)
-        before, featured_and_chapters = html.split('<ul class="item-list featured-list">', 1)
-        featured, chapters = featured_and_chapters.split('<details class="chapter-group"', 1)
-        # the Glossary alone sits above the dividing line, in its own list
-        assert name in featured and featured.count("<li") == 1
-        # every section has a page icon carrying the number from its `page`, and no "Page N" line
+        before_main, main = html.split("<main>", 1)
+        # Chapters/Glossary sit in a tab strip above the results, not a button in the contents
+        assert "world-tabs" in before_main and name in before_main
+        _before, chapters = main.split('<details class="chapter-group"', 1)
+        # every section has a page icon and a "Page N" line, the number no longer on the icon
         assert chapters.count('<span class="page-icon"') == chapters.count("<li")
-        assert re.search(r'<span class="page-number">\d+</span>', chapters)
-        assert "item-detail" not in chapters
+        assert re.search(r'<div class="item-detail">(Page|Pagina) \d+</div>', chapters)
+        assert "page-number" not in chapters
 
 
 def test_handbook_overview_groups_the_sections_under_a_toggle_heading_per_chapter(client, handbook):

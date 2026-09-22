@@ -448,6 +448,7 @@ def _list_page(
     items,
     back_url_name: str | None = None,
     world_tabs=False,
+    handbook_tabs=False,
     image_vignette=False,
     compact_thumbs=False,
     search_query: str | None = None,
@@ -458,23 +459,18 @@ def _list_page(
     bookmark_kind: str | None = None,
     groups=(),
 ):
-    """A list page is a root of its navigation menu (a World tab, the Handbook's contents), so it
-    has no back button unless `back_url_name` names a parent (only the Glossary, which sits
-    one level below the Handbook's contents). `searchable` shows the search box (and `filters`
-    under it) without the World category tabs that `world_tabs` also brings with it. `alphabet`
-    adds the right-hand A-Z jump strip (each item then needs a `letter`, see `_index_letter()`).
-    `bookmark_kind` (a `BOOKMARK_MODELS` key) gives every item with a `pk` a bookmark button, and
-    moves the bookmarked ones out of `items` into `bookmarked_items`, shown as a highlighted block
-    at the top of the list (only while signed in - see `account()`). `groups` (the Handbook's
-    chapters, each `{"key", "name", "items"}`) replaces the plain list with one toggle heading per
-    group over that group's buttons.
+    """A list page is a root of its navigation menu (a World tab, the Handbook's Chapters/Glossary
+    tabs), so it has no back button unless `back_url_name` names a parent. `searchable` shows the
+    search box (and `filters` under it) without the category tabs that `world_tabs`/`handbook_tabs`
+    also bring with it. `alphabet` adds the right-hand A-Z jump strip (each item then needs a
+    `letter`, see `_index_letter()`). `bookmark_kind` (a `BOOKMARK_MODELS` key) gives every item
+    with a `pk` a bookmark button, and moves the bookmarked ones out of `items` into
+    `bookmarked_items`, shown as a highlighted block at the top of the list (only while signed in -
+    see `account()`). `groups` (the Handbook's chapters, each `{"key", "name", "items"}`) replaces
+    the plain list with one toggle heading per group over that group's buttons.
     """
     # Letters (and their jump targets) come from every entry, bookmarked or not.
     alphabet_letters = list(dict.fromkeys(item["letter"] for item in items)) if alphabet else []
-    # `featured` entries (the Handbook's Glossary) sit in their own block above everything else,
-    # set off by a dividing line like the bookmarked block's.
-    featured_items = [item for item in items if item.get("featured")]
-    items = [item for item in items if not item.get("featured")]
     bookmarked_items = []
     if not request.user.is_authenticated:
         bookmark_kind = None  # bookmarks are per account: nothing to show or toggle signed out
@@ -488,21 +484,18 @@ def _list_page(
     context = {
         "page_title": _(title),
         "items": items,
-        "featured_items": featured_items,
         "bookmarked_items": bookmarked_items,
         "groups": groups,
         "bookmark_kind": bookmark_kind,
         "world_tabs": world_tabs,
+        "handbook_tabs": handbook_tabs,
         "searchable": searchable,
         "image_vignette": image_vignette,
         "compact_thumbs": compact_thumbs,
         "alphabet": alphabet,
         "alphabet_letters": alphabet_letters,
-        # A search box over a featured block goes under it (the Handbook's Glossary button, then
-        # the search, then the chapters) instead of under the page header like everywhere else.
-        "search_below_featured": bool(featured_items and (world_tabs or searchable)),
     }
-    if world_tabs or searchable:
+    if world_tabs or handbook_tabs or searchable:
         context["search_query"] = search_query or ""
         context["search_placeholder"] = search_placeholder
         context["filters"] = filters
@@ -710,31 +703,12 @@ def bookmark_toggle(request):
 # --- Handbook ----------------------------------------------------------------------------
 
 
-def _handbook_glossary_button() -> list[dict]:
-    """The Glossary's button: the source book's own "Rules Glossary" section is dropped entirely
-    (see `HandbookSection`'s docstring/the README's i18n section: it has no Italian SRD source to
-    translate it from), but its actual purpose - a named-rule/keyword index - is better served by
-    linking straight into the already-translated `Rule` catalog instead of untranslatable static
-    prose. Featured: it sits above the search box and the chapters, in the contents and in the
-    search results alike (see `_list_page`).
-    """
-    rule_count = rule_service.list_rules().count()
-    return [
-        {
-            "name": _("Glossary"),
-            "detail": _("%(count)d named rules and keywords") % {"count": rule_count},
-            "url": reverse("handbook-rules-glossary"),
-            "featured": True,
-        },
-    ]
-
-
 def handbook_overview(request):
     q = _search_query(request)
     if q:
         return _handbook_search(request, q)
-    # Below the Glossary button and the search box, each `HandbookChapter` is a toggle heading
-    # over the buttons of its sections.
+    # Below the tabs and the search box, each `HandbookChapter` is a toggle heading over the
+    # buttons of its sections.
     groups = [
         {
             "key": chapter.pk,
@@ -742,8 +716,7 @@ def handbook_overview(request):
             "items": [
                 {
                     "name": _badged_heading(section.name, _self_translated(section, "name")),
-                    # Drawn as a page icon with the number on top (`_list_item.html`), not as a
-                    # detail line.
+                    # Drawn as a page icon plus a "Page N" detail line (`_list_item.html`).
                     "page": section.page,
                     "url": reverse("handbook-section-detail", args=[section.pk]),
                 }
@@ -755,18 +728,18 @@ def handbook_overview(request):
     return _list_page(
         request,
         "Handbook",
-        _handbook_glossary_button(),
+        [],
         groups=groups,
+        handbook_tabs=True,
         searchable=True,
         search_placeholder=_("Search the handbook"),
     )
 
 
 def _handbook_search(request, q: str):
-    """The Handbook contents page while searching: the same chapter toggles, but holding only the
+    """The Handbook's Chapters tab while searching: the same chapter toggles, but holding only the
     sections whose name or text contains `q` (each with snippets of where), followed by the
-    Glossary rules that match - under the same Glossary button and search box. See
-    `handbook_search`.
+    Glossary rules that match - under the same tabs and search box. See `handbook_search`.
     """
     pattern = query_pattern(q)
     groups = []
@@ -804,6 +777,7 @@ def _handbook_search(request, q: str):
                 {
                     "name": _badged_heading(rule.name, _self_translated(rule, "name")),
                     "page": rule.page,
+                    "glossary_icon": True,
                     "detail": mark_safe("".join(snippets)),
                     "url": reverse("world-rule-detail", args=[rule.pk]),
                 }
@@ -814,8 +788,9 @@ def _handbook_search(request, q: str):
     return _list_page(
         request,
         "Handbook",
-        _handbook_glossary_button(),
+        [],
         groups=groups,
+        handbook_tabs=True,
         searchable=True,
         search_query=q,
         search_placeholder=_("Search the handbook"),
@@ -831,7 +806,10 @@ def handbook_rules_glossary(request):
         {
             "pk": rule.pk,
             "name": _badged_heading(rule.name, _self_translated(rule, "name")),
-            "detail": f"{_('Page')} {rule.page}",
+            # The Glossary's own icon (`_list_item.html`) plus a "Page N" detail line, same as a
+            # Handbook chapter's sections - just with the AZ glossary icon instead of the page icon.
+            "page": rule.page,
+            "glossary_icon": True,
             "url": reverse("world-rule-detail", args=[rule.pk]),
             "letter": _index_letter(rule.name),
         }
@@ -841,7 +819,7 @@ def handbook_rules_glossary(request):
         request,
         "Glossary",
         items,
-        back_url_name="handbook-overview",
+        handbook_tabs=True,
         searchable=True,
         search_query=q,
         search_placeholder=_("Search glossary"),
