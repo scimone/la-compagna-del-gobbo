@@ -180,6 +180,41 @@
     padding: 0 0.7rem 0.7rem;
   }
 
+  /* A level/subclass group's features, each linking straight to its own detail page instead of
+     showing its text inline (see `entries_render.py`'s `_render_feature_links()`) - a plain list
+     of tappable rows rather than `.entry-cards`' boxed-off cards, since there's no body text left
+     to visually separate. Selectors are scoped under `.level-group` (also true when nested one
+     level deeper, inside a `.subclass-block`) so they win over the generic `.detail-section ul`/
+     `li` rules above - same specificity (two classes), later in the cascade. */
+  .level-group .feature-link-list {
+    list-style: none;
+    margin: 0;
+    padding: 0 0.7rem 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .level-group .feature-link-list li {
+    margin: 0;
+  }
+
+  .feature-link-list a {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.8rem;
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    touch-action: manipulation;
+  }
+
+  .feature-link-list a:active {
+    background: var(--bg);
+  }
+
   /* Each subclass is its own collapsed-by-default `<details>` (its name is the clickable
      `<summary>` "button"), same look as `.level-group` above rather than a plain heading, since
      a Class can have several and showing them all expanded at once buried the page. */

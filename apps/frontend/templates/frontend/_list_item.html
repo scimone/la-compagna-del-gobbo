@@ -32,10 +32,20 @@
     <div class="item-text">
       <span class="item-name">{{ item.name }}</span>
       {% if item.page %}<div class="item-detail">{% translate "Page" %} {{ item.page }}</div>{% endif %}
-      {% if item.detail %}<div class="item-detail">{{ item.detail }}</div>{% endif %}
+      {% if item.properties %}
+        <div class="item-detail">{% for prop in item.properties %}{% if not forloop.first %} · {% endif %}{{ prop }}{% endfor %}</div>
+      {% elif item.detail %}
+        <div class="item-detail">{{ item.detail }}</div>
+      {% endif %}
     </div>
   </a>
   {% if bookmark_kind and item.pk %}
+    {% if item.kind %}
+      {# Overrides the shared form's own `kind` input for this one entry (see `_list_page()`'s #}
+      {# docstring on mixed-kind pages) - `form`-associated but placed after that input in the   #}
+      {# DOM, so it wins as the last same-name value per the HTML forms spec's tree order.        #}
+      <input type="hidden" form="bookmark-list-form" name="kind" value="{{ item.kind }}">
+    {% endif %}
     {# Submits the list's one shared form (`#bookmark-list-form` in list.html) with this #}
     {# entry's pk as `object_id` - the `form` attribute ties the button to it from here.    #}
     <button

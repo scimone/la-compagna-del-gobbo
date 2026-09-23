@@ -1,12 +1,13 @@
 """Which catalog a `Bookmark.kind` refers to, and the two lookups the views need."""
 
 from apps.frontend.models import Bookmark
-from apps.rules.models import Background, Class, Feat, Rule, Species, Spell
+from apps.rules.models import Background, Class, Feat, Feature, Rule, Species, Spell
 
 BOOKMARK_MODELS = {
     "background": Background,
     "class": Class,
     "feat": Feat,
+    "feature": Feature,
     "species": Species,
     "spell": Spell,
     "rule": Rule,

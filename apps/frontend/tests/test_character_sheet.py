@@ -228,15 +228,20 @@ def test_abilities_are_six_boxes_with_saves_and_the_skills_follow(signed_in, ali
     assert '<span class="dim">DEX</span>' in html and '<span class="dim">dex</span>' not in html
 
 
-def test_features_lists_species_traits_class_features_and_feats(signed_in, alice):
+def test_features_lists_species_traits_class_features_and_feats_as_clickable_links(
+    signed_in, alice
+):
     cleric = finished(alice, "cleric")
 
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "features")
 
-    for heading in ("Species Traits", "Class Features", "Feats"):
-        assert heading in html
-    assert "Divine Order" in html and "Magic Initiate" in html
-    assert 'data-describe="/characters/describe/feature/' in html
+    feature_list = html.split('id="cs-feature-list"')[1].split("</ul>")[0]
+    assert "Divine Order" in feature_list and "Magic Initiate" in feature_list
+    # Rows link straight to each entry's own World page now, instead of unfolding inline.
+    assert '<a class="cs-row" href="/world/feats/feature/' in feature_list
+    assert '<a class="cs-row" href="/world/feats/' in feature_list
+    assert "data-describe=" not in feature_list
+    assert 'name="type"' in html  # the type pills, once this character has more than one kind
 
 
 def test_spellbook_shows_the_casting_numbers_the_slots_and_the_spells(signed_in, alice):

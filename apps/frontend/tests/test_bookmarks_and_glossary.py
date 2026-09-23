@@ -4,7 +4,7 @@ from django.template.loader import render_to_string
 
 from apps.frontend.models import Bookmark
 from apps.frontend.views import _index_letter
-from apps.rules.models import Feat, Rule
+from apps.rules.models import Class, ClassLevel, Feat, Feature, Rule
 
 
 @pytest.fixture
@@ -29,6 +29,13 @@ def rules(db):
 def feats(db):
     Feat.objects.create(id="alert", name="Alert", page=1, category="Origin")
     Feat.objects.create(id="tough", name="Tough", page=1, category="Origin")
+
+
+@pytest.fixture
+def class_feature(db):
+    klass = Class.objects.create(id="wizard", name="Wizard", page=1, hit_die="d6")
+    level = ClassLevel.objects.create(klass=klass, level=1)
+    return Feature.objects.create(class_level=level, name="Arcane Recovery")
 
 
 def _toggle(client, kind, object_id, **extra):
@@ -92,6 +99,25 @@ def test_list_moves_bookmarked_entries_to_a_highlighted_block_above_the_list(cli
     # ... and only while it matches the current search
     found = client.get("/world/feats/?q=alert").content.decode()
     assert "item-list bookmark-list" not in found
+
+
+def test_a_class_feature_bookmarks_under_its_own_kind_alongside_feats(client, feats, class_feature):
+    # The merged Features list mixes Feat rows (kind "feat", a string pk) with Feature rows
+    # (kind "feature", an int pk) under the one shared bookmark form - each entry's own hidden
+    # `kind` override (see `_list_item.html`) must reach the right `BOOKMARK_MODELS` catalog, and
+    # the int pk must still compare equal to `Bookmark.object_id`, a `CharField`.
+    html = client.get("/world/feats/").content.decode()
+    assert "Arcane Recovery" in html
+    row = next(chunk for chunk in html.split("<li") if "Arcane Recovery" in chunk)
+    assert 'name="kind" value="feature"' in row
+
+    _toggle(client, "feature", str(class_feature.pk), next="/world/feats/")
+    assert Bookmark.objects.filter(kind="feature", object_id=str(class_feature.pk)).exists()
+
+    html = client.get("/world/feats/").content.decode()
+    pinned = html.split("item-list bookmark-list")[1].split("</ul>")[0]
+    rest = html.split('class="item-list main-list')[1]
+    assert "Arcane Recovery" in pinned and "Arcane Recovery" not in rest
 
 
 def test_a_list_with_only_bookmarked_entries_still_renders_them(client, feats):

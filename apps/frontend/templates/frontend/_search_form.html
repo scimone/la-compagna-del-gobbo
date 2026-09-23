@@ -85,10 +85,15 @@
               name="{{ filter.name }}"
               class="filter-select{% if filter.value %} active{% endif %}"
               aria-label="{{ filter.label }}"
+              {% if filter.filter_by %}data-filter-by="{{ filter.filter_by }}"{% endif %}
             >
               <option value="">{{ filter.all_label }}</option>
-              {% for value, label in filter.options %}
-                <option value="{{ value }}"{% if value == filter.value %} selected{% endif %}>{{ label }}</option>
+              {% for option in filter.options %}
+                <option
+                  value="{{ option.0 }}"
+                  {% if filter.filter_by %}data-group="{{ option.2 }}"{% endif %}
+                  {% if option.0 == filter.value %}selected{% endif %}
+                >{{ option.1 }}</option>
               {% endfor %}
             </select>
           </div>

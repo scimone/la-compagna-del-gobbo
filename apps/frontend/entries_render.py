@@ -20,10 +20,12 @@ references, 102/102 spell references, and 19/19 feat references resolve. Every o
 via `_tag_display_text()` - there's no catalog page for those to link to.
 
 `render_trait_cards()`, `render_class_features()` and `render_subclasses()` are separate entry
-points (not part of the generic `render_entries()` recursion) for the spots that need a distinct
-visual per named block instead of plain stacked headings: a Species' traits, a Class's per-level
-features, and a Class's subclasses (each subclass reusing the same per-level card grouping as
-`render_class_features()`).
+points (not part of the generic `render_entries()` recursion) for the spots that need something
+other than plain stacked headings: a Species' traits (`render_trait_cards()`) as one card per
+trait, and a Class's per-level features and subclasses (`render_class_features()`/
+`render_subclasses()`) as one collapsible group per level holding a clickable link per feature -
+to that feature's own detail page (`world_feature_detail()` in `views.py`), rather than its text
+shown inline, since every `Feature` row has its own page now.
 """
 
 import re
@@ -181,11 +183,10 @@ def render_handbook_section(entries) -> SafeString:
 
 def _render_entry_cards(blocks: list, linker: _ReferenceLinker) -> str:
     """Render a flat list of {name, entries} blocks as one visually separated card per block -
-    shared by `render_trait_cards()` and `render_class_features()` below. A block's optional `id`
-    (a `Feature` pk, set by `render_class_features()` so the Level Progression table's Features
-    column can link straight to the matching card) becomes the card's DOM id - browsers open an
-    ancestor `<details>` automatically when navigating to a fragment inside it, so no JS is needed
-    to expand the right level group/section.
+    used by `render_trait_cards()` below (a Species' traits still show their full text on its own
+    Traits tab). A block's optional `id` (a `Feature` pk) becomes the card's DOM id - browsers open
+    an ancestor `<details>` automatically when navigating to a fragment inside it, so no JS is
+    needed to expand the right section.
     """
     cards = []
     for block in blocks:
@@ -245,8 +246,8 @@ def render_trait_cards(
     per trait.
 
     `feature_ids` (a `{name: pk}` map, e.g. `{f.name: f.pk for f in species.feature_rows.all()}`)
-    gives a card its DOM id the same way `render_class_features()`'s does, for a matching named
-    block - lets the World Features list's species-trait entries deep-link straight to their card.
+    gives a card its DOM id for a matching named block - lets the World Features list's species-
+    trait entries deep-link straight to their card.
     """
     linker = _ReferenceLinker()
     feature_ids = feature_ids or {}
@@ -261,20 +262,33 @@ def render_trait_cards(
     return mark_safe(_render_entry_cards(blocks, linker))
 
 
-def _render_level_groups(by_level: dict[int, list[dict]], linker: _ReferenceLinker) -> str:
-    """Render a {level: [{name, entries}, ...]} mapping as one collapsible group per level, each
-    holding one card per block gained at that level - shared by `render_class_features()` and
-    `render_subclasses()` below. All groups start collapsed - see `_render_entry_cards()`'s
-    docstring for why no JS is needed to expand the right one when a fragment link points inside
-    it.
+def _render_feature_links(features, linker: _ReferenceLinker) -> str:
+    """One `<li>` per feature, linking to its own detail page (`world_feature_detail()`) instead
+    of showing its `entries` text inline - shared by `render_class_features()` and
+    `render_subclasses()` below, whose Levels/Subclasses tabs used to show that text in a card
+    (`_render_entry_cards()`) but now only link out to it, since every `Feature` has its own page.
+    """
+    items = "".join(
+        f'<li><a href="{escape(reverse("world-feature-detail", args=[f.pk]))}">'
+        f"{_render_text(f.name, linker)}"
+        f"{self_translated_badge(bool(f.self_translated_fields))}</a></li>"
+        for f in features
+    )
+    return f'<ul class="feature-link-list">{items}</ul>'
+
+
+def _render_level_feature_links(by_level: dict[int, list], linker: _ReferenceLinker) -> str:
+    """One collapsible group per level, each holding one link per feature gained at that level -
+    shared by `render_class_features()` and `render_subclasses()` below. Open by default (unlike
+    `_render_level_groups()`'s cards): a level's worth of links is short enough that there's no
+    need to hide it behind a tap the way a level's worth of full feature text used to be.
     """
     groups = []
     for level in sorted(by_level):
-        cards_html = _render_entry_cards(by_level[level], linker)
         groups.append(
-            f'<details class="level-group">'
+            f'<details class="level-group" open>'
             f"<summary>{escape(gettext('Level'))} {level}</summary>"
-            f"{cards_html}"
+            f"{_render_feature_links(by_level[level], linker)}"
             f"</details>"
         )
     return "".join(groups)
@@ -285,21 +299,16 @@ def render_class_features(features) -> SafeString:
     `Feature.objects.filter(class_level__klass=klass).order_by("pk")`, the `.order_by("pk")`
     needed for the same reason as `render_subclasses()`: `Feature`'s default ordering is
     alphabetical by name, which isn't the source's presentation order) as one collapsible group
-    per level, each holding one card per feature gained at that level - multiple features
-    commonly share a level, e.g. every class's level 1 has several.
+    per level, each holding one clickable link per feature gained at that level (to that feature's
+    own detail page, see `world_feature_detail()`) - multiple features commonly share a level,
+    e.g. every class's level 1 has several. Used to show each feature's full text inline instead -
+    see `_render_level_feature_links()` for why that moved to each `Feature`'s own page.
     """
     linker = _ReferenceLinker()
-    by_level: dict[int, list[dict]] = {}
+    by_level: dict[int, list] = {}
     for feature in features:
-        by_level.setdefault(feature.class_level.level, []).append(
-            {
-                "id": feature.pk,
-                "name": feature.name,
-                "entries": feature.entries,
-                "self_translated": bool(feature.self_translated_fields),
-            }
-        )
-    return mark_safe(_render_level_groups(by_level, linker))
+        by_level.setdefault(feature.class_level.level, []).append(feature)
+    return mark_safe(_render_level_feature_links(by_level, linker))
 
 
 def render_subclasses(subclasses) -> SafeString:
@@ -307,15 +316,16 @@ def render_subclasses(subclasses) -> SafeString:
     and `levels` (`SubclassLevel` rows, each with its features as `Feature` rows reachable via
     `.feature_rows` - `SubclassLevel` keeps no `features` JSON of its own, see its docstring for
     why) - as one collapsed-by-default `<details>` block per subclass (its name is the clickable
-    `<summary>`), reusing the same per-level collapsible card grouping as `render_class_features()`
-    for the body. Iterate `subclasses` with `.levels` and `.levels__feature_rows` already
-    prefetched (e.g. `klass.subclasses.prefetch_related("levels__feature_rows")`) to avoid a query
-    per level.
+    `<summary>`), reusing the same per-level collapsible link grouping as `render_class_features()`
+    for the body - each feature links out to its own detail page instead of the body showing its
+    text. Iterate `subclasses` with `.levels` and `.levels__feature_rows` already prefetched (e.g.
+    `klass.subclasses.prefetch_related("levels__feature_rows")`) to avoid a query per level.
 
-    `Subclass.description` is already cleanly split out of the source's granting-level block at
-    import time (see `_split_subclass_features` in
-    `apps/rules/management/commands/import_rules_data.py`) - this used to also have to unwrap
-    that same data error here at render time, but that's fixed at the source instead now.
+    `Subclass.description` (flavor text, distinct from any one feature's own `entries`) is already
+    cleanly split out of the source's granting-level block at import time (see
+    `_split_subclass_features` in `apps/rules/management/commands/import_rules_data.py`) - this
+    used to also have to unwrap that same data error here at render time, but that's fixed at the
+    source instead now, and it still renders here in full (only feature text moved out).
     """
     linker = _ReferenceLinker()
     blocks = []
@@ -323,22 +333,11 @@ def render_subclasses(subclasses) -> SafeString:
         description_html = (
             _render_node(subclass.description, linker) if subclass.description else ""
         )
-        by_level = {
-            sl.level: [
-                {
-                    "id": f.pk,
-                    "name": f.name,
-                    "entries": f.entries,
-                    "self_translated": bool(f.self_translated_fields),
-                }
-                for f in sl.feature_rows.all()
-            ]
-            for sl in subclass.levels.all()
-        }
-        groups_html = _render_level_groups(by_level, linker)
+        by_level = {sl.level: list(sl.feature_rows.all()) for sl in subclass.levels.all()}
+        groups_html = _render_level_feature_links(by_level, linker)
         subclass_badge = self_translated_badge(bool(subclass.self_translated_fields))
         blocks.append(
-            f'<details class="subclass-block">'
+            f'<details class="subclass-block" open>'
             f"<summary>{_render_text(subclass.name, linker)}{subclass_badge}</summary>"
             f'<div class="subclass-body">{description_html}{groups_html}</div>'
             f"</details>"
@@ -483,11 +482,9 @@ def _format_table_cell(value) -> str:
 
     `world_class_detail()`'s Features column adds a fourth, view-built shape not sourced from
     `columns` at all - `{"type": "features", "items": [{"href": ..., "name": ...}, ...]}` - one
-    `Feature` per grant at that level, rendered as links into the Levels tab's "Features by Level"
-    section (`href` is that tab's own URL plus `#feature-{pk}`, since the cards this links to are
-    on a different tab/page now, not lower on this same page; the pk-to-DOM-id half, `id=
-    "feature-{pk}"`, is set in `_render_entry_cards()`) instead of plain text, since unlike the
-    other cell types this one carries markup and must come back as a `SafeString` -
+    `Feature` per grant at that level, rendered as links straight to each feature's own detail
+    page (`href` is `reverse("world-feature-detail", args=[f.pk])`) instead of plain text, since
+    unlike the other cell types this one carries markup and must come back as a `SafeString` -
     `render_key_value_table()` uses `conditional_escape()` rather than `escape()` for exactly this
     cell type, leaving every other (plain-text) cell escaped as before.
     """

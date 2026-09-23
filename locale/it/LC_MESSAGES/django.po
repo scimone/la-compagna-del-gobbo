@@ -1128,6 +1128,14 @@ msgstr "Storia del personaggio"
 msgid "No features yet."
 msgstr "Ancora nessun privilegio."
 
+#: apps/frontend/templates/frontend/characters/sheet/_features.html
+msgid "Search features"
+msgstr "Cerca privilegi"
+
+#: apps/frontend/templates/frontend/characters/sheet/_features.html
+msgid "No features match."
+msgstr "Nessun privilegio corrisponde."
+
 #: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
 msgid "Coins"
 msgstr "Monete"

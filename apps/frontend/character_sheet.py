@@ -38,6 +38,7 @@ from apps.frontend.views import (
     _CASTING_TIME_FILTER_LABELS,
     _SCHOOL_LABELS,
     _SIZE_LABELS,
+    _SPECIES_IMAGE_SLUGS,
     _WEAPON_CATEGORY_LABELS,
     _class_name,
     _format_feat_category,
@@ -204,80 +205,131 @@ def _abilities(stats) -> dict:
 # --- features ----------------------------------------------------------------------------------
 
 
-def _features(character: Character) -> list[dict]:
-    """Groups of `{name, detail, describe}` rows: species traits, each class's features, each
-    subclass's, then the feats and options (invocations, maneuvers, ...) the player picked."""
-    granted = [
-        cf.feature
-        for cf in character.features.select_related(
-            "feature__class_level__klass", "feature__subclass_level__subclass", "feature__species"
-        )
-    ]
-    groups: dict[tuple, dict] = {}
-
-    def add(order, title, subtitle, name, detail, kind, pk, level=0):
-        group = groups.setdefault(
-            (order, title, subtitle), {"title": title, "subtitle": subtitle, "rows": []}
-        )
-        group["rows"].append(
-            {
-                "name": name,
-                "detail": detail,
-                "describe": _describe_url(kind, pk),
-                "level": level,
-                "pk": pk,
-            }
-        )
-
-    for f in granted:
+def _feature_items(character: Character) -> list[dict]:
+    """Flat, alphabetical rows for the Features tab's own searchable/filterable list (the same
+    look as the World's own Features list, see `world_feats()`) - this character's species
+    traits, class features, subclass features and feats, each linking straight to its own World
+    detail page instead of unfolding a description inline (`_feature_options()` below keeps the
+    old tap-to-unfold row for the one group that has no such page to link to: Options - invocations,
+    maneuvers, ...).
+    """
+    items = []
+    for cf in character.features.select_related(
+        "feature__class_level__klass",
+        "feature__subclass_level__subclass__klass",
+        "feature__species",
+    ):
+        f = cf.feature
+        search = f"{f.name_en} {f.name_it}".lower()
         if f.species_id:
-            add(0, _("Species Traits"), f.species.name, f.name, "", "feature", f.pk)
+            items.append(
+                {
+                    "name": f.name,
+                    "detail": f"{_('Species')} · {f.species.name}",
+                    "url": reverse("world-feature-detail", args=[f.pk]),
+                    "image": _menu_image_url(
+                        "features_species",
+                        f"{_SPECIES_IMAGE_SLUGS.get(f.species_id, f.species_id)}.jpeg",
+                    ),
+                    "type": "species",
+                    "search": search,
+                }
+            )
         elif f.class_level_id:
-            level = f.class_level.level
-            add(
-                1,
-                _("Class Features"),
-                f.class_level.klass.name,
-                f.name,
-                f"{_('Level')} {level}",
-                "feature",
-                f.pk,
-                level,
+            klass = f.class_level.klass
+            items.append(
+                {
+                    "name": f.name,
+                    "detail": f"{_('Class')} · {klass.name} · {_('Level')} {f.class_level.level}",
+                    "url": reverse("world-feature-detail", args=[f.pk]),
+                    "image": _menu_image_url("classes", f"{klass.pk}-grey.png"),
+                    "type": "class",
+                    "search": search,
+                }
             )
         elif f.subclass_level_id:
-            level = f.subclass_level.level
-            add(
-                2,
-                _("Subclass Features"),
-                f.subclass_level.subclass.name,
-                f.name,
-                f"{_('Level')} {level}",
-                "feature",
-                f.pk,
-                level,
+            subclass = f.subclass_level.subclass
+            items.append(
+                {
+                    "name": f.name,
+                    "detail": (
+                        f"{_('Subclass')} · {subclass.name} · {_('Level')} {f.subclass_level.level}"
+                    ),
+                    "url": reverse("world-feature-detail", args=[f.pk]),
+                    "image": _menu_image_url("classes", f"{subclass.klass_id}-grey.png"),
+                    "type": "subclass",
+                    "search": search,
+                }
             )
     for cf in character.feats.select_related("feat"):
-        source = cf.source.split(":")[0] if cf.source else ""
-        detail = " · ".join(
-            x for x in (_format_feat_category(cf.feat.category), source.capitalize()) if x
+        feat = cf.feat
+        items.append(
+            {
+                "name": feat.name,
+                "detail": _format_feat_category(feat.category),
+                "url": reverse("world-feat-detail", args=[feat.pk]),
+                "image": _menu_image_url(
+                    "feats", f"{feat.category.split(' (')[0].lower().replace(' ', '_')}.jpeg"
+                ),
+                "type": "feat",
+                "search": f"{feat.name_en} {feat.name_it}".lower(),
+            }
         )
-        add(3, _("Feats"), "", cf.feat.name, detail, "feat", cf.feat_id)
-    for co in character.optional_features.select_related("optional_feature"):
-        add(
-            4,
-            _("Options"),
-            "",
-            co.optional_feature.name,
-            co.optional_feature.feature_type,
-            "invocation",
-            co.optional_feature_id,
-        )
+    items.sort(key=lambda item: item["name"].casefold())
+    return items
 
-    result = []
-    for _key, group in sorted(groups.items(), key=lambda kv: kv[0][:1] + (kv[0][2],)):
-        group["rows"].sort(key=lambda r: (r["level"], r["pk"]))
-        result.append(group)
-    return result
+
+def _feature_type_filter(items: list[dict]) -> dict | None:
+    """The Features tab's own Type pill row, limited to the kinds this character actually has (a
+    filter with a single possible value would filter nothing - same convention as
+    `_spell_filters()`). Built by hand rather than `views._pill_filter()`: there's no `request`
+    query param behind this one, `character_sheet.js`'s `filterRows()` reads it client-side only,
+    the same way it already does the spellbook's own filters.
+    """
+    labels = {
+        "feat": _("Feats"),
+        "class": _("Class Features"),
+        "subclass": _("Subclass Features"),
+        "species": _("Species Traits"),
+    }
+    present = [kind for kind in labels if any(item["type"] == kind for item in items)]
+    if len(present) <= 1:
+        return None
+    return {
+        "kind": "radio",
+        "name": "type",
+        "label": _("Type"),
+        "value": "",
+        "options": [(kind, labels[kind]) for kind in present],
+        "all_label": _("All"),
+        "only": None,
+    }
+
+
+def _feature_options(character: Character) -> list[dict]:
+    """The Options group (invocations, maneuvers, ...) - a `{name, detail, describe}` row per
+    pick, still tap-to-unfold (`_describe_url()`) since, unlike a species trait/class or subclass
+    feature/feat, there's no World catalog page for one of these to link to instead."""
+    rows = [
+        {
+            "name": co.optional_feature.name,
+            "detail": co.optional_feature.feature_type,
+            "describe": _describe_url("invocation", co.optional_feature_id),
+        }
+        for co in character.optional_features.select_related("optional_feature")
+    ]
+    rows.sort(key=lambda r: r["name"].casefold())
+    return rows
+
+
+def _features_tab(character: Character) -> dict:
+    items = _feature_items(character)
+    type_filter = _feature_type_filter(items)
+    return {
+        "items": items,
+        "filters": [type_filter] if type_filter else [],
+        "option_rows": _feature_options(character),
+    }
 
 
 # --- spellbook ---------------------------------------------------------------------------------
@@ -775,7 +827,7 @@ def character_detail(request, pk):
             "header": _header(character, stats),
             "strip": _strip(character, stats, items),
             "abilities": _abilities(stats),
-            "feature_groups": _features(character),
+            "features": _features_tab(character),
             "spellbook": _spellbook(character, stats, classes),
             "inventory": _inventory(character, stats),
             "proficiencies": _proficiencies(character),

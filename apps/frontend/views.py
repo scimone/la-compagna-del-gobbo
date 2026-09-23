@@ -467,8 +467,14 @@ def _list_page(
     `letter`, see `_index_letter()`). `bookmark_kind` (a `BOOKMARK_MODELS` key) gives every item
     with a `pk` a bookmark button, and moves the bookmarked ones out of `items` into
     `bookmarked_items`, shown as a highlighted block at the top of the list (only while signed in -
-    see `account()`). `groups` (the Handbook's chapters, each `{"key", "name", "items"}`) replaces
-    the plain list with one toggle heading per group over that group's buttons.
+    see `account()`). An item on a page mixing more than one kind of row (e.g. the Features list's
+    Feats alongside Class/Subclass Features and Species Traits) can override `bookmark_kind` with
+    its own `"kind"` - `_list_item.html` then also renders a per-item hidden `kind` input (`form`-
+    associated to the shared bookmark form, placed after it in the DOM) so both a plain submit and
+    `new FormData(form)` pick up that override instead of the page's shared default, per the HTML
+    forms spec collecting listed/associated elements in tree order. `groups` (the Handbook's
+    chapters, each `{"key", "name", "items"}`) replaces the plain list with one toggle heading per
+    group over that group's buttons.
     """
     # Letters (and their jump targets) come from every entry, bookmarked or not.
     alphabet_letters = list(dict.fromkeys(item["letter"] for item in items)) if alphabet else []
@@ -476,9 +482,18 @@ def _list_page(
     if not request.user.is_authenticated:
         bookmark_kind = None  # bookmarks are per account: nothing to show or toggle signed out
     if bookmark_kind:
-        ids = bookmarked_ids(request.user, bookmark_kind)
+        ids_by_kind: dict[str, set[str]] = {}
         for item in items:
-            item["bookmarked"] = item.get("pk") in ids
+            kind = item.get("kind", bookmark_kind)
+            if item.get("pk") is None:
+                item["bookmarked"] = False
+                continue
+            if kind not in ids_by_kind:
+                ids_by_kind[kind] = bookmarked_ids(request.user, kind)
+            # `Bookmark.object_id` is a `CharField` (every bookmarkable model but `Feature` has a
+            # string slug pk to match it verbatim) - `Feature`'s own pk is a plain int, so it needs
+            # `str()` here or it would never compare equal to anything in `ids_by_kind`.
+            item["bookmarked"] = str(item["pk"]) in ids_by_kind[kind]
         bookmarked_items = [item for item in items if item["bookmarked"]]
         items = [item for item in items if not item["bookmarked"]]
 
@@ -545,11 +560,18 @@ def _pill_filter(request, name, label, options, *, all_label=None, only=None):
     }
 
 
-def _select_filter(request, name, label, options, *, all_label=None, only=None):
+def _select_filter(request, name, label, options, *, all_label=None, only=None, filter_by=None):
     """Dropdown sibling of `_pill_filter()`: a native `<select>` for a single choice from a list
     too long for a pill row (e.g. every Class, or Level 1-20) - see `_search_form.html`'s
     `kind == "select"` block. `only` is the same conditional-visibility mechanism `_pill_filter()`
     documents.
+
+    `filter_by` (another select filter's own `name`, e.g. "class") narrows this one's own options
+    to those relevant to whatever that other select currently holds - each option then carries a
+    third tuple element (its owning group's value, e.g. a Subclass option's `klass_id`) instead of
+    a plain `(value, label)` pair. `_search_form.html` puts that on a `data-group` attribute, and
+    `syncGroupedOptions()` in base.html hides every option whose group doesn't match the
+    controlling select's current value (and clears this select if its own choice just got hidden).
     """
     return {
         "kind": "select",
@@ -559,6 +581,7 @@ def _select_filter(request, name, label, options, *, all_label=None, only=None):
         "options": options,
         "all_label": all_label or _("All"),
         "only": only,
+        "filter_by": filter_by,
     }
 
 
@@ -970,10 +993,7 @@ def world_classes(request):
                     "klass": feature.class_level.klass.name,
                     "level": feature.class_level.level,
                 },
-                "url": (
-                    f"{reverse('world-class-detail', args=[feature.class_level.klass_id])}"
-                    f"?tab=levels#feature-{feature.pk}"
-                ),
+                "url": reverse("world-feature-detail", args=[feature.pk]),
             }
             for feature in features
         ]
@@ -1059,10 +1079,12 @@ def world_class_detail(request, pk):
                     _("Features"): {
                         "type": "features",
                         "items": [
-                            # The Features by Level cards this links to live on the Levels tab,
-                            # not this (About) page, so the link needs that tab's own URL, not
-                            # just a same-page `#feature-{pk}` fragment.
-                            {"name": f.name, "href": f"?tab=levels#feature-{f.pk}"}
+                            # Straight to the feature's own page (its text no longer lives on the
+                            # Levels tab - see `world_feature_detail()`).
+                            {
+                                "name": f.name,
+                                "href": reverse("world-feature-detail", args=[f.pk]),
+                            }
                             for f in features_by_level.get(lvl.level, [])
                         ],
                     },
@@ -1161,9 +1183,10 @@ def world_feats(request):
         request,
         "subclass",
         _("Subclass"),
-        [(sc.pk, sc.name) for sc in Subclass.objects.all()],
+        [(sc.pk, sc.name, sc.klass_id) for sc in Subclass.objects.all()],
         all_label=_("All subclasses"),
         only="subclass",
+        filter_by="class",
     )
     species_filter = _select_filter(
         request,
@@ -1208,12 +1231,14 @@ def world_feats(request):
                 class_features = class_features.filter(class_level__klass_id=class_filter["value"])
         items += [
             {
+                "pk": feature.pk,
+                "kind": "feature",
                 "name": _badged_heading(feature.name, _self_translated(feature, "name")),
-                "detail": _("Feature of %(klass)s (Level %(level)s)")
-                % {
-                    "klass": feature.class_level.klass.name,
-                    "level": feature.class_level.level,
-                },
+                "properties": [
+                    _("Class"),
+                    feature.class_level.klass.name,
+                    f"{_('Level')} {feature.class_level.level}",
+                ],
                 "url": reverse("world-feature-detail", args=[feature.pk]),
                 "image": _menu_image_url("classes", f"{feature.class_level.klass_id}-grey.png"),
             }
@@ -1243,12 +1268,14 @@ def world_feats(request):
             klass_id = feature.subclass_level.subclass.klass_id
             items.append(
                 {
+                    "pk": feature.pk,
+                    "kind": "feature",
                     "name": _badged_heading(feature.name, _self_translated(feature, "name")),
-                    "detail": _("Feature of %(klass)s (Level %(level)s)")
-                    % {
-                        "klass": feature.subclass_level.subclass.name,
-                        "level": feature.subclass_level.level,
-                    },
+                    "properties": [
+                        _("Subclass"),
+                        feature.subclass_level.subclass.name,
+                        f"{_('Level')} {feature.subclass_level.level}",
+                    ],
                     "url": reverse("world-feature-detail", args=[feature.pk]),
                     "image": _menu_image_url("classes", f"{klass_id}-grey.png"),
                 }
@@ -1262,6 +1289,8 @@ def world_feats(request):
             species_traits = species_traits.filter(species_id=species_filter["value"])
         items += [
             {
+                "pk": trait.pk,
+                "kind": "feature",
                 "name": _badged_heading(trait.name, _self_translated(trait, "name")),
                 "detail": _("Trait of %(species)s") % {"species": trait.species.name},
                 "url": reverse("world-feature-detail", args=[trait.pk]),

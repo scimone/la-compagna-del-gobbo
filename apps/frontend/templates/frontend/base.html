@@ -869,14 +869,36 @@
           .forEach(function (field) {
             field.addEventListener("change", function () {
               syncOnlyFilters();
+              syncGroupedOptions();
               clearTimeout(debounceTimer);
               runSearch();
             });
           });
 
+        // A `<select>` marked `data-filter-by="<name>"` (see `_select_filter()`'s `filter_by` in
+        // views.py, e.g. Subclass narrowed by Class) only shows the options whose own `data-group`
+        // matches that other select's current value - every option once it's empty/absent. Kept
+        // in sync with `syncOnlyFilters()` above rather than folded into it: this one only ever
+        // hides/shows `<option>`s inside a still-visible select, it never touches `[data-only]`.
+        function syncGroupedOptions() {
+          Array.from(form.querySelectorAll("select[data-filter-by]")).forEach(function (select) {
+            var controller = form.querySelector('[name="' + select.dataset.filterBy + '"]');
+            var groupValue = controller ? controller.value : "";
+            Array.from(select.options).forEach(function (option) {
+              if (!option.value) return; // the "All" option always stays
+              option.hidden = !!groupValue && option.dataset.group !== groupValue;
+            });
+            if (select.selectedOptions[0] && select.selectedOptions[0].hidden) {
+              select.value = "";
+              select.classList.remove("active");
+            }
+          });
+        }
+
         // Initial visibility for whatever `type` (and any of its own now-irrelevant filter
         // values) a deep link/back-navigation landed on, before the first paint settles.
         syncOnlyFilters();
+        syncGroupedOptions();
 
         // `runSearch()` above only swaps `#search-results` (the item list) - a select filter's
         // own "active" border (like a checklist filter's button below, server-rendered from
