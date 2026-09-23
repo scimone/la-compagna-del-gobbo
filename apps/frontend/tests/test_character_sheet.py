@@ -710,6 +710,31 @@ def test_a_custom_item_is_listed_in_its_section_and_sold_at_its_own_price(signed
     assert cleric.currency.gold == gold_before + 50 and cleric.custom_items.get().quantity == 1
 
 
+def test_a_custom_weapon_can_carry_a_simple_or_martial_category(signed_in, alice):
+    cleric = finished(alice, "cleric")
+
+    act(
+        signed_in, cleric, action="custom_add", name="Boomerang", section="weapons",
+        type="Ranged Weapon", weapon_category="martial",
+    )  # fmt: skip
+
+    boomerang = cleric.custom_items.get()
+    assert boomerang.weapon_category == "martial"
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "inventory")
+    assert "Martial" in html and "Ranged Weapon" in html  # both in the detail line
+
+    # A non-weapon section drops the field rather than trust it, and an unknown value is rejected.
+    reply = act(signed_in, cleric, action="custom_add", name="Trinket", weapon_category="martial")
+    assert reply.status_code == 200
+    assert cleric.custom_items.get(name="Trinket").weapon_category == ""
+    assert (
+        act(
+            signed_in, cleric, action="custom_add", name="x", section="weapons",
+            weapon_category="deadly",
+        ).status_code == 400
+    )  # fmt: skip
+
+
 def test_a_custom_item_needs_a_name_and_sane_numbers(signed_in, alice):
     cleric = finished(alice, "cleric")
 
@@ -786,21 +811,25 @@ def test_the_add_item_sheet_starts_with_pills_for_the_main_type_and_the_rest_wai
     cleric = finished(alice, "cleric")
 
     html = signed_in.get(f"/characters/{cleric.pk}/items/").content.decode()
+    # The custom-item form (also up in the fixed part, next to this) has its own Category pills,
+    # also named "section" - scope to the World's own search+filters form for these asserts.
+    catalog = html.split('<form class="world-search"')[1].split("</form>")[0]
 
-    pills = re.findall(r'<input\s+type="radio"\s+name="section"\s+value="(\w*)"([^>]*)>', html)
+    pills = re.findall(r'<input\s+type="radio"\s+name="section"\s+value="(\w*)"([^>]*)>', catalog)
     assert [value for value, _checked in pills] == ["", "weapons", "armor", "tools", "misc"]
     assert ["checked" in checked for _value, checked in pills] == [True, False, False, False, False]
     # Every other filter belongs to one pill and is hidden until it is picked...
-    filters = re.findall(r'<details class="filter-popover"([^>]*)>', html)
+    filters = re.findall(r'<details class="filter-popover"([^>]*)>', catalog)
     assert filters and all("data-only=" in f and "hidden" in f for f in filters)
     # ...and only the weapons have the weapon-only ones.
     only = {
-        label: re.findall(r'data-only="(\w+)"[^>]*>\s*<summary[^>]*>\s*' + label, html)
+        label: re.findall(r'data-only="(\w+)"[^>]*>\s*<summary[^>]*>\s*' + label, catalog)
         for label in ("Category", "Properties", "Mastery", "Type")
     }
     assert only["Category"] == only["Properties"] == only["Mastery"] == ["weapons"]
     assert only["Type"] == ["weapons", "armor", "tools", "misc"]
-    # Every row says which pill it belongs to.
+    # Every row says which pill it belongs to (not the custom form's own markup: an item's own
+    # `data-section` isn't the same attribute as a radio's `name="section"` above).
     assert 'data-section="weapons"' in html and 'data-section="armor"' in html
     assert 'data-section="tools"' in html and 'data-section="misc"' in html
 

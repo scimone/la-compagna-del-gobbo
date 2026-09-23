@@ -294,6 +294,12 @@
   .cs-form label { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; font-size: 0.85rem; color: var(--muted); }
   .cs-form input[type="text"], .cs-form input[type="number"], .cs-form select, .cs-form textarea { width: 100%; padding: 0.5rem 0.6rem; color: var(--text); }
   .cs-form label.check { flex-direction: row; align-items: center; gap: 0.5rem; }
+  /* The World's own pill / filter-option look (Category, weapon category, Type's popover options)
+     sits right in `.cs-form` too (Category/Type, right under Name) - `.cs-form label`'s own muted
+     vertical-caption styling above isn't meant for these, so put back their normal look. */
+  .cs-form label.pill, .cs-form label.filter-option { flex-direction: row; align-items: center; color: var(--text); }
+  .cs-form label.pill { font-size: 0.8rem; }
+  .cs-form label.filter-option { font-size: 0.85rem; gap: 0.5rem; }
   .cs-form-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; }
   .btn-primary { padding: 0.65rem 1rem; background: var(--accent); border: 0; border-radius: 0.6rem; color: var(--accent-text); font-weight: 600; cursor: pointer; }
   #cs .hint { margin: 0; font-size: 0.85rem; color: var(--muted); line-height: 1.4; }

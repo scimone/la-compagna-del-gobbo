@@ -54,10 +54,35 @@
   <p class="hint">{% translate "An item of your own: it is only listed, counted, weighed and sold - it has no game rules." %}</p>
   <div class="cs-form" data-custom-form>
     <label>{% translate "Name" %}<input type="text" name="name" maxlength="200" autocomplete="off"></label>
-    <label>{% translate "Category" %}
-      <select name="section">{% for key, label in sections %}<option value="{{ key }}"{% if key == "misc" %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
-    </label>
-    <label>{% translate "Type" %}<input type="text" name="type" maxlength="60" autocomplete="off"></label>
+    {# Same look as the World's own filters (e.g. the spellbook's Level filter): a pill row for   #}
+    {# the one-of-four Category, a popover of radio options for Type - its button doubles as its  #}
+    {# own caption, same as any other filter button - and, for weapons only, a second popover     #}
+    {# next to it for Simple/Martial. Picking a Category rebuilds Type's options                  #}
+    {# (`character_sheet.js`) from `custom_types_by_section` below and shows/hides the weapon-     #}
+    {# category button; picking a new Category resets both back to "Any"/"None".                  #}
+    <div class="world-pills world-pills-scroll" role="radiogroup" aria-label="{% translate 'Category' %}" data-custom-section>
+      {% for key, label in sections %}
+        <label class="pill"><input type="radio" name="section" value="{{ key }}"{% if key == "misc" %} checked{% endif %}> {{ label }}</label>
+      {% endfor %}
+    </div>
+    <div class="world-filter-buttons">
+      <details class="filter-popover" data-custom-weapon-category hidden>
+        <summary class="filter-button">{% translate "Weapon category" %}</summary>
+        <div class="filter-popover-panel">
+          <label class="filter-option"><input type="radio" name="weapon_category" value="" checked> {% translate "Any" %}</label>
+          {% for key, label in weapon_categories %}
+            <label class="filter-option"><input type="radio" name="weapon_category" value="{{ key }}"> {{ label }}</label>
+          {% endfor %}
+        </div>
+      </details>
+      <details class="filter-popover" data-custom-type>
+        <summary class="filter-button">{% translate "Type" %}</summary>
+        <div class="filter-popover-panel" data-custom-type-panel>
+          <label class="filter-option"><input type="radio" name="type" value="" checked> {% translate "None" %}</label>
+        </div>
+      </details>
+    </div>
+    {{ custom_types_by_section|json_script:"cs-custom-types-data" }}
     <div class="cs-form-row">
       <label>{% translate "Quantity" %}<input type="number" name="quantity" min="1" value="1" inputmode="numeric"></label>
       <label>{% if weight_unit == "kg" %}{% translate "Weight (kg)" %}{% else %}{% translate "Weight (lb)" %}{% endif %}<input type="number" name="weight" min="0" step="any" inputmode="decimal"></label>

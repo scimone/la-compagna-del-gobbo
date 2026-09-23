@@ -15,7 +15,9 @@ class CharacterCustomItem(models.Model):
     art objects), which - unlike equipment - sells for its full value, not half. `section` is the
     part of the inventory it is listed under. `type_label` is a free-text finer type within that
     section (e.g. "Light Armor", "Potion") - a label only, purely for the item's own detail line;
-    it carries no rules, unlike a catalog item's real `EquipmentType`.
+    it carries no rules, unlike a catalog item's real `EquipmentType`. `weapon_category` is the
+    same idea for a weapon's Simple/Martial split - only ever shown, like `type_label`, never
+    checked against a proficiency (that stays catalog-only, see `_weapon_groups()`).
     """
 
     SECTION_CHOICES = [
@@ -23,6 +25,10 @@ class CharacterCustomItem(models.Model):
         ("armor", "Armor"),
         ("tools", "Tools"),
         ("misc", "Misc Items"),
+    ]
+    WEAPON_CATEGORY_CHOICES = [
+        ("simple", "Simple"),
+        ("martial", "Martial"),
     ]
 
     character = models.ForeignKey(
@@ -35,6 +41,9 @@ class CharacterCustomItem(models.Model):
     valuable = models.BooleanField(default=False)
     section = models.CharField(max_length=10, choices=SECTION_CHOICES, default="misc")
     type_label = models.CharField(max_length=60, blank=True, default="")
+    weapon_category = models.CharField(
+        max_length=10, choices=WEAPON_CATEGORY_CHOICES, blank=True, default=""
+    )
     description = models.TextField(blank=True, default="")
 
     class Meta:

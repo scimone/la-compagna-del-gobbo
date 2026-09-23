@@ -31,6 +31,7 @@ WEARABLE_TYPES = (*BODY_ARMOR_TYPES, SHIELD_TYPE, "m", "r")
 #: A custom item opts in with `valuable` (gems, art objects, trade goods).
 FULL_VALUE_TYPES = ("c",)
 CUSTOM_SECTIONS = tuple(key for key, _label in CharacterCustomItem.SECTION_CHOICES)
+CUSTOM_WEAPON_CATEGORIES = tuple(key for key, _label in CharacterCustomItem.WEAPON_CATEGORY_CHOICES)
 MAX_QUANTITY = 9999
 #: `CharacterSpell.source` of a spell the player added from the sheet. The builder's grants carry
 #: their own source, and only these can be taken away again from the sheet.
@@ -259,6 +260,7 @@ def add_custom_item(
     name: str,
     section: str = "misc",
     type_label: str = "",
+    weapon_category: str = "",
     quantity: int = 1,
     weight: float | None = None,
     value: int | None = None,
@@ -270,6 +272,8 @@ def add_custom_item(
         raise ValueError("name is empty")
     if section not in CUSTOM_SECTIONS:
         raise ValueError(f"unknown section {section!r}")
+    if weapon_category and weapon_category not in CUSTOM_WEAPON_CATEGORIES:
+        raise ValueError(f"unknown weapon category {weapon_category!r}")
     if (weight is not None and weight < 0) or (value is not None and value < 0):
         raise ValueError("weight and cost cannot be negative")
     type_max = CharacterCustomItem._meta.get_field("type_label").max_length
@@ -278,6 +282,9 @@ def add_custom_item(
         name=name[: CharacterCustomItem._meta.get_field("name").max_length],
         section=section,
         type_label=type_label.strip()[:type_max],
+        # Only weapons have one - a stray value from the client for any other section is dropped
+        # rather than trusted, same spirit as `section` above.
+        weapon_category=weapon_category if section == "weapons" else "",
         quantity=_clamp(quantity, 1, MAX_QUANTITY),
         weight=weight or None,
         value=value or None,

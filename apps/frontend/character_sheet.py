@@ -463,6 +463,8 @@ def _item_card(kind: str, row, pack_name: str = "") -> dict:
     # One line under the name, like a spell's "Cantrip · Divination": what the item does, then
     # what it weighs and costs, then where it came from.
     detail = []
+    if custom and row.weapon_category:
+        detail.append(_pick_translation(_WEAPON_CATEGORY_LABELS, row.weapon_category))
     if custom and row.type_label:
         detail.append(row.type_label)
     if not custom:
@@ -866,6 +868,7 @@ def _act_custom_add(character, post):
         name=post.get("name", ""),
         section=post.get("section", "misc"),
         type_label=post.get("type", ""),
+        weapon_category=post.get("weapon_category", ""),
         quantity=int(_number(post, "quantity") or 1),
         weight=weight,
         value=round(cost * 100) if cost is not None else None,
@@ -1087,6 +1090,18 @@ def character_items(request, pk):
             "items": rows,
             "filters": filters,
             "sections": [(key, label) for key, label, _types in _INVENTORY_SECTIONS],
+            # Suggestions for the custom item's free-text Type field - the catalog's own type
+            # names, so a homebrew item can be labelled "Light Armor" or "Potion" like a real one.
+            # One list per section - `character_sheet.js` swaps in the right one as the player
+            # picks a Category, so a weapon doesn't get offered "Shield" as a type.
+            "custom_types_by_section": {
+                key: sorted({type_names[pk] for pk in type_names if used_types.get(pk) == key})
+                for key, _label, _types in _INVENTORY_SECTIONS
+            },
+            # Only shown once Category is "weapons" (`character_sheet.js`).
+            "weapon_categories": [
+                (c, _pick_translation(_WEAPON_CATEGORY_LABELS, c)) for c in ("simple", "martial")
+            ],
             "weight_unit": "kg" if units.is_metric() else "lb",
             "coins": _coins(character),
         },

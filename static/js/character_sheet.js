@@ -457,6 +457,103 @@
     else window.history.replaceState(window.history.state, "", next);
   }
 
+  // A filter-popover button shows "active" (with a count badge of 1) once anything but its own
+  // empty/"Any"/"None" option is picked - shared by the custom item form's Type and (for weapons)
+  // Weapon category popovers below.
+  function syncPopoverButton(panel, button) {
+    var on = !!panel.querySelector("input:checked[value]:not([value=''])");
+    button.classList.toggle("active", on);
+    var badge = button.querySelector(".filter-count");
+    if (on) {
+      if (!badge) {
+        badge = document.createElement("span");
+        badge.className = "filter-count";
+        button.appendChild(badge);
+      }
+      badge.textContent = 1;
+    } else if (badge) {
+      badge.remove();
+    }
+  }
+
+  // Both popovers below live in `.cs-form`, which scrolls - a plain CSS dropdown
+  // (`position: absolute`) would be clipped the moment that scrolls it even slightly out of view
+  // (as every other filter avoids by living in the fixed part instead; these can't, sitting right
+  // under Name). Escape that by switching the open panel to `position: fixed`, placed under its
+  // button by hand, and closing it if the form scrolls out from under it rather than let it drift.
+  function escapeScrollClip(popover, panel, button) {
+    var scroller = popover.closest(".cs-scroll");
+    popover.addEventListener("toggle", function () {
+      if (!popover.open) return;
+      var rect = button.getBoundingClientRect();
+      panel.style.position = "fixed";
+      panel.style.top = rect.bottom + 4 + "px";
+      panel.style.left = rect.left + "px";
+    });
+    if (scroller) {
+      scroller.addEventListener("scroll", function () {
+        if (popover.open) popover.open = false;
+      });
+    }
+  }
+
+  // The custom item form's Type is a filter-popover of radio options, same as the catalog's own
+  // Type filter right next to it - just single-select (an item has one type) and built from
+  // whichever Category pill is picked (a "Weapons" item isn't offered "Shield" as a type).
+  // `custom_types_by_section` ({section: [name, ...]}) came down as JSON. A "weapons" Category
+  // also reveals a second popover next to it, for Simple/Martial.
+  function initCustomTypeOptions(body) {
+    var data = body.querySelector("#cs-custom-types-data");
+    var sectionGroup = body.querySelector("[data-custom-section]");
+    var weaponPopover = body.querySelector("[data-custom-weapon-category]");
+    var weaponPanel = weaponPopover && weaponPopover.querySelector(".filter-popover-panel");
+    var weaponButton = weaponPopover && weaponPopover.querySelector(".filter-button");
+    var popover = body.querySelector("[data-custom-type]");
+    var panel = popover && popover.querySelector("[data-custom-type-panel]");
+    var button = popover && popover.querySelector(".filter-button");
+    if (!data || !sectionGroup || !popover || !panel || !button) return;
+    var bySection = JSON.parse(data.textContent);
+
+    // The panel's first option is the static "None" radio (kept in the template); everything
+    // after it is rebuilt here. A Category change always resets the pick back to "None" - a type
+    // from the old Category may not even exist in the new one - and shows/hides the weapon
+    // category popover (its own pick resets the same way, back to "Any").
+    function rebuild() {
+      var section = sectionGroup.querySelector("input:checked");
+      var onWeapons = !!section && section.value === "weapons";
+      Array.prototype.slice.call(panel.children, 1).forEach(function (el) { el.remove(); });
+      ((section && bySection[section.value]) || []).forEach(function (name) {
+        var option = document.createElement("label");
+        option.className = "filter-option";
+        var input = document.createElement("input");
+        input.type = "radio";
+        input.name = "type";
+        input.value = name;
+        option.appendChild(input);
+        option.appendChild(document.createTextNode(" " + name));
+        panel.appendChild(option);
+      });
+      panel.children[0].querySelector("input").checked = true;
+      syncPopoverButton(panel, button);
+      if (weaponPopover) {
+        weaponPopover.hidden = !onWeapons;
+        weaponPanel.children[0].querySelector("input").checked = true; // back to "Any"
+        syncPopoverButton(weaponPanel, weaponButton);
+      }
+    }
+
+    escapeScrollClip(popover, panel, button);
+    if (weaponPopover) {
+      escapeScrollClip(weaponPopover, weaponPanel, weaponButton);
+      weaponPanel.addEventListener("change", function () {
+        syncPopoverButton(weaponPanel, weaponButton);
+      });
+    }
+    sectionGroup.addEventListener("change", rebuild);
+    panel.addEventListener("change", function () { syncPopoverButton(panel, button); });
+    rebuild();
+  }
+
   // Each overlay (`.cs-overlay`) is fetched from its `data-url` the first time it is opened. The
   // button that opens one names it: `data-add-open="<overlay id>"`.
   function openAdd(overlay) {
@@ -473,6 +570,8 @@
         overlay.dataset.loaded = "1";
         var scope = body.querySelector("[data-filter-list]");
         if (scope) filterRows(scope); // hides the filters that wait for a pill to be picked
+        updateBuyButtons();
+        initCustomTypeOptions(body);
       })
       .catch(function () { body.textContent = ""; overlay.hidden = true; showError(); });
   }
@@ -505,7 +604,9 @@
       var params = { action: "custom_add" };
       var name = overlay.querySelector('[data-custom-form] [name="name"]');
       overlay.querySelectorAll("[data-custom-form] [name]").forEach(function (field) {
-        params[field.name] = field.type === "checkbox" ? (field.checked ? "1" : "") : field.value;
+        if (field.type === "checkbox") params[field.name] = field.checked ? "1" : "";
+        else if (field.type === "radio") { if (field.checked) params[field.name] = field.value; }
+        else params[field.name] = field.value;
       });
       if (!params.name.trim()) {
         name.focus();
@@ -515,8 +616,15 @@
         if (!accepted) return;
         overlay.querySelectorAll("[data-custom-form] [name]").forEach(function (field) {
           if (field.type === "checkbox") field.checked = false;
+          else if (field.type === "radio") field.checked = field.defaultChecked;
           else if (field.name === "quantity") field.value = "1";
           else if (field.tagName !== "SELECT") field.value = "";
+        });
+        // Radios reset above, but the Category pill, weapon-category pill and Type popover also
+        // carry their own live state (rebuilt options, hidden/shown, the popover's badge) - a
+        // "change" event redoes that too.
+        overlay.querySelectorAll('[data-custom-form] input[type="radio"]:checked').forEach(function (field) {
+          field.dispatchEvent(new Event("change", { bubbles: true }));
         });
       });
     }
