@@ -109,6 +109,15 @@
     );
   }
 
+  // Hide the Buy pill on any catalog row the purse can no longer afford (and bring it back once it
+  // can again) - checked against the purse as it stands right now, same as the confirmation dialog.
+  function updateBuyButtons() {
+    var copper = purseCopper();
+    root.querySelectorAll(".equip.buy[data-cost]").forEach(function (button) {
+      button.hidden = Number(button.dataset.cost) > copper;
+    });
+  }
+
   // gp/sp/cp only, like the server's own `_gold_label` (platinum and electrum are never spent on
   // a purchase, so they never show up in a price or a balance).
   function copperLabel(copper) {
@@ -196,6 +205,8 @@
       var pct = state.max_hp ? Math.max(0, Math.min(100, (state.hp / state.max_hp) * 100)) : 0;
       bar.style.setProperty("--pct", pct + "%");
     });
+
+    updateBuyButtons();
   }
 
   // A row of pips (spell slots, Hit Dice) with `left` of them filled. Each pip carries the delta it
