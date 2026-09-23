@@ -443,6 +443,34 @@ def _index_letter(name: str) -> str:
     return "#"
 
 
+def _split_bookmarked(
+    request, items: list[dict], bookmark_kind: str
+) -> tuple[list[dict], list[dict]]:
+    """`(rest, bookmarked)`: `items` (each with a `pk`, optionally its own `"kind"` override for a
+    page mixing more than one `BOOKMARK_MODELS` kind - see `_list_page()`'s docstring) split by
+    whether `request.user` has it bookmarked, with each item's own `"bookmarked"` flag set along
+    the way. Callers must only call this once `request.user.is_authenticated` - shared by
+    `_list_page()` (the World lists) and the character sheet's own Features tab
+    (`character_sheet._features_tab()`), which reads the exact same `Bookmark` rows under the same
+    kinds ("feat"/"feature") so a bookmark set from either page shows up on the other.
+    """
+    ids_by_kind: dict[str, set[str]] = {}
+    for item in items:
+        kind = item.get("kind", bookmark_kind)
+        if item.get("pk") is None:
+            item["bookmarked"] = False
+            continue
+        if kind not in ids_by_kind:
+            ids_by_kind[kind] = bookmarked_ids(request.user, kind)
+        # `Bookmark.object_id` is a `CharField` (every bookmarkable model but `Feature` has a
+        # string slug pk to match it verbatim) - `Feature`'s own pk is a plain int, so it needs
+        # `str()` here or it would never compare equal to anything in `ids_by_kind`.
+        item["bookmarked"] = str(item["pk"]) in ids_by_kind[kind]
+    bookmarked = [item for item in items if item["bookmarked"]]
+    rest = [item for item in items if not item["bookmarked"]]
+    return rest, bookmarked
+
+
 def _list_page(
     request,
     title,
@@ -482,20 +510,7 @@ def _list_page(
     if not request.user.is_authenticated:
         bookmark_kind = None  # bookmarks are per account: nothing to show or toggle signed out
     if bookmark_kind:
-        ids_by_kind: dict[str, set[str]] = {}
-        for item in items:
-            kind = item.get("kind", bookmark_kind)
-            if item.get("pk") is None:
-                item["bookmarked"] = False
-                continue
-            if kind not in ids_by_kind:
-                ids_by_kind[kind] = bookmarked_ids(request.user, kind)
-            # `Bookmark.object_id` is a `CharField` (every bookmarkable model but `Feature` has a
-            # string slug pk to match it verbatim) - `Feature`'s own pk is a plain int, so it needs
-            # `str()` here or it would never compare equal to anything in `ids_by_kind`.
-            item["bookmarked"] = str(item["pk"]) in ids_by_kind[kind]
-        bookmarked_items = [item for item in items if item["bookmarked"]]
-        items = [item for item in items if not item["bookmarked"]]
+        items, bookmarked_items = _split_bookmarked(request, items, bookmark_kind)
 
     context = {
         "page_title": _(title),
@@ -1208,7 +1223,7 @@ def world_feats(request):
             {
                 "pk": f.pk,
                 "name": _badged_heading(f.name, _self_translated(f, "name")),
-                "detail": _format_feat_category(f.category),
+                "properties": [_("Feat"), _format_feat_category(f.category)],
                 "url": reverse("world-feat-detail", args=[f.pk]),
                 # "Fighting Style (P)"/"(R)" sub-variants share their base category's artwork.
                 "image": _menu_image_url(
@@ -1240,7 +1255,9 @@ def world_feats(request):
                     f"{_('Level')} {feature.class_level.level}",
                 ],
                 "url": reverse("world-feature-detail", args=[feature.pk]),
-                "image": _menu_image_url("classes", f"{feature.class_level.klass_id}-grey.png"),
+                "image": _menu_image_url(
+                    "features_classes", f"{feature.class_level.klass_id}.jpeg"
+                ),
             }
             for feature in class_features
         ]
@@ -1277,7 +1294,7 @@ def world_feats(request):
                         f"{_('Level')} {feature.subclass_level.level}",
                     ],
                     "url": reverse("world-feature-detail", args=[feature.pk]),
-                    "image": _menu_image_url("classes", f"{klass_id}-grey.png"),
+                    "image": _menu_image_url("features_subclasses", f"{klass_id}.jpg"),
                 }
             )
 
@@ -1292,11 +1309,11 @@ def world_feats(request):
                 "pk": trait.pk,
                 "kind": "feature",
                 "name": _badged_heading(trait.name, _self_translated(trait, "name")),
-                "detail": _("Trait of %(species)s") % {"species": trait.species.name},
+                "properties": [_("Species"), trait.species.name],
                 "url": reverse("world-feature-detail", args=[trait.pk]),
                 "image": _menu_image_url(
                     "features_species",
-                    f"{_SPECIES_IMAGE_SLUGS.get(trait.species_id, trait.species_id)}.jpeg",
+                    f"{_SPECIES_IMAGE_SLUGS.get(trait.species_id, trait.species_id)}.jpg",
                 ),
             }
             for trait in species_traits

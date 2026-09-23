@@ -74,6 +74,10 @@ msgstr "Strumenti"
 msgid "Feat"
 msgstr "Talento"
 
+#: apps/frontend/character_sheet.py
+msgid "Option"
+msgstr "Opzione"
+
 #: apps/frontend/views.py
 msgid "Page"
 msgstr "Pagina"

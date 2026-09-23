@@ -235,13 +235,34 @@ def test_features_lists_species_traits_class_features_and_feats_as_clickable_lin
 
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "features")
 
-    feature_list = html.split('id="cs-feature-list"')[1].split("</ul>")[0]
+    feature_list = html.split('id="cs-feature-list"')[1].split('id="cs-feature-empty"')[0]
     assert "Divine Order" in feature_list and "Magic Initiate" in feature_list
-    # Rows link straight to each entry's own World page now, instead of unfolding inline.
-    assert '<a class="cs-row" href="/world/feats/feature/' in feature_list
-    assert '<a class="cs-row" href="/world/feats/' in feature_list
+    # Rows link straight to each entry's own World page now, instead of unfolding inline - the
+    # exact same `_list_item.html` markup the World's own Features list uses.
+    assert 'href="/world/feats/feature/' in feature_list
+    assert 'href="/world/feats/' in feature_list
     assert "data-describe=" not in feature_list
     assert 'name="type"' in html  # the type pills, once this character has more than one kind
+
+
+def test_features_tab_bookmarks_are_the_same_ones_the_world_list_shows(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    divine_order = cleric.features.get(feature__name="Divine Order").feature
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "features")
+    assert "item-list bookmark-list" not in html
+    assert 'aria-pressed="false"' in html
+
+    signed_in.post("/bookmarks/toggle/", {"kind": "feature", "object_id": str(divine_order.pk)})
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "features")
+    pinned = html.split("item-list bookmark-list")[1].split("</ul>")[0]
+    assert "Divine Order" in pinned
+
+    # The exact same `Bookmark` row - toggling it here shows up on the World list too.
+    world_html = signed_in.get("/world/feats/").content.decode()
+    world_pinned = world_html.split("item-list bookmark-list")[1].split("</ul>")[0]
+    assert "Divine Order" in world_pinned
 
 
 def test_spellbook_shows_the_casting_numbers_the_slots_and_the_spells(signed_in, alice):

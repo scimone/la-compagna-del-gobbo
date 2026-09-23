@@ -1,6 +1,8 @@
-{# Card list styles shared by the World lists (`list.html`) and the character wizard's pickers: #}
-{# a row with an optional thumbnail, a name and a detail line. Rules for bookmarks, the featured  #}
-{# row and the A-Z strip stay in `list.html`. #}
+{# Card list styles shared by the World lists (`list.html`), the character wizard's pickers, and #}
+{# the character sheet's own Features tab (`_features.html`) - a row with an optional thumbnail, #}
+{# a name and a detail line, plus its bookmark toggle and the pinned "already bookmarked" block   #}
+{# above the rest of the list. The featured row and the A-Z strip stay in `list.html` - only the #}
+{# World lists have those. #}
   .item-list {
     display: flex;
     flex-direction: column;
@@ -96,4 +98,50 @@
 
   .item-list.compact-thumbs .thumb-vignette {
     border-radius: 0.6rem;
+  }
+
+  /* Bookmarked entries of the current (searched/filtered) list, pinned above the rest: no
+     heading, just visibly different (accent border and tint) from a regular entry. */
+  .bookmark-list {
+    flex-shrink: 0;
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.25rem;
+    border-bottom: 1px dashed var(--accent);
+  }
+
+  .item-list.bookmark-list li {
+    background: var(--surface);
+    background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+    border-color: var(--accent);
+    border-left-width: 0.3rem;
+  }
+
+  /* Bookmark toggle at the right end of an entry - a separate control next to the link, not
+     inside it (a button can't nest in an anchor). */
+  .item-bookmark {
+    appearance: none;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.9rem;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  .item-bookmark svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .item-bookmark:active {
+    background: var(--bg);
+  }
+
+  .item-bookmark.active {
+    color: var(--accent);
   }

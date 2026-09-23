@@ -1,5 +1,10 @@
 {# The character sheet's CSS (dropped into base.html's <style>). Everything is scoped under #cs, #}
 {# and uses only base.html's colour variables, so dark mode needs nothing of its own.           #}
+
+{# The Features tab's own list (`_features.html`) reuses the World lists' own row/bookmark #}
+{# look verbatim - see `_item_list_style.html`'s own comment. #}
+{% include "frontend/_item_list_style.html" %}
+
   /* The sheet owns the whole space between the app header and the bottom nav: the top block
      never scrolls, `.cs-body` below it does - that is what keeps the header sticky. */
   main { padding: 0; gap: 0; overflow: hidden; }

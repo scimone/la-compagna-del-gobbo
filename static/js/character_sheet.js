@@ -413,9 +413,10 @@
       item.hidden = !match;
       if (match) shown += 1;
     });
-    // A level heading whose every row just got hidden goes with them - unless it never had any to
-    // begin with (a level with slots but no spells yet), which stays up regardless of the search.
-    list.querySelectorAll(".cs-level-group").forEach(function (group) {
+    // A level heading (spellbook) or the Features tab's own "Bookmarks" block whose every row
+    // just got hidden goes with them - unless it never had any to begin with (a level with slots
+    // but no spells yet), which stays up regardless of the search.
+    list.querySelectorAll(".cs-level-group, .bookmark-list").forEach(function (group) {
       var items = group.querySelectorAll("li");
       group.hidden = items.length > 0 && !Array.prototype.some.call(items, function (li) { return !li.hidden; });
     });
@@ -459,6 +460,44 @@
   document.addEventListener("click", function (event) {
     if (event.target.closest(".filter-popover")) return;
     root.querySelectorAll(".filter-popover[open]").forEach(function (popover) { popover.open = false; });
+  });
+
+  // ---- features tab: bookmarks (the World list's own AJAX swap, list.html, over #cs-feature-list
+  // ---- instead of #search-results - re-running filterRows() after, since unlike a full page this
+  // ---- tab's search/filter state lives only in the DOM, not the URL, and would otherwise be lost.
+  root.addEventListener("click", function (event) {
+    var button = event.target.closest && event.target.closest(".item-bookmark");
+    if (!button || !window.fetch) return;
+    var form = document.getElementById("bookmark-list-form");
+    if (!form) return;
+    event.preventDefault();
+
+    var data = new FormData(form);
+    data.set("object_id", button.value);
+    button.disabled = true;
+    fetch(form.action, {
+      method: "POST",
+      body: data,
+      headers: { "X-Requested-With": "XMLHttpRequest" },
+    })
+      .then(function (response) {
+        if (!response.ok) throw new Error("bookmark failed");
+        return fetch(window.location.href, { cache: "no-store" });
+      })
+      .then(function (response) { return response.text(); })
+      .then(function (html) {
+        var next = new DOMParser().parseFromString(html, "text/html")
+          .getElementById("cs-feature-list");
+        var current = document.getElementById("cs-feature-list");
+        if (!next || !current) throw new Error("no list");
+        current.replaceWith(next);
+        var tools = root.querySelector('[data-filter-list="cs-feature-list"]');
+        if (tools) filterRows(tools);
+      })
+      .catch(function () {
+        button.disabled = false;
+        form.submit();
+      });
   });
 
   // ---- adding items and spells: the overlays -----------------------------------------------

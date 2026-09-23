@@ -137,24 +137,18 @@
     margin-bottom: 0;
   }
 
-  .level-group {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 0.6rem;
-    overflow: hidden;
-  }
-
   .level-group + .level-group {
     margin-top: 0.6rem;
   }
 
   .level-group summary {
     cursor: pointer;
-    padding: 0.6rem 0.9rem;
+    padding: 0.5rem 0;
     font-weight: 700;
     color: var(--accent);
     list-style: none;
     touch-action: manipulation;
+    border-bottom: 1px solid var(--border);
   }
 
   .level-group summary::-webkit-details-marker {
@@ -173,11 +167,11 @@
   }
 
   .level-group .entry-cards {
-    padding: 0 0.7rem 0.7rem;
+    padding: 0.6rem 0 0;
   }
 
   .level-group .toggle-body {
-    padding: 0 0.7rem 0.7rem;
+    padding: 0.6rem 0 0;
   }
 
   /* A level/subclass group's features, each linking straight to its own detail page instead of
@@ -189,7 +183,7 @@
   .level-group .feature-link-list {
     list-style: none;
     margin: 0;
-    padding: 0 0.7rem 0.7rem;
+    padding: 0.6rem 0 0;
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
@@ -218,25 +212,19 @@
   /* Each subclass is its own collapsed-by-default `<details>` (its name is the clickable
      `<summary>` "button"), same look as `.level-group` above rather than a plain heading, since
      a Class can have several and showing them all expanded at once buried the page. */
-  .subclass-block {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 0.6rem;
-    overflow: hidden;
-  }
-
   .subclass-block + .subclass-block {
     margin-top: 0.6rem;
   }
 
   .subclass-block > summary {
     cursor: pointer;
-    padding: 0.7rem 0.9rem;
+    padding: 0.6rem 0;
     font-weight: 700;
     font-size: 1.05rem;
     color: var(--accent);
     list-style: none;
     touch-action: manipulation;
+    border-bottom: 1px solid var(--border);
   }
 
   .subclass-block > summary::-webkit-details-marker {
@@ -255,7 +243,7 @@
   }
 
   .subclass-block .subclass-body {
-    padding: 0 0.9rem 0.9rem;
+    padding: 0.6rem 0 0;
   }
 
   /* `overflow-x: auto` alone would make the used value of `overflow-y` also `auto` (per the
