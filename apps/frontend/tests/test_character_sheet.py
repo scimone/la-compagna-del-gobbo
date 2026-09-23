@@ -11,7 +11,8 @@ from PIL import Image
 
 from apps.builder.services import creation
 from apps.builder.tests.conftest import build_character
-from apps.characters.models import Character, CharacterInventoryItem
+from apps.characters.models import Character, CharacterInventoryItem, CharacterOptionalFeature
+from apps.rules.models import OptionalFeature
 
 pytestmark = pytest.mark.usefixtures("imported_rules")
 
@@ -265,6 +266,44 @@ def test_features_tab_bookmarks_are_the_same_ones_the_world_list_shows(signed_in
     assert "Divine Order" in world_pinned
 
 
+def test_options_are_mixed_into_features_with_their_own_page_icon_and_bookmark(signed_in, alice):
+    warlock = finished(alice, "warlock", background="charlatan")
+    invocation = OptionalFeature.objects.filter(feature_type="Eldritch Invocation").first()
+    CharacterOptionalFeature.objects.create(character=warlock, optional_feature=invocation)
+
+    html = panel(signed_in.get(f"/characters/{warlock.pk}/").content.decode(), "features")
+    feature_list = html.split('id="cs-feature-list"')[1].split('id="cs-feature-empty"')[0]
+    row = next(chunk for chunk in feature_list.split("<li") if invocation.name in chunk)
+    assert f'href="/world/feats/option/{invocation.pk}/"' in row
+    assert "Option" in row  # the property tag, like "Feat"/"Class"/... for the others
+    assert "features_classes/warlock.jpeg" in row  # a Warlock invocation uses the Warlock icon
+    assert "data-describe=" not in row
+
+    signed_in.post("/bookmarks/toggle/", {"kind": "option", "object_id": invocation.pk})
+    html = panel(signed_in.get(f"/characters/{warlock.pk}/").content.decode(), "features")
+    pinned = html.split("item-list bookmark-list")[1].split("</ul>")[0]
+    assert invocation.name in pinned
+
+
+def test_option_detail_page_shows_its_class_and_can_be_bookmarked(signed_in, alice):
+    invocation = OptionalFeature.objects.filter(feature_type="Eldritch Invocation").first()
+
+    html = signed_in.get(f"/world/feats/option/{invocation.pk}/").content.decode()
+
+    assert invocation.name in html
+    assert 'href="/world/classes/warlock/"' in html and "Warlock" in html
+    assert 'id="bookmark-form"' in html
+
+
+def test_subclass_feature_icons_get_a_distinguishing_border_class(signed_in, alice):
+    html = signed_in.get("/world/feats/?type=subclass").content.decode()
+    items = html.split('id="search-results"')[1]  # past <head>, where "<li" also matches "<link"
+
+    assert "subclass-icon" in items
+    row = next(chunk for chunk in items.split("<li") if "subclass-icon" in chunk)
+    assert "features_subclasses/" in row
+
+
 def test_spellbook_shows_the_casting_numbers_the_slots_and_the_spells(signed_in, alice):
     cleric = finished(alice, "cleric")
 
@@ -277,6 +316,26 @@ def test_spellbook_shows_the_casting_numbers_the_slots_and_the_spells(signed_in,
     assert 'data-slot="1"' in html and html.count('class="pip-btn on"') == 2  # two 1st-level slots
     assert 'name="q"' in html and "filter-popover" in html  # the World's search and filters
     assert html.count("data-search=") == cleric.spells.count()
+
+
+def test_spellbook_rows_link_to_the_world_page_are_bookmarkable_and_drop_the_level_filter(
+    signed_in, alice
+):
+    cleric = finished(alice, "cleric")
+    known = cleric.spells.first().spell
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
+
+    assert f'href="/world/spells/{known.pk}/"' in html
+    assert "data-describe=" not in html and 'class="chev"' not in html  # no toggle arrow
+    assert 'class="item-bookmark' in html
+    tools = html.split('class="cs-spell-tools"')[1].split("</form>")[0]
+    assert "Level" not in tools  # the level groups already group by it - redundant as a filter
+
+    signed_in.post("/bookmarks/toggle/", {"kind": "spell", "object_id": known.pk})
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
+    row = next(chunk for chunk in html.split("<li") if known.name in chunk)
+    assert 'class="item-bookmark active"' in row
 
 
 def test_the_spellbooks_fixed_part_has_an_add_spell_button_even_without_spells(

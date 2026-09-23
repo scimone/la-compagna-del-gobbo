@@ -27,6 +27,7 @@ from apps.builder.services import creation, derived_stats
 from apps.characters.models import Character, CharacterChoice
 from apps.characters.services import access, play, portrait
 from apps.frontend import units
+from apps.frontend.bookmarks import bookmarked_ids
 from apps.frontend.character_views import (
     _card_line,
     _damage_text,
@@ -43,6 +44,7 @@ from apps.frontend.views import (
     _class_name,
     _format_feat_category,
     _menu_image_url,
+    _option_class_id,
     _pick_translation,
     _split_bookmarked,
 )
@@ -270,6 +272,7 @@ def _feature_items(character: Character) -> list[dict]:
                     ],
                     "url": reverse("world-feature-detail", args=[f.pk]),
                     "image": _menu_image_url("features_subclasses", f"{subclass.klass_id}.jpg"),
+                    "image_class": "subclass-icon",
                     "type": "subclass",
                     "search": search,
                 }
@@ -291,15 +294,17 @@ def _feature_items(character: Character) -> list[dict]:
         )
     for co in character.optional_features.select_related("optional_feature"):
         option = co.optional_feature
+        klass_id = _option_class_id(option)
         items.append(
             {
+                "pk": option.pk,
+                "kind": "option",
                 "name": option.name,
                 "properties": [_("Option"), option.feature_type],
-                # No `url`: unlike the others, there's no World catalog page for one of these to
-                # link to - `_list_item.html` renders a `describe`-only row as an expandable
-                # `.cs-row` instead of a link, the same tap-to-unfold interaction this had under
-                # its own former "Options" heading.
-                "describe": _describe_url("invocation", co.optional_feature_id),
+                "url": reverse("world-option-detail", args=[option.pk]),
+                "image": (
+                    _menu_image_url("features_classes", f"{klass_id}.jpeg") if klass_id else None
+                ),
                 "type": "option",
                 "search": f"{option.name_en} {option.name_it}".lower(),
             }
@@ -441,8 +446,9 @@ def _casting_sources(stats, classes) -> list[dict]:
 
 
 def _spell_row(spell, status: str = "") -> dict:
-    """One spell as a list row - in the spellbook, and in the "add a spell" sheet, which filters
-    the same way: `level`/`school`/... are what the filter buttons compare against."""
+    """One spell as a list row - in the "add a spell" sheet (`character_spells()`), and as the
+    base `_spellbook_row()` builds on for the spellbook's own list. `level`/`school`/... are
+    what the filter buttons compare against (see `_spell_filters()`)."""
     level_text = _("Cantrip") if spell.level == 0 else f"{_('Level')} {spell.level}"
     return {
         "key": f"spell-{spell.pk}",
@@ -464,7 +470,41 @@ def _spell_row(spell, status: str = "") -> dict:
     }
 
 
-def _spell_rows(character: Character) -> list[dict]:
+def _spellbook_row(spell, status: str, removable: bool) -> dict:
+    """One of this character's own known spells as a list row - the exact same look and
+    click-through-to-its-own-page behavior as the World's own Spells list (`world_feats()`'s
+    sibling, `world_spells()`), reusing `_spell_row()`'s already-computed fields rather than
+    duplicating them. `removable` (only true for a spell the player added by hand, and only
+    while they can edit this character) adds its own small "take this off the spellbook" action
+    next to the bookmark button - see `item.remove` in `_list_item.html`.
+    """
+    row = _spell_row(spell, status)
+    row["pk"] = spell.pk
+    row["url"] = reverse("world-spell-detail", args=[spell.pk])
+    # `_list_item.html`'s `filterRows()`-facing `data-*` attributes - the same values `_spell_row()`
+    # already put in `classes`/`school`/`range`/`times`/`saves` (no `level`: the main spellbook
+    # groups by level already, so filtering on it too would just repeat that grouping). Not
+    # `search` here: `row["search"]` (from `_spell_row()`) already renders its own `data-search`
+    # via `_list_item.html`'s dedicated `item.search` shortcut - repeating it under `data` too
+    # would render the attribute twice.
+    row["data"] = {
+        "class": row["classes"],
+        "school": row["school"],
+        "range": row["range"],
+        "time": row["times"],
+        "save": row["saves"],
+    }
+    if removable:
+        row["remove"] = {
+            "act": "spell_remove",
+            "param": "spell",
+            "id": spell.pk,
+            "confirm": _("Remove this spell?"),
+        }
+    return row
+
+
+def _spellbook_rows(character: Character, can_edit: bool) -> list[dict]:
     rows = []
     for cs in (
         character.spells.select_related("spell", "klass")
@@ -479,11 +519,10 @@ def _spell_rows(character: Character) -> list[dict]:
             status = _("In spellbook")
         else:
             status = ""
-        row = _spell_row(cs.spell, status)
         # A spell the player added by hand can be taken away again; the ones a class, species or
         # feat gave cannot.
-        row["removable"] = cs.source == play.SPELL_SOURCE
-        rows.append(row)
+        removable = can_edit and cs.source == play.SPELL_SOURCE
+        rows.append(_spellbook_row(cs.spell, status, removable))
     return rows
 
 
@@ -523,8 +562,13 @@ def _spell_filters(rows: list[dict]) -> list[dict]:
     ]
 
 
-def _spellbook(character: Character, stats, classes) -> dict:
-    rows = _spell_rows(character)
+def _spellbook(request, character: Character, stats, classes, can_edit: bool) -> dict:
+    rows = _spellbook_rows(character, can_edit)
+    bookmark_kind = "spell" if request.user.is_authenticated else None
+    if bookmark_kind:
+        bookmarked = bookmarked_ids(request.user, bookmark_kind)
+        for row in rows:
+            row["bookmarked"] = str(row["pk"]) in bookmarked
     slots = _slots(character, stats, classes)
     # Grouped by level for the spell list's own sticky headings, each with the slot pool(s) spent
     # at that level next to it (there can be more than one - a Pact Magic pool lands wherever its
@@ -546,11 +590,15 @@ def _spellbook(character: Character, stats, classes) -> dict:
         }
         for level in sorted(set(spells_by_level) | set(slots_by_level))
     ]
+    # The "Level" filter would just repeat the level groups above - not necessary, unlike the
+    # World Spells list, which has no such grouping of its own.
+    filters = [f for f in _spell_filters(rows) if f["name"] != "level"]
     return {
         "sources": _casting_sources(stats, classes),
         "spell_groups": groups,
         "spells": rows,
-        "spell_filters": _spell_filters(rows),
+        "spell_filters": filters,
+        "bookmark_kind": bookmark_kind,
     }
 
 
@@ -838,6 +886,7 @@ def character_detail(request, pk):
     stats = derived_stats.compute(character)
     classes = list(character.classes.select_related("klass", "subclass"))
     items = list(character.inventory_items.select_related("equipment"))
+    can_edit = access.can_edit(request.user, character)
     tab = request.GET.get("tab", "")
     response = render(
         request,
@@ -846,7 +895,7 @@ def character_detail(request, pk):
             "page_title": character.name,
             "back_url": reverse("characters-overview"),
             "character": character,
-            "can_edit": access.can_edit(request.user, character),
+            "can_edit": can_edit,
             # Not `tabs`/`active_tab`: base.html draws its own `?tab=` strip for those names.
             "sheet_tabs": TABS,
             "sheet_tab": tab if tab in dict(TABS) else DEFAULT_TAB,
@@ -854,7 +903,7 @@ def character_detail(request, pk):
             "strip": _strip(character, stats, items),
             "abilities": _abilities(stats),
             "features": _features_tab(request, character),
-            "spellbook": _spellbook(character, stats, classes),
+            "spellbook": _spellbook(request, character, stats, classes, can_edit),
             "inventory": _inventory(character, stats),
             "proficiencies": _proficiencies(character),
             "identity": _identity(character, classes),

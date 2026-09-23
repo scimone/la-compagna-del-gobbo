@@ -100,6 +100,14 @@
     border-radius: 0.6rem;
   }
 
+  /* A Subclass Feature's icon (see `world_feats()`'s `image_class`) gets a thin ring in the
+     subclass brand colour, telling it apart from a Class Feature's otherwise-identical artwork
+     at a glance - `box-sizing: border-box` (set globally in base.html) keeps the box the same
+     4rem/3rem outer size as every other icon, the border just insets the picture itself by 1px. */
+  .item-list .item-thumb.subclass-icon {
+    border: 1px solid #80b98c;
+  }
+
   /* Bookmarked entries of the current (searched/filtered) list, pinned above the rest: no
      heading, just visibly different (accent border and tint) from a regular entry. */
   .bookmark-list {
@@ -143,5 +151,32 @@
   }
 
   .item-bookmark.active {
+    color: var(--accent);
+  }
+
+  /* A row's own small removable action (see `item.remove` in `_list_item.html`) - same box as
+     `.item-bookmark`, a plain muted colour since it's a one-shot action, not a toggled state. */
+  .item-remove {
+    appearance: none;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.9rem;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  .item-remove svg {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+
+  .item-remove:active {
+    background: var(--bg);
     color: var(--accent);
   }

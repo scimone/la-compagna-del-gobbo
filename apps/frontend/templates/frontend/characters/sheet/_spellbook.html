@@ -39,6 +39,15 @@
 {% endif %}
 
 <div class="cs-scroll">
+{% if spellbook.bookmark_kind %}
+  {# A distinct id, not the World list's own "bookmark-list-form": every character sheet tab sits #}
+  {# in the DOM at once (just `hidden`), so the Features tab's own such form needs one too. #}
+  <form id="bookmark-list-form-spellbook" method="post" action="{% url 'bookmark-toggle' %}">
+    {% csrf_token %}
+    <input type="hidden" name="kind" value="{{ spellbook.bookmark_kind }}">
+    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+  </form>
+{% endif %}
 {% if spellbook.spell_groups %}
   {# One section per spell level, its own sticky heading (stays in view above its own rows, like #}
   {# the Handbook's chapter headings) carrying that level's slots right next to the level name -  #}
@@ -66,33 +75,11 @@
           {% endif %}
         </div>
         {% if g.spells %}
-          <ul class="cs-list cs-spells">
+          {# The exact same row (look, click-through, bookmark) as the World's own Spells list -   #}
+          {# see `_spellbook_row()`. A spell added by hand also carries its own `remove` action.    #}
+          <ul class="item-list compact-thumbs">
             {% for s in g.spells %}
-              <li data-key="{{ s.key }}" data-search="{{ s.search }}" data-level="{{ s.level }}" data-class="{{ s.classes }}" data-school="{{ s.school }}"
-                  data-range="{{ s.range }}" data-time="{{ s.times }}" data-save="{{ s.saves }}">
-                <button type="button" class="cs-row" data-describe="{{ s.describe }}" aria-expanded="false">
-                  {% if s.image %}<img class="thumb" src="{{ s.image }}" alt="">{% endif %}
-                  <span class="item-text">
-                    <span class="item-name">{{ s.name }}</span>
-                    <span class="item-detail">{{ s.detail }}</span>
-                  </span>
-                  <span class="chev" aria-hidden="true"></span>
-                </button>
-                {% if can_edit and s.removable %}
-                  {# A spell you added yourself can be taken away again; the description loads above the button. #}
-                  <div class="desc" hidden>
-                    <div class="desc-body"></div>
-                    <div class="item-tools">
-                      <div class="item-buttons">
-                        <button type="button" class="btn-remove" data-act="spell_remove" data-spell="{{ s.id }}"
-                                data-confirm="{% translate 'Remove this spell?' %}">{% translate "Remove" %}</button>
-                      </div>
-                    </div>
-                  </div>
-                {% else %}
-                  <div class="desc" hidden></div>
-                {% endif %}
-              </li>
+              {% include "frontend/_list_item.html" with item=s bookmark_kind=spellbook.bookmark_kind bookmark_form_id="bookmark-list-form-spellbook" %}
             {% endfor %}
           </ul>
         {% endif %}

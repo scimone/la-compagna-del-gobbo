@@ -462,16 +462,23 @@
     root.querySelectorAll(".filter-popover[open]").forEach(function (popover) { popover.open = false; });
   });
 
-  // ---- features tab: bookmarks (the World list's own AJAX swap, list.html, over #cs-feature-list
-  // ---- instead of #search-results - re-running filterRows() after, since unlike a full page this
-  // ---- tab's search/filter state lives only in the DOM, not the URL, and would otherwise be lost.
+  // ---- bookmarks, on any tab with them (Features, Spellbook): the World list's own AJAX swap,
+  // ---- list.html, over that tab's own list id instead of #search-results, found generically -
+  // ---- `button.form` (its own `form=""` attribute) rather than a hardcoded form id, since every
+  // ---- tab sits in the DOM at once (just `hidden`) and so needs its own distinct form id (see
+  // ---- `_list_item.html`'s `bookmark_form_id`); the swap target the same way, off the nearest
+  // ---- `[data-filter-list]` (its `.cs-sticky` search/filter tools). filterRows() re-runs on the
+  // ---- fresh list after, since unlike a full page this tab's search/filter state lives only in
+  // ---- the DOM, not the URL, and would otherwise be lost.
   root.addEventListener("click", function (event) {
     var button = event.target.closest && event.target.closest(".item-bookmark");
     if (!button || !window.fetch) return;
-    var form = document.getElementById("bookmark-list-form");
-    if (!form) return;
+    var form = button.form;
+    var tools = button.closest(".cs-panel") && button.closest(".cs-panel").querySelector("[data-filter-list]");
+    if (!form || !tools) return;
     event.preventDefault();
 
+    var listId = tools.dataset.filterList;
     var data = new FormData(form);
     data.set("object_id", button.value);
     button.disabled = true;
@@ -486,13 +493,12 @@
       })
       .then(function (response) { return response.text(); })
       .then(function (html) {
-        var next = new DOMParser().parseFromString(html, "text/html")
-          .getElementById("cs-feature-list");
-        var current = document.getElementById("cs-feature-list");
+        var next = new DOMParser().parseFromString(html, "text/html").getElementById(listId);
+        var current = document.getElementById(listId);
         if (!next || !current) throw new Error("no list");
         current.replaceWith(next);
-        var tools = root.querySelector('[data-filter-list="cs-feature-list"]');
-        if (tools) filterRows(tools);
+        var freshTools = root.querySelector('[data-filter-list="' + listId + '"]');
+        if (freshTools) filterRows(freshTools);
       })
       .catch(function () {
         button.disabled = false;

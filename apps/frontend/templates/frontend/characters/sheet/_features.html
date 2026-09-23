@@ -2,12 +2,11 @@
 {# Species traits, class/subclass features, feats and options (invocations, maneuvers, ...): the  #}
 {# exact same row look, bookmarking and "Bookmarks" pinned block as the World's own Features list  #}
 {# (`_list_item.html`, sharing its CSS - see `_item_list_style.html`), but limited to what this    #}
-{# character has, linking straight to each entry's own World page (an option has none, so it       #}
-{# unfolds its description inline instead - see `_feature_items()`), and filtered client-side as   #}
-{# you type (`character_sheet.js`'s `filterRows()`) rather than a server round trip. A bookmark    #}
-{# toggle here writes the very same `Bookmark` row the World list would (see `_features_tab()`),   #}
-{# and its own click handler (`character_sheet.js`) re-fetches and swaps just `#cs-feature-list`,  #}
-{# the same way list.html's own bookmark script swaps `#search-results`.                          #}
+{# character has, linking straight to each entry's own World page, and filtered client-side as you #}
+{# type (`character_sheet.js`'s `filterRows()`) rather than a server round trip. A bookmark toggle #}
+{# here writes the very same `Bookmark` row the World list would (see `_features_tab()`), and its  #}
+{# own click handler (`character_sheet.js`) re-fetches and swaps just `#cs-feature-list`, the same #}
+{# way list.html's own bookmark script swaps `#search-results`.                                   #}
 {% if features.items or features.bookmarked_items %}
   <div class="cs-sticky">
     {% translate "Search features" as search_placeholder %}
@@ -17,7 +16,9 @@
   </div>
   <div class="cs-scroll">
     {% if features.bookmark_kind %}
-      <form id="bookmark-list-form" method="post" action="{% url 'bookmark-toggle' %}">
+      {# A distinct id, not the World list's own "bookmark-list-form": every character sheet tab #}
+      {# sits in the DOM at once (just `hidden`), so the Spellbook's own such form needs one too. #}
+      <form id="bookmark-list-form-features" method="post" action="{% url 'bookmark-toggle' %}">
         {% csrf_token %}
         <input type="hidden" name="kind" value="{{ features.bookmark_kind }}">
         <input type="hidden" name="next" value="{{ request.get_full_path }}">
@@ -27,14 +28,14 @@
       {% if features.bookmarked_items %}
         <ul class="item-list bookmark-list compact-thumbs">
           {% for item in features.bookmarked_items %}
-            {% include "frontend/_list_item.html" with bookmark_kind=features.bookmark_kind %}
+            {% include "frontend/_list_item.html" with bookmark_kind=features.bookmark_kind bookmark_form_id="bookmark-list-form-features" %}
           {% endfor %}
         </ul>
       {% endif %}
       {% if features.items %}
         <ul class="item-list main-list compact-thumbs">
           {% for item in features.items %}
-            {% include "frontend/_list_item.html" with bookmark_kind=features.bookmark_kind %}
+            {% include "frontend/_list_item.html" with bookmark_kind=features.bookmark_kind bookmark_form_id="bookmark-list-form-features" %}
           {% endfor %}
         </ul>
       {% endif %}

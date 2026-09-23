@@ -39,6 +39,7 @@ from apps.rules.services import class_ as class_service
 from apps.rules.services import feat as feat_service
 from apps.rules.services import feature as feature_service
 from apps.rules.services import handbook as handbook_service
+from apps.rules.services import optional_feature as optional_feature_service
 from apps.rules.services import rule as rule_service
 from apps.rules.services import species as species_service
 from apps.rules.services import spell as spell_service
@@ -131,6 +132,23 @@ def _format_feat_category(category: str) -> str:
     base, _paren, suffix = category.partition(" (")
     label = _pick_translation(_FEAT_CATEGORY_LABELS, base)
     return f"{label} ({suffix}" if suffix else label
+
+
+# `OptionalFeature` (Eldritch Invocation, Metamagic, Battle Master Maneuver) has no direct `Class`
+# FK - see the model's docstring - but every current row is exactly one of these three, decoded
+# from the source's own "EI"/"MM"/"MV:B" codes at import time (`OPTIONAL_FEATURE_TYPE_CODES` in
+# the importer) into exactly the three `feature_type` strings below, verified against all 58 rows
+# in db/optionalfeatures.json. Used both for an Option's icon (`features_classes/<id>.jpeg`, the
+# same folder Class Features use) and for the "Class" fact on its own detail page.
+_OPTION_CLASS_ID = {
+    "Eldritch Invocation": "warlock",
+    "Metamagic": "sorcerer",
+    "Maneuver, Battle Master": "fighter",
+}
+
+
+def _option_class_id(option) -> str | None:
+    return _OPTION_CLASS_ID.get(option.feature_type)
 
 
 # `Spell.school`/`Spell.casting_time` are raw structured data (not `entries` prose), so they're
@@ -1295,6 +1313,7 @@ def world_feats(request):
                     ],
                     "url": reverse("world-feature-detail", args=[feature.pk]),
                     "image": _menu_image_url("features_subclasses", f"{klass_id}.jpg"),
+                    "image_class": "subclass-icon",
                 }
             )
 
@@ -1400,6 +1419,49 @@ def world_feature_detail(request, pk):
         "world-feats",
         facts,
         plain_sections=plain_sections,
+    )
+
+
+def world_option_detail(request, pk):
+    """An Options pick's (Eldritch Invocation, Metamagic, Battle Master Maneuver) own page - not
+    reachable from any World list (there isn't one for these), only from a character's own
+    Features tab, but otherwise built the same way as a Feat's or a `Feature`'s own page.
+
+    No "Prerequisite" fact: `OptionalFeature.prerequisite` isn't shaped like `Feat.prerequisite`
+    despite the shared name (its `level` is a `{level, class}` dict, not a bare int, and it has
+    two keys - `spell`, `optionalfeature` - `_format_prerequisite()` doesn't handle at all) -
+    verified against every one of the 58 rows in db/optionalfeatures.json. Showing it would need
+    its own formatter for a fact that's usually redundant with the description text anyway (most
+    rows - 35/58 - have none at all), so it's left off rather than rendered wrong.
+    """
+    option = optional_feature_service.get_optional_feature(pk)
+
+    facts = []
+    klass_id = _option_class_id(option)
+    if klass_id:
+        klass = class_service.get_class(klass_id)
+        facts.append(
+            (
+                _("Class"),
+                format_html(
+                    '<a href="{}">{}</a>',
+                    reverse("world-class-detail", args=[klass.pk]),
+                    klass.name,
+                ),
+            )
+        )
+    facts.append((_("Page"), option.page))
+
+    description_heading = _badged_heading(_("Description"), _self_translated(option, "entries"))
+    plain_sections = [(description_heading, render_entries(option.entries))]
+
+    return _detail_page(
+        request,
+        _badged_heading(option.name, _self_translated(option, "name")),
+        "world-feats",
+        facts,
+        plain_sections=plain_sections,
+        bookmark=("option", option.pk),
     )
 
 

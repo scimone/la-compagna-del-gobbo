@@ -1,52 +1,63 @@
 {% load i18n %}
 {# `item.search`/`item.type` are only set by a caller that also filters this list client-side #}
-{# (the character sheet's Features tab, see `character_sheet.js`'s `filterRows()`) - unused, so #}
-{# never rendered, on the World lists, which filter server-side instead. #}
-<li{% if item.letter %} data-letter="{{ item.letter }}"{% endif %}{% if item.search %} data-search="{{ item.search }}"{% endif %}{% if item.type %} data-type="{{ item.type }}"{% endif %}>
-  {% if item.describe %}
-    {# No `url`: unlike every other row here, there's no World page for this one to link to (the #}
-    {# Features tab's own Option rows - see `_feature_items()`) - unfold its description inline    #}
-    {# instead, the same `[data-describe]`/`.desc` mechanism `character_sheet.js` already runs.    #}
-    <button type="button" class="cs-row" data-describe="{{ item.describe }}" aria-expanded="false">
-      {% include "frontend/_list_item_content.html" %}
-      <span class="chev" aria-hidden="true"></span>
-    </button>
-    <div class="desc" hidden></div>
-  {% else %}
-    <a href="{{ item.url }}"{% if item.image or item.page %} class="{% if item.image %}menu-thumb{% endif %}{% if item.page %} page-row{% endif %}"{% endif %}>
-      {% include "frontend/_list_item_content.html" %}
-    </a>
-    {% if bookmark_kind and item.pk %}
-      {% if item.kind %}
-        {# Overrides the shared form's own `kind` input for this one entry (see `_list_page()`'s #}
-        {# docstring on mixed-kind pages) - `form`-associated but placed after that input in the   #}
-        {# DOM, so it wins as the last same-name value per the HTML forms spec's tree order.        #}
-        <input type="hidden" form="bookmark-list-form" name="kind" value="{{ item.kind }}">
-      {% endif %}
-      {# Submits the list's one shared form (`#bookmark-list-form` in list.html) with this #}
-      {# entry's pk as `object_id` - the `form` attribute ties the button to it from here.    #}
-      <button
-        type="submit"
-        form="bookmark-list-form"
-        name="object_id"
-        value="{{ item.pk }}"
-        class="item-bookmark{% if item.bookmarked %} active{% endif %}"
-        aria-pressed="{% if item.bookmarked %}true{% else %}false{% endif %}"
-        aria-label="{% if item.bookmarked %}{% translate 'Remove bookmark' %}{% else %}{% translate 'Add bookmark' %}{% endif %}"
-      >
-        {% if item.bookmarked %}
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" fill="currentColor"></path>
-            <path d="m9 10 2 2 4-4" stroke="var(--surface)"></path>
-          </svg>
-        {% else %}
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
-            <line x1="12" y1="7" x2="12" y2="13"></line>
-            <line x1="9" y1="10" x2="15" y2="10"></line>
-          </svg>
-        {% endif %}
-      </button>
+{# (the character sheet's Features/Spellbook tabs, see `character_sheet.js`'s `filterRows()`) - #}
+{# unused, so never rendered, on the World lists, which filter server-side instead. #}
+<li{% if item.letter %} data-letter="{{ item.letter }}"{% endif %}{% if item.search %} data-search="{{ item.search }}"{% endif %}{% if item.type %} data-type="{{ item.type }}"{% endif %}{% for key, value in item.data.items %} data-{{ key }}="{{ value }}"{% endfor %}>
+  <a href="{{ item.url }}"{% if item.image or item.page %} class="{% if item.image %}menu-thumb{% endif %}{% if item.page %} page-row{% endif %}"{% endif %}>
+    {% include "frontend/_list_item_content.html" %}
+  </a>
+  {% if bookmark_kind and item.pk %}
+    {# `bookmark_form_id` (default "bookmark-list-form", `list.html`'s own id) lets more than one #}
+    {# such form coexist in the same DOM - the character sheet's tabs are all present at once     #}
+    {# (just `hidden`), so its Features and Spellbook tabs each pass their own distinct id here.   #}
+    {% if item.kind %}
+      {# Overrides the shared form's own `kind` input for this one entry (see `_list_page()`'s #}
+      {# docstring on mixed-kind pages) - `form`-associated but placed after that input in the   #}
+      {# DOM, so it wins as the last same-name value per the HTML forms spec's tree order.        #}
+      <input type="hidden" form="{{ bookmark_form_id|default:'bookmark-list-form' }}" name="kind" value="{{ item.kind }}">
     {% endif %}
+    {# Submits the list's one shared form (`#bookmark-list-form` in list.html) with this #}
+    {# entry's pk as `object_id` - the `form` attribute ties the button to it from here.    #}
+    <button
+      type="submit"
+      form="{{ bookmark_form_id|default:'bookmark-list-form' }}"
+      name="object_id"
+      value="{{ item.pk }}"
+      class="item-bookmark{% if item.bookmarked %} active{% endif %}"
+      aria-pressed="{% if item.bookmarked %}true{% else %}false{% endif %}"
+      aria-label="{% if item.bookmarked %}{% translate 'Remove bookmark' %}{% else %}{% translate 'Add bookmark' %}{% endif %}"
+    >
+      {% if item.bookmarked %}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" fill="currentColor"></path>
+          <path d="m9 10 2 2 4-4" stroke="var(--surface)"></path>
+        </svg>
+      {% else %}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
+          <line x1="12" y1="7" x2="12" y2="13"></line>
+          <line x1="9" y1="10" x2="15" y2="10"></line>
+        </svg>
+      {% endif %}
+    </button>
+  {% endif %}
+  {% if item.remove %}
+    {# A row's own small "take this off the character" action (e.g. a spell the player added by #}
+    {# hand, on the character sheet's Spellbook - see `_spellbook.html`) - `character_sheet.js`'s #}
+    {# generic `[data-act]` handler runs it, `data-confirm` included, no extra JS needed here.    #}
+    <button
+      type="button"
+      class="item-remove"
+      data-act="{{ item.remove.act }}"
+      data-{{ item.remove.param }}="{{ item.remove.id }}"
+      data-confirm="{{ item.remove.confirm }}"
+      aria-label="{% translate 'Remove' %}"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 7h16"></path>
+        <path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"></path>
+        <path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path>
+      </svg>
+    </button>
   {% endif %}
 </li>

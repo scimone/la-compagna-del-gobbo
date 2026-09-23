@@ -1,7 +1,6 @@
 {% load i18n %}
-{# The inside of one list row (icon/page-icon + name + detail line), shared by `_list_item.html`'s #}
-{# two wrappers - a link for anything with a World page, an expandable `.cs-row` for the Features #}
-{# tab's own Option rows, which have none. #}
+{# The inside of one list row: icon/page-icon + name + detail line, shared by every consumer of #}
+{# `_list_item.html`. #}
 {% if item.page %}
   <span class="page-icon" title="{% translate 'Page' %} {{ item.page }}">
     {% if item.glossary_icon %}
@@ -27,7 +26,7 @@
   {# beneath a replaced element's content, so it never shows) - it's an overlay drawn   #}
   {# over the image by the wrapper's ::after, see `.thumb-vignette` in list.html.      #}
   {% if image_vignette %}<span class="thumb-vignette">{% endif %}
-  <img class="item-thumb" src="{{ item.image }}" alt="">
+  <img class="item-thumb{% if item.image_class %} {{ item.image_class }}{% endif %}" src="{{ item.image }}" alt="">
   {% if image_vignette %}</span>{% endif %}
 {% endif %}
 <div class="item-text">
