@@ -34,21 +34,23 @@
       {% for c in sec.cards %}
         <li data-key="{{ c.key }}"{% if c.equipped %} class="worn"{% endif %}>
           <div class="cs-line">
-            <button type="button" class="cs-row{% if c.wearable or c.sell_one and can_edit %} has-actions{% endif %}"{% if c.describe %} data-describe="{{ c.describe }}"{% else %} data-toggle{% endif %} aria-expanded="false">
+            <button type="button" class="cs-row{% if c.wearable or c.quick_sell and can_edit %} has-actions{% endif %}"{% if c.describe %} data-describe="{{ c.describe }}"{% else %} data-toggle{% endif %} aria-expanded="false">
               <span class="item-text">
                 <span class="item-name">{{ c.name }}{% if c.quantity > 1 %} <span class="qty">×{{ c.quantity }}</span>{% endif %}</span>
                 {% if c.detail %}<span class="item-detail">{{ c.detail }}</span>{% endif %}
               </span>
               <span class="chev" aria-hidden="true"></span>
             </button>
-            {% if c.wearable or c.sell_one and can_edit %}
+            {% if c.wearable or c.quick_sell and can_edit %}
               <div class="cs-actions">
-                {% if c.sell_one and can_edit %}
-                  {# A quick way to sell one, right on the row; the description still has "sell one"/"sell all". #}
-                  {% blocktranslate with price=c.sell_one asvar sell_confirm %}Sell this for {{ price }}?{% endblocktranslate %}
-                  <button type="button" class="btn-sell-row" data-act="item_sell" data-kind="{{ c.kind }}" data-item="{{ c.id }}" data-quantity="1"
+                {% if c.quick_sell and can_edit %}
+                  {# A quick way to sell (one, or - for a cheap stack like torches, where one alone  #}
+                  {# would round down to nothing - the whole stack); the description still has its  #}
+                  {# own "sell one"/"sell all".                                                      #}
+                  {% blocktranslate with price=c.quick_sell.price asvar sell_confirm %}Sell this for {{ price }}?{% endblocktranslate %}
+                  <button type="button" class="btn-sell-row" data-act="item_sell" data-kind="{{ c.kind }}" data-item="{{ c.id }}" data-quantity="{{ c.quick_sell.quantity }}"
                           data-confirm="{{ sell_confirm }}" aria-label="{% translate 'Sell' %}" title="{% translate 'Sell' %}">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.3 15.3c0 1 1 1.7 2.7 1.7s2.7-.6 2.7-1.6-.9-1.4-2.7-1.7-2.7-.8-2.7-1.7.9-1.6 2.7-1.6 2.4.5 2.6 1.3"/><path d="M12 8.3v1M12 15v1"/></svg>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5v11M15.5 9.2c0-1.5-1.6-2.7-3.5-2.7s-3.5 1-3.5 2.5 1.6 2 3.5 2.4 3.5 1 3.5 2.5-1.6 2.6-3.5 2.6-3.5-1.2-3.5-2.7"/></svg>
                   </button>
                 {% endif %}
                 {% if c.wearable %}

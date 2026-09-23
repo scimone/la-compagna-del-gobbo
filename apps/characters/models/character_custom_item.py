@@ -13,7 +13,9 @@ class CharacterCustomItem(models.Model):
 
     `value` is in copper, like `Equipment.value`. `valuable` marks a trade good or valuable (gems,
     art objects), which - unlike equipment - sells for its full value, not half. `section` is the
-    part of the inventory it is listed under.
+    part of the inventory it is listed under. `type_label` is a free-text finer type within that
+    section (e.g. "Light Armor", "Potion") - a label only, purely for the item's own detail line;
+    it carries no rules, unlike a catalog item's real `EquipmentType`.
     """
 
     SECTION_CHOICES = [
@@ -32,6 +34,7 @@ class CharacterCustomItem(models.Model):
     value = models.PositiveIntegerField(null=True, blank=True)
     valuable = models.BooleanField(default=False)
     section = models.CharField(max_length=10, choices=SECTION_CHOICES, default="misc")
+    type_label = models.CharField(max_length=60, blank=True, default="")
     description = models.TextField(blank=True, default="")
 
     class Meta:

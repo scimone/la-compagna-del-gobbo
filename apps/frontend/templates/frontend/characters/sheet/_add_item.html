@@ -38,7 +38,7 @@
             {% if e.cost %}
               {# The price pays for itself: `character_sheet.js` builds the confirmation (with what #}
               {# is left after) from the purse it can see live, since this sheet is never re-fetched. #}
-              <button type="button" class="equip buy" data-buy data-act="item_buy" data-equipment="{{ e.id }}" data-cost="{{ e.cost }}">{% translate "Buy" %}</button>
+              <button type="button" class="equip buy" data-buy="1" data-act="item_buy" data-equipment="{{ e.id }}" data-cost="{{ e.cost }}">{% translate "Buy" %}</button>
             {% endif %}
             <button type="button" class="equip add" data-act="item_add" data-equipment="{{ e.id }}">{% translate "Add" %}</button>
           </div>
@@ -57,6 +57,7 @@
     <label>{% translate "Category" %}
       <select name="section">{% for key, label in sections %}<option value="{{ key }}"{% if key == "misc" %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
     </label>
+    <label>{% translate "Type" %}<input type="text" name="type" maxlength="60" autocomplete="off"></label>
     <div class="cs-form-row">
       <label>{% translate "Quantity" %}<input type="number" name="quantity" min="1" value="1" inputmode="numeric"></label>
       <label>{% if weight_unit == "kg" %}{% translate "Weight (kg)" %}{% else %}{% translate "Weight (lb)" %}{% endif %}<input type="number" name="weight" min="0" step="any" inputmode="decimal"></label>

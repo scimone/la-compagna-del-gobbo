@@ -250,10 +250,19 @@ def test_buying_without_enough_money_or_a_price_is_refused_and_nothing_changes(h
 
 def test_custom_items_are_validated_and_stored_in_copper(hero):
     item = play.add_custom_item(
-        hero, name="  Lucky coin ", section="misc", value=250, weight=0.1, valuable=True
+        hero,
+        name="  Lucky coin ",
+        section="misc",
+        type_label="  Trinket ",
+        value=250,
+        weight=0.1,
+        valuable=True,
     )
 
     assert (item.name, item.value, item.valuable, item.quantity) == ("Lucky coin", 250, True, 1)
+    assert item.type_label == "Trinket"
+    untyped = play.add_custom_item(hero, name="Rock")
+    assert untyped.type_label == ""
     with pytest.raises(ValueError):
         play.add_custom_item(hero, name=" ")
     with pytest.raises(ValueError):

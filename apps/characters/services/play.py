@@ -258,6 +258,7 @@ def add_custom_item(
     *,
     name: str,
     section: str = "misc",
+    type_label: str = "",
     quantity: int = 1,
     weight: float | None = None,
     value: int | None = None,
@@ -271,10 +272,12 @@ def add_custom_item(
         raise ValueError(f"unknown section {section!r}")
     if (weight is not None and weight < 0) or (value is not None and value < 0):
         raise ValueError("weight and cost cannot be negative")
+    type_max = CharacterCustomItem._meta.get_field("type_label").max_length
     return CharacterCustomItem.objects.create(
         character=character,
         name=name[: CharacterCustomItem._meta.get_field("name").max_length],
         section=section,
+        type_label=type_label.strip()[:type_max],
         quantity=_clamp(quantity, 1, MAX_QUANTITY),
         weight=weight or None,
         value=value or None,

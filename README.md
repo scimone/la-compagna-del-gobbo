@@ -566,7 +566,7 @@ inventory item, currency, a resource — with no constraint violations).
 | `CharacterProficiency` | Armor/weapon/tool/skill/saving-throw proficiency. Not exclusively FK'd to `rules.Proficiency` (that catalog misses species/feat-granted proficiencies entirely) — `category`/`name` are stored directly, with an optional provenance link back to the catalog row when there is one |
 | `CharacterSense` | A `rules.Sense` grant with its range in feet (the range varies by source, e.g. a species trait vs. a feat, so it lives on the grant, not on `rules.Sense` itself) |
 | `CharacterInventoryItem` | An `Equipment` stack a `Character` owns, with `equipped`/`attuned`/`quantity` |
-| `CharacterCustomItem` | **New** - an item the player made up (name, quantity, weight, cost in copper, "trade good or valuable" flag, inventory section, description); sheet-only, see the character sheet section |
+| `CharacterCustomItem` | **New** - an item the player made up (name, quantity, weight, cost in copper, "trade good or valuable" flag, inventory section, a free-text finer type within it, description); sheet-only, see the character sheet section |
 | `CharacterCurrency` | The coin purse — a true 1:1 with `Character` (`character` is both the FK and the primary key) |
 | `CharacterSpell` | A spell a `Character` knows/has access to, with `prepared`/`always_prepared` flags |
 | `CharacterResource` | A limited-use resource (Rage, Sorcery Points, Superiority Dice, ...) with `max_uses`/`current_uses`/`reset_on` |
@@ -826,7 +826,9 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
       deleted by `play.remove_item` once its last item is gone). Weapons and armor have an Equip
       pill just left of the chevron (wearing body armor takes off the armor already worn); a
       sellable item also gets a small round quick-**Sell** button there (confirms the price first,
-      then sells one - `play.sell_item` again). An unfolded item (for the owner) still has its own
+      then sells one - `play.sell_item` again; a stack cheap enough that one unit alone would round
+      down to nothing, a torch, sells the *whole* stack instead - `_item_card`'s `quick_sell`).
+      An unfolded item (for the owner) still has its own
       quantity editor (-/+ or type), **Sell** buttons (one/all) and **Remove** besides. Selling pays
       half the cost (rounded down) into the purse - trade goods and valuables their full value
       (`play.sale_price`; the catalog has none, so that applies to custom items flagged "trade good
@@ -847,13 +849,18 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
       arithmetic runs in `character_sheet.js` against the live purse, not a string rendered once at
       load time, because this overlay is fetched once and never re-fetched, so a static "you'll have
       X left" could go stale after an earlier buy), and a chevron for the description; and a
-      **Custom item** tab (name, category, quantity, weight, cost in gp, "trade good or valuable",
-      description - added for free regardless of that cost field). On the Italian site the weight is
+      **Custom item** tab (name, category, a free-text finer type within it - e.g. "Light Armor",
+      "Potion" - purely a label for the item's detail line, no rules attached, quantity, weight,
+      cost in gp, "trade good or valuable", description - added for free regardless of that cost
+      field). On the Italian site the weight is
       typed in kilograms. Custom items are `characters.CharacterCustomItem` rows (a separate model:
       the catalog is `rules` data, read-only and wiped by `import_rules_data`, so they cannot be
       `Equipment` rows). They have no game rules - they are listed, counted, weighed and sold - and,
       like the rest of the sheet's play-state, are not part of the REST API. This overlay (and *Add
-      spell*'s) covers the page's own header, so each carries its own language switch.
+      spell*'s) covers the page's own header, so each carries its own language switch; switching
+      language there is a real page reload (`?overlay=item|spell`, set by `character_sheet.js` the
+      moment the overlay opens and read back on load), so it lands you back in the overlay rather
+      than dropping you back on the sheet as if you had backed out of it.
     - *Proficiencies*: armor proficiencies, weapon proficiencies, weapon masteries, tool
       proficiencies (artisan's tools and the other tools together), gaming sets, musical
       instruments and languages. A weapon grant is spelled out as the weapons it really

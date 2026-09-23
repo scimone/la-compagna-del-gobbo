@@ -343,6 +343,23 @@ def test_a_sellable_item_also_gets_a_quick_sell_button_right_on_its_row(signed_i
     assert "Sell one for" in row
 
 
+def test_a_stack_too_cheap_to_sell_one_of_still_gets_a_quick_sell_button_for_the_whole_stack(
+    signed_in, alice
+):
+    # A single torch (1 cp) halves to 0 - nothing to sell one for - but ten of them are worth 5 cp.
+    cleric = finished(alice, "cleric")
+    torches = CharacterInventoryItem.objects.create(
+        character=cleric, equipment_id="torch", quantity=10
+    )
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "inventory")
+
+    row = html.split(f'data-key="catalog-{torches.pk}"')[1].split("</li>")[0]
+    line = row.split('<div class="desc"')[0]
+    assert 'class="btn-sell-row"' in line and 'data-quantity="10"' in line  # sells the whole stack
+    assert "Sell one for" not in row and "Sell all for 5 cp" in row  # description agrees
+
+
 def test_a_monks_light_martial_weapons_are_listed_but_not_the_other_martial_ones(signed_in, alice):
     monk = finished(alice, "monk", background="guide", species="elf")
 
@@ -672,15 +689,17 @@ def test_a_custom_item_is_listed_in_its_section_and_sold_at_its_own_price(signed
     gold_before = cleric.currency.gold
 
     response = act(
-        signed_in, cleric, action="custom_add", name="Ruby", section="misc", quantity="2",
-        weight="0.5", cost="50", valuable="1", description="Blood red.",
+        signed_in, cleric, action="custom_add", name="Ruby", section="misc", type="Gemstone",
+        quantity="2", weight="0.5", cost="50", valuable="1", description="Blood red.",
     )  # fmt: skip
 
     assert response.status_code == 200 and response.json()["message"] == "Added Ruby"
     ruby = cleric.custom_items.get()
     assert (ruby.quantity, ruby.weight, ruby.value, ruby.valuable) == (2, 0.5, 5000, True)
+    assert ruby.type_label == "Gemstone"
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "inventory")
     assert "Ruby" in html and "Blood red." in html
+    assert "Gemstone" in html  # the type is in the detail line
     assert "Trade goods and valuables sell for their full value." in html
 
     sold = act(
@@ -754,7 +773,7 @@ def test_the_add_item_sheet_lists_the_whole_catalog_with_filters_and_a_custom_fo
     assert 'name="q"' in html and "filter-popover" in html  # the World's search + filters
     for label in ("Category", "Properties", "Mastery"):
         assert label in html  # a filter button each
-    assert "data-custom-form" in html and 'name="valuable"' in html
+    assert "data-custom-form" in html and 'name="valuable"' in html and 'name="type"' in html
     assert 'data-category="martial"' in html and 'data-mastery="sap"' in html
     assert "Carrying" not in html  # (that's the inventory tab's own toolbar)
     for coin in ("copper", "silver", "gold", "platinum"):

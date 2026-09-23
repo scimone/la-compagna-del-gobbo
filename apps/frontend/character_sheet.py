@@ -463,6 +463,8 @@ def _item_card(kind: str, row, pack_name: str = "") -> dict:
     # One line under the name, like a spell's "Cantrip · Divination": what the item does, then
     # what it weighs and costs, then where it came from.
     detail = []
+    if custom and row.type_label:
+        detail.append(row.type_label)
     if not custom:
         if eq.damage_dice:
             detail.append(_damage_text(eq))
@@ -480,6 +482,15 @@ def _item_card(kind: str, row, pack_name: str = "") -> dict:
         detail.append(_("from %(pack)s") % {"pack": pack_name})
     one = play.sale_price(unit_value, 1, full_value=full)
     everything = play.sale_price(unit_value, row.quantity, full_value=full)
+    # The row's own quick-sell button always sells for *something* if the stack is worth anything
+    # at all: one unit when that alone is worth a coin, otherwise the whole stack (a single cheap
+    # item - a torch - rounds down to nothing sold on its own, but a stack of them isn't nothing).
+    if one:
+        quick_sell = {"quantity": 1, "price": _gold_label(one)}
+    elif everything:
+        quick_sell = {"quantity": row.quantity, "price": _gold_label(everything)}
+    else:
+        quick_sell = None
     return {
         "key": f"{kind}-{row.pk}",
         "kind": kind,
@@ -497,6 +508,7 @@ def _item_card(kind: str, row, pack_name: str = "") -> dict:
         "full_value": full,
         "sell_one": _gold_label(one) if one else "",
         "sell_all": _gold_label(everything) if everything and row.quantity > 1 else "",
+        "quick_sell": quick_sell,
     }
 
 
@@ -853,6 +865,7 @@ def _act_custom_add(character, post):
         character,
         name=post.get("name", ""),
         section=post.get("section", "misc"),
+        type_label=post.get("type", ""),
         quantity=int(_number(post, "quantity") or 1),
         weight=weight,
         value=round(cost * 100) if cost is not None else None,

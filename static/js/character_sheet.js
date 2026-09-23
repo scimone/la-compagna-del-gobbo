@@ -444,11 +444,25 @@
 
   // ---- adding items and spells: the overlays -----------------------------------------------
 
+  // The open overlay, if any, is named in `?overlay=item|spell` - not for deep-linking, just so a
+  // reload keeps you in it: the overlay is closed by `hidden`, page-local state a language switch
+  // (a real page reload, `next` read from `location.search` at submit time) would otherwise lose,
+  // dumping the player back on the sheet as if they had backed out of it.
+  function markOverlay(key) {
+    var url = new URL(window.location.href);
+    if (key) url.searchParams.set("overlay", key);
+    else url.searchParams.delete("overlay");
+    var next = url.pathname + url.search + url.hash;
+    if (window.appNav) window.appNav.replaceUrl(next);
+    else window.history.replaceState(window.history.state, "", next);
+  }
+
   // Each overlay (`.cs-overlay`) is fetched from its `data-url` the first time it is opened. The
   // button that opens one names it: `data-add-open="<overlay id>"`.
   function openAdd(overlay) {
     if (!overlay) return;
     overlay.hidden = false;
+    markOverlay(overlay.id === "cs-add" ? "item" : "spell");
     if (overlay.dataset.loaded) return;
     var body = overlay.querySelector(".cs-overlay-body");
     body.textContent = "…";
@@ -465,6 +479,7 @@
 
   function closeAdd() {
     root.querySelectorAll(".cs-overlay").forEach(function (overlay) { overlay.hidden = true; });
+    markOverlay(null);
   }
 
   function showAddPane(overlay, name) {
@@ -560,4 +575,9 @@
   }
 
   setup();
+
+  // Reopen an overlay a language switch (or any other reload) interrupted - see `markOverlay`.
+  var overlayParam = new URLSearchParams(window.location.search).get("overlay");
+  if (overlayParam === "item") openAdd(document.getElementById("cs-add"));
+  else if (overlayParam === "spell") openAdd(document.getElementById("cs-add-spell"));
 })();
