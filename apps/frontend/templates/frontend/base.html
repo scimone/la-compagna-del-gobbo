@@ -524,6 +524,56 @@
       background: var(--bg);
     }
 
+    /* Dropdown sibling of `.filter-button` above (see `_select_filter()`/`kind == "select"` in
+       _search_form.html) - same pill look, but a native `<select>` instead of a button that
+       opens a popover, for a choice from a list too long for a pill row. The chevron is drawn on
+       the wrapper (a `<select>` is a replaced element - a `::after` on it wouldn't render in
+       every browser), so the `<select>` itself just reserves room for it on the right. */
+    .filter-select-wrap {
+      position: relative;
+    }
+
+    .filter-select-wrap::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: 0.75rem;
+      width: 0.4rem;
+      height: 0.4rem;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      color: var(--muted);
+      transform: translateY(-70%) rotate(45deg);
+      pointer-events: none;
+    }
+
+    .filter-select {
+      appearance: none;
+      max-width: 9rem;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 0.3rem 1.6rem 0.3rem 0.75rem;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      touch-action: manipulation;
+    }
+
+    .filter-select.active {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* A `.world-pills`/`.filter-select-wrap` row sets its own `display` (flex/relative), which
+       an author rule - even the `[hidden]` attribute selector below, same specificity - always
+       beats the `[hidden] { display: none }` *UA* stylesheet rule alone would give it. Bumped
+       specificity (paired with `[data-only]`) instead of `!important`, so a conditional filter
+       (see the visibility-sync script further down) actually disappears while hidden. */
+    [data-only][hidden] {
+      display: none;
+    }
+
     .world-filters-apply {
       appearance: none;
       border: 1px solid var(--border);
@@ -651,7 +701,7 @@
         data-nav="replace"
         href="{% url 'world-feats' %}"
         class="{% if '/world/feats/' in request.path %}active{% endif %}"
-      >{% translate "Feats" %}</a>
+      >{% translate "Features" %}</a>
       <a
         data-nav="replace"
         href="{% url 'world-spells' %}"
@@ -754,6 +804,32 @@
         var debounceTimer = null;
         var latestRequestId = 0;
 
+        // A filter marked `data-only` (see `_select_filter()`/`_pill_filter()`'s `only` in
+        // views.py) is relevant only while the page's `type` pill holds one of the space-
+        // separated values it names - shown/hidden together with it, with no reload, and reset
+        // back to "no filter" the moment it's hidden so a value the user can no longer see or
+        // change doesn't go on silently narrowing the results.
+        function syncOnlyFilters() {
+          var typeRadio = form.querySelector('input[name="type"]:checked');
+          var mode = typeRadio ? typeRadio.value : "";
+          Array.from(form.querySelectorAll("[data-only]")).forEach(function (el) {
+            var on = el.dataset.only.split(" ").indexOf(mode) !== -1;
+            el.hidden = !on;
+            if (on) return;
+            el.querySelectorAll('input[type=radio]').forEach(function (radio) {
+              radio.checked = !radio.value;
+            });
+            el.querySelectorAll("input[type=checkbox]").forEach(function (box) {
+              box.checked = false;
+            });
+            el.querySelectorAll("select").forEach(function (select) {
+              select.value = "";
+              select.classList.remove("active");
+            });
+            if ("open" in el) el.open = false;
+          });
+        }
+
         function runSearch() {
           var requestId = ++latestRequestId;
           var url = new URL(form.action, window.location.href);
@@ -792,10 +868,25 @@
         Array.from(form.querySelectorAll("select, input[type=radio], input[type=checkbox]"))
           .forEach(function (field) {
             field.addEventListener("change", function () {
+              syncOnlyFilters();
               clearTimeout(debounceTimer);
               runSearch();
             });
           });
+
+        // Initial visibility for whatever `type` (and any of its own now-irrelevant filter
+        // values) a deep link/back-navigation landed on, before the first paint settles.
+        syncOnlyFilters();
+
+        // `runSearch()` above only swaps `#search-results` (the item list) - a select filter's
+        // own "active" border (like a checklist filter's button below, server-rendered from
+        // `filter.value` on first load) sits outside that node, in `.world-filter-buttons`, so it
+        // never picks up its new value on this live path otherwise.
+        Array.from(document.querySelectorAll(".filter-select")).forEach(function (select) {
+          select.addEventListener("change", function () {
+            select.classList.toggle("active", !!select.value);
+          });
+        });
 
         // `runSearch()` above only swaps `#search-results` (the item list) - a checklist
         // filter's own button (its "active" state and count badge, both server-rendered from

@@ -27,7 +27,7 @@
   </div>
   {% for filter in filters %}
     {% if filter.kind == "radio" %}
-      <div class="world-pills world-pills-scroll" role="radiogroup" aria-label="{{ filter.label }}">
+      <div class="world-pills world-pills-scroll" role="radiogroup" aria-label="{{ filter.label }}"{% if filter.only %} data-only="{{ filter.only }}" hidden{% endif %}>
         <label class="pill">
           <input type="radio" name="{{ filter.name }}" value=""{% if not filter.value %} checked{% endif %}>
           {{ filter.all_label }}
@@ -75,6 +75,23 @@
               {% endfor %}
             </div>
           </details>
+        {% elif filter.kind == "select" %}
+          {# A dropdown sibling of the checkbox popover above (see `_select_filter()`) - one   #}
+          {# choice from a list too long for a pill row (every Class, Level 1-20, ...). The    #}
+          {# wrapper (not the `<select>` itself) carries `data-only`/`hidden`: a `<select>` is  #}
+          {# a replaced element, so its own `::after` chevron below wouldn't render on it.     #}
+          <div class="filter-select-wrap"{% if filter.only %} data-only="{{ filter.only }}" hidden{% endif %}>
+            <select
+              name="{{ filter.name }}"
+              class="filter-select{% if filter.value %} active{% endif %}"
+              aria-label="{{ filter.label }}"
+            >
+              <option value="">{{ filter.all_label }}</option>
+              {% for value, label in filter.options %}
+                <option value="{{ value }}"{% if value == filter.value %} selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
         {% endif %}
       {% endfor %}
     </div>

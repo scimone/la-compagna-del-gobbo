@@ -61,6 +61,11 @@ urlpatterns = [
     path("world/classes/", views.world_classes, name="world-classes"),
     path("world/classes/<slug:pk>/", views.world_class_detail, name="world-class-detail"),
     path("world/feats/", views.world_feats, name="world-feats"),
+    path(
+        "world/feats/feature/<int:pk>/",
+        views.world_feature_detail,
+        name="world-feature-detail",
+    ),
     path("world/feats/<slug:pk>/", views.world_feat_detail, name="world-feat-detail"),
     path("world/species/", views.world_species, name="world-species"),
     path("world/species/<slug:pk>/", views.world_species_detail, name="world-species-detail"),

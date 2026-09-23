@@ -37,6 +37,7 @@ from apps.rules.models import Ability, Class, Equipment, Feature, Subclass
 from apps.rules.services import background as background_service
 from apps.rules.services import class_ as class_service
 from apps.rules.services import feat as feat_service
+from apps.rules.services import feature as feature_service
 from apps.rules.services import handbook as handbook_service
 from apps.rules.services import rule as rule_service
 from apps.rules.services import species as species_service
@@ -519,12 +520,19 @@ def _by_name(queryset, q: str):
     return queryset.filter(Q(name_en__icontains=q) | Q(name_it__icontains=q))
 
 
-def _pill_filter(request, name, label, options, *, all_label=None):
+def _pill_filter(request, name, label, options, *, all_label=None, only=None):
     """One `{kind, name, label, value, options, all_label}` entry for `_list_page`'s `filters` -
     a single-select row of clickable pills (radio inputs under the hood, one implicit "any" pill
     first, labeled `all_label`) in the world-search form (see base.html). `value` is read
     straight from `?<name>=...` here so callers only have to build the options and apply the
     filter to their queryset, not thread the selected value through separately.
+
+    `only` (space-separated values of another filter's own name, e.g. a `name="section"` pill's
+    "weapons") makes this filter conditional on that other filter's current value, the same
+    `only` a `_checklist_filter()` already carries for the character sheet's own item browser
+    (see `character_sheet.py`'s local `checkbox()`) - `_search_form.html` starts it `hidden`
+    unconditionally whenever `only` is set, and JS (`filterRows()` there, `syncOnlyFilters()` in
+    base.html here) reveals the right one once it knows the controlling filter's value.
     """
     return {
         "kind": "radio",
@@ -533,6 +541,24 @@ def _pill_filter(request, name, label, options, *, all_label=None):
         "value": request.GET.get(name, "").strip(),
         "options": options,
         "all_label": all_label or _("All"),
+        "only": only,
+    }
+
+
+def _select_filter(request, name, label, options, *, all_label=None, only=None):
+    """Dropdown sibling of `_pill_filter()`: a native `<select>` for a single choice from a list
+    too long for a pill row (e.g. every Class, or Level 1-20) - see `_search_form.html`'s
+    `kind == "select"` block. `only` is the same conditional-visibility mechanism `_pill_filter()`
+    documents.
+    """
+    return {
+        "kind": "select",
+        "name": name,
+        "label": label,
+        "value": request.GET.get(name, "").strip(),
+        "options": options,
+        "all_label": all_label or _("All"),
+        "only": only,
     }
 
 
@@ -1089,41 +1115,245 @@ def world_class_detail(request, pk):
 
 def world_feats(request):
     q = _search_query(request)
+    type_filter = _pill_filter(
+        request,
+        "type",
+        _("Type"),
+        [
+            ("feat", _("Feats")),
+            ("class", _("Class Features")),
+            ("subclass", _("Subclass Features")),
+            ("species", _("Species Traits")),
+        ],
+        all_label=_("All types"),
+    )
+    selected_type = type_filter["value"]
+    # Each of these is only relevant to (and only shown for) one specific `type` pill - see
+    # `_pill_filter()`'s docstring on `only` and the `data-only` sync script in base.html. Built
+    # unconditionally (not just while its own type is selected) so the page can still render
+    # every filter's options up front - the base.html script reveals the right one with no
+    # reload the moment `type` changes, instead of re-fetching this whole form.
     category_filter = _pill_filter(
         request,
         "category",
         _("Category"),
         [(c, _format_feat_category(c)) for c in feat_service.list_categories()],
         all_label=_("All categories"),
+        only="feat",
     )
-    feats = feat_service.list_feats()
-    if q:
-        feats = _by_name(feats, q)
-    if category_filter["value"]:
-        feats = feat_service.matching_category(feats, category_filter["value"])
-    items = [
-        {
-            "pk": f.pk,
-            "name": _badged_heading(f.name, _self_translated(f, "name")),
-            "detail": _format_feat_category(f.category),
-            "url": reverse("world-feat-detail", args=[f.pk]),
-            # "Fighting Style (P)"/"(R)" sub-variants share their base category's artwork.
-            "image": _menu_image_url(
-                "feats", f"{f.category.split(' (')[0].lower().replace(' ', '_')}.jpeg"
-            ),
-        }
-        for f in feats
-    ]
+    level_filter = _select_filter(
+        request,
+        "level",
+        _("Level"),
+        [(str(n), f"{_('Level')} {n}") for n in range(1, 21)],
+        all_label=_("All levels"),
+        only="class subclass",
+    )
+    class_filter = _select_filter(
+        request,
+        "class",
+        _("Class"),
+        [(c.pk, c.name) for c in class_service.list_classes()],
+        all_label=_("All classes"),
+        only="class subclass",
+    )
+    subclass_filter = _select_filter(
+        request,
+        "subclass",
+        _("Subclass"),
+        [(sc.pk, sc.name) for sc in Subclass.objects.all()],
+        all_label=_("All subclasses"),
+        only="subclass",
+    )
+    species_filter = _select_filter(
+        request,
+        "species",
+        _("Species"),
+        [(s.pk, s.name) for s in species_service.list_species()],
+        all_label=_("All species"),
+        only="species",
+    )
+    items = []
+
+    if selected_type in ("", "feat"):
+        feats = feat_service.list_feats()
+        if q:
+            feats = _by_name(feats, q)
+        if selected_type == "feat" and category_filter["value"]:
+            feats = feat_service.matching_category(feats, category_filter["value"])
+        items += [
+            {
+                "pk": f.pk,
+                "name": _badged_heading(f.name, _self_translated(f, "name")),
+                "detail": _format_feat_category(f.category),
+                "url": reverse("world-feat-detail", args=[f.pk]),
+                # "Fighting Style (P)"/"(R)" sub-variants share their base category's artwork.
+                "image": _menu_image_url(
+                    "feats", f"{f.category.split(' (')[0].lower().replace(' ', '_')}.jpeg"
+                ),
+            }
+            for f in feats
+        ]
+
+    if selected_type in ("", "class"):
+        class_features = Feature.objects.filter(class_level__isnull=False).select_related(
+            "class_level__klass"
+        )
+        if q:
+            class_features = _by_name(class_features, q)
+        if selected_type == "class":
+            if level_filter["value"]:
+                class_features = class_features.filter(class_level__level=level_filter["value"])
+            if class_filter["value"]:
+                class_features = class_features.filter(class_level__klass_id=class_filter["value"])
+        items += [
+            {
+                "name": _badged_heading(feature.name, _self_translated(feature, "name")),
+                "detail": _("Feature of %(klass)s (Level %(level)s)")
+                % {
+                    "klass": feature.class_level.klass.name,
+                    "level": feature.class_level.level,
+                },
+                "url": reverse("world-feature-detail", args=[feature.pk]),
+                "image": _menu_image_url("classes", f"{feature.class_level.klass_id}-grey.png"),
+            }
+            for feature in class_features
+        ]
+
+    if selected_type in ("", "subclass"):
+        subclass_features = Feature.objects.filter(subclass_level__isnull=False).select_related(
+            "subclass_level__subclass__klass"
+        )
+        if q:
+            subclass_features = _by_name(subclass_features, q)
+        if selected_type == "subclass":
+            if level_filter["value"]:
+                subclass_features = subclass_features.filter(
+                    subclass_level__level=level_filter["value"]
+                )
+            if class_filter["value"]:
+                subclass_features = subclass_features.filter(
+                    subclass_level__subclass__klass_id=class_filter["value"]
+                )
+            if subclass_filter["value"]:
+                subclass_features = subclass_features.filter(
+                    subclass_level__subclass_id=subclass_filter["value"]
+                )
+        for feature in subclass_features:
+            klass_id = feature.subclass_level.subclass.klass_id
+            items.append(
+                {
+                    "name": _badged_heading(feature.name, _self_translated(feature, "name")),
+                    "detail": _("Feature of %(klass)s (Level %(level)s)")
+                    % {
+                        "klass": feature.subclass_level.subclass.name,
+                        "level": feature.subclass_level.level,
+                    },
+                    "url": reverse("world-feature-detail", args=[feature.pk]),
+                    "image": _menu_image_url("classes", f"{klass_id}-grey.png"),
+                }
+            )
+
+    if selected_type in ("", "species"):
+        species_traits = Feature.objects.filter(species__isnull=False).select_related("species")
+        if q:
+            species_traits = _by_name(species_traits, q)
+        if selected_type == "species" and species_filter["value"]:
+            species_traits = species_traits.filter(species_id=species_filter["value"])
+        items += [
+            {
+                "name": _badged_heading(trait.name, _self_translated(trait, "name")),
+                "detail": _("Trait of %(species)s") % {"species": trait.species.name},
+                "url": reverse("world-feature-detail", args=[trait.pk]),
+                "image": _menu_image_url(
+                    "features_species",
+                    f"{_SPECIES_IMAGE_SLUGS.get(trait.species_id, trait.species_id)}.jpeg",
+                ),
+            }
+            for trait in species_traits
+        ]
+
+    # One flat alphabetical list rather than grouped by type - `name` may be a `_badged_heading()`
+    # result (safe HTML, an escaped name plus a trailing badge), but comparing its string form
+    # still sorts correctly since the name itself is always the leading text.
+    items.sort(key=lambda item: str(item["name"]).casefold())
+
     return _list_page(
         request,
-        "Feats",
+        "Features",
         items,
         world_tabs=True,
         compact_thumbs=True,
         search_query=q,
-        search_placeholder=_("Search feats"),
-        filters=[category_filter],
+        search_placeholder=_("Search feats and features"),
+        filters=[
+            type_filter,
+            category_filter,
+            level_filter,
+            class_filter,
+            subclass_filter,
+            species_filter,
+        ],
         bookmark_kind="feat",
+    )
+
+
+def world_feature_detail(request, pk):
+    """A class/subclass feature or species trait's own page - a `Feature` row's `entries`
+    rendered the same way a Feat's are, since the merged Features list (`world_feats()`) links
+    every non-Feat entry here now instead of into its parent Class/Species page's own tab.
+    """
+    feature = feature_service.get_feature(pk)
+
+    facts = []
+    if feature.class_level_id:
+        klass = feature.class_level.klass
+        facts.append(
+            (
+                _("Class"),
+                format_html(
+                    '<a href="{}">{}</a>',
+                    reverse("world-class-detail", args=[klass.pk]),
+                    klass.name,
+                ),
+            )
+        )
+        facts.append((_("Level"), feature.class_level.level))
+    elif feature.subclass_level_id:
+        subclass = feature.subclass_level.subclass
+        class_url = reverse("world-class-detail", args=[subclass.klass_id])
+        facts.append(
+            (_("Class"), format_html('<a href="{}">{}</a>', class_url, subclass.klass.name))
+        )
+        facts.append(
+            (
+                _("Subclass"),
+                format_html('<a href="{}">{}</a>', f"{class_url}?tab=subclasses", subclass.name),
+            )
+        )
+        facts.append((_("Level"), feature.subclass_level.level))
+    elif feature.species_id:
+        species = feature.species
+        facts.append(
+            (
+                _("Species"),
+                format_html(
+                    '<a href="{}">{}</a>',
+                    reverse("world-species-detail", args=[species.pk]),
+                    species.name,
+                ),
+            )
+        )
+
+    description_heading = _badged_heading(_("Description"), _self_translated(feature, "entries"))
+    plain_sections = [(description_heading, render_entries(feature.entries))]
+
+    return _detail_page(
+        request,
+        _badged_heading(feature.name, _self_translated(feature, "name")),
+        "world-feats",
+        facts,
+        plain_sections=plain_sections,
     )
 
 
@@ -1230,9 +1460,11 @@ def world_species_detail(request, pk):
 
     elif active_tab == "traits":
         if species.entries:
+            feature_ids = {f.name: f.pk for f in species.feature_rows.all()}
             body = render_trait_cards(
                 species.entries,
                 self_translated=not homebrew and _self_translated(species, "entries"),
+                feature_ids=feature_ids,
             )
 
     return _detail_page(

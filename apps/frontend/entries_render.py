@@ -232,7 +232,9 @@ def homebrew_badge() -> str:
     return f' <span class="self-translated-badge homebrew-badge" title="{title}">Homebrew</span>'
 
 
-def render_trait_cards(entries: list, *, self_translated: bool = False) -> SafeString:
+def render_trait_cards(
+    entries: list, *, self_translated: bool = False, feature_ids: dict[str, int] | None = None
+) -> SafeString:
     """Render a flat list of {name, entries} blocks - the shape every XPHB Species' top-level
     `entries` list uses, one block per trait (verified against every species in db/species.json)
     - as one visually separated card per trait, instead of the plain stacked headings
@@ -241,12 +243,21 @@ def render_trait_cards(entries: list, *, self_translated: bool = False) -> SafeS
     `self_translated` marks every card the same way, since (unlike `Feature` rows) a Species'
     traits all come from the one `entries` field - there's no finer-grained provenance to show
     per trait.
+
+    `feature_ids` (a `{name: pk}` map, e.g. `{f.name: f.pk for f in species.feature_rows.all()}`)
+    gives a card its DOM id the same way `render_class_features()`'s does, for a matching named
+    block - lets the World Features list's species-trait entries deep-link straight to their card.
     """
     linker = _ReferenceLinker()
-    blocks = [
-        {**block, "self_translated": self_translated} if isinstance(block, dict) else block
-        for block in (entries or [])
-    ]
+    feature_ids = feature_ids or {}
+    blocks = []
+    for block in entries or []:
+        if isinstance(block, dict):
+            block = {**block, "self_translated": self_translated}
+            feature_id = feature_ids.get(block.get("name"))
+            if feature_id:
+                block["id"] = feature_id
+        blocks.append(block)
     return mark_safe(_render_entry_cards(blocks, linker))
 
 
@@ -315,6 +326,7 @@ def render_subclasses(subclasses) -> SafeString:
         by_level = {
             sl.level: [
                 {
+                    "id": f.pk,
                     "name": f.name,
                     "entries": f.entries,
                     "self_translated": bool(f.self_translated_fields),

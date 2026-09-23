@@ -211,8 +211,8 @@ msgid "Search classes, subclasses and features"
 msgstr "Cerca classi, sottoclassi e caratteristiche"
 
 #: apps/frontend/views.py
-msgid "Search feats"
-msgstr "Cerca talenti"
+msgid "Search feats and features"
+msgstr "Cerca talenti e caratteristiche"
 
 #: apps/frontend/views.py
 msgid "Search species and traits"
@@ -243,6 +243,10 @@ msgid "Class"
 msgstr "Classe"
 
 #: apps/frontend/views.py
+msgid "Subclass"
+msgstr "Sottoclasse"
+
+#: apps/frontend/views.py
 msgid "School"
 msgstr "Scuola"
 
@@ -257,6 +261,26 @@ msgstr "Tutti"
 #: apps/frontend/views.py
 msgid "All categories"
 msgstr "Tutte le categorie"
+
+#: apps/frontend/views.py
+msgid "All types"
+msgstr "Tutti i tipi"
+
+#: apps/frontend/views.py
+msgid "All levels"
+msgstr "Tutti i livelli"
+
+#: apps/frontend/views.py
+msgid "All classes"
+msgstr "Tutte le classi"
+
+#: apps/frontend/views.py
+msgid "All subclasses"
+msgstr "Tutte le sottoclassi"
+
+#: apps/frontend/views.py
+msgid "All species"
+msgstr "Tutte le specie"
 
 #: apps/frontend/templates/frontend/base.html
 msgid "Apply"
