@@ -141,6 +141,28 @@
       }
       initLimits();
 
+      // Point buy: how many of the budget's points the six scores cost, recomputed as any of them
+      // changes - no need to save to see it. An unset score counts as 8 (0 points), same as if it
+      // had been picked.
+      function initPointBuy() {
+        var form = wiz.querySelector("form[data-point-buy]");
+        var costsEl = document.getElementById("pb-costs");
+        var out = form && form.querySelector("[data-pb-spent]");
+        if (!form || !costsEl || !out) return;
+        var costs = JSON.parse(costsEl.textContent);
+        var budget = form.dataset.budget;
+        var fmt = form.dataset.fmtSpent;
+        var selects = form.querySelectorAll('select[name^="base."]');
+        function update() {
+          var spent = 0;
+          selects.forEach(function (s) { spent += costs[s.value] || 0; });
+          out.textContent = fmt.replace("%(n)d", spent).replace("%(budget)d", budget);
+        }
+        selects.forEach(function (s) { s.addEventListener("change", update); });
+        update();
+      }
+      initPointBuy();
+
       // Live steps (class / background / species): picking a row, or changing an answer other
       // answers depend on, saves the page's state and swaps the step in place - so the row's own
       // choices open right under it without pressing "Save and continue". The server answers with

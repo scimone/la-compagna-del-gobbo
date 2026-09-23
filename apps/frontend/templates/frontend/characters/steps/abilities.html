@@ -25,9 +25,11 @@
   </form>
 
   {% if method %}
-    <form method="post">
+    <form method="post"{% if method == "pointbuy" %} data-point-buy data-budget="{{ options.point_buy_budget }}"
+          data-fmt-spent="{% translate '%(n)d/%(budget)d points spent.' %}"{% endif %}>
       {% csrf_token %}
       <input type="hidden" name="method" value="{{ method }}">
+      {% if method == "pointbuy" %}{{ options.point_buy_costs|json_script:"pb-costs" }}{% endif %}
 
       {% if method == "standard" %}
         <p class="hint">{% translate "Use each of 15, 14, 13, 12, 10, 8 once." %}</p>
@@ -41,7 +43,7 @@
         {% endif %}
       {% elif method == "pointbuy" %}
         <p class="hint">{% blocktranslate with budget=options.point_buy_budget %}You have {{ budget }} points. Scores go from 8 (0 points) to 15 (9 points): 9=1, 10=2, 11=3, 12=4, 13=5, 14=7, 15=9.{% endblocktranslate %}
-          {% if spent is not None %}<strong>{% blocktranslate with n=spent budget=options.point_buy_budget %}{{ n }}/{{ budget }} points spent.{% endblocktranslate %}</strong>{% endif %}</p>
+          <strong data-pb-spent>{% if spent is not None %}{% blocktranslate with n=spent budget=options.point_buy_budget %}{{ n }}/{{ budget }} points spent.{% endblocktranslate %}{% endif %}</strong></p>
       {% endif %}
 
       {% if method != "roll" or options.rolled %}
