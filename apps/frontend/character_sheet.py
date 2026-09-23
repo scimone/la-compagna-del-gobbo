@@ -304,11 +304,21 @@ def _slot_maximums(stats, classes) -> tuple[list[int], dict | None]:
 
 
 def _slots(character: Character, stats, classes) -> list[dict]:
-    """Every slot pool with its pips: `[{key, label, max, spent, pips}]`."""
+    """Every slot pool with its pips: `[{key, label, short_label, level, max, spent, pips}]`. The
+    short label is what actually shows on its chip, next to the spell list's own level heading -
+    just the level digit, or "P" for a pact pool - `label` remains for its tooltip and for screen
+    readers. `level` is the spell level the pool's slots are spent on (a pact pool's own level,
+    for one) - what groups it under the matching heading."""
     maximums, pact = _slot_maximums(stats, classes)
     spent = character.spell_slots_spent
     pools = [
-        {"key": str(level), "label": f"{_('Level')} {level}", "max": count}
+        {
+            "key": str(level),
+            "label": f"{_('Level')} {level}",
+            "short_label": str(level),
+            "level": level,
+            "max": count,
+        }
         for level, count in enumerate(maximums, start=1)
         if count
     ]
@@ -317,6 +327,8 @@ def _slots(character: Character, stats, classes) -> list[dict]:
             {
                 "key": "pact",
                 "label": _("Pact Magic (level %(level)s)") % {"level": pact["level"]},
+                "short_label": _("P"),
+                "level": pact["level"],
                 "max": pact["slots"],
             }
         )
@@ -435,9 +447,30 @@ def _spell_filters(rows: list[dict]) -> list[dict]:
 
 def _spellbook(character: Character, stats, classes) -> dict:
     rows = _spell_rows(character)
+    slots = _slots(character, stats, classes)
+    # Grouped by level for the spell list's own sticky headings, each with the slot pool(s) spent
+    # at that level next to it (there can be more than one - a Pact Magic pool lands wherever its
+    # own level is, alongside a multiclass table's slots of that same level, if both exist). A
+    # level with slots but no spells yet still gets a heading (just an empty one, below); a level
+    # with spells but no slots (cantrips) gets a heading with no chip next to it.
+    slots_by_level: dict[int, list[dict]] = {}
+    for pool in slots:
+        slots_by_level.setdefault(pool["level"], []).append(pool)
+    spells_by_level: dict[int, list[dict]] = {}
+    for row in rows:
+        spells_by_level.setdefault(row["level"], []).append(row)
+    groups = [
+        {
+            "level": level,
+            "label": _("Cantrips") if level == 0 else f"{_('Level')} {level}",
+            "slots": slots_by_level.get(level, []),
+            "spells": spells_by_level.get(level, []),
+        }
+        for level in sorted(set(spells_by_level) | set(slots_by_level))
+    ]
     return {
         "sources": _casting_sources(stats, classes),
-        "slots": _slots(character, stats, classes),
+        "spell_groups": groups,
         "spells": rows,
         "spell_filters": _spell_filters(rows),
     }

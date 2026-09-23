@@ -144,6 +144,19 @@
   #cs .cs-subhead { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.3rem 0.8rem; margin: 0 var(--cs-pad); padding: 0.55rem 0 0.45rem; border-bottom: 1px solid var(--border); }
   #cs .cs-subhead h3 { margin: 0; }
   .cs-subhead + .cs-scroll { padding-top: 0.4rem; }
+  /* The spellbook's own per-level headings, one per `.cs-level-group`, repeating down the same
+     list (unlike `.cs-subhead` above, one fixed heading over a whole list): genuinely
+     `position: sticky`, so each stays put only until the next one reaches the top and takes over -
+     the classic grouped-list header. That level's own slots (if any) sit on the same line.
+     `position: sticky` sticks flush to its scroll container's own padding edge, though - `.cs-scroll`
+     with its usual top padding would leave every heading sitting that far below `.cs-sticky` instead
+     of right under it, a gap the rows scroll past behind it. Zeroed here, made up for by the
+     heading's own padding instead. */
+  .cs-scroll:has(#cs-spells) { padding-top: 0; }
+  #cs-spells { display: flex; flex-direction: column; gap: 1rem; }
+  .cs-level-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.3rem 0.6rem; padding: 0.6rem 0 0.35rem; background: var(--bg); border-bottom: 1px solid var(--border); }
+  #cs .cs-level-head h3 { margin: 0; font-size: 0.95rem; }
+  .cs-level-group .cs-list { margin-top: 0.6rem; }
   .cs-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 1rem; padding: 1rem var(--cs-pad) 1.5rem; }
   .cs-scroll > * { flex-shrink: 0; }
   .cs-group { min-width: 0; }
@@ -203,14 +216,18 @@
   .cs-metric .k { font-size: 0.56rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); line-height: 1.2; }
   .cs-metric b { font-size: 1.1rem; line-height: 1.2; }
   .cs-metric select { width: 100%; padding: 0.05rem 0.2rem; font-size: 0.85rem; font-weight: 600; }
-  .cs-slots { display: flex; flex-direction: column; gap: 0.4rem; }
-  .cs-slot-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.4rem 0.7rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; }
-  .cs-slot-row .lbl { flex: 0 0 6.5rem; font-size: 0.85rem; font-weight: 600; }
+  /* Each pool as a small pill: a level badge, its pips, and the count - no room-hungry column of
+     full-width rows, since the group's own icon (not a per-row label) already says "spell slots". */
+  .cs-slots { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
+  .cs-slot-row { display: flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.5rem; background: var(--bg); border: 1px solid var(--border); border-radius: 1rem; }
+  .cs-slot-row .lbl { flex: none; min-width: 1rem; text-align: center; font-size: 0.72rem; font-weight: 700; color: var(--accent); }
   .cs-pips { flex: 1; display: flex; flex-wrap: wrap; gap: 0.35rem; }
-  .cs-slot-row .cnt { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+  .cs-slot-row .cs-pips { flex: none; gap: 0.22rem; }
+  .cs-slot-row .cnt { font-size: 0.7rem; color: var(--muted); white-space: nowrap; }
   .cs-slot-row .cnt b { color: var(--text); }
   .pip-btn { width: 1.35rem; height: 1.35rem; padding: 0; border: 2px solid var(--accent); border-radius: 50%; background: none; cursor: pointer; }
   .pip-btn.on { background: var(--accent); }
+  .cs-slot-row .pip-btn { width: 1.05rem; height: 1.05rem; border-width: 1.5px; }
   .cs-sticky .world-search { padding: 0; background: none; border: 0; }
   .cs-sticky .world-search-icon { pointer-events: none; }
 
@@ -237,6 +254,7 @@
   .cs-row .qty { color: var(--muted); font-weight: 400; font-size: 0.85em; }
   .cs-row.has-actions .item-text { margin-right: 8.6rem; }
   .cs-row.has-buy .item-text { margin-right: 7.6rem; }
+  .cs-row.has-add .item-text { margin-right: 4.8rem; }
   .cs-list > li.worn { border-color: var(--accent); border-left-width: 0.3rem; }
   .cs-actions { position: absolute; right: 2.1rem; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.35rem; }
   .equip { padding: 0.2rem 0.6rem; background: var(--bg); border: 1px solid var(--border); border-radius: 1rem; font-size: 0.72rem; font-weight: 600; color: var(--muted); cursor: pointer; }

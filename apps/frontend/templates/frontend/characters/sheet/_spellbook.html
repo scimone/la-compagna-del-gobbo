@@ -39,60 +39,68 @@
 {% endif %}
 
 <div class="cs-scroll">
-{% if spellbook.slots %}
-  <section class="cs-group">
-    <h3>{% translate "Spell Slots" %}</h3>
-    <div class="cs-slots">
-      {% for p in spellbook.slots %}
-        <div class="cs-slot-row" data-slot="{{ p.key }}" data-max="{{ p.max }}">
-          <span class="lbl">{{ p.label }}</span>
-          <span class="cs-pips">
-            {% for on in p.pips %}
-              <button type="button" class="pip-btn{% if on %} on{% endif %}" data-act="slots" data-key="{{ p.key }}" data-delta="{% if on %}1{% else %}-1{% endif %}"
-                      aria-label="{% translate 'Spell slot' %}"{% if not can_edit %} disabled{% endif %}></button>
-            {% endfor %}
-          </span>
-          <span class="cnt"><b class="left">{{ p.left }}</b>/{{ p.max }}</span>
-        </div>
-      {% endfor %}
-    </div>
-  </section>
-{% endif %}
-
-<section class="cs-group">
-  {% if spellbook.spells %}
-    <ul class="cs-list cs-spells" id="cs-spells">
-      {% for s in spellbook.spells %}
-        <li data-key="{{ s.key }}" data-search="{{ s.search }}" data-level="{{ s.level }}" data-class="{{ s.classes }}" data-school="{{ s.school }}"
-            data-range="{{ s.range }}" data-time="{{ s.times }}" data-save="{{ s.saves }}">
-          <button type="button" class="cs-row" data-describe="{{ s.describe }}" aria-expanded="false">
-            {% if s.image %}<img class="thumb" src="{{ s.image }}" alt="">{% endif %}
-            <span class="item-text">
-              <span class="item-name">{{ s.name }}</span>
-              <span class="item-detail">{{ s.detail }}</span>
-            </span>
-            <span class="chev" aria-hidden="true"></span>
-          </button>
-          {% if can_edit and s.removable %}
-            {# A spell you added yourself can be taken away again; the description loads above the button. #}
-            <div class="desc" hidden>
-              <div class="desc-body"></div>
-              <div class="item-tools">
-                <div class="item-buttons">
-                  <button type="button" class="btn-remove" data-act="spell_remove" data-spell="{{ s.id }}"
-                          data-confirm="{% translate 'Remove this spell?' %}">{% translate "Remove" %}</button>
+{% if spellbook.spell_groups %}
+  {# One section per spell level, its own sticky heading (stays in view above its own rows, like #}
+  {# the Handbook's chapter headings) carrying that level's slots right next to the level name -  #}
+  {# a Pact Magic pool included, at its own level, alongside a multiclass table's if both exist.  #}
+  <div id="cs-spells">
+    {% for g in spellbook.spell_groups %}
+      <section class="cs-level-group" data-level-group="{{ g.level }}">
+        <div class="cs-level-head">
+          <h3>{{ g.label }}</h3>
+          {% if g.slots %}
+            <div class="cs-slots">
+              {% for p in g.slots %}
+                <div class="cs-slot-row" data-slot="{{ p.key }}" data-max="{{ p.max }}" title="{{ p.label }}">
+                  <span class="lbl">{{ p.short_label }}</span>
+                  <span class="cs-pips">
+                    {% for on in p.pips %}
+                      <button type="button" class="pip-btn{% if on %} on{% endif %}" data-act="slots" data-key="{{ p.key }}" data-delta="{% if on %}1{% else %}-1{% endif %}"
+                              aria-label="{{ p.label }}"{% if not can_edit %} disabled{% endif %}></button>
+                    {% endfor %}
+                  </span>
+                  <span class="cnt"><b class="left">{{ p.left }}</b>/{{ p.max }}</span>
                 </div>
-              </div>
+              {% endfor %}
             </div>
-          {% else %}
-            <div class="desc" hidden></div>
           {% endif %}
-        </li>
-      {% endfor %}
-    </ul>
-    <p class="cs-empty" id="cs-spells-empty" hidden>{% translate "No spells match." %}</p>
-  {% else %}
-    <p class="cs-empty">{% translate "No spells yet." %}</p>
-  {% endif %}
-</section>
+        </div>
+        {% if g.spells %}
+          <ul class="cs-list cs-spells">
+            {% for s in g.spells %}
+              <li data-key="{{ s.key }}" data-search="{{ s.search }}" data-level="{{ s.level }}" data-class="{{ s.classes }}" data-school="{{ s.school }}"
+                  data-range="{{ s.range }}" data-time="{{ s.times }}" data-save="{{ s.saves }}">
+                <button type="button" class="cs-row" data-describe="{{ s.describe }}" aria-expanded="false">
+                  {% if s.image %}<img class="thumb" src="{{ s.image }}" alt="">{% endif %}
+                  <span class="item-text">
+                    <span class="item-name">{{ s.name }}</span>
+                    <span class="item-detail">{{ s.detail }}</span>
+                  </span>
+                  <span class="chev" aria-hidden="true"></span>
+                </button>
+                {% if can_edit and s.removable %}
+                  {# A spell you added yourself can be taken away again; the description loads above the button. #}
+                  <div class="desc" hidden>
+                    <div class="desc-body"></div>
+                    <div class="item-tools">
+                      <div class="item-buttons">
+                        <button type="button" class="btn-remove" data-act="spell_remove" data-spell="{{ s.id }}"
+                                data-confirm="{% translate 'Remove this spell?' %}">{% translate "Remove" %}</button>
+                      </div>
+                    </div>
+                  </div>
+                {% else %}
+                  <div class="desc" hidden></div>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </section>
+    {% endfor %}
+  </div>
+  <p class="cs-empty" id="cs-spells-empty" hidden>{% translate "No spells match." %}</p>
+{% else %}
+  <p class="cs-empty">{% translate "No spells yet." %}</p>
+{% endif %}
 </div>

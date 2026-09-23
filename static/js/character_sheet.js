@@ -390,7 +390,9 @@
       (active[box.name] = active[box.name] || []).push(box.value);
     });
     var shown = 0;
-    list.querySelectorAll(":scope > li").forEach(function (item) {
+    // A descendant selector, not `:scope > li`: the spellbook nests each level's rows one level
+    // deeper, in that level's own `<ul>` (under its sticky heading) rather than a single flat one.
+    list.querySelectorAll("li").forEach(function (item) {
       var match = !query || fold(item.dataset.search).indexOf(query) !== -1;
       Object.keys(active).forEach(function (name) {
         if (!match) return;
@@ -399,6 +401,12 @@
       });
       item.hidden = !match;
       if (match) shown += 1;
+    });
+    // A level heading whose every row just got hidden goes with them - unless it never had any to
+    // begin with (a level with slots but no spells yet), which stays up regardless of the search.
+    list.querySelectorAll(".cs-level-group").forEach(function (group) {
+      var items = group.querySelectorAll("li");
+      group.hidden = items.length > 0 && !Array.prototype.some.call(items, function (li) { return !li.hidden; });
     });
     var empty = document.getElementById(scope.dataset.filterEmpty);
     if (empty) empty.hidden = shown > 0;

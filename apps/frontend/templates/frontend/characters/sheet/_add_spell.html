@@ -14,7 +14,7 @@
       <li data-search="{{ s.search }}" data-level="{{ s.level }}" data-class="{{ s.classes }}" data-school="{{ s.school }}"
           data-range="{{ s.range }}" data-time="{{ s.times }}" data-save="{{ s.saves }}">
         <div class="cs-line">
-          <button type="button" class="cs-row has-equip" data-describe="{{ s.describe }}" aria-expanded="false">
+          <button type="button" class="cs-row has-add" data-describe="{{ s.describe }}" aria-expanded="false">
             {% if s.image %}<img class="thumb" src="{{ s.image }}" alt="" loading="lazy">{% endif %}
             <span class="item-text">
               <span class="item-name">{{ s.name }}</span>
@@ -22,8 +22,10 @@
             </span>
             <span class="chev" aria-hidden="true"></span>
           </button>
-          {# The spells the character already has are marked, and the ones added here are once the add went through. #}
-          <button type="button" class="equip add" data-act="spell_add" data-spell="{{ s.id }}" data-done="{% translate 'Added' %}"{% if s.known %} disabled{% endif %}>{% if s.known %}{% translate "Added" %}{% else %}{% translate "Add" %}{% endif %}</button>
+          <div class="cs-actions">
+            {# The spells the character already has are marked, and the ones added here are once the add went through. #}
+            <button type="button" class="equip add" data-act="spell_add" data-spell="{{ s.id }}" data-done="{% translate 'Added' %}"{% if s.known %} disabled{% endif %}>{% if s.known %}{% translate "Added" %}{% else %}{% translate "Add" %}{% endif %}</button>
+          </div>
         </div>
         <div class="desc" hidden><div class="desc-body"></div></div>
       </li>
