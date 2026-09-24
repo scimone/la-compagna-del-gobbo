@@ -12,11 +12,14 @@ view only translates HTTP into calls and answers with the state the script needs
 
 from math import ceil
 
+from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.cache import add_never_cache_headers
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy, pgettext_lazy
 from django.views.decorators.http import require_GET, require_POST
@@ -29,6 +32,7 @@ from apps.characters.services import access, play, portrait
 from apps.frontend import units
 from apps.frontend.bookmarks import bookmarked_ids
 from apps.frontend.character_views import (
+    _DESCRIBERS,
     _card_line,
     _damage_text,
     _gold_label,
@@ -586,13 +590,15 @@ def _spellbook(request, character: Character, stats, classes, can_edit: bool) ->
             "level": level,
             "label": _("Cantrips") if level == 0 else f"{_('Level')} {level}",
             "slots": slots_by_level.get(level, []),
-            "spells": spells_by_level.get(level, []),
+            # Bookmarked spells first, in their own pinned block, like every other bookmarks list.
+            "bookmarked_spells": [s for s in spells_by_level.get(level, []) if s.get("bookmarked")],
+            "spells": [s for s in spells_by_level.get(level, []) if not s.get("bookmarked")],
         }
         for level in sorted(set(spells_by_level) | set(slots_by_level))
     ]
     # The "Level" filter would just repeat the level groups above - not necessary, unlike the
     # World Spells list, which has no such grouping of its own.
-    filters = [f for f in _spell_filters(rows) if f["name"] != "level"]
+    filters = [f for f in _spell_filters(rows) if f["name"] not in ("level", "class")]
     return {
         "sources": _casting_sources(stats, classes),
         "spell_groups": groups,
@@ -663,9 +669,12 @@ def _item_card(kind: str, row, pack_name: str = "") -> dict:
         "equipped": not custom and row.equipped,
         "wearable": not custom and eq.type_id in play.WEARABLE_TYPES,
         "section": row.section if custom else "",
-        # A catalog item unfolds to its catalog description; a custom one to what the player wrote.
-        "describe": "" if custom else _describe_url("equipment", eq.pk),
-        "description": row.description if custom else "",
+        # The row opens the item's own page (`character_item()`): its description, and what the
+        # player can do with it - quantity, sell, remove.
+        "url": reverse(
+            "character-custom-item" if custom else "character-stack-item",
+            args=[row.character_id, row.pk],
+        ),
         "full_value": full,
         "sell_one": _gold_label(one) if one else "",
         "sell_all": _gold_label(everything) if everything and row.quantity > 1 else "",
@@ -1023,6 +1032,7 @@ def _act_custom_add(character, post):
     if weight is not None and units.is_metric():  # typed in kilograms, stored in pounds
         weight /= units.POUNDS_TO_KG
     cost = _number(post, "cost")  # in gold pieces
+    bought = post.get("buy") == "1"  # paid for out of the purse, rather than just added
     item = play.add_custom_item(
         character,
         name=post.get("name", ""),
@@ -1034,8 +1044,16 @@ def _act_custom_add(character, post):
         value=round(cost * 100) if cost is not None else None,
         valuable=post.get("valuable") == "1",
         description=post.get("description", ""),
+        buy=bought,
     )
-    return {"refresh": True, "message": _("Added %(name)s") % {"name": item.name}}
+    if bought:
+        message = _("Bought %(name)s for %(price)s") % {
+            "name": item.name,
+            "price": _gold_label(item.value * item.quantity),
+        }
+    else:
+        message = _("Added %(name)s") % {"name": item.name}
+    return {"refresh": True, "message": message}
 
 
 def _act_item_qty(character, post):
@@ -1166,7 +1184,7 @@ def character_items(request, pk):
             "name": e.name,
             "search": f"{e.name_en} {e.name_it}".lower(),
             "detail": _card_line("equipment", e),
-            "describe": _describe_url("equipment", e.pk),
+            "url": reverse("character-catalog-item", args=[character.pk, e.pk]),
             "section": section_of.get(e.type_id, "misc"),
             "type": e.type_id or "",
             "category": e.weapon_category,
@@ -1266,6 +1284,126 @@ def character_items(request, pk):
             "coins": _coins(character),
         },
     )
+
+
+#: What each kind of item page lets the player do (see `character_item()`).
+_ITEM_PAGE_ACTIONS = {
+    "stack": ("equip", "item_qty", "item_sell", "item_remove"),
+    "custom": ("item_qty", "item_sell", "item_remove"),
+    "catalog": ("item_add", "item_buy"),
+}
+
+
+def _item_page_facts(kind: str, row) -> tuple[list, list]:
+    """The facts and description sections of an item's page: a catalog item's own (the World's
+    rendering, same as the old unfolding panel had), or what a custom item's owner wrote."""
+    if kind != "custom":
+        equipment = row if kind == "catalog" else row.equipment
+        return _DESCRIBERS["equipment"](equipment.pk)
+    labels = {key: label for key, label, _types in _INVENTORY_SECTIONS}
+    facts = [(_("Category"), labels[row.section])]
+    if row.type_label:
+        facts.append((_("Type"), row.type_label))
+    if row.weapon_category:
+        facts.append(
+            (_("Weapon category"), _pick_translation(_WEAPON_CATEGORY_LABELS, row.weapon_category))
+        )
+    if row.value:
+        facts.append((_("Cost"), _gold_label(row.value)))
+    if row.weight:
+        facts.append((_("Weight"), _weight_text(row.weight)))
+    return facts, []
+
+
+def character_item(request, pk, kind, ref):
+    """One item's page - the "description in a new view" of an inventory row or of a row of the
+    "add an item" list, like a feature's page. Above the description, the editor's tools: quantity,
+    equip, sell and remove for an item the character has; Add and Buy for a catalog one. They are
+    plain forms posting back here (each runs the very action the sheet's script would), so no
+    script is needed - the page just reloads, or goes back to the inventory once the item is
+    gone."""
+    character = get_object_or_404(Character, pk=pk)
+    if character.status != Character.STATUS_COMPLETE or not access.can_view(
+        request.user, character
+    ):
+        raise Http404
+    can_edit = access.can_edit(request.user, character)
+    inventory_url = f"{reverse('character-detail', args=[pk])}?tab=inventory"
+    if kind == "stack":
+        row = get_object_or_404(
+            character.inventory_items.select_related("equipment__type", "parent__equipment"),
+            pk=ref,
+        )
+    elif kind == "custom":
+        row = get_object_or_404(character.custom_items, pk=ref)
+    else:
+        row = get_object_or_404(Equipment.objects.select_related("type"), pk=ref)
+
+    if request.method == "POST":
+        action = request.POST.get("action", "")
+        if not can_edit:
+            return HttpResponse(status=403)
+        if action not in _ITEM_PAGE_ACTIONS[kind]:
+            return HttpResponse(status=400)
+        post = request.POST.copy()
+        # Which item is the page's own business, never the form's.
+        if kind == "catalog":
+            post["equipment"] = row.pk
+        else:
+            post["kind"] = "catalog" if kind == "stack" else "custom"
+            post["item"] = row.pk
+        try:
+            result = _ACTIONS[action](character, post)
+        except (ValueError, ObjectDoesNotExist):
+            messages.error(request, _("Could not save that change."))
+            return redirect(request.path)
+        if kind != "catalog" and not type(row).objects.filter(pk=row.pk).exists():
+            return redirect(inventory_url)  # sold or removed: nothing left to look at
+        if isinstance(result, dict) and result.get("message"):
+            messages.success(request, result["message"])
+        return redirect(request.path)
+
+    facts, sections = _item_page_facts(kind, row)
+    if kind == "catalog":
+        card = None
+        name = row.name
+        back_url = f"{inventory_url}&overlay=item"
+    else:
+        card = _item_card("custom" if kind == "custom" else "catalog", row)
+        name = card["name"]
+        back_url = inventory_url
+        if not can_edit:  # an editor has the quantity right there, in the tools
+            facts = [*facts, (_("Quantity"), row.quantity)]
+    cost = row.value if kind == "catalog" else 0
+    purse = play.purse_copper(character) if kind == "catalog" else 0
+    tools = render_to_string(
+        "frontend/characters/_item_tools.html",
+        {
+            "kind": kind,
+            "can_edit": can_edit,
+            "card": card,
+            "equipment": row if kind == "catalog" else None,
+            "description": row.description if kind == "custom" else "",
+            "sections": sections,
+            "cost": _gold_label(cost) if cost else "",
+            "can_afford": bool(cost) and cost <= purse,
+            "left": _gold_label(max(0, purse - cost)) if cost else "",
+            "messages": messages.get_messages(request),
+        },
+        request=request,
+    )
+    response = render(
+        request,
+        "frontend/characters/item.html",
+        {
+            "page_title": name,
+            "back_url": back_url,
+            "facts": facts,
+            "body": mark_safe(tools.strip()),  # noqa: S308 - rendered from our own template
+        },
+    )
+    add_never_cache_headers(response)
+    return response
 
 
 def character_portrait(request, pk):

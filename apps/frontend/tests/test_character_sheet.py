@@ -2,6 +2,7 @@
 
 import re
 from io import BytesIO
+from pathlib import Path
 
 import pytest
 from django.contrib.auth import get_user_model
@@ -12,7 +13,8 @@ from PIL import Image
 from apps.builder.services import creation
 from apps.builder.tests.conftest import build_character
 from apps.characters.models import Character, CharacterInventoryItem, CharacterOptionalFeature
-from apps.rules.models import OptionalFeature
+from apps.characters.services import play
+from apps.rules.models import Feature, OptionalFeature, Spell
 
 pytestmark = pytest.mark.usefixtures("imported_rules")
 
@@ -338,6 +340,37 @@ def test_spellbook_rows_link_to_the_world_page_are_bookmarkable_and_drop_the_lev
     assert 'class="item-bookmark active"' in row
 
 
+def test_a_bookmarked_spell_is_pinned_at_the_top_of_its_own_level_group(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    # the last spell of its level alphabetically, so it would otherwise sit at the bottom
+    level = cleric.spells.first().spell.level
+    same_level = sorted(
+        (cs.spell for cs in cleric.spells.all() if cs.spell.level == level), key=lambda s: s.name
+    )
+    assert len(same_level) > 1
+    last = same_level[-1]
+
+    signed_in.post("/bookmarks/toggle/", {"kind": "spell", "object_id": last.pk})
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
+
+    group = html.split(f'data-level-group="{level}"')[1].split("</section>")[0]
+    pinned = group.split("item-list bookmark-list")[1].split("</ul>")[0]
+    assert last.name in pinned and same_level[0].name not in pinned
+    assert group.index(last.name) < group.index(same_level[0].name)
+    assert group.count(last.name) == 1  # moved, not duplicated
+
+
+def test_a_hand_added_spell_has_its_remove_button_left_of_the_bookmark(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    extra = Spell.objects.exclude(pk__in=cleric.spells.values_list("spell_id", flat=True)).first()
+    act(signed_in, cleric, action="spell_add", spell=extra.pk)
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
+
+    row = next(chunk for chunk in html.split("<li") if f"/world/spells/{extra.pk}/" in chunk)
+    assert row.index('class="item-remove"') < row.index('class="item-bookmark')
+
+
 def test_the_spellbooks_fixed_part_has_an_add_spell_button_even_without_spells(
     signed_in, client, alice, bob
 ):
@@ -375,7 +408,8 @@ def test_inventory_has_a_fixed_pouch_and_one_list_style_with_details_on_one_line
         assert f"<h3>{section}" in html
     assert "data-view" not in html and "Grid" not in html  # the list is the only layout
     mace = re.search(
-        r'<div class="cs-line">\s*<button[^>]*data-describe="[^"]*mace/"[^>]*>(.*?)</button>',
+        r'<div class="cs-line linked">\s*<a[^>]*href="/characters/\d+/inventory/\d+/"[^>]*>'
+        r"\s*<span[^>]*>\s*<span[^>]*>Mace(.*?)</a>",
         html,
         re.S,
     )
@@ -383,7 +417,10 @@ def test_inventory_has_a_fixed_pouch_and_one_list_style_with_details_on_one_line
     assert (
         detail.startswith("1d6") and "lb." in detail and "gp" in detail
     )  # one line: damage, weight, cost
-    assert 'class="chev"' in mace.group(1)  # the arrow is on the row, like Features and Spells
+    # A link to the item's page, no toggle arrow - like the Features and Spellbook rows - under
+    # section headings that stay in view like the spellbook's.
+    assert 'class="chev"' not in html and "data-describe=" not in html and "data-toggle" not in html
+    assert 'id="cs-inventory"' in html and 'class="cs-level-head"' in html
 
 
 def test_a_pack_is_not_listed_but_its_contents_are_and_say_where_they_came_from(signed_in, alice):
@@ -399,15 +436,16 @@ def test_a_pack_is_not_listed_but_its_contents_are_and_say_where_they_came_from(
     assert f"from {escape(pack.equipment.name)}" in row
 
 
-def test_items_can_be_edited_sold_and_removed_from_the_row_that_lists_them(signed_in, alice):
+def test_an_inventory_row_links_to_the_items_page_instead_of_unfolding_its_tools(signed_in, alice):
     cleric = finished(alice, "cleric")
+    mace = cleric.inventory_items.get(equipment_id="mace")
 
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "inventory")
 
-    tools = html.split('data-key="catalog-')[1].split("</li>")[0]
-    for control in ('data-act="item_qty"', 'data-act="item_sell"', 'data-act="item_remove"'):
-        assert control in tools
-    assert "Equipment sells for half its cost." in html
+    row = html.split(f'data-key="catalog-{mace.pk}"')[1].split("</li>")[0]
+    assert f'href="/characters/{cleric.pk}/inventory/{mace.pk}/"' in row
+    for tool in ('data-act="item_qty"', 'data-act="item_remove"'):
+        assert tool not in html  # quantity and remove live on the item's own page now
 
 
 def test_a_sellable_item_also_gets_a_quick_sell_button_right_on_its_row(signed_in, alice):
@@ -417,15 +455,12 @@ def test_a_sellable_item_also_gets_a_quick_sell_button_right_on_its_row(signed_i
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "inventory")
 
     row = html.split(f'data-key="catalog-{mace.pk}"')[1].split("</li>")[0]
-    line = row.split('<div class="desc"')[0]  # before the description panel, i.e. on the row itself
-    assert 'class="btn-sell-row"' in line and 'data-act="item_sell"' in line
-    assert 'data-quantity="1"' in line and "data-confirm=" in line  # asks first, and says the price
-    # The description still has its own "sell one" too (there's only one mace, so no "sell all") -
+    assert 'class="btn-sell-row"' in row and 'data-act="item_sell"' in row
+    assert 'data-quantity="1"' in row and "data-confirm=" in row  # asks first, and says the price
+    # The item's page still has its own "sell one" too (there's only one mace, so no "sell all") -
     # this doesn't replace it.
-    assert (
-        row.count('data-act="item_sell"') == 2
-    )  # the quick one, and "sell one" in the description
-    assert "Sell one for" in row
+    page = signed_in.get(f"/characters/{cleric.pk}/inventory/{mace.pk}/").content.decode()
+    assert "Sell one for" in page and "Sell all for" not in page
 
 
 def test_a_stack_too_cheap_to_sell_one_of_still_gets_a_quick_sell_button_for_the_whole_stack(
@@ -440,9 +475,9 @@ def test_a_stack_too_cheap_to_sell_one_of_still_gets_a_quick_sell_button_for_the
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "inventory")
 
     row = html.split(f'data-key="catalog-{torches.pk}"')[1].split("</li>")[0]
-    line = row.split('<div class="desc"')[0]
-    assert 'class="btn-sell-row"' in line and 'data-quantity="10"' in line  # sells the whole stack
-    assert "Sell one for" not in row and "Sell all for 5 cp" in row  # description agrees
+    assert 'class="btn-sell-row"' in row and 'data-quantity="10"' in row  # sells the whole stack
+    page = signed_in.get(f"/characters/{cleric.pk}/inventory/{torches.pk}/").content.decode()
+    assert "Sell one for" not in page and "Sell all for 5 cp" in page  # the page agrees
 
 
 def test_a_monks_light_martial_weapons_are_listed_but_not_the_other_martial_ones(signed_in, alice):
@@ -783,9 +818,10 @@ def test_a_custom_item_is_listed_in_its_section_and_sold_at_its_own_price(signed
     assert (ruby.quantity, ruby.weight, ruby.value, ruby.valuable) == (2, 0.5, 5000, True)
     assert ruby.type_label == "Gemstone"
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "inventory")
-    assert "Ruby" in html and "Blood red." in html
-    assert "Gemstone" in html  # the type is in the detail line
-    assert "Trade goods and valuables sell for their full value." in html
+    assert "Ruby" in html and "Gemstone" in html  # the type is in the detail line
+    page = signed_in.get(f"/characters/{cleric.pk}/inventory/custom/{ruby.pk}/").content.decode()
+    assert "Blood red." in page  # what the player wrote is on the item's own page
+    assert "Trade goods and valuables sell for their full value." in page
 
     sold = act(
         signed_in, cleric, action="item_sell", kind="custom", item=str(ruby.pk), quantity="1"
@@ -793,6 +829,73 @@ def test_a_custom_item_is_listed_in_its_section_and_sold_at_its_own_price(signed
     assert sold.json()["message"] == "Sold for 50 gp"  # a valuable: the full 50 gp, not 25
     cleric.currency.refresh_from_db()
     assert cleric.currency.gold == gold_before + 50 and cleric.custom_items.get().quantity == 1
+
+
+@pytest.mark.django_db
+def test_class_subclasses_start_collapsed_and_share_one_exclusive_group(client, imported_rules):
+    html = client.get("/world/classes/cleric/?tab=subclasses").content.decode()
+
+    blocks = re.findall(r'<details class="subclass-block"[^>]*>', html)
+    assert blocks and all(
+        tag == '<details class="subclass-block" name="subclass">' for tag in blocks
+    )
+
+
+@pytest.mark.django_db
+def test_class_levels_tab_has_plain_headings_and_subclass_headings_are_sticky(
+    client, imported_rules
+):
+    html = client.get("/world/classes/cleric/?tab=levels").content.decode()
+    assert '<div class="level-heading">Level 1</div>' in html
+    assert '<details class="level-group"' not in html  # no toggle on a level heading
+
+    detail = Path("apps/frontend/templates/frontend/detail.html").read_text()
+    subclass_rule = detail.split(".subclass-block > summary {")[1].split("}")[0]
+    assert "position: sticky" in subclass_rule
+
+
+@pytest.mark.django_db
+def test_world_features_list_leaves_out_ability_score_improvement(client, imported_rules):
+    assert Feature.objects.filter(name_en="Ability Score Improvement").exists()
+
+    classes = client.get("/world/feats/?type=class").content.decode()
+    everything = client.get("/world/feats/").content.decode()
+
+    assert "Ability Score Improvement" not in classes
+    # the General *feat* of the same name is a different thing, and stays
+    assert "Ability Score Improvement" in everything
+    assert not re.search(r"Ability Score Improvement</span>\s*<div[^>]*>Class", everything)
+
+
+def test_a_custom_item_can_be_bought_out_of_the_purse_or_just_added(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    play.set_coin(cleric, "gold", 100)
+
+    bought = act(
+        signed_in, cleric, action="custom_add", name="Spyglass", cost="30", quantity="2", buy="1"
+    )
+
+    assert bought.status_code == 200
+    assert bought.json()["message"] == "Bought Spyglass for 60 gp"
+    cleric.currency.refresh_from_db()
+    assert cleric.currency.gold == 40 and cleric.custom_items.get().quantity == 2
+
+    gift = act(signed_in, cleric, action="custom_add", name="Gift", cost="30")  # no `buy`
+    assert gift.json()["message"] == "Added Gift"
+    cleric.currency.refresh_from_db()
+    assert cleric.currency.gold == 40  # nothing paid
+
+
+def test_buying_a_custom_item_needs_a_cost_and_enough_money(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    play.set_coin(cleric, "gold", 10)
+
+    broke = act(signed_in, cleric, action="custom_add", name="Anvil", cost="50", buy="1")
+    free = act(signed_in, cleric, action="custom_add", name="Pebble", buy="1")
+
+    assert broke.status_code == 400 and free.status_code == 400
+    cleric.currency.refresh_from_db()
+    assert cleric.currency.gold == 10 and not cleric.custom_items.exists()
 
 
 def test_a_custom_weapon_can_carry_a_simple_or_martial_category(signed_in, alice):

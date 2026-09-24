@@ -127,12 +127,10 @@ def test_a_list_with_only_bookmarked_entries_still_renders_them(client, feats):
     assert "Alert" in html and "Tough" in html and "No entries" not in html
 
 
-def test_handbook_glossary_entries_carry_the_az_icon_the_chapters_dont(client, rules):
-    html = client.get("/handbook/").content.decode()
-    assert '<svg viewBox="0 0 36 26"' not in html  # no glossary entries on the Chapters tab
-
-    glossary = client.get("/handbook/rules-glossary/").content.decode()
-    assert '<svg viewBox="0 0 36 26"' in glossary
+def test_handbook_chapter_and_glossary_rows_have_no_icon(client, rules):
+    for url in ("/handbook/", "/handbook/rules-glossary/"):
+        html = client.get(url).content.decode()
+        assert "page-icon" not in html and '<svg viewBox="0 0 36 26"' not in html
 
 
 def test_glossary_searches_live_from_the_first_letter_and_indexes_by_letter(client, rules):

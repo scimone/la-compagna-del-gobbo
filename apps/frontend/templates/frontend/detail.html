@@ -166,6 +166,15 @@
     transform: rotate(90deg);
   }
 
+  /* A level heading with no toggle (the class Levels tab): same look as the `summary` above,
+     minus the arrow and the pointer. */
+  .level-group.static > .level-heading {
+    padding: 0.5rem 0;
+    font-weight: 700;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+  }
+
   .level-group .entry-cards {
     padding: 0.6rem 0 0;
   }
@@ -217,6 +226,10 @@
   }
 
   .subclass-block > summary {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--bg);
     cursor: pointer;
     padding: 0.6rem 0;
     font-weight: 700;

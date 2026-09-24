@@ -164,6 +164,12 @@ def _purse_copper(purse: CharacterCurrency) -> int:
     )
 
 
+def purse_copper(character: Character) -> int:
+    """Everything in the character's coin purse, in copper (0 without one)."""
+    purse = CharacterCurrency.objects.filter(character=character).first()
+    return _purse_copper(purse) if purse else 0
+
+
 def _set_purse_copper(purse: CharacterCurrency, total: int) -> None:
     """Re-mint `total` copper into coins. Platinum and electrum are kept only if the purse
     already uses them - like `sell_item`, a purchase never introduces a denomination the player
@@ -254,6 +260,7 @@ def buy_item(
     return add_item(character, equipment_id, quantity), price
 
 
+@transaction.atomic
 def add_custom_item(
     character: Character,
     *,
@@ -266,7 +273,11 @@ def add_custom_item(
     value: int | None = None,
     valuable: bool = False,
     description: str = "",
+    buy: bool = False,
 ) -> CharacterCustomItem:
+    """List an item of the player's own. With `buy`, its cost (`value` per unit, in copper) is
+    also paid out of the coin purse - an item with no cost, or a purse that cannot afford it,
+    refuses (nothing is charged or added); without, it is simply added (a gift, say)."""
     name = name.strip()
     if not name:
         raise ValueError("name is empty")
@@ -276,6 +287,14 @@ def add_custom_item(
         raise ValueError(f"unknown weapon category {weapon_category!r}")
     if (weight is not None and weight < 0) or (value is not None and value < 0):
         raise ValueError("weight and cost cannot be negative")
+    quantity = _clamp(quantity, 1, MAX_QUANTITY)
+    if buy:
+        if not value:
+            raise ValueError("this item has no price to buy it at")
+        purse, _created = CharacterCurrency.objects.get_or_create(character=character)
+        if value * quantity > _purse_copper(purse):
+            raise ValueError("not enough money to buy this")
+        _set_purse_copper(purse, _purse_copper(purse) - value * quantity)
     type_max = CharacterCustomItem._meta.get_field("type_label").max_length
     return CharacterCustomItem.objects.create(
         character=character,
@@ -285,7 +304,7 @@ def add_custom_item(
         # Only weapons have one - a stray value from the client for any other section is dropped
         # rather than trusted, same spirit as `section` above.
         weapon_category=weapon_category if section == "weapons" else "",
-        quantity=_clamp(quantity, 1, MAX_QUANTITY),
+        quantity=quantity,
         weight=weight or None,
         value=value or None,
         valuable=valuable,

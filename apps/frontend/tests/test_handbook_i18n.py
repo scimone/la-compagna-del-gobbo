@@ -66,8 +66,8 @@ def test_handbook_chapters_and_glossary_sit_in_tabs_and_sections_show_their_page
         # Chapters/Glossary sit in a tab strip above the results, not a button in the contents
         assert "world-tabs" in before_main and name in before_main
         _before, chapters = main.split('<details class="chapter-group"', 1)
-        # every section has a page icon and a "Page N" line, the number no longer on the icon
-        assert chapters.count('<span class="page-icon"') == chapters.count("<li")
+        # every section has a "Page N" line and no icon
+        assert "page-icon" not in chapters
         assert re.search(r'<div class="item-detail">(Page|Pagina) \d+</div>', chapters)
         assert "page-number" not in chapters
 

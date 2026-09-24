@@ -968,10 +968,8 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     first letter of the name (accent-coloured); signed out it reads "Login" and is shaped exactly
     like the language button. Nothing else is per-account yet:
     `characters` still has no ownership.
-  - `_list_item.html` gives an item with a `page` a small icon plus a "Page N" detail line: a
-    Handbook chapter section's is a sheet-of-paper icon, a Glossary `Rule`'s (`glossary_icon` on
-    the item) the same open-book A-Z icon the Chapters/Glossary tabs would otherwise need a legend
-    for - so the two lists read as the same kind of row, just with a different icon.
+  - `_list_item.html` gives an item with a `page` (a Handbook chapter section, a Glossary `Rule`)
+    a "Page N" detail line under its name - no icon.
   - `apps/frontend/entries_render.py` turns the raw 5etools `entries` JSON blobs (used by
     `Background`/`Species`/`Class`/`Feat`/`Spell`/`Rule`) into safe HTML: nested
     headings/lists/tables/insets/"choose N" groups, and - via `_ReferenceLinker` - turns any

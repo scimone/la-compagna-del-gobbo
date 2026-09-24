@@ -7,8 +7,8 @@
  *    button on click, an input/textarea/select when it changes. The extra `data-*` attributes are
  *    the parameters. The server answers with the state to redraw; `refresh: true` means something
  *    derived changed (AC, attacks), so the whole sheet is re-fetched and swapped instead.
- *  - descriptions: `data-describe="<url>"` rows unfold a description under themselves (`data-toggle`
- *    rows just unfold what is already there); chips
+ *  - descriptions: `data-describe="<url>"` rows (the "add a spell" list) unfold a description under
+ *    themselves (`data-toggle` rows just unfold what is already there); chips
  *    (inside `data-panel-group`) show it in the panel that follows their group.
  *  - the spellbook's search and filter buttons filter the rows on the spot; so do those of the
  *    "add an item" and "add a spell" overlays, which are fetched the first time they are opened.
@@ -207,6 +207,7 @@
     });
 
     updateBuyButtons();
+    updateCustomBuy();
   }
 
   // A row of pips (spell slots, Hit Dice) with `left` of them filled. Each pip carries the delta it
@@ -225,11 +226,6 @@
   function refresh() {
     var area = scroller();
     var scroll = area ? area.scrollTop : 0;
-    // Rows the player has unfolded (an item whose quantity they are editing) stay unfolded.
-    var open = Array.prototype.map.call(
-      root.querySelectorAll("#cs-swap li[data-key] > .desc:not([hidden])"),
-      function (desc) { return desc.parentElement.dataset.key; }
-    );
     return fetch(window.location.href, { credentials: "same-origin" })
       .then(function (response) { return response.text(); })
       .then(function (html) {
@@ -238,12 +234,6 @@
         if (!fresh || !current) return;
         current.innerHTML = fresh.innerHTML;
         setup();
-        open.forEach(function (key) {
-          var row = root.querySelector(
-            '#cs-swap li[data-key="' + key + '"] > .cs-line > .cs-row, #cs-swap li[data-key="' + key + '"] > .cs-row'
-          );
-          if (row) toggleRow(row, row.closest("li"));
-        });
         area = scroller();
         if (area) area.scrollTop = scroll;
       })
@@ -521,102 +511,72 @@
     else window.history.replaceState(window.history.state, "", next);
   }
 
-  // A filter-popover button shows "active" (with a count badge of 1) once anything but its own
-  // empty/"Any"/"None" option is picked - shared by the custom item form's Type and (for weapons)
-  // Weapon category popovers below.
-  function syncPopoverButton(panel, button) {
-    var on = !!panel.querySelector("input:checked[value]:not([value=''])");
-    button.classList.toggle("active", on);
-    var badge = button.querySelector(".filter-count");
-    if (on) {
-      if (!badge) {
-        badge = document.createElement("span");
-        badge.className = "filter-count";
-        button.appendChild(badge);
-      }
-      badge.textContent = 1;
-    } else if (badge) {
-      badge.remove();
-    }
+  // A dropdown filter looks "active" (accent border, like the World's own) once anything but its
+  // empty first option is picked - it shows the picked option itself, not a count.
+  function syncSelect(select) {
+    select.classList.toggle("active", !!select.value);
   }
 
-  // Both popovers below live in `.cs-form`, which scrolls - a plain CSS dropdown
-  // (`position: absolute`) would be clipped the moment that scrolls it even slightly out of view
-  // (as every other filter avoids by living in the fixed part instead; these can't, sitting right
-  // under Name). Escape that by switching the open panel to `position: fixed`, placed under its
-  // button by hand, and closing it if the form scrolls out from under it rather than let it drift.
-  function escapeScrollClip(popover, panel, button) {
-    var scroller = popover.closest(".cs-scroll");
-    popover.addEventListener("toggle", function () {
-      if (!popover.open) return;
-      var rect = button.getBoundingClientRect();
-      panel.style.position = "fixed";
-      panel.style.top = rect.bottom + 4 + "px";
-      panel.style.left = rect.left + "px";
-    });
-    if (scroller) {
-      scroller.addEventListener("scroll", function () {
-        if (popover.open) popover.open = false;
-      });
-    }
-  }
-
-  // The custom item form's Type is a filter-popover of radio options, same as the catalog's own
-  // Type filter right next to it - just single-select (an item has one type) and built from
-  // whichever Category pill is picked (a "Weapons" item isn't offered "Shield" as a type).
-  // `custom_types_by_section` ({section: [name, ...]}) came down as JSON. A "weapons" Category
-  // also reveals a second popover next to it, for Simple/Martial.
+  // The custom item form's Type is a dropdown, same as the Features list's own filters - single
+  // choice (an item has one type), built from whichever Category pill is picked (a "Weapons" item
+  // isn't offered "Shield" as a type). `custom_types_by_section` ({section: [name, ...]}) came
+  // down as JSON. A "weapons" Category also reveals a second dropdown next to it, for
+  // Simple/Martial.
   function initCustomTypeOptions(body) {
     var data = body.querySelector("#cs-custom-types-data");
     var sectionGroup = body.querySelector("[data-custom-section]");
-    var weaponPopover = body.querySelector("[data-custom-weapon-category]");
-    var weaponPanel = weaponPopover && weaponPopover.querySelector(".filter-popover-panel");
-    var weaponButton = weaponPopover && weaponPopover.querySelector(".filter-button");
-    var popover = body.querySelector("[data-custom-type]");
-    var panel = popover && popover.querySelector("[data-custom-type-panel]");
-    var button = popover && popover.querySelector(".filter-button");
-    if (!data || !sectionGroup || !popover || !panel || !button) return;
+    var weaponWrap = body.querySelector("[data-custom-weapon-category]");
+    var weaponSelect = weaponWrap && weaponWrap.querySelector("select");
+    var typeWrap = body.querySelector("[data-custom-type]");
+    var typeSelect = typeWrap && typeWrap.querySelector("select");
+    if (!data || !sectionGroup || !typeSelect) return;
     var bySection = JSON.parse(data.textContent);
 
-    // The panel's first option is the static "None" radio (kept in the template); everything
-    // after it is rebuilt here. A Category change always resets the pick back to "None" - a type
-    // from the old Category may not even exist in the new one - and shows/hides the weapon
-    // category popover (its own pick resets the same way, back to "Any").
+    // The select's first option is the static empty one (kept in the template); everything after
+    // it is rebuilt here. A Category change always resets the pick - a type from the old Category
+    // may not even exist in the new one - and shows/hides the weapon category dropdown.
     function rebuild() {
       var section = sectionGroup.querySelector("input:checked");
-      var onWeapons = !!section && section.value === "weapons";
-      Array.prototype.slice.call(panel.children, 1).forEach(function (el) { el.remove(); });
+      Array.prototype.slice.call(typeSelect.options, 1).forEach(function (o) { o.remove(); });
       ((section && bySection[section.value]) || []).forEach(function (name) {
-        var option = document.createElement("label");
-        option.className = "filter-option";
-        var input = document.createElement("input");
-        input.type = "radio";
-        input.name = "type";
-        input.value = name;
-        option.appendChild(input);
-        option.appendChild(document.createTextNode(" " + name));
-        panel.appendChild(option);
+        typeSelect.add(new Option(name, name));
       });
-      panel.children[0].querySelector("input").checked = true;
-      syncPopoverButton(panel, button);
-      if (weaponPopover) {
-        weaponPopover.hidden = !onWeapons;
-        weaponPanel.children[0].querySelector("input").checked = true; // back to "Any"
-        syncPopoverButton(weaponPanel, weaponButton);
+      typeSelect.value = "";
+      syncSelect(typeSelect);
+      if (weaponSelect) {
+        weaponWrap.hidden = !section || section.value !== "weapons";
+        weaponSelect.value = "";
+        syncSelect(weaponSelect);
       }
     }
 
-    escapeScrollClip(popover, panel, button);
-    if (weaponPopover) {
-      escapeScrollClip(weaponPopover, weaponPanel, weaponButton);
-      weaponPanel.addEventListener("change", function () {
-        syncPopoverButton(weaponPanel, weaponButton);
-      });
-    }
     sectionGroup.addEventListener("change", rebuild);
-    panel.addEventListener("change", function () { syncPopoverButton(panel, button); });
+    typeSelect.addEventListener("change", function () { syncSelect(typeSelect); });
+    if (weaponSelect) weaponSelect.addEventListener("change", function () { syncSelect(weaponSelect); });
     rebuild();
   }
+
+  // What a custom item costs in copper (unit cost in gp, times quantity), from the form as filled
+  // in right now.
+  function customCost(form) {
+    var cost = Number(form.querySelector('[name="cost"]').value) || 0;
+    var quantity = Math.max(1, Math.floor(Number(form.querySelector('[name="quantity"]').value) || 1));
+    return Math.round(cost * 100) * quantity;
+  }
+
+  // The custom item form's Buy button shows only while a cost is filled in that the purse covers.
+  function updateCustomBuy() {
+    root.querySelectorAll("[data-custom-form]").forEach(function (form) {
+      var buy = form.querySelector("[data-custom-buy]");
+      if (!buy) return;
+      var cost = customCost(form);
+      buy.hidden = cost <= 0 || cost > purseCopper();
+    });
+  }
+
+  root.addEventListener("input", function (event) {
+    if (event.target.closest("[data-custom-form]")) updateCustomBuy();
+  });
 
   // Each overlay (`.cs-overlay`) is fetched from its `data-url` the first time it is opened. The
   // button that opens one names it: `data-add-open="<overlay id>"`.
@@ -636,6 +596,7 @@
         if (scope) filterRows(scope); // hides the filters that wait for a pill to be picked
         updateBuyButtons();
         initCustomTypeOptions(body);
+        updateCustomBuy();
       })
       .catch(function () { body.textContent = ""; overlay.hidden = true; showError(); });
   }
@@ -666,6 +627,7 @@
       // Not a <form>: a submit would reach navigation.js, which treats every submit as a page change.
       var overlay = add.closest(".cs-overlay");
       var params = { action: "custom_add" };
+      var form = add.closest("[data-custom-form]");
       var name = overlay.querySelector('[data-custom-form] [name="name"]');
       overlay.querySelectorAll("[data-custom-form] [name]").forEach(function (field) {
         if (field.type === "checkbox") params[field.name] = field.checked ? "1" : "";
@@ -676,6 +638,16 @@
         name.focus();
         return;
       }
+      if (add.hasAttribute("data-custom-buy")) {
+        // Same confirmation as the catalog's Buy: the price, and what is left of the purse after.
+        var cost = customCost(form);
+        var confirmText =
+          root.dataset.fmtBuyConfirm.replace("%(price)s", copperLabel(cost)) +
+          "\n" +
+          root.dataset.fmtBuyLeft.replace("%(left)s", copperLabel(Math.max(0, purseCopper() - cost)));
+        if (!window.confirm(confirmText)) return;
+        params.buy = "1";
+      }
       send(params).then(function (accepted) {
         if (!accepted) return;
         overlay.querySelectorAll("[data-custom-form] [name]").forEach(function (field) {
@@ -684,6 +656,7 @@
           else if (field.name === "quantity") field.value = "1";
           else if (field.tagName !== "SELECT") field.value = "";
         });
+        updateCustomBuy();
         // Radios reset above, but the Category pill, weapon-category pill and Type popover also
         // carry their own live state (rebuilt options, hidden/shown, the popover's badge) - a
         // "change" event redoes that too.

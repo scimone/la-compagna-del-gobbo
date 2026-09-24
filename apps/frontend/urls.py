@@ -15,6 +15,27 @@ urlpatterns = [
     path("characters/<int:pk>/act/", character_sheet.character_act, name="character-act"),
     path("characters/<int:pk>/items/", character_sheet.character_items, name="character-items"),
     path("characters/<int:pk>/spells/", character_sheet.character_spells, name="character-spells"),
+    # One item's page: what a row of the inventory (a stack of catalog gear, or a custom item) or
+    # of the "add an item" list opens - the third has no row of the character's yet, just the
+    # catalog entry, with the Add/Buy buttons.
+    path(
+        "characters/<int:pk>/inventory/<int:ref>/",
+        character_sheet.character_item,
+        {"kind": "stack"},
+        name="character-stack-item",
+    ),
+    path(
+        "characters/<int:pk>/inventory/custom/<int:ref>/",
+        character_sheet.character_item,
+        {"kind": "custom"},
+        name="character-custom-item",
+    ),
+    path(
+        "characters/<int:pk>/catalog/<slug:ref>/",
+        character_sheet.character_item,
+        {"kind": "catalog"},
+        name="character-catalog-item",
+    ),
     path(
         "characters/<int:pk>/portrait/",
         character_sheet.character_portrait,

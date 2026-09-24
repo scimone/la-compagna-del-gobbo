@@ -27,27 +27,13 @@
 
   {% include "frontend/_item_list_style.html" %}
 
-  /* A Handbook chapter section's page, or a Glossary entry's page: same box either way
-     (`_list_item.html` puts the paper-sheet icon in it, or the Glossary's own AZ icon), the page
-     number itself given as a "Page N" text line instead (`.item-detail`), like any other detail. */
+  /* A Handbook chapter section's page, or a Glossary entry's page: no icon, just the name over a
+     "Page N" text line (`.item-detail`), like any other detail. */
   .item-list a.page-row {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.55rem 0.9rem 0.55rem 0.7rem;
-  }
-
-  .page-icon {
-    flex-shrink: 0;
-    width: 2.6rem;
-    height: 2.6rem;
-    color: var(--accent);
-  }
-
-  .page-icon svg {
-    display: block;
-    width: 100%;
-    height: 100%;
+    padding: 0.55rem 0.9rem 0.55rem 0.9rem;
   }
 
   /* Handbook search: where the query was found - a few snippets under the section's name, the

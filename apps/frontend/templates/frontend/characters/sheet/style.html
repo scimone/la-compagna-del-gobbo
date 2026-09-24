@@ -157,8 +157,9 @@
      with its usual top padding would leave every heading sitting that far below `.cs-sticky` instead
      of right under it, a gap the rows scroll past behind it. Zeroed here, made up for by the
      heading's own padding instead. */
-  .cs-scroll:has(#cs-spells) { padding-top: 0; }
-  #cs-spells { display: flex; flex-direction: column; gap: 1rem; }
+  .cs-scroll:has(#cs-spells), .cs-scroll:has(#cs-inventory) { padding-top: 0; }
+  #cs-spells, #cs-inventory { display: flex; flex-direction: column; gap: 1rem; }
+  .cs-scroll:has(#cs-inventory) > .cs-warnings { margin-top: 1rem; }
   .cs-level-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.3rem 0.6rem; padding: 0.6rem 0 0.35rem; background: var(--bg); border-bottom: 1px solid var(--border); }
   #cs .cs-level-head h3 { margin: 0; font-size: 0.95rem; }
   .cs-level-group .cs-list, .cs-level-group .item-list { margin-top: 0.6rem; }
@@ -193,7 +194,7 @@
   /* Expandable rows: features, spells. */
   .cs-list { display: flex; flex-direction: column; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
   .cs-list > li { background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; overflow: hidden; }
-  .cs-row { display: flex; align-items: center; gap: 0.7rem; width: 100%; padding: 0.5rem 0.8rem; background: none; border: 0; text-align: left; cursor: pointer; }
+  .cs-row { display: flex; align-items: center; gap: 0.7rem; width: 100%; padding: 0.5rem 0.8rem; background: none; border: 0; text-align: left; cursor: pointer; color: inherit; text-decoration: none; }
   .cs-row:active { background: var(--bg); }
   .cs-row .item-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
   .cs-row .item-name { font-weight: 600; }
@@ -261,6 +262,10 @@
   .cs-row.has-buy .item-text { margin-right: 7.6rem; }
   .cs-row.has-add .item-text { margin-right: 4.8rem; }
   .cs-list > li.worn { border-color: var(--accent); border-left-width: 0.3rem; }
+  /* A row that is a link to the item's page has no chevron, so its pills sit closer to the edge. */
+  .cs-line.linked .cs-actions { right: 0.7rem; }
+  .cs-line.linked .cs-row.has-actions .item-text { margin-right: 7.2rem; }
+  .cs-line.linked .cs-row.has-buy .item-text { margin-right: 6.2rem; }
   .cs-actions { position: absolute; right: 2.1rem; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.35rem; }
   .equip { padding: 0.2rem 0.6rem; background: var(--bg); border: 1px solid var(--border); border-radius: 1rem; font-size: 0.72rem; font-weight: 600; color: var(--muted); cursor: pointer; }
   .equip.on { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
@@ -315,7 +320,7 @@
   .cs-seg button.active { background: var(--accent); color: var(--accent-text); }
   .cs-form { display: flex; flex-direction: column; gap: 0.7rem; }
   .cs-form label { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; font-size: 0.85rem; color: var(--muted); }
-  .cs-form input[type="text"], .cs-form input[type="number"], .cs-form select, .cs-form textarea { width: 100%; padding: 0.5rem 0.6rem; color: var(--text); }
+  .cs-form input[type="text"], .cs-form input[type="number"], .cs-form select:not(.filter-select), .cs-form textarea { width: 100%; padding: 0.5rem 0.6rem; color: var(--text); }
   .cs-form label.check { flex-direction: row; align-items: center; gap: 0.5rem; }
   /* The World's own pill / filter-option look (Category, weapon category, Type's popover options)
      sits right in `.cs-form` too (Category/Type, right under Name) - `.cs-form label`'s own muted
@@ -324,5 +329,8 @@
   .cs-form label.pill { font-size: 0.8rem; }
   .cs-form label.filter-option { font-size: 0.85rem; gap: 0.5rem; }
   .cs-form-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; }
+  .cs-form-actions { display: flex; gap: 0.5rem; }
+  .cs-form-actions .btn-primary { flex: 1; }
+  .cs-form-actions .btn-buy[hidden] { display: none; }
   .btn-primary { padding: 0.65rem 1rem; background: var(--accent); border: 0; border-radius: 0.6rem; color: var(--accent-text); font-weight: 600; cursor: pointer; }
   #cs .hint { margin: 0; font-size: 0.85rem; color: var(--muted); line-height: 1.4; }

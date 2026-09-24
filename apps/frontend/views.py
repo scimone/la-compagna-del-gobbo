@@ -798,7 +798,7 @@ def handbook_overview(request):
             "items": [
                 {
                     "name": _badged_heading(section.name, _self_translated(section, "name")),
-                    # Drawn as a page icon plus a "Page N" detail line (`_list_item.html`).
+                    # Drawn as a "Page N" detail line (`_list_item.html`).
                     "page": section.page,
                     "url": reverse("handbook-section-detail", args=[section.pk]),
                 }
@@ -859,7 +859,6 @@ def _handbook_search(request, q: str):
                 {
                     "name": _badged_heading(rule.name, _self_translated(rule, "name")),
                     "page": rule.page,
-                    "glossary_icon": True,
                     "detail": mark_safe("".join(snippets)),
                     "url": reverse("world-rule-detail", args=[rule.pk]),
                 }
@@ -888,10 +887,8 @@ def handbook_rules_glossary(request):
         {
             "pk": rule.pk,
             "name": _badged_heading(rule.name, _self_translated(rule, "name")),
-            # The Glossary's own icon (`_list_item.html`) plus a "Page N" detail line, same as a
-            # Handbook chapter's sections - just with the AZ glossary icon instead of the page icon.
+            # A "Page N" detail line (`_list_item.html`), same as a Handbook chapter's sections.
             "page": rule.page,
-            "glossary_icon": True,
             "url": reverse("world-rule-detail", args=[rule.pk]),
             "letter": _index_letter(rule.name),
         }
@@ -1252,8 +1249,13 @@ def world_feats(request):
         ]
 
     if selected_type in ("", "class"):
-        class_features = Feature.objects.filter(class_level__isnull=False).select_related(
-            "class_level__klass"
+        # Every class repeats "Ability Score Improvement" at the same handful of levels - noise
+        # in a list of things to look up, so it's left out (matched on the English name, whatever
+        # the active language).
+        class_features = (
+            Feature.objects.filter(class_level__isnull=False)
+            .exclude(name_en="Ability Score Improvement")
+            .select_related("class_level__klass")
         )
         if q:
             class_features = _by_name(class_features, q)

@@ -74,9 +74,16 @@
             </div>
           {% endif %}
         </div>
+        {# The exact same row (look, click-through, bookmark) as the World's own Spells list -   #}
+        {# see `_spellbook_row()`. A spell added by hand also carries its own `remove` action.    #}
+        {% if g.bookmarked_spells %}
+          <ul class="item-list bookmark-list compact-thumbs" aria-label="{% translate 'Bookmarks' %}">
+            {% for s in g.bookmarked_spells %}
+              {% include "frontend/_list_item.html" with item=s bookmark_kind=spellbook.bookmark_kind bookmark_form_id="bookmark-list-form-spellbook" %}
+            {% endfor %}
+          </ul>
+        {% endif %}
         {% if g.spells %}
-          {# The exact same row (look, click-through, bookmark) as the World's own Spells list -   #}
-          {# see `_spellbook_row()`. A spell added by hand also carries its own `remove` action.    #}
           <ul class="item-list compact-thumbs">
             {% for s in g.spells %}
               {% include "frontend/_list_item.html" with item=s bookmark_kind=spellbook.bookmark_kind bookmark_form_id="bookmark-list-form-spellbook" %}

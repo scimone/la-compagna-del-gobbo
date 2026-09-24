@@ -23,7 +23,7 @@ via `_tag_display_text()` - there's no catalog page for those to link to.
 points (not part of the generic `render_entries()` recursion) for the spots that need something
 other than plain stacked headings: a Species' traits (`render_trait_cards()`) as one card per
 trait, and a Class's per-level features and subclasses (`render_class_features()`/
-`render_subclasses()`) as one collapsible group per level holding a clickable link per feature -
+`render_subclasses()`) as one plain-headed group per level holding a clickable link per feature -
 to that feature's own detail page (`world_feature_detail()` in `views.py`), rather than its text
 shown inline, since every `Feature` row has its own page now.
 """
@@ -278,18 +278,19 @@ def _render_feature_links(features, linker: _ReferenceLinker) -> str:
 
 
 def _render_level_feature_links(by_level: dict[int, list], linker: _ReferenceLinker) -> str:
-    """One collapsible group per level, each holding one link per feature gained at that level -
-    shared by `render_class_features()` and `render_subclasses()` below. Open by default (unlike
-    `_render_level_groups()`'s cards): a level's worth of links is short enough that there's no
-    need to hide it behind a tap the way a level's worth of full feature text used to be.
+    """One group per level, each a plain, non-interactive heading (a `<div>` - see
+    `.level-group.static` in detail.html) over one link per feature gained at that level - shared
+    by `render_class_features()` and `render_subclasses()` below. Always shown, no toggle: a
+    level's worth of links is short enough not to need hiding behind a tap the way a level's worth
+    of full feature text used to be.
     """
     groups = []
     for level in sorted(by_level):
+        heading = f"{escape(gettext('Level'))} {level}"
+        links = _render_feature_links(by_level[level], linker)
         groups.append(
-            f'<details class="level-group" open>'
-            f"<summary>{escape(gettext('Level'))} {level}</summary>"
-            f"{_render_feature_links(by_level[level], linker)}"
-            f"</details>"
+            f'<div class="level-group static"><div class="level-heading">{heading}</div>'
+            f"{links}</div>"
         )
     return "".join(groups)
 
@@ -298,7 +299,7 @@ def render_class_features(features) -> SafeString:
     """Render a Class's `Feature` rows (each with `class_level` set - fetch with e.g.
     `Feature.objects.filter(class_level__klass=klass).order_by("pk")`, the `.order_by("pk")`
     needed for the same reason as `render_subclasses()`: `Feature`'s default ordering is
-    alphabetical by name, which isn't the source's presentation order) as one collapsible group
+    alphabetical by name, which isn't the source's presentation order) as one plain-headed group
     per level, each holding one clickable link per feature gained at that level (to that feature's
     own detail page, see `world_feature_detail()`) - multiple features commonly share a level,
     e.g. every class's level 1 has several. Used to show each feature's full text inline instead -
@@ -316,7 +317,9 @@ def render_subclasses(subclasses) -> SafeString:
     and `levels` (`SubclassLevel` rows, each with its features as `Feature` rows reachable via
     `.feature_rows` - `SubclassLevel` keeps no `features` JSON of its own, see its docstring for
     why) - as one collapsed-by-default `<details>` block per subclass (its name is the clickable
-    `<summary>`), reusing the same per-level collapsible link grouping as `render_class_features()`
+    `<summary>`; they share a `name`, so the browser keeps at most one open - opening
+    another closes the first, no JS), reusing the same per-level link grouping as
+    `render_class_features()`
     for the body - each feature links out to its own detail page instead of the body showing its
     text. Iterate `subclasses` with `.levels` and `.levels__feature_rows` already prefetched (e.g.
     `klass.subclasses.prefetch_related("levels__feature_rows")`) to avoid a query per level.
@@ -337,7 +340,7 @@ def render_subclasses(subclasses) -> SafeString:
         groups_html = _render_level_feature_links(by_level, linker)
         subclass_badge = self_translated_badge(bool(subclass.self_translated_fields))
         blocks.append(
-            f'<details class="subclass-block" open>'
+            f'<details class="subclass-block" name="subclass">'
             f"<summary>{_render_text(subclass.name, linker)}{subclass_badge}</summary>"
             f'<div class="subclass-body">{description_html}{groups_html}</div>'
             f"</details>"

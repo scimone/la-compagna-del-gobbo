@@ -1,0 +1,48 @@
+{% load i18n %}
+{# The top of an item's page (`character_item()`): a note about what just happened, the editor's #}
+{# tools, then the description. Plain forms posting back to the page - no script involved.        #}
+{% for message in messages %}<p class="item-note {{ message.tags }}">{{ message }}</p>{% endfor %}
+{% if can_edit %}
+  <div class="item-tools">
+    {% if kind == "catalog" %}
+      <form method="post" class="item-buttons">
+        {% csrf_token %}
+        {% if cost and can_afford %}
+          {% blocktranslate with price=cost asvar buy_confirm %}Buy for {{ price }}?{% endblocktranslate %}
+          {% blocktranslate with left=left asvar buy_left %}You will have {{ left }} left.{% endblocktranslate %}
+          <button type="submit" name="action" value="item_buy" class="outline" data-confirm="{{ buy_confirm }}&#10;{{ buy_left }}"
+                  onclick="return confirm(this.dataset.confirm)">{% translate "Buy" %} · {{ cost }}</button>
+        {% endif %}
+        <button type="submit" name="action" value="item_add" class="primary">{% translate "Add" %}</button>
+      </form>
+    {% else %}
+      <div class="qty-edit">
+        <span>{% translate "Quantity" %}</span>
+        <form method="post">{% csrf_token %}<input type="hidden" name="action" value="item_qty"><button type="submit" name="delta" value="-1" class="step" aria-label="{% translate 'One less' %}">−</button></form>
+        <form method="post">{% csrf_token %}<input type="hidden" name="action" value="item_qty"><input type="number" name="value" min="1" inputmode="numeric" value="{{ card.quantity }}" aria-label="{% translate 'Quantity' %}" onchange="this.form.submit()"></form>
+        <form method="post">{% csrf_token %}<input type="hidden" name="action" value="item_qty"><button type="submit" name="delta" value="1" class="step" aria-label="{% translate 'One more' %}">+</button></form>
+      </div>
+      <div class="item-buttons">
+        {% if card.wearable %}
+          <form method="post">{% csrf_token %}<input type="hidden" name="action" value="equip"><input type="hidden" name="value" value="{% if card.equipped %}0{% else %}1{% endif %}">
+            <button type="submit"{% if card.equipped %} class="on"{% endif %}>{% if card.equipped %}{% translate "Equipped" %}{% else %}{% translate "Equip" %}{% endif %}</button></form>
+        {% endif %}
+        {% if card.sell_one %}
+          <form method="post">{% csrf_token %}<input type="hidden" name="action" value="item_sell"><input type="hidden" name="quantity" value="1">
+            <button type="submit" class="outline">{% blocktranslate with price=card.sell_one %}Sell one for {{ price }}{% endblocktranslate %}</button></form>
+        {% endif %}
+        {% if card.sell_all %}
+          <form method="post">{% csrf_token %}<input type="hidden" name="action" value="item_sell"><input type="hidden" name="quantity" value="{{ card.quantity }}">
+            <button type="submit" class="outline">{% blocktranslate with price=card.sell_all %}Sell all for {{ price }}{% endblocktranslate %}</button></form>
+        {% endif %}
+        <form method="post" onsubmit="return confirm(this.dataset.confirm)" data-confirm="{% translate 'Remove this item?' %}">{% csrf_token %}<input type="hidden" name="action" value="item_remove">
+          <button type="submit" class="quiet">{% translate "Remove" %}</button></form>
+      </div>
+      {% if card.sell_one %}
+        <p class="hint">{% if card.full_value %}{% translate "Trade goods and valuables sell for their full value." %}{% else %}{% translate "Equipment sells for half its cost." %}{% endif %}</p>
+      {% endif %}
+    {% endif %}
+  </div>
+{% endif %}
+{% if description %}<p>{{ description|linebreaksbr }}</p>{% endif %}
+{% for html in sections %}<div class="entries">{{ html }}</div>{% endfor %}

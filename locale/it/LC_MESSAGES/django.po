@@ -1456,3 +1456,8 @@ msgstr "Vendi"
 #, python-format
 msgid "Sell this for %(price)s?"
 msgstr "Vendere questo per %(price)s?"
+
+#: apps/frontend/character_sheet.py
+#: apps/frontend/templates/frontend/characters/sheet/_add_item.html
+msgid "Weapon category"
+msgstr "Categoria dell'arma"

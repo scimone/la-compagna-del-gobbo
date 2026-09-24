@@ -49,6 +49,10 @@ no GitHub credentials) and restarts only that container (`dnd-db` and its data a
 running). Do this automatically, without being asked, at the end of each task — not just when
 explicitly told to deploy.
 
+**Commit after every task.** Always commit the changes you make, automatically, at the end of
+each task (after verifying and redeploying), without waiting to be asked. Local `git commit` only
+- no push, since the sandbox may have no GitHub credentials.
+
 ## Architecture
 
 Three Django apps form a strict dependency chain — `rules` (static game content, read-only,
