@@ -68,7 +68,7 @@ Two structural conventions apply across `rules`/`characters`/`builder`:
 - **Models**: one file per model under `models/`, re-exported from `models/__init__.py`.
 - **No API**: the app is deliberately a pure server-rendered frontend, exposed to the internet —
   there are no REST/JSON endpoints, no Django Ninja, no OpenAPI docs, and none should be added.
-  The only HTTP surface is `apps/frontend/` views (plus `/admin/`, `/i18n/`, PWA files). Views
+  The only HTTP surface is `apps/frontend/` views (plus `/i18n/`, PWA files); the Django admin is not installed. Views
   never contain business logic — that lives in `services/` (plain functions over
   querysets/instances, including any 404/validity checks), one file per domain.
 

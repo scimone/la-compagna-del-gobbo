@@ -14,6 +14,12 @@ def _english_by_default():
     translation.activate("en")
 
 
+@pytest.fixture(autouse=True)
+def _plain_http_client(settings):
+    """Production redirects http to https; the test client speaks plain http."""
+    settings.SECURE_SSL_REDIRECT = False
+
+
 @pytest.fixture(scope="module")
 def imported_rules(django_db_setup, django_db_blocker):
     """The full `import_rules_data` result, loaded once per test module and committed (not rolled

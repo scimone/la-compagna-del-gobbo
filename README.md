@@ -101,7 +101,7 @@ uv run ruff check .
 - **One file per domain concept.** Models live one-per-file under `models/`, re-exported from
   `models/__init__.py`. Service functions are grouped one-file-per-domain under `services/`.
 - **No public API.** This is a pure server-rendered frontend: the only HTTP surface is the HTML
-  views in `apps/frontend/` (plus `/admin/`, `/i18n/setlang/` and the PWA manifest/service worker).
+  views in `apps/frontend/` (plus `/i18n/setlang/` and the PWA manifest/service worker); there is no admin site either.
   There is no REST/JSON API, no OpenAPI schema and no Django Ninja - it was removed on purpose to
   keep the attack surface of an internet-facing deployment as small as possible. Don't add one back.
 - **No business logic in views.** Views call into `services/` (plain functions over

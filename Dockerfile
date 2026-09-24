@@ -16,6 +16,6 @@ COPY . .
 # builds DATABASES from POSTGRES_* env vars - these placeholders exist only for this one build
 # step (never baked into the image as a persistent ENV) and are overridden by the real values
 # docker-compose supplies at container start.
-RUN POSTGRES_DB=collectstatic POSTGRES_USER=collectstatic POSTGRES_PASSWORD=collectstatic \
+RUN DJANGO_SECRET_KEY=collectstatic-build-only POSTGRES_DB=collectstatic POSTGRES_USER=collectstatic POSTGRES_PASSWORD=collectstatic \
     POSTGRES_HOST=collectstatic POSTGRES_PORT=5432 \
     uv run manage.py collectstatic --noinput

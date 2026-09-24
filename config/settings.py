@@ -1,38 +1,127 @@
 import os
 from pathlib import Path
 
+from django.utils.csp import CSP
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / ".env")
 
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key-change-me")
+# Secure by default: every value below is the production one unless the environment says
+# otherwise. DEBUG is opt-in (`DJANGO_DEBUG=true` in a local .env), never the fallback.
+DEBUG = os.environ.get("DJANGO_DEBUG", "false").lower() == "true"
 
-DEBUG = os.environ.get("DJANGO_DEBUG", "true").lower() == "true"
+# No fallback key outside DEBUG: a missing DJANGO_SECRET_KEY must stop the app, not quietly sign
+# sessions with a key that is public in the repository.
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY") or (
+    "dev-only-insecure-key-never-use-in-production" if DEBUG else None
+)
+if not SECRET_KEY:
+    raise RuntimeError("DJANGO_SECRET_KEY must be set when DJANGO_DEBUG is not true")
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",")
+ALLOWED_HOSTS = [
+    host
+    for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "dnd.scimone.uk").split(",")
+    if host.strip()
+]
 
 # Comma-separated list of scheme+host origins allowed to POST here (e.g. the language
 # switcher). Django's CSRF check compares the request's Origin header against this list -
-# ALLOWED_HOSTS alone doesn't cover it. Needed for any origin that isn't plain http(s)://
-# <a host already covered by autodetection>, which in practice means anything served through
-# a reverse proxy under its own domain (e.g. https://dnd.scimone.uk via nginx-proxy-manager).
+# ALLOWED_HOSTS alone doesn't cover it, and behind a TLS-terminating proxy the scheme it sees
+# is the proxy's, so the public https:// origin has to be listed explicitly.
 CSRF_TRUSTED_ORIGINS = [
-    origin for origin in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",") if origin
+    origin
+    for origin in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "https://dnd.scimone.uk").split(",")
+    if origin.strip()
 ]
 
 # This app sits behind a reverse proxy (nginx-proxy-manager / Cloudflare tunnel) that terminates
 # TLS and forwards plain HTTP to uvicorn - without this, Django thinks every request is
 # insecure (wrong scheme in generated URLs, secure-cookie logic never triggers, and the CSRF
 # check has less context to work with). The header name must match what the proxy actually
-# sets; X-Forwarded-Proto is the standard one and is what nginx-proxy-manager sends.
+# sets; X-Forwarded-Proto is the standard one and is what nginx-proxy-manager sends. Only safe
+# while the proxy is the sole way to reach port 3000 (a direct client could forge the header).
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
+# --- Transport and cookie hardening -------------------------------------------------------
+# Everything that only makes sense over HTTPS is tied to `not DEBUG`, so a local `DEBUG=true` run
+# over plain http keeps working while the default (production) configuration is fully locked down.
+_HTTPS_ONLY = not DEBUG
+
+SECURE_SSL_REDIRECT = _HTTPS_ONLY
+# One year, subdomains included, preload directive emitted. The `preload` flag is inert until the
+# domain is submitted to hstspreload.org - which is hard to undo, so that is a separate decision.
+SECURE_HSTS_SECONDS = 31536000 if _HTTPS_ONLY else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = _HTTPS_ONLY
+SECURE_HSTS_PRELOAD = _HTTPS_ONLY
+
+# `__Host-` cookies are only accepted by browsers when Secure, Path=/ and with no Domain
+# attribute, so a sibling subdomain can't overwrite or shadow them.
+SESSION_COOKIE_NAME = "__Host-sessionid" if _HTTPS_ONLY else "sessionid"
+SESSION_COOKIE_SECURE = _HTTPS_ONLY
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_NAME = "__Host-csrftoken" if _HTTPS_ONLY else "csrftoken"
+CSRF_COOKIE_SECURE = _HTTPS_ONLY
+# Safe: the sheet's JS reads the token from the form's hidden input, never from the cookie.
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = "Lax"
+LANGUAGE_COOKIE_SECURE = _HTTPS_ONLY
+LANGUAGE_COOKIE_HTTPONLY = True
+LANGUAGE_COOKIE_SAMESITE = "Lax"
+
+# --- Response headers ---------------------------------------------------------------------
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = "same-origin"
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin"
+X_FRAME_OPTIONS = "DENY"
+
+# Content-Security-Policy (Django's own middleware, below). Nothing is loaded from another
+# origin, so everything is 'self'. 'unsafe-inline' remains for script and style only because the
+# templates still carry inline <script> blocks, `on*=` handlers and `style=` attributes; moving
+# those into static files would let script-src drop it. Framing, <base>, <object> and form
+# targets are locked outright.
+SECURE_CSP = {
+    "default-src": [CSP.SELF],
+    "script-src": [CSP.SELF, CSP.UNSAFE_INLINE],
+    "style-src": [CSP.SELF, CSP.UNSAFE_INLINE],
+    "img-src": [CSP.SELF, "data:", "blob:"],
+    "font-src": [CSP.SELF],
+    "connect-src": [CSP.SELF],
+    "manifest-src": [CSP.SELF],
+    "worker-src": [CSP.SELF],
+    "object-src": [CSP.NONE],
+    "base-uri": [CSP.SELF],
+    "form-action": [CSP.SELF],
+    "frame-ancestors": [CSP.NONE],
+}
+
+# --- Request size limits ------------------------------------------------------------------
+# Non-file request bodies (forms) never legitimately approach this; portraits are files and are
+# capped separately in `apps/characters/services/portrait.py`.
+DATA_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
+
+# With DEBUG off Django's default only e-mails tracebacks to ADMINS (none are configured), so
+# unhandled errors would vanish. Send them to stderr, where `docker logs` picks them up.
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "plain": {"format": "%(asctime)s %(levelname)s %(name)s: %(message)s"},
+    },
+    "handlers": {
+        "console": {"class": "logging.StreamHandler", "formatter": "plain"},
+    },
+    "loggers": {
+        "django": {"handlers": ["console"], "level": "INFO", "propagate": False},
+        "django.security": {"handlers": ["console"], "level": "WARNING", "propagate": False},
+    },
+}
+
 INSTALLED_APPS = [
-    # Must come before `django.contrib.admin` so the admin picks up its translated-field support.
     "modeltranslation",
-    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -59,6 +148,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.csp.ContentSecurityPolicyMiddleware",
     "apps.frontend.middleware.TrackLastSectionUrlMiddleware",
 ]
 
