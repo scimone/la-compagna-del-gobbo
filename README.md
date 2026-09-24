@@ -10,7 +10,6 @@ exists today and what each placeholder is reserved for.
 
 - **Django** — models and persistence
 - **PostgreSQL** — the database (via `docker-compose.yml`)
-- **Django Ninja** — the HTTP API (OpenAPI schema at `/api/docs`)
 - **django-pwa** — PWA manifest/service-worker plumbing for the frontend shell
 - **WhiteNoise** — serves collected static files (PWA icons, menu artwork, `serviceworker.js`)
   directly from the ASGI app when running in the `dnd-web` container - there's no separate web
@@ -48,8 +47,7 @@ docker compose exec dnd-web uv run manage.py import_rules_data
 For this mode, `.env`'s `POSTGRES_HOST`/`POSTGRES_PORT` should point at the `dnd-db` service on
 the compose network (`dnd-db` / `5432`, per `.env.dist`) - or at an external Postgres instance
 reachable from the container, if you'd rather not use the bundled `dnd-db` at all (in which case
-that service just goes unused; nothing requires the app to talk to it). App: `http://localhost:3000/`
-— API docs: `http://localhost:3000/api/docs`.
+that service just goes unused; nothing requires the app to talk to it). App: `http://localhost:3000/`.
 
 **Redeploying** after a code change: `bash update-app.sh` — rebuilds the image from the working tree (no
 `git pull`, so no GitHub credentials needed) and restarts only `dnd-web` (`dnd-db` and its data are left running untouched).
@@ -102,16 +100,14 @@ uv run ruff check .
 
 - **One file per domain concept.** Models live one-per-file under `models/`, re-exported from
   `models/__init__.py`. Service functions are grouped one-file-per-domain under `services/`.
-- **API: one folder per tag group, one file per endpoint.** Each app's `api/` package has a
-  subfolder per Ninja tag (e.g. `api/characters/`, `api/inventory/`). Each subfolder has a
-  `__init__.py` that creates the shared `router = Router(tags=[...])` and imports every sibling
-  endpoint module so its `@router.<method>(...)` decorator registers on import. Each endpoint file
-  contains exactly one route function.
-- **No business logic in routers.** Endpoint functions call into `services/` (`rules` and
-  `characters` are implemented this way; `builder` isn't yet — see its section below).
-- **`rules` is read-only from the API's point of view.** It's populated via
-  `manage.py import_rules_data` (see [apps/rules/management/](apps/rules/management/)), not
-  through write endpoints.
+- **No public API.** This is a pure server-rendered frontend: the only HTTP surface is the HTML
+  views in `apps/frontend/` (plus `/admin/`, `/i18n/setlang/` and the PWA manifest/service worker).
+  There is no REST/JSON API, no OpenAPI schema and no Django Ninja - it was removed on purpose to
+  keep the attack surface of an internet-facing deployment as small as possible. Don't add one back.
+- **No business logic in views.** Views call into `services/` (plain functions over
+  querysets/instances) - `rules`, `characters` and `builder` are all consumed this way.
+- **`rules` is read-only.** It's populated via `manage.py import_rules_data` (see
+  [apps/rules/management/](apps/rules/management/)), never through the UI.
 
 ## App boundaries
 
@@ -267,7 +263,7 @@ subclass directly - right where it already computes each level's features via
 stored JSON field. Anything that displayed a subclass's features now reads `Feature` rows via
 `subclass_level.feature_rows` instead (`render_subclasses()` in
 `apps/frontend/entries_render.py`) - and since `Feature`'s default ordering is alphabetical by
-name (correct for its own `/api/rules/features` listing), that query is given an explicit
+name (correct for the plain `Feature` listing), that query is given an explicit
 `.order_by("pk")` to preserve the source's presentation order instead (verified against Cleric's
 Life Domain, whose real order - "Life Domain Spells", "Disciple of Life", "Preserve Life" - is
 *not* alphabetical, so this was checked, not assumed).
@@ -514,30 +510,11 @@ assets) and `otherVersions` (cross-references to non-XPHB printings — we only 
 | `HandbookChapter` | A chapter of the player's handbook ("Playing the Game", "Spells", ...) - the heading its sections are grouped under |
 | `HandbookSection` | A named topic of the player's handbook (rules text, not catalog data) |
 
-**API** (`apps/rules/api/rules/`, tag `Rules`, mounted at `/api/rules`) — one file per endpoint,
-implemented (real queries via `services/`, `ModelSchema` responses in `apps/rules/schemas.py`):
-
-`GET /classes`, `GET /classes/{id}`, `GET /classes/{id}/levels`, `GET /classes/{id}/subclasses`,
-`GET /classes/{id}/choices`, `GET /subclasses`, `GET /subclasses/{id}`,
-`GET /subclasses/{id}/levels`, `GET /species`, `GET /species/{id}`, `GET /backgrounds`,
-`GET /backgrounds/{id}`, `GET /backgrounds/{id}/choices`, `GET /feats`, `GET /feats/{id}`,
-`GET /features`, `GET /features/{id}`, `GET /features/{id}/effects`, `GET /equipment`
-(`?category=`), `GET /equipment/{id}`, `GET /equipment-properties`, `GET /masteries`,
-`GET /skills`, `GET /senses`, `GET /languages`, `GET /proficiencies`, `GET /spells`
-(`?class=`, `?level=`), `GET /spells/{id}`, `GET /rules`, `GET /rules/{key}`,
-`GET /optional-features`, `GET /optional-features/{id}`
-
-`Effect` and `ChoiceDefinition` are deliberately nested under their parent (`/features/{id}/
-effects`, `/classes/{id}/choices`, `/backgrounds/{id}/choices`) rather than given flat top-level
-endpoints — see the [Model status](#model-status) table for why they're only useful in that
-context. There's no standalone `/tools` endpoint either (see the removed-models note above); a
-`?category=tool` filter on `/equipment` covers it.
-
 **Services** (`apps/rules/services/`, one file per resource domain): `class_.py`, `subclass.py`,
 `species.py`, `background.py`, `feat.py`, `feature.py`, `equipment.py`, `skill.py`, `sense.py`,
 `language.py`, `optional_feature.py`, `proficiency.py`, `spell.py`, `rule.py` — plain functions
 returning querysets/instances, no HTTP concerns. Path-validity checks (e.g. `list_class_levels`
-404ing if the class doesn't exist) live here, not in the endpoint files.
+404ing if the class doesn't exist) live here, not in the views.
 
 ### `apps/characters/` — persisted character state
 
@@ -571,33 +548,6 @@ inventory item, currency, a resource — with no constraint violations).
 | `CharacterSpell` | A spell a `Character` knows/has access to, with `prepared`/`always_prepared` flags |
 | `CharacterResource` | A limited-use resource (Rage, Sorcery Points, Superiority Dice, ...) with `max_uses`/`current_uses`/`reset_on` |
 
-**API** (`apps/characters/api/`, mounted at `/api/characters`), split into four tag folders,
-one file per endpoint:
-
-- `api/characters/` (tag `Characters`): `GET /`, `POST /`, `GET /{id}`, `PATCH /{id}`,
-  `DELETE /{id}`, `GET /{id}/sheet` (see below for what `sheet` does and doesn't include).
-- `api/inventory/` (tag `Character Inventory`): `GET /{id}/inventory`, `POST /{id}/inventory`,
-  `PATCH /{id}/inventory/{item_id}`, `DELETE /{id}/inventory/{item_id}`,
-  `POST /{id}/inventory/{item_id}/equip`, `POST /{id}/inventory/{item_id}/unequip`,
-  `GET /{id}/currency`, `PATCH /{id}/currency`.
-- `api/spells/` (tag `Character Spells`): `GET /{id}/spells`, `POST /{id}/spells`,
-  `DELETE /{id}/spells/{spell_id}`, `POST /{id}/spells/{spell_id}/prepare`,
-  `POST /{id}/spells/{spell_id}/unprepare`.
-- `api/details/` (tag `Character Details`, read-only): `GET /{id}/classes`, `GET /{id}/feats`,
-  `GET /{id}/features`, `GET /{id}/languages`, `GET /{id}/optional-features`,
-  `GET /{id}/proficiencies`, `GET /{id}/senses`, `GET /{id}/resources`, `GET /{id}/choices`
-  (the last reads already-*resolved* choices - not the same as the builder's own
-  `GET /{id}/builder/choices`, which lists outstanding ones still to be made).
-
-All of the above are implemented (real persistence via `services/`, `ModelSchema` responses in
-`apps/characters/schemas.py`). `sheet` aggregates every collection a character owns into one
-response (`CharacterSheetSchema`) - it deliberately does **not** compute AC/HP-max-derivation/
-initiative/passive Perception/etc., since those need rules resolution that doesn't exist yet
-(see `apps/builder/`); it's everything already *persisted*, not a finished character sheet.
-
-`apps/characters/api/router.py` combines the four tag routers into the one router mounted in
-`config/urls.py`.
-
 **Services** (`apps/characters/services/`, one file per domain): `character.py` (CRUD + the
 sheet aggregator), `classes.py`, `feats.py`, `features.py`, `languages.py`,
 `optional_features.py`, `proficiencies.py`, `senses.py`, `resources.py`, `choices.py`,
@@ -606,39 +556,23 @@ sheet aggregator), `classes.py`, `feats.py`, `features.py`, `languages.py`,
 ### `apps/builder/` — character creation/leveling engine
 
 The D&D character engine: what can be chosen, whether a choice is valid, what it grants, and how
-leveling up works. Mounted under `/api/characters` too, since its routes nest under
-`/characters/{id}/builder/...` — it's logic bolted onto a `characters` resource, not a separate
-top-level resource. Owns little to no persistent state of its own; it reads/writes `characters`
-models by applying `rules` data.
+leveling up works. It's logic bolted onto a `characters` resource, not a separate top-level
+resource, and has no HTTP surface of its own - the frontend calls its services directly. Owns
+little to no persistent state of its own; it reads/writes `characters` models by applying `rules`
+data.
 
 **Level-1 character creation is implemented** (see [Character creation](#character-creation)
-below); level-up, multiclass and prerequisites are not. The REST endpoints listed here are still
-unwired stubs - the frontend calls the services directly, like the World views call `rules`. It's not
-an oversight: builder is an actual rules engine (per-class choice validation, prerequisite checking,
-multiclass spell-slot math, ...) and was designed in
-[docs/character_creation_plan.md](docs/character_creation_plan.md) before any endpoint body would mean
-anything.
-
-**API** (`apps/builder/api/`), three tag folders, one file per endpoint:
-
-- `api/builder/` (tag `Character Builder`): `GET /{id}/builder`, `GET /{id}/builder/choices`,
-  `GET /{id}/builder/choices/{key}`, `PUT /{id}/builder/choices/{key}`,
-  `POST /{id}/builder/class`, `POST /{id}/builder/background`, `POST /{id}/builder/species`,
-  `GET /{id}/builder/ability-options`, `PUT /{id}/builder/ability-scores`,
-  `GET /{id}/builder/starting-equipment`, `POST /{id}/builder/starting-equipment`,
-  `POST /{id}/builder/finalize`.
-- `api/validation/` (tag `Character Validation`): `GET /{id}/builder/validation`,
-  `POST /{id}/builder/validate` — returns structured errors (`path`/`code`/`message`) so the
-  frontend never has to duplicate rules knowledge.
-- `api/progression/` (tag `Character Progression`): `GET /{id}/builder/level-up`,
-  `POST /{id}/builder/level-up/preview`, `POST /{id}/builder/level-up/commit`.
+below); level-up, multiclass and prerequisites are not. The frontend calls the services directly,
+like the World views call `rules`. Builder is an actual rules engine (per-class choice validation,
+prerequisite checking, multiclass spell-slot math, ...) and was designed in
+[docs/character_creation_plan.md](docs/character_creation_plan.md).
 
 **Services** (`apps/builder/services/`; the ones marked ✅ are implemented, the rest are still the
 docstring-only placeholders from the design doc):
 
 | File | Will hold |
 |---|---|
-| `builder.py` | `BuilderService.get_state(character)` — the central state aggregator the whole builder API is built around |
+| `builder.py` | `BuilderService.get_state(character)` — the central state aggregator the builder is built around |
 | `choices.py` | Resolving/validating individual builder choices |
 | `validation.py` | Whole-character validation (what's missing/invalid) |
 | `prerequisites.py` | Prerequisite checks for feats/features/choices |
@@ -649,9 +583,6 @@ docstring-only placeholders from the design doc):
 **Resolvers** (`apps/builder/resolvers/`, currently docstring-only placeholders) — each knows how
 one `rules` concept translates into grants on a character: `class_.py`, `species.py`,
 `background.py`, `feat.py`, `equipment.py`, `spell.py`, `proficiency.py`.
-
-**Schemas** (`apps/builder/schemas.py`) — currently a single placeholder file; will hold the
-Ninja schemas for builder state/choices/validation/progression responses once the endpoints are wired.
 
 #### Character creation
 
@@ -867,7 +798,7 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
       typed in kilograms. Custom items are `characters.CharacterCustomItem` rows (a separate model:
       the catalog is `rules` data, read-only and wiped by `import_rules_data`, so they cannot be
       `Equipment` rows). They have no game rules - they are listed, counted, weighed and sold - and,
-      like the rest of the sheet's play-state, are not part of the REST API. This overlay (and *Add
+      like the rest of the sheet's play-state, are not exposed over any API. This overlay (and *Add
       spell*'s) covers the page's own header, so each carries its own language switch; switching
       language there is a real page reload (`?overlay=item|spell`, set by `character_sheet.js` the
       moment the overlay opens and read back on load), so it lands you back in the overlay rather
@@ -1009,8 +940,7 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
   `config/settings.py` (`PWA_APP_*` / `PWA_SERVICE_WORKER_PATH`).
 - The service worker itself is a real file at `static/js/serviceworker.js` (network-first for
   same-origin requests, falling back to cache only when offline - a stale cached page would
-  otherwise silently ignore a language switch; explicitly never caches `/api/*`, since a stale
-  API response would be actively misleading, unlike a stale static page).
+  otherwise silently ignore a language switch).
 - PWA icons are placeholder solid-color PNGs at `static/images/icons/` (192/512/180px) - still
   unreplaced, unlike the class/species artwork above.
 - See [Running it](#running-it) above for how static files (this artwork included) actually get
@@ -1038,7 +968,7 @@ feat text, handbook prose, ...) are bulk-imported from `db/`, not developer-auth
 translated field (`HandbookSection.name`/`.entries` so far - registered in
 `apps/rules/translation.py`) gets one extra column per language (`name_en`/`name_it`), and the
 plain attribute (`section.name`) returns the active language's value, falling back to English
-when that translation is empty (`MODELTRANSLATION_FALLBACK_LANGUAGES`). Services, API schemas and
+when that translation is empty (`MODELTRANSLATION_FALLBACK_LANGUAGES`). Services and
 templates keep reading `section.name` unchanged, and a half-translated catalog never shows blanks.
 No duplicate tables - just columns on the existing ones.
 

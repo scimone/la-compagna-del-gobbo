@@ -7,7 +7,6 @@ requires-python = ">=3.12"
 dependencies = [
     "django>=6.1.1",
     "django-modeltranslation>=0.20.6",
-    "django-ninja>=1.7.0",
     "django-pwa>=2.0.1",
     "pillow>=12.3.0",
     "psycopg[binary]>=3.3.5",
@@ -35,11 +34,6 @@ extend-exclude = ["**/migrations/*.py"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "DJ"]
-
-[tool.ruff.lint.per-file-ignores]
-# These __init__.py files import their sibling endpoint modules purely for the
-# side effect of registering routes on the shared `router` (blueprint pattern).
-"apps/*/api/**/__init__.py" = ["E402", "F401"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["apps", "config"]

@@ -57,19 +57,18 @@ each task (after verifying and redeploying), without waiting to be asked. Local 
 
 Three Django apps form a strict dependency chain — `rules` (static game content, read-only,
 populated only via `import_rules_data`) → `characters` (persisted character state, FKs into
-`rules`, no auth/ownership) → `builder` (creation/leveling engine, mounted under
-`/characters/{id}/builder/...`, currently stub endpoints over docstring-only services). A fourth
+`rules`, no auth/ownership) → `builder` (creation/leveling engine, called directly by
+the frontend; partly docstring-only services). A fourth
 app, `frontend`, is the server-rendered PWA UI shell and sits outside this chain. Full detail —
-every model, every endpoint, per-app service/resolver breakdown — is in the README's "App
+every model, per-app service/resolver breakdown — is in the README's "App
 boundaries" section; don't re-derive it here, read that.
 
 Two structural conventions apply across `rules`/`characters`/`builder`:
 
 - **Models**: one file per model under `models/`, re-exported from `models/__init__.py`.
-- **API**: one folder per Ninja tag group under `api/`, one file per endpoint, with the
-  subfolder's `__init__.py` creating the shared `router = Router(tags=[...])` and importing
-  every sibling endpoint module purely to trigger its `@router.<method>` registration
-  (`apps/*/api/**/__init__.py` is ruff-exempted from E402/F401 for exactly this reason). Routers
+- **No API**: the app is deliberately a pure server-rendered frontend, exposed to the internet —
+  there are no REST/JSON endpoints, no Django Ninja, no OpenAPI docs, and none should be added.
+  The only HTTP surface is `apps/frontend/` views (plus `/admin/`, `/i18n/`, PWA files). Views
   never contain business logic — that lives in `services/` (plain functions over
   querysets/instances, including any 404/validity checks), one file per domain.
 

@@ -35,11 +35,6 @@ self.addEventListener("activate", function (event) {
 self.addEventListener("fetch", function (event) {
   var requestUrl = new URL(event.request.url);
 
-  // Never cache the API - the frontend button is only useful with live data.
-  if (requestUrl.pathname.startsWith("/api/")) {
-    return;
-  }
-
   if (requestUrl.origin === location.origin) {
     // Network-first: every page here can depend on the language cookie/session, so a cached
     // response would silently ignore a language switch (this is exactly what happened when
