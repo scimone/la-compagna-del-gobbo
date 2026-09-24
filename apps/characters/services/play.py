@@ -1,6 +1,6 @@
 """Play-state changes on a finished character: HP, death saves, hit dice, spell slots, coins, worn
-gear, free text, the items carried (add, count, remove, sell), the spells added by hand -
-everything the character sheet lets the owner tick or type while playing.
+gear, free text, the items carried (add, count, remove, sell), the spells and features added by
+hand - everything the character sheet lets the owner tick or type while playing.
 
 Each function validates and clamps its input and saves; a value that makes no sense raises
 `ValueError` (the view turns it into a 400). Rests (short/long) are not here yet.
@@ -15,10 +15,13 @@ from apps.characters.models import (
     Character,
     CharacterCurrency,
     CharacterCustomItem,
+    CharacterFeat,
+    CharacterFeature,
     CharacterInventoryItem,
+    CharacterOptionalFeature,
     CharacterSpell,
 )
-from apps.rules.models import Equipment, Spell
+from apps.rules.models import Equipment, Feat, Feature, OptionalFeature, Spell
 
 COINS = ("copper", "silver", "electrum", "gold", "platinum")
 TEXT_FIELDS = ("backstory",)
@@ -36,6 +39,14 @@ MAX_QUANTITY = 9999
 #: `CharacterSpell.source` of a spell the player added from the sheet. The builder's grants carry
 #: their own source, and only these can be taken away again from the sheet.
 SPELL_SOURCE = "sheet"
+#: The same for a feature, feat or option the player added from the sheet (`add_feature`).
+FEATURE_SOURCE = "sheet"
+#: What `add_feature`/`remove_feature` take as `kind`, and the model each one is stored in.
+FEATURE_KINDS = {
+    "feature": (Feature, CharacterFeature, "feature"),
+    "feat": (Feat, CharacterFeat, "feat"),
+    "option": (OptionalFeature, CharacterOptionalFeature, "optional_feature"),
+}
 
 
 def _clamp(value: int, low: int, high: int) -> int:
@@ -384,3 +395,40 @@ def remove_spell(character: Character, spell_id: str) -> None:
     if row.source != SPELL_SOURCE:
         raise ValueError("only a spell you added yourself can be removed")
     row.delete()
+
+
+# --- features ----------------------------------------------------------------------------------
+
+
+def _feature_kind(kind: str):
+    try:
+        return FEATURE_KINDS[kind]
+    except KeyError:
+        raise ValueError(f"unknown feature kind: {kind!r}") from None
+
+
+def add_feature(character: Character, kind: str, ref: str):
+    """Give the character a class/subclass/species feature (`kind="feature"`, `ref` its id), a
+    feat (`"feat"`) or an option such as an invocation (`"option"`). Returns the catalog row.
+    `ObjectDoesNotExist` for an unknown one, `ValueError` for an unknown kind or when the
+    character already has it."""
+    catalog, model, field = _feature_kind(kind)
+    entry = catalog.objects.get(pk=ref)
+    # Not `get_or_create`: a feat can be taken more than once (see `CharacterFeat`), so there may
+    # be several rows to find.
+    if model.objects.filter(character=character, **{field: entry}).exists():
+        raise ValueError(f"{entry.name} is already on the sheet")
+    model.objects.create(character=character, **{field: entry}, source=FEATURE_SOURCE)
+    return entry
+
+
+def remove_feature(character: Character, kind: str, ref: str) -> None:
+    """Take away a feature added by hand (`add_feature`). One the builder granted is part of what
+    the character is, and stays."""
+    _catalog, model, field = _feature_kind(kind)
+    rows = model.objects.filter(character=character, **{f"{field}_id": ref})
+    if not rows.exists():
+        raise model.DoesNotExist
+    if not rows.filter(source=FEATURE_SOURCE).exists():
+        raise ValueError("only a feature you added yourself can be removed")
+    rows.filter(source=FEATURE_SOURCE).delete()

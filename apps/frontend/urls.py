@@ -15,6 +15,11 @@ urlpatterns = [
     path("characters/<int:pk>/act/", character_sheet.character_act, name="character-act"),
     path("characters/<int:pk>/items/", character_sheet.character_items, name="character-items"),
     path("characters/<int:pk>/spells/", character_sheet.character_spells, name="character-spells"),
+    path(
+        "characters/<int:pk>/features/",
+        character_sheet.character_features,
+        name="character-features",
+    ),
     # One item's page: what a row of the inventory (a stack of catalog gear, or a custom item) or
     # of the "add an item" list opens - the third has no row of the character's yet, just the
     # catalog entry, with the Add/Buy buttons.

@@ -1,0 +1,36 @@
+{% load i18n %}
+{# The "add a feature" sheet (fetched into the overlay on first use): every feature, feat and   #}
+{# option as a filterable list in the World's list design - the same search box and filter      #}
+{# buttons as the World's Features list, over one Type pill and the Class / Species filters      #}
+{# that go with it.                                                                              #}
+<div class="cs-sticky">
+  <div data-filter-list="cs-feature-catalog" data-filter-empty="cs-feature-catalog-empty">
+    {% translate "Search features" as search_placeholder %}
+    {% include "frontend/_search_form.html" with search_query="" search_placeholder=search_placeholder %}
+  </div>
+</div>
+
+<div class="cs-scroll">
+  <ul class="cs-list" id="cs-feature-catalog">
+    {% for f in features %}
+      <li data-search="{{ f.search }}" data-type="{{ f.type }}" data-class="{{ f.klass }}" data-species="{{ f.species }}">
+        <div class="cs-line">
+          <button type="button" class="cs-row has-add" data-describe="{{ f.describe }}" aria-expanded="false">
+            {% if f.image %}<img class="thumb" src="{{ f.image }}" alt="" loading="lazy">{% endif %}
+            <span class="item-text">
+              <span class="item-name">{{ f.name }}</span>
+              <span class="item-detail">{{ f.detail }}</span>
+            </span>
+            <span class="chev" aria-hidden="true"></span>
+          </button>
+          <div class="cs-actions">
+            {# What the character already has is marked, and so is what was added here once the add went through. #}
+            <button type="button" class="equip add" data-act="feature_add" data-feature="{{ f.ref }}" data-done="{% translate 'Added' %}"{% if f.known %} disabled{% endif %}>{% if f.known %}{% translate "Added" %}{% else %}{% translate "Add" %}{% endif %}</button>
+          </div>
+        </div>
+        <div class="desc" hidden><div class="desc-body"></div></div>
+      </li>
+    {% endfor %}
+  </ul>
+  <p class="cs-empty" id="cs-feature-catalog-empty" hidden>{% translate "No features match." %}</p>
+</div>

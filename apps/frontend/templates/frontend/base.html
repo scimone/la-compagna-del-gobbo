@@ -574,6 +574,41 @@
       display: none;
     }
 
+    /* "Clear filters" (see `_search_form.html`/`filter_clear.js`): only there while some filter is
+       set - a non-"All" pill, a ticked checkbox or a picked dropdown option. Pure CSS, so it
+       follows every change of the form (live search, the character sheet's own filtering) with no
+       state to keep in step. */
+    .filter-clear {
+      display: none;
+      appearance: none;
+      border: 0;
+      background: none;
+      color: var(--accent);
+      font-size: 0.8rem;
+      padding: 0.3rem 0.5rem;
+      text-decoration: underline;
+      white-space: nowrap;
+      touch-action: manipulation;
+      /* Above an open filter popover (5), which can drop over the end of this row: one tap on
+         "Clear filters" must reach it, not the option underneath. */
+      position: relative;
+      z-index: 6;
+    }
+
+    .world-search:has(
+        .world-pills input:checked:not([value=""]),
+        .filter-popover input:checked,
+        .filter-select.active
+      ) .filter-clear {
+      display: inline-flex;
+    }
+
+    /* A filter row holding only the (hidden) clear button, or filters that are all hidden for the
+       current type, takes up no room of its own. */
+    .world-filter-buttons:not(:has(.filter-popover:not([hidden]), .filter-select-wrap:not([hidden]))) {
+      margin-top: 0;
+    }
+
     .world-filters-apply {
       appearance: none;
       border: 1px solid var(--border);
@@ -940,6 +975,15 @@
           });
         });
 
+        // "Clear filters" (`filter_clear.js`) has already reset the fields and their buttons - what
+        // is left is the type-dependent filters and the results.
+        form.addEventListener("filtersclear", function () {
+          syncOnlyFilters();
+          syncGroupedOptions();
+          clearTimeout(debounceTimer);
+          runSearch();
+        });
+
         // A checkbox filter's `<details>` (see `.filter-popover` above) only closes natively on
         // its own `<summary>` being tapped again, or another one in its exclusive group opening
         // - also close it on any tap outside the popover, the behavior a "dropdown" implies.
@@ -988,6 +1032,7 @@
     </script>
   {% endif %}
 
+  <script src="{% static 'js/filter_clear.js' %}"></script>
   <script src="{% static 'js/navigation.js' %}"></script>
 </body>
 </html>

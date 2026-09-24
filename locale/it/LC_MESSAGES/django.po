@@ -1461,3 +1461,15 @@ msgstr "Vendere questo per %(price)s?"
 #: apps/frontend/templates/frontend/characters/sheet/_add_item.html
 msgid "Weapon category"
 msgstr "Categoria dell'arma"
+
+#: apps/frontend/templates/frontend/characters/sheet/_features.html apps/frontend/templates/frontend/characters/detail.html
+msgid "Add feature"
+msgstr "Aggiungi privilegio"
+
+#: apps/frontend/character_sheet.py
+msgid "Remove this feature?"
+msgstr "Rimuovere questo privilegio?"
+
+#: apps/frontend/templates/frontend/_search_form.html
+msgid "Clear filters"
+msgstr "Azzera i filtri"

@@ -14,6 +14,7 @@ from math import ceil
 
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
@@ -54,12 +55,17 @@ from apps.frontend.views import (
 )
 from apps.rules.models import (
     Ability,
+    Class,
     ClassLevel,
     Equipment,
     EquipmentProperty,
     EquipmentType,
+    Feat,
+    Feature,
     Mastery,
+    OptionalFeature,
     Skill,
+    Species,
     Spell,
 )
 from apps.rules.services import spell as spell_service
@@ -212,13 +218,101 @@ def _abilities(stats) -> dict:
 # --- features ----------------------------------------------------------------------------------
 
 
-def _feature_items(character: Character) -> list[dict]:
+def _removal(can_edit: bool, source: str, kind: str, pk) -> dict:
+    """The row's own "take this off the sheet" action (see `item.remove` in `_list_item.html`) -
+    only for something the player added by hand, and only while they can edit this character."""
+    if not (can_edit and source == play.FEATURE_SOURCE):
+        return {}
+    return {
+        "remove": {
+            "act": "feature_remove",
+            "param": "feature",
+            "id": f"{kind}:{pk}",
+            "confirm": _("Remove this feature?"),
+        }
+    }
+
+
+def _feature_row(f) -> dict:
+    """One `rules.Feature` (a species trait, class feature or subclass feature) as a Features
+    list row: the exact same shape `world_feats()` builds, linking to its own World page."""
+    row = {
+        "pk": f.pk,
+        "kind": "feature",
+        "name": f.name,
+        "url": reverse("world-feature-detail", args=[f.pk]),
+        "search": f"{f.name_en} {f.name_it}".lower(),
+    }
+    if f.species_id:
+        return {
+            **row,
+            "properties": [_("Species"), f.species.name],
+            "image": _menu_image_url(
+                "features_species",
+                f"{_SPECIES_IMAGE_SLUGS.get(f.species_id, f.species_id)}.jpg",
+            ),
+            "type": "species",
+            "group": f.species_id,
+        }
+    if f.class_level_id:
+        klass = f.class_level.klass
+        return {
+            **row,
+            "properties": [_("Class"), klass.name, f"{_('Level')} {f.class_level.level}"],
+            "image": _menu_image_url("features_classes", f"{klass.pk}.jpeg"),
+            "type": "class",
+            "group": klass.pk,
+        }
+    subclass = f.subclass_level.subclass
+    return {
+        **row,
+        "properties": [
+            _("Subclass"),
+            subclass.name,
+            f"{_('Level')} {f.subclass_level.level}",
+        ],
+        "image": _menu_image_url("features_subclasses", f"{subclass.klass_id}.jpg"),
+        "image_class": "subclass-icon",
+        "type": "subclass",
+        "group": subclass.klass_id,
+    }
+
+
+def _feat_row(feat) -> dict:
+    return {
+        "pk": feat.pk,
+        "name": feat.name,
+        "properties": [_("Feat"), _format_feat_category(feat.category)],
+        "url": reverse("world-feat-detail", args=[feat.pk]),
+        "image": _menu_image_url(
+            "feats", f"{feat.category.split(' (')[0].lower().replace(' ', '_')}.jpeg"
+        ),
+        "type": "feat",
+        "search": f"{feat.name_en} {feat.name_it}".lower(),
+    }
+
+
+def _option_row(option) -> dict:
+    klass_id = _option_class_id(option)
+    return {
+        "pk": option.pk,
+        "kind": "option",
+        "name": option.name,
+        "properties": [_("Option"), option.feature_type],
+        "url": reverse("world-option-detail", args=[option.pk]),
+        "image": _menu_image_url("features_classes", f"{klass_id}.jpeg") if klass_id else None,
+        "type": "option",
+        "search": f"{option.name_en} {option.name_it}".lower(),
+    }
+
+
+def _feature_items(character: Character, can_edit: bool = False) -> list[dict]:
     """Flat, alphabetical rows for the Features tab's own searchable/filterable list - the exact
     same row shape `world_feats()` builds (same `properties`, bookmarkable the same way - see
     `_features_tab()`), just limited to this character's own species traits, class features,
     subclass features, feats and options (invocations, maneuvers, ...), and each linking straight
-    to its own World detail page - except an option, which has none, so it keeps unfolding its
-    description inline instead (`describe`, not `url` - see `_list_item.html`).
+    to its own World detail page. One the player added by hand also carries its own `remove`
+    action (see `_removal()`).
     """
     items = []
     for cf in character.features.select_related(
@@ -227,97 +321,18 @@ def _feature_items(character: Character) -> list[dict]:
         "feature__species",
     ):
         f = cf.feature
-        search = f"{f.name_en} {f.name_it}".lower()
-        if f.species_id:
-            items.append(
-                {
-                    "pk": f.pk,
-                    "kind": "feature",
-                    "name": f.name,
-                    "properties": [_("Species"), f.species.name],
-                    "url": reverse("world-feature-detail", args=[f.pk]),
-                    "image": _menu_image_url(
-                        "features_species",
-                        f"{_SPECIES_IMAGE_SLUGS.get(f.species_id, f.species_id)}.jpg",
-                    ),
-                    "type": "species",
-                    "search": search,
-                }
-            )
-        elif f.class_level_id:
-            klass = f.class_level.klass
-            items.append(
-                {
-                    "pk": f.pk,
-                    "kind": "feature",
-                    "name": f.name,
-                    "properties": [
-                        _("Class"),
-                        klass.name,
-                        f"{_('Level')} {f.class_level.level}",
-                    ],
-                    "url": reverse("world-feature-detail", args=[f.pk]),
-                    "image": _menu_image_url("features_classes", f"{klass.pk}.jpeg"),
-                    "type": "class",
-                    "search": search,
-                }
-            )
-        elif f.subclass_level_id:
-            subclass = f.subclass_level.subclass
-            items.append(
-                {
-                    "pk": f.pk,
-                    "kind": "feature",
-                    "name": f.name,
-                    "properties": [
-                        _("Subclass"),
-                        subclass.name,
-                        f"{_('Level')} {f.subclass_level.level}",
-                    ],
-                    "url": reverse("world-feature-detail", args=[f.pk]),
-                    "image": _menu_image_url("features_subclasses", f"{subclass.klass_id}.jpg"),
-                    "image_class": "subclass-icon",
-                    "type": "subclass",
-                    "search": search,
-                }
-            )
+        if f.species_id or f.class_level_id or f.subclass_level_id:
+            items.append({**_feature_row(f), **_removal(can_edit, cf.source, "feature", f.pk)})
     for cf in character.feats.select_related("feat"):
-        feat = cf.feat
-        items.append(
-            {
-                "pk": feat.pk,
-                "name": feat.name,
-                "properties": [_("Feat"), _format_feat_category(feat.category)],
-                "url": reverse("world-feat-detail", args=[feat.pk]),
-                "image": _menu_image_url(
-                    "feats", f"{feat.category.split(' (')[0].lower().replace(' ', '_')}.jpeg"
-                ),
-                "type": "feat",
-                "search": f"{feat.name_en} {feat.name_it}".lower(),
-            }
-        )
+        items.append({**_feat_row(cf.feat), **_removal(can_edit, cf.source, "feat", cf.feat.pk)})
     for co in character.optional_features.select_related("optional_feature"):
         option = co.optional_feature
-        klass_id = _option_class_id(option)
-        items.append(
-            {
-                "pk": option.pk,
-                "kind": "option",
-                "name": option.name,
-                "properties": [_("Option"), option.feature_type],
-                "url": reverse("world-option-detail", args=[option.pk]),
-                "image": (
-                    _menu_image_url("features_classes", f"{klass_id}.jpeg") if klass_id else None
-                ),
-                "type": "option",
-                "search": f"{option.name_en} {option.name_it}".lower(),
-            }
-        )
+        items.append({**_option_row(option), **_removal(can_edit, co.source, "option", option.pk)})
     items.sort(key=lambda item: item["name"].casefold())
     return items
 
 
-def _feature_type_filter(items: list[dict]) -> dict | None:
+def _feature_type_filter(items: list[dict], always: bool = False) -> dict | None:
     """The Features tab's own Type pill row, limited to the kinds this character actually has (a
     filter with a single possible value would filter nothing - same convention as
     `_spell_filters()`). Built by hand rather than `views._pill_filter()`: there's no `request`
@@ -332,7 +347,7 @@ def _feature_type_filter(items: list[dict]) -> dict | None:
         "option": _("Options"),
     }
     present = [kind for kind in labels if any(item["type"] == kind for item in items)]
-    if len(present) <= 1:
+    if len(present) <= 1 and not always:
         return None
     return {
         "kind": "radio",
@@ -345,7 +360,7 @@ def _feature_type_filter(items: list[dict]) -> dict | None:
     }
 
 
-def _features_tab(request, character: Character) -> dict:
+def _features_tab(request, character: Character, can_edit: bool = False) -> dict:
     """`bookmark_kind` is "feat" (the same default `world_feats()` uses) - a Feature-derived row
     overrides it with its own `"kind": "feature"` exactly the way `world_feats()`'s merged list
     does, so `_split_bookmarked()` reads and writes the very same `Bookmark` rows either page
@@ -353,13 +368,14 @@ def _features_tab(request, character: Character) -> dict:
     and vice versa. An Option row (see `_feature_items()`) carries neither `pk` nor `kind`, so it
     is never bookmarkable and always stays in the main list.
     """
-    items = _feature_items(character)
+    items = _feature_items(character, can_edit)
     type_filter = _feature_type_filter(items)
     bookmark_kind = "feat" if request.user.is_authenticated else None
     bookmarked_items = []
     if bookmark_kind:
         items, bookmarked_items = _split_bookmarked(request, items, bookmark_kind)
     return {
+        "count": len(items) + len(bookmarked_items),
         "items": items,
         "bookmarked_items": bookmarked_items,
         "bookmark_kind": bookmark_kind,
@@ -911,7 +927,7 @@ def character_detail(request, pk):
             "header": _header(character, stats),
             "strip": _strip(character, stats, items),
             "abilities": _abilities(stats),
-            "features": _features_tab(request, character),
+            "features": _features_tab(request, character, can_edit),
             "spellbook": _spellbook(request, character, stats, classes, can_edit),
             "inventory": _inventory(character, stats),
             "proficiencies": _proficiencies(character),
@@ -992,6 +1008,18 @@ def _act_spell_add(character, post):
 
 def _act_spell_remove(character, post):
     play.remove_spell(character, post.get("spell", ""))
+    return True
+
+
+def _act_feature_add(character, post):
+    kind, _sep, ref = post.get("feature", "").partition(":")
+    entry = play.add_feature(character, kind, ref)
+    return {"refresh": True, "message": _("Added %(name)s") % {"name": entry.name}}
+
+
+def _act_feature_remove(character, post):
+    kind, _sep, ref = post.get("feature", "").partition(":")
+    play.remove_feature(character, kind, ref)
     return True
 
 
@@ -1086,6 +1114,8 @@ _ACTIONS["item_remove"] = _act_item_remove
 _ACTIONS["item_sell"] = _act_item_sell
 _ACTIONS["spell_add"] = _act_spell_add
 _ACTIONS["spell_remove"] = _act_spell_remove
+_ACTIONS["feature_add"] = _act_feature_add
+_ACTIONS["feature_remove"] = _act_feature_remove
 
 
 def _state(character: Character) -> dict:
@@ -1164,6 +1194,110 @@ def character_spells(request, pk):
         request,
         "frontend/characters/sheet/_add_spell.html",
         {"spells": rows, "filters": _spell_filters(rows)},
+    )
+
+
+def _feature_catalog_row(base: dict, ref: str, describe: str, known: set[str], **groups) -> dict:
+    """One entry of the "add a feature" sheet, from one of the Features tab's own row builders
+    (`_feature_row()` and friends): what the sheet's list shows, filters on and posts back."""
+    return {
+        "ref": ref,
+        "name": base["name"],
+        "search": base["search"],
+        "detail": " · ".join(base["properties"]),
+        "image": base["image"],
+        "describe": describe,
+        "type": base["type"],
+        "known": ref in known,
+        "klass": groups.get("klass", ""),
+        "species": groups.get("species", ""),
+    }
+
+
+def _feature_catalog(character: Character) -> list[dict]:
+    """Every feature, feat and option the character could be given, as rows of the "add a
+    feature" sheet - the same catalog as the World's Features list (minus the Ability Score
+    Improvement every class repeats), plus the options that have a page of their own."""
+    known = {f"feature:{pk}" for pk in character.features.values_list("feature_id", flat=True)}
+    known |= {f"feat:{pk}" for pk in character.feats.values_list("feat_id", flat=True)}
+    known |= {
+        f"option:{pk}"
+        for pk in character.optional_features.values_list("optional_feature_id", flat=True)
+    }
+    rows = []
+    features = (
+        Feature.objects.filter(
+            Q(class_level__isnull=False)
+            | Q(subclass_level__isnull=False)
+            | Q(species__isnull=False)
+        )
+        .exclude(name_en="Ability Score Improvement")
+        .select_related("class_level__klass", "subclass_level__subclass__klass", "species")
+    )
+    for f in features:
+        base = _feature_row(f)
+        groups = (
+            {"species": base["group"]} if base["type"] == "species" else {"klass": base["group"]}
+        )
+        rows.append(
+            _feature_catalog_row(
+                base, f"feature:{f.pk}", _describe_url("feature", f.pk), known, **groups
+            )
+        )
+    for feat in Feat.objects.all():
+        rows.append(
+            _feature_catalog_row(
+                _feat_row(feat), f"feat:{feat.pk}", _describe_url("feat", feat.pk), known
+            )
+        )
+    for option in OptionalFeature.objects.all():
+        rows.append(
+            _feature_catalog_row(
+                _option_row(option),
+                f"option:{option.pk}",
+                _describe_url("invocation", option.pk),
+                known,
+                klass=_option_class_id(option) or "",
+            )
+        )
+    rows.sort(key=lambda row: row["name"].casefold())
+    return rows
+
+
+@require_GET
+def character_features(request, pk):
+    """The "add a feature" sheet: every feature, feat and option as a filterable list. A fragment
+    the sheet's script loads into its overlay the first time it is opened."""
+    character = get_object_or_404(Character, pk=pk)
+    if character.status != Character.STATUS_COMPLETE or not access.can_edit(
+        request.user, character
+    ):
+        return HttpResponse(status=403)
+    rows = _feature_catalog(character)
+    filters = [_feature_type_filter(rows, always=True)]
+    filters += [
+        {
+            "kind": "checkbox",
+            "name": "class",
+            "label": _("Class"),
+            "values": set(),
+            "options": [(c.pk, c.name) for c in Class.objects.order_by("name")],
+            # Shown once the Type pill is one whose rows belong to a class.
+            "only": "class subclass option",
+        },
+        {
+            "kind": "checkbox",
+            "name": "species",
+            "label": _("Species"),
+            "values": set(),
+            "options": [(sp.pk, sp.name) for sp in Species.objects.order_by("name")],
+            "only": "species",
+        },
+    ]
+    return render(
+        request,
+        "frontend/characters/sheet/_add_feature.html",
+        {"features": rows, "filters": filters},
     )
 
 

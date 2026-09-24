@@ -19,6 +19,9 @@ class CharacterOptionalFeature(models.Model):
         "rules.OptionalFeature", on_delete=models.PROTECT, related_name="+"
     )
     granted_at_level = models.PositiveSmallIntegerField(null=True, blank=True)
+    #: `"sheet"` for an option the player added by hand from the character sheet (see
+    #: `CharacterFeature.source`); blank for a builder pick.
+    source = models.CharField(max_length=50, blank=True, default="")
 
     class Meta:
         ordering = ["character", "granted_at_level"]

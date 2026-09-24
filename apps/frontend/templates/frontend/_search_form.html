@@ -99,6 +99,9 @@
           </div>
         {% endif %}
       {% endfor %}
+      {# Puts every filter above back to "no filter" (`filter_clear.js`); shown only while one is #}
+      {# set - see `.filter-clear` in base.html. The search text is left alone.                    #}
+      <button type="button" class="filter-clear" data-filter-clear>{% translate "Clear filters" %}</button>
     </div>
     {# JS intercepts every filter change into a live re-fetch (see the script at the        #}
     {# bottom of this file) - this stays as the fallback submit control for a browser that   #}

@@ -7,11 +7,12 @@
  *    button on click, an input/textarea/select when it changes. The extra `data-*` attributes are
  *    the parameters. The server answers with the state to redraw; `refresh: true` means something
  *    derived changed (AC, attacks), so the whole sheet is re-fetched and swapped instead.
- *  - descriptions: `data-describe="<url>"` rows (the "add a spell" list) unfold a description under
- *    themselves (`data-toggle` rows just unfold what is already there); chips
+ *  - descriptions: `data-describe="<url>"` rows (the "add a spell" and "add a feature" lists)
+ *    unfold a description under themselves (`data-toggle` rows just unfold what is already there); chips
  *    (inside `data-panel-group`) show it in the panel that follows their group.
  *  - the spellbook's search and filter buttons filter the rows on the spot; so do those of the
- *    "add an item" and "add a spell" overlays, which are fetched the first time they are opened.
+ *    "add an item", "add a spell" and "add a feature" overlays, which are fetched the first time
+ *    they are opened.
  *  - the portrait: choosing a file (or removing it) posts to its own endpoint (`data-portrait-url`).
  *
  * Nothing here is a rule: the numbers come from the server.
@@ -377,7 +378,6 @@
     });
     // A filter button marked `data-only` belongs to one pill: it shows once that pill is picked and
     // is cleared when another is.
-    var buttons = form.querySelector(".world-filter-buttons");
     form.querySelectorAll(".filter-popover[data-only]").forEach(function (popover) {
       var on = popover.dataset.only.split(" ").indexOf(mode) !== -1;
       popover.hidden = !on;
@@ -386,7 +386,6 @@
         popover.querySelectorAll("input:checked").forEach(function (box) { box.checked = false; });
       }
     });
-    if (buttons) buttons.hidden = !buttons.querySelector(".filter-popover:not([hidden])");
     form.querySelectorAll(".filter-popover input:checked").forEach(function (box) {
       (active[box.name] = active[box.name] || []).push(box.value);
     });
@@ -431,6 +430,11 @@
   }
 
   root.addEventListener("input", function (event) {
+    var scope = event.target.closest("[data-filter-list]");
+    if (scope) filterRows(scope);
+  });
+  // "Clear filters" (`filter_clear.js`) reset the fields already; the rows follow.
+  root.addEventListener("filtersclear", function (event) {
     var scope = event.target.closest("[data-filter-list]");
     if (scope) filterRows(scope);
   });
@@ -583,7 +587,7 @@
   function openAdd(overlay) {
     if (!overlay) return;
     overlay.hidden = false;
-    markOverlay(overlay.id === "cs-add" ? "item" : "spell");
+    markOverlay(overlay.dataset.overlay);
     if (overlay.dataset.loaded) return;
     var body = overlay.querySelector(".cs-overlay-body");
     body.textContent = "…";
@@ -723,6 +727,7 @@
 
   // Reopen an overlay a language switch (or any other reload) interrupted - see `markOverlay`.
   var overlayParam = new URLSearchParams(window.location.search).get("overlay");
-  if (overlayParam === "item") openAdd(document.getElementById("cs-add"));
-  else if (overlayParam === "spell") openAdd(document.getElementById("cs-add-spell"));
+  root.querySelectorAll(".cs-overlay").forEach(function (overlay) {
+    if (overlay.dataset.overlay === overlayParam) openAdd(overlay);
+  });
 })();

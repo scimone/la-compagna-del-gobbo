@@ -5,11 +5,12 @@ import pytest
 from apps.characters.models import (
     Character,
     CharacterClass,
+    CharacterFeature,
     CharacterInventoryItem,
     CharacterSpell,
 )
 from apps.characters.services import play
-from apps.rules.models import Class, Equipment, Spell
+from apps.rules.models import Class, Equipment, Feat, Feature, OptionalFeature, Spell
 
 pytestmark = pytest.mark.usefixtures("imported_rules")
 
@@ -388,3 +389,47 @@ def test_only_a_spell_added_by_hand_can_be_removed_again(hero):
         play.remove_spell(hero, "bless")
     with pytest.raises(CharacterSpell.DoesNotExist):
         play.remove_spell(hero, "shield")
+
+
+# --- features ----------------------------------------------------------------------------------
+
+
+def test_a_feature_feat_and_option_are_added_and_marked_as_added_from_the_sheet(hero):
+    feature = Feature.objects.filter(class_level__isnull=False).first()
+    feat = Feat.objects.first()
+    option = OptionalFeature.objects.first()
+
+    assert play.add_feature(hero, "feature", str(feature.pk)) == feature
+    assert play.add_feature(hero, "feat", feat.pk) == feat
+    assert play.add_feature(hero, "option", option.pk) == option
+
+    assert hero.features.get().source == play.FEATURE_SOURCE
+    assert hero.feats.get().source == play.FEATURE_SOURCE
+    assert hero.optional_features.get().source == play.FEATURE_SOURCE
+    for kind, ref in (("feature", feature.pk), ("feat", feat.pk), ("option", option.pk)):
+        with pytest.raises(ValueError):  # already there
+            play.add_feature(hero, kind, str(ref))
+
+
+def test_an_unknown_feature_or_kind_is_refused(hero):
+    with pytest.raises(Feature.DoesNotExist):
+        play.add_feature(hero, "feature", "0")
+    with pytest.raises(Feat.DoesNotExist):
+        play.add_feature(hero, "feat", "no-such-feat")
+    with pytest.raises(ValueError):
+        play.add_feature(hero, "spell", "fireball")
+
+
+def test_only_a_feature_added_by_hand_can_be_removed_again(hero):
+    added, granted = Feature.objects.filter(class_level__isnull=False)[:2]
+    play.add_feature(hero, "feature", str(added.pk))
+    CharacterFeature.objects.create(character=hero, feature=granted)
+
+    play.remove_feature(hero, "feature", str(added.pk))
+
+    assert not hero.features.filter(feature=added).exists()
+    with pytest.raises(ValueError):  # the builder gave it: it stays
+        play.remove_feature(hero, "feature", str(granted.pk))
+    with pytest.raises(CharacterFeature.DoesNotExist):
+        play.remove_feature(hero, "feature", str(added.pk))
+    assert hero.features.filter(feature=granted).exists()

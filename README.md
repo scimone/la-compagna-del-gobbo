@@ -800,8 +800,19 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
       proficiency pip) that stay in view, then the "Skills" heading with the pip legend (not
       proficient / proficient / expertise) next to it (also fixed, on the page colour), with the
       skills (none / proficient / expertise pips) scrolling beneath it.
-    - *Features*: species traits, class and subclass features grouped by class, feats, and options
-      (invocations, maneuvers...). A row unfolds its description.
+    - *Features*: species traits, class and subclass features, feats, and options (invocations,
+      maneuvers...) as the World Features list's own rows (search box, Type pills, bookmarks; a row
+      opens its World page). The fixed block also carries a toolbar with the feature count and, for
+      the owner, an **Add feature** button - shown even for a character with none. A feature the
+      player added by hand has a trash button on its row (what the builder granted cannot be removed).
+    - *Add feature* (`GET /characters/<id>/features/`, owner only, a third full-screen overlay loaded
+      on first use, like *Add spell*): the whole catalog - class, subclass and species features,
+      feats and options, minus the Ability Score Improvement every class repeats - as one list with
+      the World's search box, a Type pill and, once one that fits is picked, Class / Species filter
+      buttons; rows Add (or show "Added") and unfold their description. `feature_add` /
+      `feature_remove` take `feature=<kind>:<id>` (`feature`, `feat` or `option`); an added row is a
+      `CharacterFeature` / `CharacterFeat` / `CharacterOptionalFeature` with `source="sheet"`
+      (`play.add_feature`, which is also how `play.remove_feature` knows what may be removed).
     - *Spellbook*: a fixed block (`.cs-sticky`) holds the casting ability select (one entry per
       casting source) with Mod/DC/Atk, a toolbar (the spell count and, for the owner, an **Add spell**
       button - shown even for a character with no spells), **and the World's own search box and filter buttons**
@@ -884,7 +895,7 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
   - **`POST /characters/<id>/act/`** is the one endpoint the sheet posts to (form fields `action` +
     parameters; owner only, completed characters only). Actions: `name`, `xp`, `hp_delta`, `hp_set`,
     `temp_hp`, `death_toggle`, `inspiration`, `hit_dice`, `slots`, `coin`, `equip`, `text` (backstory only),
-    `item_add`, `item_buy`, `custom_add`, `item_qty`, `item_remove`, `item_sell`, `spell_add`, `spell_remove` (the picture has its own
+    `item_add`, `item_buy`, `custom_add`, `item_qty`, `item_remove`, `item_sell`, `spell_add`, `spell_remove`, `feature_add`, `feature_remove` (the picture has its own
     endpoint, above). It answers
     `{ok, refresh, message, state}` (`message` is a note for a toast, e.g. "Sold for 2 gp 5 sp"); the script redraws from `state`, or - when `refresh` is true because
     something derived changed (`equip`: AC, warnings; the item actions: the lists) - re-fetches the page and swaps
@@ -940,6 +951,14 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     just `#search-results`. `_list_page(searchable=True)` shows the search box without any tab
     strip (`world_tabs=True`/`handbook_tabs=True` show one above it) - the Handbook's Chapters and
     Glossary tabs both use it.
+  - **Clear filters**: every search form that has filters (`_search_form.html` - the World lists,
+    the sheet's Features/Spellbook lists and its three "add" overlays) ends its filter row with a
+    "Clear filters" button. It shows only while a filter is set (CSS `:has()` on the form: a
+    non-"All" pill, a ticked box, a picked dropdown), and puts every pill/checkbox/dropdown back to
+    "no filter" (`static/js/filter_clear.js`, delegated, so it also works in the fetched overlays)
+    while leaving the search text alone. It then fires a `filtersclear` event on the form: the
+    World lists re-fetch (`base.html`), the sheet re-filters its rows in the browser
+    (`character_sheet.js`).
   - **Alphabet index** (`_list_page(alphabet=True)`, Glossary only): a right-edge A-Z strip -
     press or drag along it and a big letter popup names the letter under the finger, every entry
     not filed under it (`_index_letter()`: first letter, accents stripped) fades out, and the list

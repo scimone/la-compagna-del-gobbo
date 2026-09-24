@@ -792,13 +792,13 @@ def test_the_add_item_sheets_purse_and_buy_buttons_are_visible_without_opening_a
     assert 'data-act="item_buy"' in row.rsplit("<li ", 1)[-1] or 'data-act="item_buy"' in html
 
 
-def test_the_add_item_and_add_spell_overlays_have_their_own_language_switch(signed_in, alice):
+def test_the_add_overlays_have_their_own_language_switch(signed_in, alice):
     cleric = finished(alice, "cleric")
 
     html = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
 
-    assert html.count('class="lang-switcher"') == 3  # base.html's own, plus one per overlay
-    for overlay_id in ("cs-add", "cs-add-spell"):
+    assert html.count('class="lang-switcher"') == 4  # base.html's own, plus one per overlay
+    for overlay_id in ("cs-add", "cs-add-spell", "cs-add-feature"):
         head = html.split(f'id="{overlay_id}"')[1].split("cs-overlay-body")[0]
         assert "lang-switcher" in head and "Italiano" in head
     assert act(signed_in, cleric, action="item_add", equipment="nope").status_code == 400
@@ -1180,3 +1180,147 @@ def test_a_bad_upload_says_why_and_removing_goes_back_to_the_placeholder(signed_
     assert removed.status_code == 200 and not cleric.portrait
     assert signed_in.get(f"/characters/{cleric.pk}/portrait/").status_code == 404
     assert signed_in.put(f"/characters/{cleric.pk}/portrait/").status_code == 405
+
+
+# --- adding and removing features -----------------------------------------------------------------
+
+
+def test_the_features_tab_has_an_add_feature_button_even_without_features(
+    signed_in, client, alice, bob
+):
+    fighter = finished(alice, "fighter", background="soldier")
+    fighter.features.all().delete()
+    fighter.feats.all().delete()
+
+    html = panel(signed_in.get(f"/characters/{fighter.pk}/").content.decode(), "features")
+
+    sticky = html.split('<div class="cs-sticky">')[1].split('<div class="cs-scroll">')[0]
+    assert 'data-add-open="cs-add-feature"' in sticky and "Add feature" in sticky
+    assert "No features yet." in html
+    client.force_login(bob)
+    theirs = panel(client.get(f"/characters/{fighter.pk}/").content.decode(), "features")
+    assert "data-add-open" not in theirs
+
+
+def test_the_add_feature_sheet_lists_the_catalog_with_a_type_pill_and_class_species_filters(
+    signed_in, alice
+):
+    from apps.rules.models import Feat, OptionalFeature
+
+    cleric = finished(alice, "cleric")
+    known = cleric.features.first().feature
+
+    html = signed_in.get(f"/characters/{cleric.pk}/features/").content.decode()
+
+    assert (
+        html.count('data-act="feature_add"')
+        > Feat.objects.count() + OptionalFeature.objects.count()
+    )
+    assert 'name="q"' in html and 'name="type"' in html
+    for kind in ("feat", "class", "subclass", "species", "option"):
+        assert f'data-type="{kind}"' in html
+    class_filter = html.split('data-only="class subclass option"')[1].split("</details>")[0]
+    assert 'name="class"' in class_filter
+    assert 'name="species"' in html.split('data-only="species"')[1].split("</details>")[0]
+    # every class repeats this one, so it is left out as in the World list (the feat stays)
+    assert not re.search(r"Ability Score Improvement</span>\s*<span[^>]*>Class", html)
+    row = html.split(f'data-feature="feature:{known.pk}"')[1].split("</li>")[0]
+    assert " disabled" in row.split(">")[0] and "Added" in row  # one it already has
+    assert 'data-feature="feat:' in html and 'data-feature="option:' in html
+
+
+def test_the_add_feature_sheet_is_for_the_owner_only(client, alice, bob):
+    cleric = finished(alice, "cleric")
+
+    assert client.get(f"/characters/{cleric.pk}/features/").status_code == 403
+    client.force_login(bob)
+    assert client.get(f"/characters/{cleric.pk}/features/").status_code == 403
+    assert 'id="cs-add-feature"' not in client.get(f"/characters/{cleric.pk}/").content.decode()
+
+
+def test_adding_and_removing_a_feature_over_http(signed_in, alice):
+    from apps.rules.models import Feature
+
+    cleric = finished(alice, "cleric")
+    extra = Feature.objects.filter(class_level__klass_id="fighter").first()
+    ref = f"feature:{extra.pk}"
+    before = cleric.features.count()
+
+    added = act(signed_in, cleric, action="feature_add", feature=ref)
+
+    assert added.status_code == 200 and added.json()["refresh"] is True
+    assert added.json()["message"] == f"Added {extra.name}"
+    assert cleric.features.count() == before + 1
+    assert act(signed_in, cleric, action="feature_add", feature=ref).status_code == 400
+    assert act(signed_in, cleric, action="feature_add", feature="nope").status_code == 400
+    assert act(signed_in, cleric, action="feature_add", feature="feature:0").status_code == 400
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "features")
+    row = next(chunk for chunk in html.split("<li") if f"/world/feats/feature/{extra.pk}/" in chunk)
+    assert f'data-feature="{ref}"' in row and 'class="item-remove"' in row
+    # what the builder granted has no remove button
+    granted = cleric.features.exclude(feature=extra).first().feature
+    granted_row = next(
+        chunk for chunk in html.split("<li") if f"/world/feats/feature/{granted.pk}/" in chunk
+    )
+    assert "item-remove" not in granted_row
+
+    assert act(signed_in, cleric, action="feature_remove", feature=ref).status_code == 200
+    assert cleric.features.count() == before
+    assert act(signed_in, cleric, action="feature_remove", feature=ref).status_code == 400
+    granted_ref = f"feature:{granted.pk}"
+    assert act(signed_in, cleric, action="feature_remove", feature=granted_ref).status_code == 400
+
+
+def test_adding_and_removing_a_feat_and_an_option_over_http(signed_in, alice):
+    from apps.rules.models import Feat, OptionalFeature
+
+    cleric = finished(alice, "cleric")
+    feat = Feat.objects.exclude(pk__in=cleric.feats.values_list("feat_id", flat=True)).first()
+    option = OptionalFeature.objects.first()
+
+    assert (
+        act(signed_in, cleric, action="feature_add", feature=f"feat:{feat.pk}").status_code == 200
+    )
+    assert (
+        act(signed_in, cleric, action="feature_add", feature=f"option:{option.pk}").status_code
+        == 200
+    )
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "features")
+    assert f'data-feature="feat:{feat.pk}"' in html and f'data-feature="option:{option.pk}"' in html
+
+    assert (
+        act(signed_in, cleric, action="feature_remove", feature=f"feat:{feat.pk}").status_code
+        == 200
+    )
+    assert (
+        act(signed_in, cleric, action="feature_remove", feature=f"option:{option.pk}").status_code
+        == 200
+    )
+    assert not cleric.optional_features.filter(optional_feature=option).exists()
+
+
+def test_a_non_owner_cannot_add_or_remove_a_feature(client, alice, bob):
+    cleric = finished(alice, "cleric")
+    client.force_login(bob)
+
+    assert act(client, cleric, action="feature_add", feature="feat:alert").status_code == 403
+
+
+# --- clearing filters --------------------------------------------------------------------------
+
+
+def test_every_search_form_with_filters_has_a_clear_filters_button(signed_in, alice):
+    cleric = finished(alice, "cleric")
+
+    for url in ("/world/spells/", "/world/feats/", f"/characters/{cleric.pk}/spells/"):
+        html = signed_in.get(url).content.decode()
+        assert "data-filter-clear" in html and "Clear filters" in html, url
+    sheet = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
+    assert panel(sheet, "spellbook").count("data-filter-clear") == 1
+    assert panel(sheet, "features").count("data-filter-clear") == 1
+    assert '<script src="/static/js/filter_clear.js"></script>' in sheet
+
+
+def test_a_search_form_without_filters_has_no_clear_filters_button(signed_in):
+    assert "data-filter-clear" not in signed_in.get("/world/languages/").content.decode()

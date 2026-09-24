@@ -18,6 +18,9 @@ class CharacterFeature(models.Model):
     )
     feature = models.ForeignKey("rules.Feature", on_delete=models.PROTECT, related_name="+")
     granted_at_level = models.PositiveSmallIntegerField(null=True, blank=True)
+    #: `"sheet"` for a Feature the player added by hand from the character sheet (the only kind
+    #: that can be taken away again there - see `play.add_feature`); blank for a builder grant.
+    source = models.CharField(max_length=50, blank=True, default="")
 
     class Meta:
         ordering = ["character", "granted_at_level"]
