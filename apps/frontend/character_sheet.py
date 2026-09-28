@@ -184,6 +184,10 @@ def _strip(character: Character, stats, items) -> dict:
             ("failures", _("Failures"), "✕", character.death_save_failures),
         ],
         "inspiration": character.inspiration,
+        "resources": [
+            {"pk": r.pk, "name": r.name, "current": r.current_uses, "max": r.max_uses}
+            for r in character.resources.all()
+        ],
     }
 
 
@@ -1013,6 +1017,30 @@ def _act_hit_dice(character, post):
     play.set_hit_dice_spent(character, die, hd["spent"] + _int(post, "delta"))
 
 
+def _act_short_rest(character, post):
+    """`hd_<die>=<count>` for each kind of Hit Die to spend (see `play.short_rest`)."""
+    spend = {
+        key.removeprefix("hd_"): _int(post, key)
+        for key in post
+        if key.startswith("hd_") and post.get(key)
+    }
+    con = derived_stats.compute(character).abilities["con"]["modifier"]
+    healed = play.short_rest(character, spend, con)
+    message = _("Short rest taken")
+    if healed:
+        message += " - " + _("%(hp)d hit points regained") % {"hp": healed}
+    return {"refresh": True, "message": message}
+
+
+def _act_long_rest(character, post):
+    play.long_rest(character)
+    return {"refresh": True, "message": _("Long rest taken")}
+
+
+def _act_resource(character, post):
+    play.adjust_resource(character, _int(post, "id"), _int(post, "delta"))
+
+
 def _act_slots(character, post):
     key = post.get("key", "")
     spent = int(character.spell_slots_spent.get(key, 0)) + _int(post, "delta")
@@ -1175,6 +1203,9 @@ _ACTIONS["item_qty"] = _act_item_qty
 _ACTIONS["item_remove"] = _act_item_remove
 _ACTIONS["item_sell"] = _act_item_sell
 _ACTIONS["cast"] = _act_cast
+_ACTIONS["short_rest"] = _act_short_rest
+_ACTIONS["long_rest"] = _act_long_rest
+_ACTIONS["resource"] = _act_resource
 _ACTIONS["spell_add"] = _act_spell_add
 _ACTIONS["spell_remove"] = _act_spell_remove
 _ACTIONS["feature_add"] = _act_feature_add
@@ -1203,6 +1234,10 @@ def _state(character: Character) -> dict:
             for p in _slots(character, stats, classes)
         },
         "coins": {coin: getattr(purse, coin, 0) if purse else 0 for coin in play.COINS},
+        "resources": {
+            str(r.pk): {"current": r.current_uses, "max": r.max_uses}
+            for r in character.resources.all()
+        },
     }
 
 

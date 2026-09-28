@@ -37,6 +37,7 @@
         </section>
       </div>
       {% if can_edit and spellbook.sources %}{% include "frontend/characters/sheet/_cast_dialog.html" %}{% endif %}
+      {% include "frontend/characters/sheet/_rest_dialog.html" %}
     </div>
     {% if can_edit %}
       {% get_current_language as CURRENT_LANGUAGE %}

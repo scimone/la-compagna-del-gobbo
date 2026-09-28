@@ -3,13 +3,15 @@ gear, free text, the items carried (add, count, remove, sell), the spells and fe
 hand - everything the character sheet lets the owner tick or type while playing.
 
 Each function validates and clamps its input and saves; a value that makes no sense raises
-`ValueError` (the view turns it into a 400). Rests (short/long) are not here yet.
+`ValueError` (the view turns it into a 400). Rests are at the end (`short_rest`, `long_rest`).
 
 An item row is one of two kinds, named `kind` in the functions that take a row id: `"catalog"` (a
 `CharacterInventoryItem`) or `"custom"` (a `CharacterCustomItem`).
 """
 
-from django.db import transaction
+import random
+
+from django.db import models, transaction
 
 from apps.characters.models import (
     Character,
@@ -19,6 +21,7 @@ from apps.characters.models import (
     CharacterFeature,
     CharacterInventoryItem,
     CharacterOptionalFeature,
+    CharacterResource,
     CharacterSpell,
 )
 from apps.rules.models import Equipment, Feat, Feature, OptionalFeature, Spell
@@ -440,11 +443,6 @@ def cast_spell(
     return slot_key
 
 
-def long_rest(character: Character) -> None:
-    """The part of a long rest the sheet tracks so far: free casts (Magic Initiate) come back."""
-    character.spells.filter(free_cast_used=True).update(free_cast_used=False)
-
-
 def remove_spell(character: Character, spell_id: str) -> None:
     """Take away a spell added by hand (`add_spell`). One the character got from a class, species
     or feat is part of what it can do, and stays."""
@@ -489,3 +487,106 @@ def remove_feature(character: Character, kind: str, ref: str) -> None:
     if not rows.filter(source=FEATURE_SOURCE).exists():
         raise ValueError("only a feature you added yourself can be removed")
     rows.filter(source=FEATURE_SOURCE).delete()
+
+
+# --- resources ---------------------------------------------------------------------------------
+
+
+def adjust_resource(character: Character, resource_id: int, delta: int) -> None:
+    """Spend (`delta < 0`) or regain uses of a limited-use resource (Rage, Bardic Inspiration...),
+    between none and its maximum."""
+    row = character.resources.get(pk=resource_id)
+    row.current_uses = _clamp(row.current_uses + delta, 0, row.max_uses)
+    row.save(update_fields=["current_uses"])
+
+
+# --- rests -------------------------------------------------------------------------------------
+#
+# SRD "Riposo breve" / "Riposo lungo" (Rules Glossary). What is *not* tracked, so not handled here:
+# the 16 hours between long rests, an interrupted rest (initiative, a spell that is not a cantrip,
+# damage, an hour of exertion - the player decides whether the rest was completed), exhaustion and
+# reduced ability scores (the sheet has neither), and the class features that let you choose
+# something at a rest (Arcane Recovery, Natural Recovery, swapping prepared spells or weapon
+# mastery).
+
+
+def hit_dice_left(character: Character) -> dict[str, int]:
+    """Unspent Hit Dice by die size (`{"d8": 2}`), the pools of every class added together."""
+    left: dict[str, int] = {}
+    for row in character.classes.select_related("klass"):
+        left[row.klass.hit_die] = left.get(row.klass.hit_die, 0) + row.level - row.hit_dice_spent
+    return left
+
+
+def _spent_hit_dice(character: Character, die: str) -> int:
+    return sum(
+        c.hit_dice_spent
+        for c in character.classes.select_related("klass")
+        if c.klass.hit_die == die
+    )
+
+
+def _require_standing(character: Character) -> None:
+    if character.current_hit_points < 1:
+        raise ValueError("a character needs at least 1 hit point to begin a rest")
+
+
+@transaction.atomic
+def short_rest(
+    character: Character,
+    spend: dict[str, int],
+    con_modifier: int,
+    roll=random.randint,
+) -> int:
+    """Take a short rest (1 hour). Returns the hit points regained.
+
+    `spend` is how many Hit Dice of each size (`{"d8": 2}`) to spend: each one rolls its die,
+    adds the Constitution modifier (at least 1 hit point) and heals, up to the maximum. Then the
+    abilities that recharge on a short rest do: a resource marked `short_rest` in full, one marked
+    `other` (Rage, Second Wind: "regain one use") by one use, and Pact Magic slots in full.
+    """
+    _require_standing(character)
+    left = hit_dice_left(character)
+    healed = 0
+    for die, count in spend.items():
+        if count < 0 or count > left.get(die, 0):
+            raise ValueError(f"not enough {die} hit dice")
+        sides = int(die.removeprefix("d"))
+        for _ in range(count):
+            room = character.max_hit_points - character.current_hit_points
+            gained = min(max(1, roll(1, sides) + con_modifier), room)
+            character.current_hit_points += gained
+            healed += gained
+        if count:
+            set_hit_dice_spent(character, die, _spent_hit_dice(character, die) + count)
+    if healed:
+        character.death_save_successes = character.death_save_failures = 0
+    slots = dict(character.spell_slots_spent)
+    slots.pop("pact", None)
+    character.spell_slots_spent = slots
+    character.save()
+    for row in character.resources.all():
+        if row.reset_on == "short_rest":
+            row.current_uses = row.max_uses
+        elif row.reset_on == "other":
+            row.current_uses = min(row.max_uses, row.current_uses + 1)
+        else:
+            continue
+        row.save(update_fields=["current_uses"])
+    return healed
+
+
+@transaction.atomic
+def long_rest(character: Character) -> None:
+    """Take a long rest (8 hours): every hit point and every spent Hit Die back, temporary hit
+    points gone, the death saves cleared, every spell slot and free cast (Magic Initiate's) and
+    every limited-use resource restored. Heroic Inspiration is not touched."""
+    _require_standing(character)
+    character.current_hit_points = character.max_hit_points
+    character.temporary_hit_points = 0
+    character.death_save_successes = character.death_save_failures = 0
+    character.spell_slots_spent = {}
+    character.save()
+    character.classes.update(hit_dice_spent=0)
+    character.spells.filter(free_cast_used=True).update(free_cast_used=False)
+    CharacterResource.objects.filter(character=character).update(current_uses=models.F("max_uses"))

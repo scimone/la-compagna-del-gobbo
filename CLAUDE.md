@@ -88,11 +88,13 @@ i18n section for the format and why the two are separate problems.
 
 ## Where spending lives
 
-*Spending* a resource during play (HP, death saves, Hit Dice, spell slots) lives in
+*Spending* a resource during play (HP, death saves, Hit Dice, spell slots, casting a spell, a
+`CharacterResource`) and taking a **short/long rest** (per the SRD's Riposo breve/lungo) live in
 `apps/characters/services/play.py`, called by the character sheet's `POST /characters/<id>/act/`
-(see the README). `rules` stays read-only, `builder` stays creation/leveling. Not decided yet:
-short/long **rests** restoring what is spent, and spending a `CharacterResource` (Rage, Sorcery
-Points - the sheet doesn't show those); both would most naturally be more functions in `play.py`.
+(see the README). `rules` stays read-only, `builder` stays creation/leveling. Not tracked, so not
+handled: exhaustion, reduced ability scores, the 16 h between long rests, interrupted rests, and
+the class features that choose something at a rest (Arcane Recovery, Natural Recovery, swapping
+prepared spells or weapon mastery).
 
 ## Environment gotchas
 

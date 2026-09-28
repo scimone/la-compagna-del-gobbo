@@ -7,6 +7,7 @@ from apps.characters.models import (
     CharacterClass,
     CharacterFeature,
     CharacterInventoryItem,
+    CharacterResource,
     CharacterSpell,
 )
 from apps.characters.services import play
@@ -457,3 +458,94 @@ def test_only_a_feature_added_by_hand_can_be_removed_again(hero):
     with pytest.raises(CharacterFeature.DoesNotExist):
         play.remove_feature(hero, "feature", str(added.pk))
     assert hero.features.filter(feature=granted).exists()
+
+
+# --- rests -------------------------------------------------------------------------------------
+
+
+@pytest.fixture
+def fighter(hero):
+    CharacterClass.objects.create(
+        character=hero, klass=Class.objects.get(pk="fighter"), level=3, is_starting_class=True
+    )
+    CharacterResource.objects.create(
+        character=hero, name="Second Wind", max_uses=2, current_uses=0, reset_on="other"
+    )
+    CharacterResource.objects.create(
+        character=hero, name="Action Surge", max_uses=1, current_uses=0, reset_on="short_rest"
+    )
+    CharacterResource.objects.create(
+        character=hero, name="Lay on Hands", max_uses=15, current_uses=3, reset_on="long_rest"
+    )
+    return hero
+
+
+def test_a_short_rest_spends_hit_dice_to_heal_and_recharges_short_rest_abilities(fighter):
+    fighter.current_hit_points = 5
+    fighter.spell_slots_spent = {"pact": 1, "1": 2}
+    fighter.save()
+
+    healed = play.short_rest(fighter, {"d10": 2}, con_modifier=2, roll=lambda low, high: 6)
+
+    fighter.refresh_from_db()
+    assert healed == 15 and fighter.current_hit_points == 20  # 2 x (6 + 2) capped at the max
+    assert play.hit_dice_left(fighter) == {"d10": 1}
+    assert fighter.spell_slots_spent == {"1": 2}  # only Pact Magic comes back
+    resources = {r.name: r.current_uses for r in fighter.resources.all()}
+    assert resources == {"Second Wind": 1, "Action Surge": 1, "Lay on Hands": 3}
+
+
+def test_a_short_rest_die_heals_at_least_one_and_cannot_overspend(fighter):
+    fighter.current_hit_points = 1
+    fighter.save()
+
+    assert play.short_rest(fighter, {"d10": 1}, con_modifier=-3, roll=lambda low, high: 1) == 1
+    with pytest.raises(ValueError):
+        play.short_rest(fighter, {"d10": 3}, con_modifier=0)  # only 2 left
+    with pytest.raises(ValueError):
+        play.short_rest(fighter, {"d8": 1}, con_modifier=0)
+
+
+def test_a_rest_needs_at_least_one_hit_point(fighter):
+    fighter.current_hit_points = 0
+    fighter.save()
+
+    for rest in (lambda: play.short_rest(fighter, {}, 0), lambda: play.long_rest(fighter)):
+        with pytest.raises(ValueError):
+            rest()
+
+
+def test_a_long_rest_restores_everything_but_inspiration(fighter):
+    fighter.current_hit_points = 4
+    fighter.temporary_hit_points = 5
+    fighter.death_save_failures = 2
+    fighter.spell_slots_spent = {"1": 2, "pact": 1}
+    fighter.inspiration = True
+    fighter.save()
+    fighter.classes.update(hit_dice_spent=2)
+    CharacterSpell.objects.create(
+        character=fighter,
+        spell=Spell.objects.get(pk="shield"),
+        prepared=True,
+        free_cast=True,
+        free_cast_used=True,
+    )
+
+    play.long_rest(fighter)
+
+    fighter.refresh_from_db()
+    assert (fighter.current_hit_points, fighter.temporary_hit_points) == (20, 0)
+    assert fighter.death_save_failures == 0 and fighter.spell_slots_spent == {}
+    assert fighter.inspiration is True
+    assert play.hit_dice_left(fighter) == {"d10": 3}
+    assert not fighter.spells.filter(free_cast_used=True).exists()
+    assert all(r.current_uses == r.max_uses for r in fighter.resources.all())
+
+
+def test_a_resource_is_spent_and_regained_between_zero_and_its_maximum(fighter):
+    wind = fighter.resources.get(name="Second Wind")
+
+    play.adjust_resource(fighter, wind.pk, 5)
+    assert fighter.resources.get(name="Second Wind").current_uses == 2
+    play.adjust_resource(fighter, wind.pk, -5)
+    assert fighter.resources.get(name="Second Wind").current_uses == 0

@@ -1,0 +1,26 @@
+{% load i18n %}
+{# Outside the tab panels, like the cast dialog. #}
+{% if can_edit %}
+<dialog class="cs-cast" id="cs-short-rest-dialog">
+  <h3>{% translate "Short Rest" %}</h3>
+  <p class="cs-cast-ask">{% translate "One hour of light activity. You can spend Hit Dice to regain hit points (each rolls its die and adds your Constitution modifier)." %}</p>
+  {% for hd in strip.hit_dice %}
+    <label class="cs-cast-field"><span class="k">{% translate "Hit Dice to spend" %} - {{ hd.die }} ({{ hd.left }} / {{ hd.total }})</span>
+      <input type="number" min="0" max="{{ hd.left }}" value="0" inputmode="numeric" data-rest-die="{{ hd.die }}"{% if not hd.left %} disabled{% endif %}>
+    </label>
+  {% endfor %}
+  <p class="cs-cast-note">{% translate "Abilities that recharge on a short rest are restored: Pact Magic slots, and the resources that come back on one." %}</p>
+  <div class="cs-cast-buttons">
+    <button type="button" data-rest-cancel>{% translate "Cancel" %}</button>
+    <button type="button" class="ok" data-rest-confirm="short">{% translate "Take a short rest" %}</button>
+  </div>
+</dialog>
+<dialog class="cs-cast" id="cs-long-rest-dialog">
+  <h3>{% translate "Long Rest" %}</h3>
+  <p class="cs-cast-ask">{% translate "At least 8 hours (6 asleep). You regain all hit points and all spent Hit Dice, temporary hit points end, and spell slots, free casts and resources are restored." %}</p>
+  <div class="cs-cast-buttons">
+    <button type="button" data-rest-cancel>{% translate "Cancel" %}</button>
+    <button type="button" class="ok" data-rest-confirm="long">{% translate "Take a long rest" %}</button>
+  </div>
+</dialog>
+{% endif %}

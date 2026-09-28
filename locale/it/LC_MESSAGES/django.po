@@ -1530,3 +1530,62 @@ msgstr "Lancia senza slot incantesimo (una volta per riposo lungo)"
 #, python-format
 msgid "Feature of %(klass)s"
 msgstr "Privilegio di %(klass)s"
+
+#: apps/frontend/character_sheet.py
+msgid "Short rest taken"
+msgstr "Riposo breve completato"
+
+#: apps/frontend/character_sheet.py
+#, python-format
+msgid "%(hp)d hit points regained"
+msgstr "%(hp)d punti ferita recuperati"
+
+#: apps/frontend/character_sheet.py
+msgid "Long rest taken"
+msgstr "Riposo lungo completato"
+
+#: apps/frontend/templates/frontend/characters/sheet/_stats.html
+#: apps/frontend/templates/frontend/characters/sheet/_rest_dialog.html
+msgid "Short Rest"
+msgstr "Riposo breve"
+
+#: apps/frontend/templates/frontend/characters/sheet/_stats.html
+#: apps/frontend/templates/frontend/characters/sheet/_rest_dialog.html
+msgid "Long Rest"
+msgstr "Riposo lungo"
+
+#: apps/frontend/templates/frontend/characters/sheet/_stats.html
+msgid "Resources"
+msgstr "Risorse"
+
+#: apps/frontend/templates/frontend/characters/sheet/_stats.html
+msgid "Spend one use"
+msgstr "Spendi un utilizzo"
+
+#: apps/frontend/templates/frontend/characters/sheet/_stats.html
+msgid "Regain one use"
+msgstr "Recupera un utilizzo"
+
+#: apps/frontend/templates/frontend/characters/sheet/_rest_dialog.html
+msgid "One hour of light activity. You can spend Hit Dice to regain hit points (each rolls its die and adds your Constitution modifier)."
+msgstr "Un'ora di attività leggera. Puoi spendere Dadi Vita per recuperare punti ferita (ognuno tira il proprio dado e aggiunge il modificatore di Costituzione)."
+
+#: apps/frontend/templates/frontend/characters/sheet/_rest_dialog.html
+msgid "Hit Dice to spend"
+msgstr "Dadi Vita da spendere"
+
+#: apps/frontend/templates/frontend/characters/sheet/_rest_dialog.html
+msgid "Abilities that recharge on a short rest are restored: Pact Magic slots, and the resources that come back on one."
+msgstr "Le capacità che si ricaricano con un riposo breve vengono ripristinate: gli slot della Magia del patto e le risorse che ne beneficiano."
+
+#: apps/frontend/templates/frontend/characters/sheet/_rest_dialog.html
+msgid "Take a short rest"
+msgstr "Fai un riposo breve"
+
+#: apps/frontend/templates/frontend/characters/sheet/_rest_dialog.html
+msgid "At least 8 hours (6 asleep). You regain all hit points and all spent Hit Dice, temporary hit points end, and spell slots, free casts and resources are restored."
+msgstr "Almeno 8 ore (6 di sonno). Recuperi tutti i punti ferita e tutti i Dadi Vita spesi, i punti ferita temporanei terminano e slot incantesimo, lanci gratuiti e risorse vengono ripristinati."
+
+#: apps/frontend/templates/frontend/characters/sheet/_rest_dialog.html
+msgid "Take a long rest"
+msgstr "Fai un riposo lungo"

@@ -145,6 +145,15 @@
   .box { width: 1.2rem; height: 1.2rem; border-width: 1.5px; }
   .death-line .boxes { gap: 0.3rem; }
 
+  .cs-rest { cursor: pointer; }
+  .cs-rest:active { background: var(--bg); }
+  .cs-rest .k { font-size: 0.8rem; color: var(--text); }
+  .cs-res-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; margin-top: 0.3rem; }
+  .cs-res-row .lbl { font-size: 0.85rem; font-weight: 600; }
+  .cs-res-row .ctl { display: inline-flex; align-items: center; gap: 0.5rem; }
+  .step.small { width: 1.9rem; height: 1.9rem; font-size: 1.1rem; }
+  .cs-cast-field input[type="number"] { padding: 0.3rem; }
+
   /* Tabs: the same underline strip as the World's, but buttons - they switch panels in place. */
   .cs-tabbar { padding: 0 var(--cs-pad); background: var(--surface); }
   .cs-tabs { display: flex; overflow-x: auto; scrollbar-width: none; }

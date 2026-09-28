@@ -1416,3 +1416,25 @@ def test_a_magic_initiate_spell_can_be_cast_once_without_a_slot(signed_in, alice
 
     play.long_rest(cleric)
     assert act(signed_in, cleric, action="cast", spell=row.spell_id, free="1").status_code == 200
+
+
+def test_the_rest_buttons_and_the_resources_show_and_the_actions_work(signed_in, alice):
+    fighter = finished(alice, "fighter")
+    fighter.current_hit_points = 3
+    fighter.save()
+    stats = panel(signed_in.get(f"/characters/{fighter.pk}/").content.decode(), "stats")
+    assert 'data-rest="short"' in stats and 'data-rest="long"' in stats
+    assert "Second Wind" in stats
+
+    response = act(signed_in, fighter, action="short_rest", hd_d10="1")
+    assert response.status_code == 200
+    fighter.refresh_from_db()
+    assert fighter.current_hit_points > 3 and play.hit_dice_left(fighter) == {"d10": 0}
+    assert act(signed_in, fighter, action="short_rest", hd_d10="1").status_code == 400
+
+    assert act(signed_in, fighter, action="long_rest").status_code == 200
+    fighter.refresh_from_db()
+    assert fighter.current_hit_points == fighter.max_hit_points
+    wind = fighter.resources.get(name="Second Wind")
+    act(signed_in, fighter, action="resource", id=wind.pk, delta="-1")
+    assert fighter.resources.get(name="Second Wind").current_uses == wind.max_uses - 1

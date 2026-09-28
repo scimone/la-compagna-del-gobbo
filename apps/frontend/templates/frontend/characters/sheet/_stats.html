@@ -117,6 +117,33 @@
     {% endfor %}
   </div>
 
+  {# Rests: what they restore is in `play.short_rest`/`play.long_rest`; the dialogs are in _rest_dialog.html. #}
+  {% if can_edit %}
+    <button type="button" class="cs-card cs-tile half cs-rest" data-rest="short">
+      <span class="k">{% translate "Short Rest" %}</span>
+    </button>
+    <button type="button" class="cs-card cs-tile half cs-rest" data-rest="long">
+      <span class="k">{% translate "Long Rest" %}</span>
+    </button>
+  {% endif %}
+
+  {# Limited-use resources (Rage, Bardic Inspiration, ...): spent with the buttons, restored by rests. #}
+  {% if strip.resources %}
+    <div class="cs-card">
+      <span class="k">{% translate "Resources" %}</span>
+      {% for r in strip.resources %}
+        <div class="cs-res-row">
+          <span class="lbl">{{ r.name }}</span>
+          <span class="ctl">
+            {% if can_edit %}<button type="button" class="step small" data-act="resource" data-id="{{ r.pk }}" data-delta="-1" aria-label="{% translate 'Spend one use' %}">−</button>{% endif %}
+            <span class="cnt"><b data-bind="resources.{{ r.pk }}.current">{{ r.current }}</b>/{{ r.max }}</span>
+            {% if can_edit %}<button type="button" class="step small" data-act="resource" data-id="{{ r.pk }}" data-delta="1" aria-label="{% translate 'Regain one use' %}">+</button>{% endif %}
+          </span>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
   {# The spellcasting numbers (they used to sit above the Spellbook's list). #}
   {% if spellbook.sources %}
     <div class="cs-card">

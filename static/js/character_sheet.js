@@ -566,6 +566,30 @@
     if (event.target.matches("[data-cast-ritual], [data-cast-free]")) castRefresh(dialog);
   });
 
+  // ---- rests: the Short/Long Rest tiles open their dialogs; confirming posts the action and the ----
+  // ---- server (`play.short_rest`/`play.long_rest`) works out what is restored. -------------------
+
+  root.addEventListener("click", function (event) {
+    var tile = event.target.closest("[data-rest]");
+    if (tile) {
+      var opener = document.getElementById("cs-" + tile.dataset.rest + "-rest-dialog");
+      if (opener && opener.showModal) opener.showModal();
+      return;
+    }
+    var dialog = event.target.closest("#cs-short-rest-dialog, #cs-long-rest-dialog");
+    if (!dialog) return;
+    if (event.target.closest("[data-rest-cancel]")) {
+      dialog.close();
+    } else if (event.target.closest("[data-rest-confirm]")) {
+      var params = { action: event.target.closest("[data-rest-confirm]").dataset.restConfirm + "_rest" };
+      dialog.querySelectorAll("[data-rest-die]").forEach(function (input) {
+        if (Number(input.value) > 0) params["hd_" + input.dataset.restDie] = input.value;
+      });
+      dialog.close();
+      send(params);
+    }
+  });
+
   // A filter popover closes when you tap anywhere else.
   document.addEventListener("click", function (event) {
     if (event.target.closest(".filter-popover")) return;
