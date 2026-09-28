@@ -1242,7 +1242,7 @@ msgstr "Recupera un Dado Vita"
 
 #: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
 msgid "Death Saves"
-msgstr "Tiri salvezza contro morte"
+msgstr "Tiri salvezza"
 
 #: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/
 msgid "Character sections"
@@ -1597,3 +1597,23 @@ msgstr "Cerca privilegi, talenti e tratti"
 #: apps/frontend/templates/frontend/base.html
 msgid "Confirm"
 msgstr "Conferma"
+
+#: apps/frontend/character_sheet.py
+msgid "CP"
+msgstr "MR"
+
+#: apps/frontend/character_sheet.py
+msgid "SP"
+msgstr "MA"
+
+#: apps/frontend/character_sheet.py
+msgid "GP"
+msgstr "MO"
+
+#: apps/frontend/character_sheet.py
+msgid "PP"
+msgstr "MP"
+
+#: apps/frontend/character_sheet.py
+msgid "EP"
+msgstr "ME"

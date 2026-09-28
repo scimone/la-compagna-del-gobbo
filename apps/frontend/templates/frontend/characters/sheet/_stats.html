@@ -1,12 +1,25 @@
 {% load i18n %}
-{# Everything that changes during play, as a dashboard of cards: progress, the combat numbers, then #}
-{# hit points as the centrepiece with the resources you spend (Hit Dice, death saves) under it. Nothing is #}
-{# fixed; the whole tab scrolls. `data-bind` and the `data-*` on the pips are what                  #}
-{# `character_sheet.js` redraws after a change.                                                      #}
+{# Everything that changes during play, as a dashboard of cards that fills the tab: the rows share the #}
+{# height by weight (`--w`) and what is inside scales with it (see the Stats tab CSS), so nothing      #}
+{# scrolls on a normal screen. `data-bind` and the `data-*` on the pips are what                       #}
+{# `character_sheet.js` redraws after a change.                                                        #}
 <div class="cs-scroll">
 <section class="cs-stats" aria-label="{% translate 'Quick stats' %}">
 
+  {# Rests: what they restore is in `play.short_rest`/`play.long_rest`; the dialogs are in _rest_dialog.html. #}
+  {% if can_edit %}
+  <div class="cs-row" style="--w: 0.6">
+    <button type="button" class="cs-card cs-tile half cs-rest" data-rest="short">
+      <span class="k">{% translate "Short Rest" %}</span>
+    </button>
+    <button type="button" class="cs-card cs-tile half cs-rest" data-rest="long">
+      <span class="k">{% translate "Long Rest" %}</span>
+    </button>
+  </div>
+  {% endif %}
+
   {# Armor Class, Initiative, Speed: the numbers of a fight. #}
+  <div class="cs-row" style="--w: 1.6">
   <div class="cs-card cs-tile third">
     <span class="ac-emblem">
       <svg viewBox="0 0 24 26" aria-hidden="true"><path d="M12 1.5 21.5 5v7.5c0 5.6-3.9 10-9.5 12-5.6-2-9.5-6.4-9.5-12V5z"/></svg>
@@ -31,6 +44,9 @@
     <span class="k">{% translate "Speed" %}</span>
   </div>
 
+  </div>
+
+  <div class="cs-row" style="--w: 1">
   <div class="cs-card cs-tile half">
     <span class="v">{{ header.passive_perception }}</span>
     <span class="k">{% translate "Passive Perception" %}</span>
@@ -41,7 +57,10 @@
     <span class="k">{% translate "Heroic Inspiration" %}</span>
   </button>
 
+  </div>
+
   {# Hit points: the biggest thing on the page, right above what is spent to get them back. #}
+  <div class="cs-row" style="--w: 2.2">
   <div class="cs-card cs-hp">
     <div class="cs-card-head">
       <span class="k">{% translate "Hit Points" %}</span>
@@ -68,7 +87,10 @@
     <div class="cs-bar hp" data-hp-bar style="--pct: {{ strip.hp_percent }}%"><i></i></div>
   </div>
 
+  </div>
+
   {# What is spent and recovered: one pip per Hit Die (tap a full one to spend it), then death saves. #}
+  <div class="cs-row" style="--w: 1.5">
   <div class="cs-card half">
     <span class="k">{% translate "Hit Dice" %}</span>
     {% for hd in strip.hit_dice %}
@@ -98,19 +120,11 @@
       </div>
     {% endfor %}
   </div>
-
-  {# Rests: what they restore is in `play.short_rest`/`play.long_rest`; the dialogs are in _rest_dialog.html. #}
-  {% if can_edit %}
-    <button type="button" class="cs-card cs-tile half cs-rest" data-rest="short">
-      <span class="k">{% translate "Short Rest" %}</span>
-    </button>
-    <button type="button" class="cs-card cs-tile half cs-rest" data-rest="long">
-      <span class="k">{% translate "Long Rest" %}</span>
-    </button>
-  {% endif %}
+  </div>
 
   {# Limited-use resources (Rage, Bardic Inspiration, ...): spent with the buttons, restored by rests. #}
   {% if strip.resources %}
+  <div class="cs-row" style="--w: 1.2">
     <div class="cs-card">
       <span class="k">{% translate "Resources" %}</span>
       {% for r in strip.resources %}
@@ -124,10 +138,12 @@
         </div>
       {% endfor %}
     </div>
+  </div>
   {% endif %}
 
   {# The spellcasting numbers (they used to sit above the Spellbook's list). #}
   {% if spellbook.sources %}
+  <div class="cs-row" style="--w: 1.2">
     <div class="cs-card">
       <span class="k">{% translate "Spellcasting" %}</span>
     <section class="cs-casting" data-casting>
@@ -148,9 +164,11 @@
       {% endwith %}
     </section>
     </div>
+  </div>
   {% endif %}
 
   {# Experience: the number, and how far it is to the next level. #}
+  <div class="cs-row" style="--w: 0.9">
   <div class="cs-card cs-xp">
     <div class="cs-card-head">
       <label class="k" for="cs-xp">{% translate "Experience Points" %}</label>
@@ -166,6 +184,7 @@
     {% if header.next_xp %}
       <div class="cs-bar" role="progressbar" aria-label="{% translate 'Progress to the next level' %}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ header.xp_progress }}" style="--pct: {{ header.xp_progress }}%"><i></i></div>
     {% endif %}
+  </div>
   </div>
 </section>
 </div>

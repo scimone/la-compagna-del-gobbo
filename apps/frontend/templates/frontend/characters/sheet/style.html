@@ -124,17 +124,24 @@
     .cs-hd-row { gap: 0.4rem; }
   }
 
-  /* The dashboard fills the whole height of the tab instead of scrolling: the rows share what is
-     left (Hit Points takes the slack, the rest sit at their natural height). Where the screen is
-     too small for that, the tab simply scrolls as before (`flex: 1 0 auto` never shrinks below
-     the content). */
-  .cs-scroll:has(.cs-stats) { padding-top: 0.6rem; padding-bottom: 0.6rem; }
-  .cs-stats { flex: 1 0 auto; gap: 0.5rem; grid-template-rows: auto auto minmax(0, 1fr) auto; grid-auto-rows: auto; }
-  .cs-stats .cs-card { padding: 0.6rem 0.8rem; }
-  .cs-stats .cs-tile { padding: 0.5rem 0.3rem; }
-  .cs-hp { display: flex; flex-direction: column; }
+  /* The dashboard fills the whole height of the tab and never scrolls on a normal screen: the rows
+     share the height by weight (`--w`, set in _stats.html), and what is inside scales with the
+     height of the dashboard itself (`cqh` = 1% of it), between a floor and the usual size. Only
+     a screen too short for even the floors (`min-height`) makes the tab scroll. */
+  .cs-scroll:has(.cs-stats) { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+  .cs-stats { display: flex; flex-direction: column; gap: 0.4rem; flex: 1 1 0; min-height: 31rem; container-type: size; }
+  .cs-row { flex: var(--w, 1) 1 0; min-height: 0; display: flex; gap: 0.4rem; }
+  .cs-row > .cs-card { flex: 1 1 0; min-width: 0; min-height: 0; overflow: hidden; }
+  .cs-stats .cs-card { padding: clamp(0.25rem, 1.2cqh, 0.6rem) 0.7rem; display: flex; flex-direction: column; justify-content: center; }
+  .cs-stats .cs-tile { padding: 0.2rem 0.3rem; gap: clamp(0.05rem, 0.6cqh, 0.3rem); }
+  .cs-stats .cs-tile .v { font-size: clamp(1.1rem, 5.2cqh, 2rem); }
+  .ac-emblem { width: clamp(2rem, 7cqh, 3.3rem); height: clamp(2.2rem, 7.6cqh, 3.6rem); }
+  .ac-emblem .v { font-size: clamp(1rem, 3.6cqh, 1.6rem) !important; }
+  .cs-insp svg { width: clamp(1.2rem, 4.6cqh, 2.1rem); height: clamp(1.2rem, 4.6cqh, 2.1rem); }
   .cs-hp .cs-hp-main { flex: 1; margin-top: 0; }
-  .cs-hp .cs-bar.hp { margin-top: 0.4rem; }
+  #cs .hp-val input, .hp-val b { font-size: clamp(1.8rem, 7.5cqh, 2.6rem); }
+  .step { width: clamp(2.2rem, 6.5cqh, 2.9rem); height: clamp(2.2rem, 6.5cqh, 2.9rem); }
+  .cs-hp .cs-bar.hp { margin-top: 0.3rem; flex-shrink: 0; }
   /* Hit Dice and Death Saves: compact, so both fit side by side without taking much height. */
   .cs-hd-row { margin-top: 0.3rem; gap: 0.4rem; }
   .cs-hd-row .lbl { min-width: 1.6rem; font-size: 0.85rem; }
@@ -146,6 +153,7 @@
   .death-line .boxes { gap: 0.3rem; }
 
   .cs-rest { cursor: pointer; }
+  .cs-stats .cs-rest { padding-top: 0; padding-bottom: 0; }
   .cs-rest:active { background: var(--bg); }
   .cs-rest .k { font-size: 0.8rem; color: var(--text); }
   .cs-res-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; margin-top: 0.3rem; }

@@ -108,12 +108,12 @@ _TOOL_GROUPS = (
 _ARMOR_CATEGORY_TYPES = {"light": "la", "medium": "ma", "heavy": "ha", "shield": "s"}
 #: The coins shown in the pouch (electrum only appears once the character owns some).
 _COINS = (
-    ("copper", gettext_lazy("Copper"), "CP"),
-    ("silver", gettext_lazy("Silver"), "SP"),
-    ("gold", gettext_lazy("Gold"), "GP"),
-    ("platinum", gettext_lazy("Platinum"), "PP"),
+    ("copper", gettext_lazy("Copper"), gettext_lazy("CP")),
+    ("silver", gettext_lazy("Silver"), gettext_lazy("SP")),
+    ("gold", gettext_lazy("Gold"), gettext_lazy("GP")),
+    ("platinum", gettext_lazy("Platinum"), gettext_lazy("PP")),
 )
-_ELECTRUM = ("electrum", gettext_lazy("Electrum"), "EP")
+_ELECTRUM = ("electrum", gettext_lazy("Electrum"), gettext_lazy("EP"))
 _CASTER_DIVISOR = {"full": 1, "1/2": 2, "artificer": 2, "1/3": 3}
 
 

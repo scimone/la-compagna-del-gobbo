@@ -573,7 +573,7 @@ def test_the_sheet_is_in_italian_and_metric(signed_in, alice):
 
     html = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
 
-    for word in ("Ispirazione eroica", "Dadi Vita", "Tiri salvezza contro morte", "Privilegi"):
+    for word in ("Ispirazione eroica", "Dadi Vita", "Tiri salvezza", "Privilegi"):
         assert word in html
     for word in ("Statistiche", "Punti esperienza", "Cambia immagine"):
         assert word in html
@@ -1458,3 +1458,20 @@ def test_the_overview_shows_a_picture_and_level_wording(signed_in, alice):
     html = signed_in.get("/characters/").content.decode()
 
     assert 'class="pic"' in html and "Monk level 1" in html
+
+
+def test_the_purse_uses_the_italian_coin_abbreviations(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    signed_in.cookies["django_language"] = "it"
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "inventory")
+
+    for abbreviation in ("MR", "MA", "MO", "MP"):
+        assert f'aria-hidden="true">{abbreviation}<' in html
+    assert ">GP<" not in html
+
+
+def test_the_manifest_is_fetched_with_credentials(signed_in):
+    html = signed_in.get("/characters/").content.decode()
+
+    assert '<link rel="manifest" href="/manifest.json" crossorigin="use-credentials">' in html
