@@ -5,8 +5,8 @@ services:
     command: >
       sh -c "uv run manage.py migrate --noinput &&
              uv run uvicorn config.asgi:application --host 0.0.0.0 --port 3000"
-    ports:
-      - "3000:3000"
+#    ports:
+#      - "3000:3000"
     depends_on:
       dnd-db:
         condition: service_healthy
@@ -16,7 +16,7 @@ services:
       - ./media:/app/media
     restart: unless-stopped
     networks:
-      - dnd-proxy
+      - dnd-external
       - dnd-internal
 
   dnd-db:
@@ -40,5 +40,5 @@ services:
 networks:
   dnd-internal:
     driver: bridge
-  dnd-proxy:
+  dnd-external:
     external: true
