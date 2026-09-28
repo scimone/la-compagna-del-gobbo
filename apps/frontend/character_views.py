@@ -8,7 +8,7 @@ its POST, then returns the context for its template (or a redirect). See
 `docs/character_creation_plan.md` section 5.
 """
 
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.cache import add_never_cache_headers
@@ -29,6 +29,7 @@ from apps.builder.services import (
 from apps.builder.services.store import STEPS, Draft, read_values
 from apps.characters.models import Character
 from apps.characters.services import access
+from apps.characters.services import character as character_service
 from apps.frontend import units
 from apps.frontend.entries_render import render_entries
 from apps.frontend.views import (
@@ -103,7 +104,11 @@ def characters_list(request):
         if request.user.is_authenticated
         else Character.objects.none()
     )
-    items = [_summary(c) for c in finished if access.can_view(request.user, c)]
+    items = [
+        _summary(c, access.can_edit(request.user, c))
+        for c in finished
+        if access.can_view(request.user, c)
+    ]
     response = render(
         request,
         "frontend/characters/list.html",
@@ -121,7 +126,7 @@ def characters_list(request):
     return response
 
 
-def _summary(character: Character) -> dict:
+def _summary(character: Character, can_delete: bool = False) -> dict:
     classes = ", ".join(
         f"{c.klass.name} {c.level}" for c in character.classes.select_related("klass")
     )
@@ -132,6 +137,7 @@ def _summary(character: Character) -> dict:
             x for x in (character.species.name if character.species else "", classes) if x
         ),
         "owner": character.owner.get_username() if character.owner else "",
+        "can_delete": can_delete,
     }
 
 
@@ -245,6 +251,16 @@ def wizard_discard(request, pk):
     if response:
         return response
     creation.discard(character)
+    return redirect("characters-overview")
+
+
+@require_POST
+def character_delete(request, pk):
+    """Delete a finished character (only its owner may)."""
+    character = get_object_or_404(Character, pk=pk)
+    if not access.can_edit(request.user, character):
+        return HttpResponseForbidden()
+    character_service.delete_character(character.pk)
     return redirect("characters-overview")
 
 

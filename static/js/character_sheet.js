@@ -450,6 +450,97 @@
       box.querySelector("[data-casting-atk]").textContent = option.dataset.atk;
     }
   });
+  // ---- casting: the Cast button opens a dialog with the casting numbers, the slot to spend and, ----
+  // ---- for a ritual, the choice to skip the slot; confirming posts `cast` (the server applies the ----
+  // ---- rules - see `play.cast_spell`). Slot pools are read live from the spellbook's own rows. ----
+
+  function castPools(minLevel) {
+    var pools = [];
+    root.querySelectorAll(".cs-slot-row[data-slot]").forEach(function (row) {
+      var group = row.closest("[data-level-group]");
+      var level = Number(group ? group.dataset.levelGroup : 0);
+      var left = Number(row.querySelector(".left").textContent) || 0;
+      if (level >= minLevel && left > 0) {
+        pools.push({ key: row.dataset.slot, level: level, left: left, label: row.title });
+      }
+    });
+    return pools;
+  }
+
+  function castRefresh(dialog) {
+    var ritual = dialog.querySelector("[data-cast-ritual]").checked;
+    var slotField = dialog.querySelector("[data-cast-slot-field]");
+    var slotSelect = dialog.querySelector("[data-cast-slot]");
+    var needsSlot = dialog._level > 0 && !ritual;
+    slotField.hidden = !needsSlot;
+    dialog.querySelector("[data-cast-noslot]").hidden = !(needsSlot && !slotSelect.options.length);
+    dialog.querySelector("[data-cast-confirm]").disabled = needsSlot && !slotSelect.options.length;
+  }
+
+  function openCast(button) {
+    var dialog = document.getElementById("cs-cast-dialog");
+    if (!dialog || !dialog.showModal) return;
+    var level = Number(button.dataset.castLevel);
+    var canSlot = button.dataset.castSlot === "1";
+    var isRitual = button.dataset.castRitual === "1";
+    dialog._spell = button.dataset.cast;
+    dialog._level = level;
+    var name = button.closest("li").querySelector(".item-name");
+    dialog.querySelector("[data-cast-title]").textContent = name ? name.textContent.trim() : "";
+    // The ability: the stats tab's own choices, the spell's own class first.
+    var select = dialog.querySelector("[data-casting-select]");
+    var source = root.querySelector(".cs-stats [data-casting-select]");
+    select.innerHTML = source.innerHTML;
+    var index = 0;
+    Array.prototype.forEach.call(select.options, function (option, i) {
+      if (button.dataset.castSource && option.dataset.id === button.dataset.castSource) index = i;
+    });
+    select.selectedIndex = index;
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+    var slotSelect = dialog.querySelector("[data-cast-slot]");
+    slotSelect.innerHTML = "";
+    if (level > 0 && canSlot) {
+      castPools(level).forEach(function (pool) {
+        var option = document.createElement("option");
+        option.value = pool.key;
+        option.textContent = pool.label + " (" + pool.left + ")";
+        slotSelect.appendChild(option);
+      });
+    }
+    var ritual = dialog.querySelector("[data-cast-ritual]");
+    ritual.checked = level > 0 && isRitual && !canSlot; // only castable as a ritual
+    ritual.disabled = !canSlot;
+    dialog.querySelector("[data-cast-ritual-field]").hidden = !(level > 0 && isRitual);
+    dialog.querySelector("[data-cast-concentration]").hidden = button.dataset.castConcentration !== "1";
+    castRefresh(dialog);
+    dialog.showModal();
+  }
+
+  root.addEventListener("click", function (event) {
+    var button = event.target.closest(".item-cast");
+    if (button) {
+      event.preventDefault();
+      openCast(button);
+      return;
+    }
+    var dialog = event.target.closest("#cs-cast-dialog");
+    if (!dialog) return;
+    if (event.target.closest("[data-cast-cancel]")) {
+      dialog.close();
+    } else if (event.target.closest("[data-cast-confirm]")) {
+      var ritual = dialog.querySelector("[data-cast-ritual]").checked;
+      var params = { action: "cast", spell: dialog._spell };
+      if (ritual) params.ritual = "1";
+      else if (dialog._level > 0) params.slot = dialog.querySelector("[data-cast-slot]").value;
+      dialog.close();
+      send(params);
+    }
+  });
+  root.addEventListener("change", function (event) {
+    var dialog = event.target.closest("#cs-cast-dialog");
+    if (dialog && event.target.matches("[data-cast-ritual]")) castRefresh(dialog);
+  });
+
   // A filter popover closes when you tap anywhere else.
   document.addEventListener("click", function (event) {
     if (event.target.closest(".filter-popover")) return;

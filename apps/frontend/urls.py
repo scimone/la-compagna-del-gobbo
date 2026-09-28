@@ -12,6 +12,7 @@ urlpatterns = [
         name="character-describe",
     ),
     path("characters/<int:pk>/", character_sheet.character_detail, name="character-detail"),
+    path("characters/<int:pk>/delete/", character_views.character_delete, name="character-delete"),
     path("characters/<int:pk>/act/", character_sheet.character_act, name="character-act"),
     path("characters/<int:pk>/items/", character_sheet.character_items, name="character-items"),
     path("characters/<int:pk>/spells/", character_sheet.character_spells, name="character-spells"),

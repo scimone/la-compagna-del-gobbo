@@ -6,6 +6,13 @@
   <a href="{{ item.url }}"{% if item.image or item.page %} class="{% if item.image %}menu-thumb{% endif %}{% if item.page %} page-row{% endif %}"{% endif %}>
     {% include "frontend/_list_item_content.html" %}
   </a>
+  {% if item.cast %}
+    {# The character sheet's Spellbook only: `character_sheet.js` opens its cast dialog. #}
+    <button type="button" class="item-cast" data-cast="{{ item.cast.id }}"
+            data-cast-level="{{ item.cast.level }}" data-cast-source="{{ item.cast.source }}"
+            data-cast-ritual="{{ item.cast.ritual|yesno:'1,0' }}" data-cast-slot="{{ item.cast.slot|yesno:'1,0' }}"
+            data-cast-concentration="{{ item.cast.concentration|yesno:'1,0' }}">{% translate "Cast" %}</button>
+  {% endif %}
   {% if item.remove %}
     {# A row's own small "take this off the character" action (e.g. a spell the player added by #}
     {# hand, on the character sheet's Spellbook - see `_spellbook.html`) - `character_sheet.js`'s #}

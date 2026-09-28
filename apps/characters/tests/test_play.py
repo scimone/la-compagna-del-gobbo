@@ -391,6 +391,30 @@ def test_only_a_spell_added_by_hand_can_be_removed_again(hero):
         play.remove_spell(hero, "shield")
 
 
+def test_casting_follows_the_srd_slot_and_ritual_rules(hero):
+    def learn(spell_id, **flags):
+        CharacterSpell.objects.create(character=hero, spell=Spell.objects.get(pk=spell_id), **flags)
+
+    learn("shield", prepared=True)
+    learn("bless", in_spellbook=True)  # known but not prepared
+    ritual = Spell.objects.filter(ritual=True, level=1).first()
+    learn(ritual.pk, in_spellbook=True)
+
+    play.cast_spell(hero, "shield", slot_key="2", slot_max=2, slot_level=2)  # upcast
+    assert hero.spell_slots_spent == {"2": 1}
+    with pytest.raises(ValueError):  # not prepared
+        play.cast_spell(hero, "bless", slot_key="1", slot_max=2, slot_level=1)
+    with pytest.raises(ValueError):  # slot too low
+        play.cast_spell(hero, "shield", slot_key="1", slot_max=2, slot_level=0)
+    play.cast_spell(hero, "shield", slot_key="2", slot_max=2, slot_level=2)
+    with pytest.raises(ValueError):  # all spent
+        play.cast_spell(hero, "shield", slot_key="2", slot_max=2, slot_level=2)
+    # A ritual in the spellbook needs no preparation and no slot; a non-ritual cannot be one.
+    assert play.cast_spell(hero, ritual.pk, ritual=True) == "ritual"
+    with pytest.raises(ValueError):
+        play.cast_spell(hero, "shield", ritual=True)
+
+
 # --- features ----------------------------------------------------------------------------------
 
 

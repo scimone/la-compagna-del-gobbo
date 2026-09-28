@@ -218,6 +218,21 @@
 
   /* Spellbook. */
   .cs-casting { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 0.4rem; }
+  .cs-card .cs-casting { margin-top: 0.4rem; }
+  .cs-card .cs-metric { padding: 0.35rem 0.4rem; }
+  dialog.cs-cast { max-width: 24rem; width: calc(100% - 2rem); padding: 1rem; border: 1px solid var(--border); border-radius: 0.8rem; background: var(--surface); color: var(--text); }
+  dialog.cs-cast::backdrop { background: rgba(0,0,0,.5); }
+  dialog.cs-cast h3 { margin: 0 0 0.3rem; }
+  .cs-cast-ask { margin: 0 0 0.7rem; color: var(--muted); }
+  .cs-cast-field { display: flex; flex-direction: column; gap: 0.2rem; margin-top: 0.7rem; }
+  .cs-cast-field.cs-cast-ritual { flex-direction: row; align-items: center; gap: 0.5rem; }
+  .cs-cast-field[hidden], .cs-cast-note[hidden] { display: none; }
+  .cs-cast-field select { padding: 0.3rem; }
+  .cs-cast-note { margin: 0.6rem 0 0; font-size: 0.85rem; color: var(--muted); }
+  .cs-cast-buttons { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1rem; }
+  .cs-cast-buttons button { padding: 0.45rem 1.1rem; border-radius: 1rem; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 600; cursor: pointer; }
+  .cs-cast-buttons button.ok { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+  .cs-cast-buttons button:disabled { opacity: 0.5; cursor: default; }
   .cs-metric { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 0; padding: 0.2rem 0.4rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; }
   .cs-metric .k { font-size: 0.56rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); line-height: 1.2; }
   .cs-metric b { font-size: 1.1rem; line-height: 1.2; }

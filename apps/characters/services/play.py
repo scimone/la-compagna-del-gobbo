@@ -388,6 +388,49 @@ def add_spell(character: Character, spell_id: str) -> CharacterSpell:
     return row
 
 
+@transaction.atomic
+def cast_spell(
+    character: Character,
+    spell_id: str,
+    *,
+    slot_key: str = "",
+    slot_max: int = 0,
+    slot_level: int = 0,
+    ritual: bool = False,
+) -> str:
+    """Cast one of the character's spells, applying the SRD's spellcasting rules. Returns what was
+    spent (`""`, `"cantrip"`, `"ritual"` or the slot key).
+
+    - A cantrip (level 0) costs nothing.
+    - A spell with the Ritual tag can be cast as a ritual: no slot, and it need not be prepared
+      when it is in the spellbook (`in_spellbook`), but it takes 10 minutes longer and cannot be
+      upcast.
+    - Any other spell must be prepared (or always prepared) and expends one slot of the spell's
+      level or higher - `slot_key` is the pool (`"1"`..`"9"` or `"pact"`), `slot_level` the level
+      it casts at and `slot_max` how many slots the pool has (both derived by the caller).
+    """
+    row = character.spells.select_related("spell").get(spell_id=spell_id)
+    spell = row.spell
+    is_prepared = row.prepared or row.always_prepared
+    if spell.level == 0:
+        return "cantrip"
+    if ritual:
+        if not spell.ritual:
+            raise ValueError(f"{spell.name} is not a ritual")
+        if not (is_prepared or row.in_spellbook):
+            raise ValueError(f"{spell.name} is not prepared")
+        return "ritual"
+    if not is_prepared:
+        raise ValueError(f"{spell.name} is not prepared")
+    if slot_level < spell.level:
+        raise ValueError("the slot is too low for this spell")
+    spent = int(character.spell_slots_spent.get(slot_key, 0))
+    if spent >= slot_max:
+        raise ValueError("no spell slot of that level left")
+    set_slots_spent(character, slot_key, spent + 1, slot_max)
+    return slot_key
+
+
 def remove_spell(character: Character, spell_id: str) -> None:
     """Take away a spell added by hand (`add_spell`). One the character got from a class, species
     or feat is part of what it can do, and stays."""

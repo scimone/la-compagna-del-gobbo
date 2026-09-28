@@ -1,0 +1,29 @@
+{% load i18n %}
+{# Outside the tab panels: a `hidden` ancestor would hide even a modal dialog. #}
+{% if can_edit and spellbook.sources %}
+<dialog class="cs-cast" id="cs-cast-dialog">
+  <h3 data-cast-title></h3>
+  <p class="cs-cast-ask">{% translate "Do you really want to cast this spell?" %}</p>
+  <div class="cs-casting" data-casting>
+    <label class="cs-metric wide">
+      <span class="k">{% translate "Ability" %}</span>
+      <select data-casting-select data-cast-source aria-label="{% translate 'Spellcasting ability' %}"></select>
+    </label>
+    <div class="cs-metric"><span class="k">{% translate "Mod" %}</span><b data-casting-mod></b></div>
+    <div class="cs-metric"><span class="k">{% translate "DC" %}</span><b data-casting-dc></b></div>
+    <div class="cs-metric"><span class="k">{% translate "Atk" %}</span><b data-casting-atk></b></div>
+  </div>
+  <label class="cs-cast-field" data-cast-slot-field><span class="k">{% translate "Spell slot" %}</span>
+    <select data-cast-slot></select>
+  </label>
+  <label class="cs-cast-field cs-cast-ritual" data-cast-ritual-field hidden>
+    <input type="checkbox" data-cast-ritual> {% translate "Cast as a ritual (takes 10 minutes longer, no slot used)" %}
+  </label>
+  <p class="cs-cast-note" data-cast-concentration hidden>{% translate "Requires Concentration: you lose any other spell you are concentrating on." %}</p>
+  <p class="cs-cast-note" data-cast-noslot hidden>{% translate "No spell slot of a high enough level left." %}</p>
+  <div class="cs-cast-buttons">
+    <button type="button" data-cast-cancel>{% translate "Cancel" %}</button>
+    <button type="button" class="ok" data-cast-confirm>{% translate "Cast" %}</button>
+  </div>
+</dialog>
+{% endif %}

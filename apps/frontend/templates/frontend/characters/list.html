@@ -7,6 +7,17 @@
   .chars ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
   .chars li a { display: flex; flex-direction: column; padding: 0.65rem 0.9rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; color: var(--text); text-decoration: none; }
   .chars li a:active { background: var(--bg); }
+  .chars li.has-delete { display: flex; gap: 0.4rem; align-items: stretch; }
+  .chars li.has-delete a { flex: 1; min-width: 0; }
+  .chars .del { flex-shrink: 0; width: 2.9rem; display: flex; align-items: center; justify-content: center; background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; color: var(--muted); cursor: pointer; padding: 0; }
+  .chars .del:active { color: var(--accent); background: var(--bg); }
+  .chars .del svg { width: 1.2rem; height: 1.2rem; }
+  dialog.del-dialog { max-width: 22rem; width: calc(100% - 2rem); padding: 1rem; border: 1px solid var(--border); border-radius: 0.8rem; background: var(--surface); color: var(--text); }
+  dialog.del-dialog::backdrop { background: rgba(0,0,0,.5); }
+  dialog.del-dialog p { margin: 0 0 1rem; }
+  dialog.del-dialog .row { display: flex; justify-content: flex-end; gap: 0.6rem; }
+  dialog.del-dialog button { padding: 0.45rem 1rem; border-radius: 1rem; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 600; cursor: pointer; }
+  dialog.del-dialog button.danger { background: #b3261e; border-color: #b3261e; color: #fff; }
   .chars li.new a { border-color: var(--accent); border-left-width: 0.3rem; }
   .chars li.draft a { border-style: dashed; }
   .chars .name { font-weight: 600; }
@@ -32,15 +43,44 @@
       <h2>{% translate "Characters" %}</h2>
       <ul>
         {% for c in characters %}
-          <li{% if new_id == c.character.pk|stringformat:"d" %} class="new"{% endif %}>
+          <li class="{% if new_id == c.character.pk|stringformat:"d" %}new{% endif %}{% if c.can_delete %} has-delete{% endif %}">
             <a href="{{ c.url }}"><span class="name">{{ c.character.name }}</span>
               <span class="detail">{{ c.detail }}{% if c.owner %} · {{ c.owner }}{% endif %}</span></a>
+            {% if c.can_delete %}
+              <button type="button" class="del" data-delete-url="{% url 'character-delete' c.character.pk %}" data-name="{{ c.character.name }}" aria-label="{% translate 'Delete character' %}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"></path><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path></svg>
+              </button>
+            {% endif %}
           </li>
         {% endfor %}
       </ul>
     {% elif not drafts %}
       <p class="empty">{% translate "No characters yet. Tap + to create the first one." %}</p>
     {% endif %}
+    <dialog class="del-dialog" id="del-dialog">
+      <form method="post" id="del-form">
+        {% csrf_token %}
+        <p>{% translate "Do you really want to delete this character?" %} <strong id="del-name"></strong></p>
+        <div class="row">
+          <button type="button" id="del-cancel">{% translate "Cancel" %}</button>
+          <button type="submit" class="danger">{% translate "Delete" %}</button>
+        </div>
+      </form>
+    </dialog>
+    <script>
+      (function () {
+        var dialog = document.getElementById("del-dialog");
+        if (!dialog) return;
+        document.querySelectorAll(".chars .del").forEach(function (button) {
+          button.addEventListener("click", function () {
+            document.getElementById("del-form").action = button.dataset.deleteUrl;
+            document.getElementById("del-name").textContent = button.dataset.name;
+            dialog.showModal();
+          });
+        });
+        document.getElementById("del-cancel").addEventListener("click", function () { dialog.close(); });
+      })();
+    </script>
     <a class="fab" href="{% url 'character-new' %}" aria-label="{% translate 'New character' %}">+</a>
   </div>
 {% endblock %}

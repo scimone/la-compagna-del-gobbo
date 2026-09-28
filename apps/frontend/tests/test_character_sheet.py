@@ -190,7 +190,7 @@ def test_what_must_stay_in_view_is_outside_the_scrolling_part_of_its_panel(signe
     for tab, fixed in (
         ("abilities", "cs-pb"),  # the proficiency bonus is in the fixed part too...
         ("abilities", "cs-abilities"),
-        ("spellbook", "data-casting"),
+        ("spellbook", "cs-invbar"),
         ("inventory", "cs-purse"),
     ):
         before_scroll = panel(html, tab).split('<div class="cs-scroll">')[0]
@@ -312,7 +312,9 @@ def test_spellbook_shows_the_casting_numbers_the_slots_and_the_spells(signed_in,
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
 
     sticky = html.split('<div class="cs-sticky">')[1].split('<div class="cs-scroll">')[0]
-    assert "Wisdom" in sticky and "data-casting-dc" in sticky
+    assert "data-casting-dc" not in sticky  # the casting numbers live on the stats tab now
+    stats = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "stats")
+    assert "Wisdom" in stats and "data-casting-dc" in stats
     assert "My Spells" not in html
     assert 'name="q"' in sticky and "filter-popover" in sticky  # metrics, search and filters stick
     assert 'data-slot="1"' in html and html.count('class="pip-btn on"') == 2  # two 1st-level slots
@@ -1324,3 +1326,35 @@ def test_every_search_form_with_filters_has_a_clear_filters_button(signed_in, al
 
 def test_a_search_form_without_filters_has_no_clear_filters_button(signed_in):
     assert "data-filter-clear" not in signed_in.get("/world/languages/").content.decode()
+
+
+def test_casting_a_prepared_spell_spends_a_slot_of_that_level_and_a_cantrip_none(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    spell = cleric.spells.filter(spell__level=1, prepared=True).first().spell
+    cantrip = cleric.spells.filter(spell__level=0).first().spell
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
+    assert f'data-cast="{spell.pk}"' in html and f'data-cast="{cantrip.pk}"' in html
+
+    assert act(signed_in, cleric, action="cast", spell=cantrip.pk).status_code == 200
+    cleric.refresh_from_db()
+    assert cleric.spell_slots_spent == {}
+    assert act(signed_in, cleric, action="cast", spell=spell.pk, slot="1").status_code == 200
+    cleric.refresh_from_db()
+    assert cleric.spell_slots_spent == {"1": 1}
+    act(signed_in, cleric, action="cast", spell=spell.pk, slot="1")
+    assert act(signed_in, cleric, action="cast", spell=spell.pk, slot="1").status_code == 400
+    assert act(signed_in, cleric, action="cast", spell=spell.pk, slot="9").status_code == 400
+
+
+def test_the_owner_can_delete_a_character_and_only_the_owner(client, alice, bob):
+    hero = finished(alice, "cleric")
+    client.force_login(bob)
+    assert client.post(f"/characters/{hero.pk}/delete/").status_code == 403
+    assert Character.objects.filter(pk=hero.pk).exists()
+    assert f"/characters/{hero.pk}/delete/" not in client.get("/characters/").content.decode()
+
+    client.force_login(alice)
+    assert f"/characters/{hero.pk}/delete/" in client.get("/characters/").content.decode()
+    assert client.post(f"/characters/{hero.pk}/delete/").status_code == 302
+    assert not Character.objects.filter(pk=hero.pk).exists()

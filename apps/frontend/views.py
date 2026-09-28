@@ -315,22 +315,62 @@ def _format_ability_choice(raw_list):
     return f" {_('or')} ".join(alternatives)
 
 
+_WEAPON_PROPERTY_LABELS = {
+    "light": ("Light", "Leggera"),
+    "finesse": ("Finesse", "Accurata"),
+}
+
+
+def _format_weapon_filter(spec: str):
+    """A filtered weapon grant (`{"all": {"fromFilter": "type=martial weapon|property=light"}}`,
+    Monk/Rogue): "Martial weapons with the Light property"."""
+    parts = dict(p.split("=", 1) for p in spec.split("|") if "=" in p)
+    category = parts.get("type", "").removesuffix(" weapon")
+    properties = [
+        _pick_translation(_WEAPON_PROPERTY_LABELS, name).lower()
+        for name in parts.get("property", "").split(";")
+        if name
+    ]
+    text = (
+        _pick_translation(_WEAPON_CATEGORY_LABELS, category)
+        if category in _WEAPON_CATEGORY_LABELS
+        else category.capitalize()
+    )
+    if not properties:
+        return text
+    return _("%(category)s weapons with the %(properties)s property") % {
+        "category": text,
+        "properties": f" {_('or')} ".join(properties),
+    }
+
+
 def _format_flag_grant(raw_list):
     """A flat/choice proficiency-grant list shared by `Class.armor_proficiencies`/
     `weapon_proficiencies`/`tool_proficiencies` and `Background.tools` - each entry is either a
-    plain `{"name": true}` flag or an ad hoc placeholder+count/filter shape.
+    plain `{"name": true}` flag or an ad hoc placeholder+count/filter shape. Named flags come
+    first as a comma-separated line; the "choose N of this category" entries follow as one
+    bulleted list per count, under a "Choose N:" heading.
     """
     parts = []
+    choices: dict[int, list[str]] = {}
     for entry in raw_list or []:
         for key, value in entry.items():
             if value is True:
                 parts.append(_proficiency_label(key))
+            elif isinstance(value, bool):
+                continue
             elif isinstance(value, int):
-                choice = _pick_translation(_TOOL_CHOICE_LABELS, key)
-                parts.append(f"{_('Choose')} {value}: {choice}")
+                choices.setdefault(value, []).append(_pick_translation(_TOOL_CHOICE_LABELS, key))
             elif isinstance(value, dict):
-                parts.append(_proficiency_label(key))
-    return ", ".join(parts)
+                if isinstance(value.get("fromFilter"), str):
+                    parts.append(_format_weapon_filter(value["fromFilter"]))
+                else:
+                    parts.append(_proficiency_label(key))
+    html = format_html_join(", ", "{}", ((part,) for part in parts))
+    for count, options in choices.items():
+        items = format_html_join("", "<li>{}</li>", ((option,) for option in options))
+        html += format_html("<div>{} {}:</div><ul>{}</ul>", _("Choose"), count, items)
+    return html
 
 
 def _format_prerequisite(raw_list):

@@ -1,26 +1,7 @@
 {% load i18n %}
 {# The casting numbers, the toolbar, the search box and the filter buttons stay put while the rest scrolls. #}
-{% if spellbook.sources or spellbook.spells or can_edit %}
+{% if spellbook.spells or can_edit %}
 <div class="cs-sticky">
-  {% if spellbook.sources %}
-    <section class="cs-casting" data-casting>
-      <label class="cs-metric wide">
-        <span class="k">{% translate "Ability" %}</span>
-        <select data-casting-select aria-label="{% translate 'Spellcasting ability' %}">
-          {% for s in spellbook.sources %}
-            <option value="{{ forloop.counter0 }}" data-mod="{{ s.modifier|stringformat:'+d' }}" data-dc="{{ s.dc }}" data-atk="{{ s.attack|stringformat:'+d' }}">
-              {{ s.ability }}{% if s.origin and spellbook.sources|length > 1 %} ({{ s.origin }}){% endif %}
-            </option>
-          {% endfor %}
-        </select>
-      </label>
-      {% with first=spellbook.sources.0 %}
-        <div class="cs-metric"><span class="k">{% translate "Mod" %}</span><b data-casting-mod>{{ first.modifier|stringformat:"+d" }}</b></div>
-        <div class="cs-metric"><span class="k">{% translate "DC" %}</span><b data-casting-dc>{{ first.dc }}</b></div>
-        <div class="cs-metric"><span class="k">{% translate "Atk" %}</span><b data-casting-atk>{{ first.attack|stringformat:"+d" }}</b></div>
-      {% endwith %}
-    </section>
-  {% endif %}
   {% if can_edit %}
     <div class="cs-invbar">
       <span class="cs-weight">{% translate "Spells" %} <b>{{ spellbook.spells|length }}</b></span>

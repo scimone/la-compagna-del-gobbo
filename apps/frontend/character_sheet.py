@@ -455,6 +455,7 @@ def _casting_sources(stats, classes) -> list[dict]:
         )
         sources.append(
             {
+                "id": entry["source"],
                 "ability": ability_names.get(entry["ability"], entry["ability"]),
                 "origin": origin,
                 "modifier": stats.abilities[entry["ability"]]["modifier"],
@@ -490,7 +491,7 @@ def _spell_row(spell, status: str = "") -> dict:
     }
 
 
-def _spellbook_row(spell, status: str, removable: bool) -> dict:
+def _spellbook_row(spell, status: str, removable: bool, cast: dict | None = None) -> dict:
     """One of this character's own known spells as a list row - the exact same look and
     click-through-to-its-own-page behavior as the World's own Spells list (`world_feats()`'s
     sibling, `world_spells()`), reusing `_spell_row()`'s already-computed fields rather than
@@ -514,6 +515,8 @@ def _spellbook_row(spell, status: str, removable: bool) -> dict:
         "time": row["times"],
         "save": row["saves"],
     }
+    if cast:
+        row["cast"] = {"id": spell.pk, "level": spell.level, **cast}
     if removable:
         row["remove"] = {
             "act": "spell_remove",
@@ -542,7 +545,18 @@ def _spellbook_rows(character: Character, can_edit: bool) -> list[dict]:
         # A spell the player added by hand can be taken away again; the ones a class, species or
         # feat gave cannot.
         removable = can_edit and cs.source == play.SPELL_SOURCE
-        rows.append(_spellbook_row(cs.spell, status, removable))
+        # Cantrips and prepared spells can be cast (a slot for the latter); a ritual only sitting
+        # in the spellbook can still be cast as a ritual.
+        prepared = cs.prepared or cs.always_prepared
+        cast = None
+        if cs.spell.level == 0 or prepared or (cs.spell.ritual and cs.in_spellbook):
+            cast = {
+                "source": f"class:{cs.klass_id}" if cs.klass_id else "",
+                "ritual": cs.spell.ritual,
+                "slot": cs.spell.level > 0 and prepared,
+                "concentration": cs.spell.concentration,
+            }
+        rows.append(_spellbook_row(cs.spell, status, removable, cast))
     return rows
 
 
@@ -979,6 +993,26 @@ def _act_slots(character, post):
     play.set_slots_spent(character, key, spent, _slot_maximum(character, key))
 
 
+def _act_cast(character, post):
+    """Cast a spell: which slot pool pays for it (`slot`), or as a ritual (`ritual=1`)."""
+    spell = character.spells.select_related("spell").get(spell_id=post.get("spell", "")).spell
+    key = post.get("slot", "")
+    stats = derived_stats.compute(character)
+    classes = list(character.classes.select_related("klass"))
+    pool = next((p for p in _slots(character, stats, classes) if p["key"] == key), None)
+    if pool is None and spell.level > 0 and post.get("ritual") != "1":
+        raise ValueError("no such spell slot")
+    play.cast_spell(
+        character,
+        spell.pk,
+        slot_key=key,
+        slot_max=pool["max"] if pool else 0,
+        slot_level=pool["level"] if pool else 0,
+        ritual=post.get("ritual") == "1",
+    )
+    return {"message": _("Cast %(name)s") % {"name": spell.name}}
+
+
 def _act_xp(character, post):
     play.set_experience(character, _int(post, "value"))
     return True  # the progress bar under it moves
@@ -1112,6 +1146,7 @@ _ACTIONS["custom_add"] = _act_custom_add
 _ACTIONS["item_qty"] = _act_item_qty
 _ACTIONS["item_remove"] = _act_item_remove
 _ACTIONS["item_sell"] = _act_item_sell
+_ACTIONS["cast"] = _act_cast
 _ACTIONS["spell_add"] = _act_spell_add
 _ACTIONS["spell_remove"] = _act_spell_remove
 _ACTIONS["feature_add"] = _act_feature_add

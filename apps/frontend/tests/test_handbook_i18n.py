@@ -380,11 +380,13 @@ def test_class_ability_and_proficiency_facts_stay_english(client, catalogs):
 
 def test_class_weapon_proficiency_categories_are_translated_in_italian(client, catalogs):
     html = _get(client, "/world/classes/monk/", "it")
-    assert "Tutte, Semplici" in html
+    assert "Semplici" in html
+    assert "Da Guerra con la proprietà leggera" in html
     assert "Simple" not in html
 
     html = _get(client, "/world/classes/monk/", "en")
-    assert "All, Simple" in html
+    assert "Simple" in html
+    assert "Martial weapons with the light property" in html
 
 
 def test_background_ability_scores_use_translated_ability_names(client, catalogs):

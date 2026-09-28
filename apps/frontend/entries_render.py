@@ -556,10 +556,11 @@ def render_starting_equipment(options) -> SafeString:
         else:
             continue
         grouped.setdefault(opt.option, []).append(piece)
-    items_html = "".join(
-        f"<li><strong>{escape(option)}:</strong> {escape(', '.join(pieces))}</li>"
-        for option, pieces in sorted(grouped.items())
-    )
+    lines = [escape(", ".join(pieces)) for _option, pieces in sorted(grouped.items())]
+    items_html = "".join(f"<li>{line}</li>" for line in lines)
+    if len(lines) > 1:
+        # Alternatives (A/B/C on the source): "Choose 1:" above them instead of a letter each.
+        return mark_safe(f"<div>{escape(gettext('Choose'))} 1:</div><ul>{items_html}</ul>")
     return mark_safe(f"<ul>{items_html}</ul>")
 
 

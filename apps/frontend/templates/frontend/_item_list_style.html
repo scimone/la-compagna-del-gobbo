@@ -156,6 +156,27 @@
 
   /* A row's own small removable action (see `item.remove` in `_list_item.html`) - same box as
      `.item-bookmark`, a plain muted colour since it's a one-shot action, not a toggled state. */
+  .item-cast {
+    appearance: none;
+    flex-shrink: 0;
+    align-self: center;
+    margin: 0 0.3rem;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--accent);
+    border-radius: 1rem;
+    background: none;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  .item-cast:active {
+    background: var(--accent);
+    color: var(--accent-text);
+  }
+
   .item-remove {
     appearance: none;
     flex-shrink: 0;

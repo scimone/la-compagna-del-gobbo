@@ -308,7 +308,7 @@ msgstr "Scurovisione"
 
 #: apps/frontend/views.py
 msgid "Features"
-msgstr "Caratteristiche"
+msgstr "Privilegi"
 
 #: apps/frontend/views.py
 msgid "Proficiency Bonus"
@@ -1473,3 +1473,51 @@ msgstr "Rimuovere questo privilegio?"
 #: apps/frontend/templates/frontend/_search_form.html
 msgid "Clear filters"
 msgstr "Azzera i filtri"
+
+#: apps/frontend/views.py
+#, python-format
+msgid "%(category)s weapons with the %(properties)s property"
+msgstr "%(category)s con la proprietà %(properties)s"
+
+#: apps/frontend/character_sheet.py
+#, python-format
+msgid "Cast %(name)s"
+msgstr "Lanciato %(name)s"
+
+#: apps/frontend/templates/frontend/_list_item.html
+#: apps/frontend/templates/frontend/characters/sheet/_cast_dialog.html
+msgid "Cast"
+msgstr "Lancia"
+
+#: apps/frontend/templates/frontend/characters/sheet/_cast_dialog.html
+#: apps/frontend/templates/frontend/characters/list.html
+msgid "Cancel"
+msgstr "Annulla"
+
+#: apps/frontend/templates/frontend/characters/sheet/_cast_dialog.html
+msgid "Do you really want to cast this spell?"
+msgstr "Vuoi davvero lanciare questo incantesimo?"
+
+#: apps/frontend/templates/frontend/characters/sheet/_cast_dialog.html
+msgid "Cast as a ritual (takes 10 minutes longer, no slot used)"
+msgstr "Lancia come rituale (richiede 10 minuti in più, nessuno slot usato)"
+
+#: apps/frontend/templates/frontend/characters/sheet/_cast_dialog.html
+msgid "Requires Concentration: you lose any other spell you are concentrating on."
+msgstr "Richiede Concentrazione: perdi qualsiasi altro incantesimo su cui ti stai concentrando."
+
+#: apps/frontend/templates/frontend/characters/sheet/_cast_dialog.html
+msgid "No spell slot of a high enough level left."
+msgstr "Nessuno slot incantesimo di livello sufficiente rimasto."
+
+#: apps/frontend/templates/frontend/characters/list.html
+msgid "Delete"
+msgstr "Elimina"
+
+#: apps/frontend/templates/frontend/characters/list.html
+msgid "Delete character"
+msgstr "Elimina personaggio"
+
+#: apps/frontend/templates/frontend/characters/list.html
+msgid "Do you really want to delete this character?"
+msgstr "Vuoi davvero eliminare questo personaggio?"
