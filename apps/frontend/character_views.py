@@ -132,7 +132,8 @@ def characters_list(request):
 
 def _summary(character: Character, can_delete: bool = False) -> dict:
     classes = ", ".join(
-        f"{c.klass.name} {c.level}" for c in character.classes.select_related("klass")
+        f"{c.klass.name} {_('Level').lower()} {c.level}"
+        for c in character.classes.select_related("klass")
     )
     return {
         "character": character,
@@ -142,6 +143,11 @@ def _summary(character: Character, can_delete: bool = False) -> dict:
         ),
         "owner": character.owner.get_username() if character.owner else "",
         "can_delete": can_delete,
+        "portrait": (
+            f"{reverse('character-portrait', args=[character.pk])}?v={character.portrait.name}"
+            if character.portrait
+            else ""
+        ),
     }
 
 
@@ -553,8 +559,11 @@ def _describe_equipment(pk):
         facts.append((_("Damage"), _damage_text(item)))
     if item.ac:
         facts.append((_("Armor Class"), item.ac))
-    if properties := ", ".join(p.name for p in item.properties.all()):
-        facts.append((_("Properties"), properties))
+    property_names = [p.name for p in item.properties.all()]
+    if item.range:  # Thrown / Ammunition weapons: the range is one more property
+        property_names.append(f"{_('Range')} {units.weapon_range(item.range)}")
+    if property_names:
+        facts.append((_("Properties"), ", ".join(property_names)))
     if masteries := ", ".join(m.name for m in item.masteries.all()):
         facts.append((_("Mastery"), masteries))
     if item.value:

@@ -1589,3 +1589,11 @@ msgstr "Almeno 8 ore (6 di sonno). Recuperi tutti i punti ferita e tutti i Dadi 
 #: apps/frontend/templates/frontend/characters/sheet/_rest_dialog.html
 msgid "Take a long rest"
 msgstr "Fai un riposo lungo"
+
+#: apps/frontend/views.py
+msgid "Search Features, Feats and Traits"
+msgstr "Cerca privilegi, talenti e tratti"
+
+#: apps/frontend/templates/frontend/base.html
+msgid "Confirm"
+msgstr "Conferma"

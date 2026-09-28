@@ -575,6 +575,30 @@
       display: none;
     }
 
+    /* The confirmation popup (`confirm.js`) and the character sheet's own dialogs share this look. */
+    dialog.app-dialog, dialog.cs-cast {
+      max-width: 24rem;
+      width: calc(100% - 2rem);
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 0.8rem;
+      background: var(--surface);
+      color: var(--text);
+    }
+    dialog.app-dialog::backdrop, dialog.cs-cast::backdrop { background: rgba(0, 0, 0, 0.5); }
+    .app-dialog-message { margin: 0 0 1rem; white-space: pre-line; }
+    .app-dialog-buttons { display: flex; justify-content: flex-end; gap: 0.6rem; }
+    .app-dialog-buttons button {
+      padding: 0.45rem 1.1rem;
+      border-radius: 1rem;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .app-dialog-buttons button.ok { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+
     /* "Clear filters" (see `_search_form.html`/`filter_clear.js`): only there while some filter is
        set - a non-"All" pill, a ticked checkbox or a picked dropdown option. Pure CSS, so it
        follows every change of the form (live search, the character sheet's own filtering) with no
@@ -1033,6 +1057,8 @@
     </script>
   {% endif %}
 
+  <script>window.APP_CONFIRM_LABELS = { cancel: "{% translate 'Cancel' %}", ok: "{% translate 'Confirm' %}" };</script>
+  <script src="{% static 'js/confirm.js' %}"></script>
   <script src="{% static 'js/filter_clear.js' %}"></script>
   <script src="{% static 'js/navigation.js' %}"></script>
 </body>

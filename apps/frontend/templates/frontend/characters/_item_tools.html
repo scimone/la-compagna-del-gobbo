@@ -10,8 +10,7 @@
         {% if cost and can_afford %}
           {% blocktranslate with price=cost asvar buy_confirm %}Buy for {{ price }}?{% endblocktranslate %}
           {% blocktranslate with left=left asvar buy_left %}You will have {{ left }} left.{% endblocktranslate %}
-          <button type="submit" name="action" value="item_buy" class="outline" data-confirm="{{ buy_confirm }}&#10;{{ buy_left }}"
-                  onclick="return confirm(this.dataset.confirm)">{% translate "Buy" %} · {{ cost }}</button>
+          <button type="submit" name="action" value="item_buy" class="outline" data-app-confirm="{{ buy_confirm }}&#10;{{ buy_left }}">{% translate "Buy" %} · {{ cost }}</button>
         {% endif %}
         <button type="submit" name="action" value="item_add" class="primary">{% translate "Add" %}</button>
       </form>
@@ -35,7 +34,7 @@
           <form method="post">{% csrf_token %}<input type="hidden" name="action" value="item_sell"><input type="hidden" name="quantity" value="{{ card.quantity }}">
             <button type="submit" class="outline">{% blocktranslate with price=card.sell_all %}Sell all for {{ price }}{% endblocktranslate %}</button></form>
         {% endif %}
-        <form method="post" onsubmit="return confirm(this.dataset.confirm)" data-confirm="{% translate 'Remove this item?' %}">{% csrf_token %}<input type="hidden" name="action" value="item_remove">
+        <form method="post" data-app-confirm="{% translate 'Remove this item?' %}">{% csrf_token %}<input type="hidden" name="action" value="item_remove">
           <button type="submit" class="quiet">{% translate "Remove" %}</button></form>
       </div>
       {% if card.sell_one %}

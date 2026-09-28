@@ -1452,7 +1452,7 @@ def world_feats(request):
         world_tabs=True,
         compact_thumbs=True,
         search_query=q,
-        search_placeholder=_("Search feats and features"),
+        search_placeholder=_("Search Features, Feats and Traits"),
         filters=[
             type_filter,
             category_filter,

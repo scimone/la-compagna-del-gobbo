@@ -109,7 +109,7 @@
 
     {% block footer %}
       <form method="post" action="{% url 'character-discard' character.pk %}" class="discard" data-nav="root"
-            onsubmit="return confirm('{% translate 'Discard this character?' %}');">
+            data-app-confirm="{% translate 'Discard this character?' %}">
         {% csrf_token %}
         <button type="submit">{% translate "Discard this character" %}</button>
       </form>

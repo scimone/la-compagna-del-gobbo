@@ -695,6 +695,8 @@ def _item_card(kind: str, row, pack_name: str = "") -> dict:
     if not custom:
         if eq.damage_dice:
             detail.append(_damage_text(eq))
+        if eq.range:
+            detail.append(f"{_('Range')} {units.weapon_range(eq.range)}")
         if eq.type_id in play.BODY_ARMOR_TYPES and eq.ac:
             detail.append(f"{_('AC')} {eq.ac}")
         elif eq.type_id == play.SHIELD_TYPE and eq.ac:

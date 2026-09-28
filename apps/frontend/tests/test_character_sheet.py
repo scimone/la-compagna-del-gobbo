@@ -1438,3 +1438,23 @@ def test_the_rest_buttons_and_the_resources_show_and_the_actions_work(signed_in,
     wind = fighter.resources.get(name="Second Wind")
     act(signed_in, fighter, action="resource", id=wind.pk, delta="-1")
     assert fighter.resources.get(name="Second Wind").current_uses == wind.max_uses - 1
+
+
+def test_a_thrown_or_ranged_weapon_lists_its_range_as_a_property(signed_in, alice):
+    response = signed_in.get("/characters/describe/equipment/dagger/")
+    assert response.status_code == 200
+    html = response.content.decode()
+    assert "Range 6/18 m" in html  # 20/60 ft
+    assert (
+        "Range 45/180 m"
+        in signed_in.get("/characters/describe/equipment/longbow/").content.decode()
+    )
+    assert "Range" not in signed_in.get("/characters/describe/equipment/club/").content.decode()
+
+
+def test_the_overview_shows_a_picture_and_level_wording(signed_in, alice):
+    finished(alice, "monk")
+
+    html = signed_in.get("/characters/").content.decode()
+
+    assert 'class="pic"' in html and "Monk level 1" in html

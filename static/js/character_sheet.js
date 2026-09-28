@@ -246,6 +246,7 @@
     var button = event.target.closest("button[data-act]");
     if (button && !button.disabled) {
       event.preventDefault();
+      var ask = "";
       if (button.dataset.buy) {
         // The price and what is left afterwards, both worked out from the purse as it stands right
         // now (this sheet is fetched once and never refreshed, so a static confirmation could go
@@ -255,15 +256,18 @@
           root.dataset.fmtBuyConfirm.replace("%(price)s", copperLabel(cost)) +
           "\n" +
           root.dataset.fmtBuyLeft.replace("%(left)s", copperLabel(Math.max(0, purseCopper() - cost)));
-        if (!window.confirm(confirmText)) return;
-      } else if (button.dataset.confirm && !window.confirm(button.dataset.confirm)) {
-        return;
+        ask = confirmText;
+      } else if (button.dataset.confirm) {
+        ask = button.dataset.confirm;
       }
-      send(paramsOf(button)).then(function (accepted) {
-        if (accepted && button.dataset.done) {
-          button.textContent = button.dataset.done;
-          button.disabled = true;
-        }
+      (ask ? window.appConfirm(ask) : Promise.resolve(true)).then(function (ok) {
+        if (!ok) return;
+        send(paramsOf(button)).then(function (accepted) {
+          if (accepted && button.dataset.done) {
+            button.textContent = button.dataset.done;
+            button.disabled = true;
+          }
+        });
       });
     }
   });
@@ -789,10 +793,12 @@
           root.dataset.fmtBuyConfirm.replace("%(price)s", copperLabel(cost)) +
           "\n" +
           root.dataset.fmtBuyLeft.replace("%(left)s", copperLabel(Math.max(0, purseCopper() - cost)));
-        if (!window.confirm(confirmText)) return;
         params.buy = "1";
       }
-      send(params).then(function (accepted) {
+      (params.buy ? window.appConfirm(confirmText) : Promise.resolve(true)).then(function (ok) {
+        if (!ok) return null;
+        return send(params);
+      }).then(function (accepted) {
         if (!accepted) return;
         overlay.querySelectorAll("[data-custom-form] [name]").forEach(function (field) {
           if (field.type === "checkbox") field.checked = false;
@@ -850,10 +856,12 @@
   root.addEventListener("click", function (event) {
     var remove = event.target.closest("[data-portrait-remove]");
     if (!remove) return;
-    if (remove.dataset.confirm && !window.confirm(remove.dataset.confirm)) return;
-    var body = new FormData();
-    body.append("remove", "1");
-    sendPortrait(body);
+    (remove.dataset.confirm ? window.appConfirm(remove.dataset.confirm) : Promise.resolve(true)).then(function (ok) {
+      if (!ok) return;
+      var body = new FormData();
+      body.append("remove", "1");
+      sendPortrait(body);
+    });
   });
 
   // ---- (re)applied after the sheet is swapped ---------------------------------------------

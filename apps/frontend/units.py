@@ -52,6 +52,15 @@ def distance(feet: float, *, long: bool = False) -> str:
     return f"{_number(metres, decimal)} m"
 
 
+def weapon_range(text: str) -> str:
+    """A weapon's `Equipment.range` (`"20/60"`: normal/long range in feet) as `6/18 m`."""
+    metres = [
+        _number(float(part) * FEET_TO_METRES, "," if _italian() else ".")
+        for part in text.split("/")
+    ]
+    return f"{'/'.join(metres)} m"
+
+
 def range_label(label: str) -> str:
     """A `spell_service.range_label()` value (`Self`, `Touch`, `120 feet`, `1 mile`, ...) as it
     should read on the current site."""

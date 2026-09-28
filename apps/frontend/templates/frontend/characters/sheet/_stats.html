@@ -6,24 +6,6 @@
 <div class="cs-scroll">
 <section class="cs-stats" aria-label="{% translate 'Quick stats' %}">
 
-  {# Experience: the number, and how far it is to the next level. #}
-  <div class="cs-card cs-xp">
-    <div class="cs-card-head">
-      <label class="k" for="cs-xp">{% translate "Experience Points" %}</label>
-      <span class="xp-val">
-        {% if can_edit %}
-          <input id="cs-xp" type="number" min="0" inputmode="numeric" value="{{ header.xp }}" data-act="xp" data-bind="xp">
-        {% else %}
-          <b>{{ header.xp }}</b>
-        {% endif %}
-        {% if header.next_xp %}<span class="of">/ {{ header.next_xp }}</span>{% endif %}
-      </span>
-    </div>
-    {% if header.next_xp %}
-      <div class="cs-bar" role="progressbar" aria-label="{% translate 'Progress to the next level' %}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ header.xp_progress }}" style="--pct: {{ header.xp_progress }}%"><i></i></div>
-    {% endif %}
-  </div>
-
   {# Armor Class, Initiative, Speed: the numbers of a fight. #}
   <div class="cs-card cs-tile third">
     <span class="ac-emblem">
@@ -167,5 +149,23 @@
     </section>
     </div>
   {% endif %}
+
+  {# Experience: the number, and how far it is to the next level. #}
+  <div class="cs-card cs-xp">
+    <div class="cs-card-head">
+      <label class="k" for="cs-xp">{% translate "Experience Points" %}</label>
+      <span class="xp-val">
+        {% if can_edit %}
+          <input id="cs-xp" type="number" min="0" inputmode="numeric" value="{{ header.xp }}" data-act="xp" data-bind="xp">
+        {% else %}
+          <b>{{ header.xp }}</b>
+        {% endif %}
+        {% if header.next_xp %}<span class="of">/ {{ header.next_xp }}</span>{% endif %}
+      </span>
+    </div>
+    {% if header.next_xp %}
+      <div class="cs-bar" role="progressbar" aria-label="{% translate 'Progress to the next level' %}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ header.xp_progress }}" style="--pct: {{ header.xp_progress }}%"><i></i></div>
+    {% endif %}
+  </div>
 </section>
 </div>

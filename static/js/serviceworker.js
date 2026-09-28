@@ -1,4 +1,4 @@
-var staticCacheName = "dnd-pwa-v2";
+var staticCacheName = "dnd-pwa-v3";
 
 self.addEventListener("install", function (event) {
   // Take over immediately on next load instead of waiting for every open tab running the
@@ -7,7 +7,7 @@ self.addEventListener("install", function (event) {
   self.skipWaiting();
   event.waitUntil(
     caches.open(staticCacheName).then(function (cache) {
-      return cache.addAll(["/"]);
+      return cache.addAll(["/characters/"]);
     })
   );
 });
