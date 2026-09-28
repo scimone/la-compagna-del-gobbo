@@ -240,11 +240,11 @@ def test_class_level_table_headers_and_units_are_translated_in_italian(client, c
     assert "+15 ft." not in html
 
 
-def test_class_level_table_stays_imperial_in_english(client, catalogs):
+def test_class_level_table_is_metric_in_english(client, catalogs):
     html = _get(client, "/world/classes/monk/", "en")
 
     assert "Unarmored Movement" in html
-    assert "+10 ft." in html
+    assert "+3 m" in html
     assert "Punti concentrazione" not in html
 
 
@@ -257,9 +257,10 @@ def test_species_speed_and_darkvision_show_in_metres_on_the_italian_site(client,
     assert "36 m" in html  # Darkvision 120 ft.
 
 
-def test_species_speed_and_darkvision_stay_imperial_in_english(client, catalogs):
+def test_species_speed_and_darkvision_are_metric_in_english(client, catalogs):
     html = _get(client, "/world/species/elf/", "en")
-    assert "30 ft." in html
+    assert "9 m" in html
+    assert "30 ft." not in html
 
 
 def test_spell_range_shows_in_metric_on_the_italian_site(client, catalogs):
@@ -269,7 +270,7 @@ def test_spell_range_shows_in_metric_on_the_italian_site(client, catalogs):
     assert "150 feet" not in html
 
     html = _get(client, "/world/spells/fireball/", "en")
-    assert "150 feet" in html
+    assert "45 meters" in html
 
 
 def test_spell_range_filter_shows_metric_labels_on_the_italian_site(client, catalogs):
@@ -356,7 +357,7 @@ def test_english_fallback_text_shows_metric_measurements_on_the_italian_site(cli
     assert "10 feet" not in html
 
     html = _get(client, "/world/spells/thorn-whip/", "en")
-    assert "10 feet" in html
+    assert "3 meters" in html and "10 feet" not in html
 
 
 def test_class_ability_and_proficiency_facts_are_translated_in_italian(client, catalogs):

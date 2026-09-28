@@ -21,10 +21,11 @@ def test_distance_converts_feet_to_metres():
     assert units.distance(0) == "0 m"
 
 
-def test_distance_stays_imperial_in_english():
+def test_distance_is_metric_in_english_too():
     with translation.override("en"):
-        assert units.distance(30) == "30 ft."
-        assert units.distance(15) == "15 ft."
+        assert units.distance(30) == "9 m"
+        assert units.distance(15) == "4.5 m"
+        assert units.distance(30, long=True) == "9 meters"
 
 
 def test_range_label_converts_feet_and_miles():
@@ -40,9 +41,10 @@ def test_range_label_translates_the_word_labels():
     assert units.range_label("Unlimited") == "Illimitata"
 
 
-def test_range_label_stays_english_outside_italian():
+def test_range_label_is_metric_but_english_worded_outside_italian():
     with translation.override("en"):
-        assert units.range_label("120 feet") == "120 feet"
+        assert units.range_label("120 feet") == "36 meters"
+        assert units.range_label("1 mile") == "1.5 kilometers"
         assert units.range_label("Self") == "Self"
 
 
@@ -65,6 +67,6 @@ def test_metricize_text_leaves_non_measurements_alone():
     assert units.metricize_text(None) is None
 
 
-def test_metricize_text_is_a_no_op_in_english():
+def test_metricize_text_converts_in_english_too():
     with translation.override("en"):
-        assert units.metricize_text("You move 30 feet.") == "You move 30 feet."
+        assert units.metricize_text("You move 30 feet.") == "You move 9 meters."

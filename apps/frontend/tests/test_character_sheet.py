@@ -417,7 +417,7 @@ def test_inventory_has_a_fixed_pouch_and_one_list_style_with_details_on_one_line
     )
     detail = re.search(r'class="item-detail">([^<]*)<', mace.group(1)).group(1)
     assert (
-        detail.startswith("1d6") and "lb." in detail and "gp" in detail
+        detail.startswith("1d6") and "kg" in detail and "gp" in detail
     )  # one line: damage, weight, cost
     # A link to the item's page, no toggle arrow - like the Features and Spellbook rows - under
     # section headings that stay in view like the spellbook's.
@@ -817,7 +817,7 @@ def test_a_custom_item_is_listed_in_its_section_and_sold_at_its_own_price(signed
 
     assert response.status_code == 200 and response.json()["message"] == "Added Ruby"
     ruby = cleric.custom_items.get()
-    assert (ruby.quantity, ruby.weight, ruby.value, ruby.valuable) == (2, 0.5, 5000, True)
+    assert (ruby.quantity, ruby.weight, ruby.value, ruby.valuable) == (2, 1.0, 5000, True)  # 0.5 kg
     assert ruby.type_label == "Gemstone"
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "inventory")
     assert "Ruby" in html and "Gemstone" in html  # the type is in the detail line
@@ -1358,3 +1358,38 @@ def test_the_owner_can_delete_a_character_and_only_the_owner(client, alice, bob)
     assert f"/characters/{hero.pk}/delete/" in client.get("/characters/").content.decode()
     assert client.post(f"/characters/{hero.pk}/delete/").status_code == 302
     assert not Character.objects.filter(pk=hero.pk).exists()
+
+
+def test_the_anna_account_is_an_admin_who_can_delete_and_edit_anyones_character(client, alice):
+    hero = finished(alice, "cleric")
+    anna = get_user_model().objects.create_user("Anna")
+    client.force_login(anna)
+
+    assert (
+        client.post(f"/characters/{hero.pk}/act/", {"action": "xp", "value": "5"}).status_code
+        == 200
+    )
+    assert client.post(f"/characters/{hero.pk}/delete/").status_code == 302
+    assert not Character.objects.filter(pk=hero.pk).exists()
+
+
+def test_a_character_in_creation_can_be_deleted_from_the_overview(signed_in, alice):
+    draft = build_character(alice, "cleric", "acolyte", "human", "Draft")
+    assert f"/characters/{draft.pk}/delete/" in signed_in.get("/characters/").content.decode()
+
+    assert signed_in.post(f"/characters/{draft.pk}/delete/").status_code == 302
+    assert not Character.objects.filter(pk=draft.pk).exists()
+
+
+def test_a_cast_button_is_hidden_when_no_slot_is_left_for_the_spell(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    spell = cleric.spells.filter(spell__level=1, prepared=True, spell__ritual=False).first().spell
+    tag = f'data-cast="{spell.pk}"'
+
+    html = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
+    assert tag in html and "hidden" not in re.search(
+        r"<button[^>]*" + re.escape(tag) + r"[^>]*>", html
+    ).group(0)
+    play.set_slots_spent(cleric, "1", 2, 2)
+    html = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
+    assert "hidden" in re.search(r"<button[^>]*" + re.escape(tag) + r"[^>]*>", html).group(0)

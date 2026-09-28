@@ -1,9 +1,10 @@
-"""Metric display for the Italian site.
+"""Metric display, on both the Italian and the English site.
 
 The rules data is stored in imperial units (feet, miles, pounds - the source is the English SRD),
 but the Italian SRD - and so the Italian site - uses the metric system, with the SRD's own
 conversions: 5 feet = 1,5 m (so feet x 0.3), 1 mile = 1,5 km, 1 pound = 0,5 kg. Everything below
-converts only for display, only while Italian is the active language; English output is unchanged.
+converts only for display. The English site is metric too now (decimal point, "m"/"km"/"kg");
+only the wording of long forms and of range words differs per language.
 
 Translated paragraphs already contain metric values, so `metricize_text()` only ever matches the
 English wording ("30 feet", "20-foot-radius", "5 pounds") in the paragraphs that still fall back to
@@ -23,6 +24,11 @@ POUNDS_TO_KG = 0.5
 
 
 def is_metric() -> bool:
+    """Always: both languages are shown in metric units (kept as a function for its callers)."""
+    return True
+
+
+def _italian() -> bool:
     return (translation.get_language() or "en").startswith("it")
 
 
@@ -33,29 +39,34 @@ def _number(value: float, decimal: str) -> str:
 
 
 def distance(feet: float, *, long: bool = False) -> str:
-    """A length given in feet: `30 ft.` in English, `9 m` (or `9 metri`) in Italian."""
-    if not is_metric():
-        return f"{_number(feet, '.')} ft."
+    """A length given in feet: `9 m` (or `9 metri`/`9 meters`, with `long`) - a decimal comma in
+    Italian, a point in English."""
     metres = feet * FEET_TO_METRES
+    decimal = "," if _italian() else "."
     if long:
-        return f"{_number(metres, ',')} {'metro' if metres == 1 else 'metri'}"
-    return f"{_number(metres, ',')} m"
+        if _italian():
+            word = "metro" if metres == 1 else "metri"
+        else:
+            word = "meter" if metres == 1 else "meters"
+        return f"{_number(metres, decimal)} {word}"
+    return f"{_number(metres, decimal)} m"
 
 
 def range_label(label: str) -> str:
     """A `spell_service.range_label()` value (`Self`, `Touch`, `120 feet`, `1 mile`, ...) as it
     should read on the current site."""
-    if not is_metric():
-        return label
-    words = {"Self": "Sé", "Touch": "Contatto", "Sight": "Vista", "Unlimited": "Illimitata"}
-    if label in words:
-        return words[label]
+    if _italian():
+        words = {"Self": "Sé", "Touch": "Contatto", "Sight": "Vista", "Unlimited": "Illimitata"}
+        if label in words:
+            return words[label]
     match = re.fullmatch(r"(\d+(?:\.\d+)?) (feet|foot|miles?)", label)
     if not match:
         return label
     amount = float(match.group(1))
     if match.group(2).startswith("mile"):
-        return f"{_number(amount * MILES_TO_KM, ',')} chilometri"
+        if _italian():
+            return f"{_number(amount * MILES_TO_KM, ',')} chilometri"
+        return f"{_number(amount * MILES_TO_KM, '.')} kilometers"
     return distance(amount, long=True)
 
 
@@ -87,7 +98,7 @@ def metricize_text(text: str) -> str:
     "20-foot-radius" -> "6-meter-radius", "1 mile" -> "1.5 kilometers", "5 pounds" -> "2.5
     kilograms"), used only for English paragraphs shown on an Italian page.
     """
-    if not is_metric() or not text:
+    if not text:
         return text
     text = _FEET.sub(lambda m: _convert(m, FEET_TO_METRES, "meter", "meters", "m"), text)
     text = _MILES.sub(lambda m: _convert(m, MILES_TO_KM, "kilometer", "kilometers", "km"), text)

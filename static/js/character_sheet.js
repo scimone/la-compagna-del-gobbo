@@ -209,6 +209,7 @@
 
     updateBuyButtons();
     updateCustomBuy();
+    updateCastButtons();
   }
 
   // A row of pips (spell slots, Hit Dice) with `left` of them filled. Each pip carries the delta it
@@ -477,6 +478,15 @@
     dialog.querySelector("[data-cast-confirm]").disabled = needsSlot && !slotSelect.options.length;
   }
 
+  // Only a spell that can be cast right now shows its Cast button: a cantrip or a ritual always,
+  // any other one while a slot of its level or higher is left (read live, like the dialog).
+  function updateCastButtons() {
+    root.querySelectorAll(".item-cast").forEach(function (button) {
+      var level = Number(button.dataset.castLevel);
+      button.hidden = !(level === 0 || button.dataset.castRitual === "1" || castPools(level).length);
+    });
+  }
+
   function openCast(button) {
     var dialog = document.getElementById("cs-cast-dialog");
     if (!dialog || !dialog.showModal) return;
@@ -487,16 +497,10 @@
     dialog._level = level;
     var name = button.closest("li").querySelector(".item-name");
     dialog.querySelector("[data-cast-title]").textContent = name ? name.textContent.trim() : "";
-    // The ability: the stats tab's own choices, the spell's own class first.
-    var select = dialog.querySelector("[data-casting-select]");
-    var source = root.querySelector(".cs-stats [data-casting-select]");
-    select.innerHTML = source.innerHTML;
-    var index = 0;
-    Array.prototype.forEach.call(select.options, function (option, i) {
-      if (button.dataset.castSource && option.dataset.id === button.dataset.castSource) index = i;
+    // The casting numbers of the spell's own class, worked out by the server.
+    ["ability", "mod", "dc", "atk"].forEach(function (key) {
+      dialog.querySelector("[data-cast-" + key + "]").textContent = button.dataset["cast" + key.charAt(0).toUpperCase() + key.slice(1)];
     });
-    select.selectedIndex = index;
-    select.dispatchEvent(new Event("change", { bubbles: true }));
     var slotSelect = dialog.querySelector("[data-cast-slot]");
     slotSelect.innerHTML = "";
     if (level > 0 && canSlot) {

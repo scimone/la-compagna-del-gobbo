@@ -99,11 +99,11 @@ def characters_list(request):
     finished = Character.objects.filter(status=Character.STATUS_COMPLETE).select_related(
         "owner", "species"
     )
-    drafts = (
-        Character.objects.filter(status=Character.STATUS_DRAFT, owner=request.user)
-        if request.user.is_authenticated
-        else Character.objects.none()
-    )
+    drafts = Character.objects.none()
+    if access.is_admin(request.user):
+        drafts = Character.objects.filter(status=Character.STATUS_DRAFT)
+    elif request.user.is_authenticated:
+        drafts = Character.objects.filter(status=Character.STATUS_DRAFT, owner=request.user)
     items = [
         _summary(c, access.can_edit(request.user, c))
         for c in finished
@@ -115,7 +115,11 @@ def characters_list(request):
         {
             "page_title": _("Characters"),
             "drafts": [
-                {"character": c, "url": _step_url(c, creation.get_state(c)["current"])}
+                {
+                    "character": c,
+                    "url": _step_url(c, creation.get_state(c)["current"]),
+                    "owner": c.owner.get_username() if c.owner_id != request.user.id else "",
+                }
                 for c in drafts
             ],
             "characters": items,

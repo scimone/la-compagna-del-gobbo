@@ -596,6 +596,25 @@ def _spell_filters(rows: list[dict]) -> list[dict]:
     ]
 
 
+def _finish_cast(cast: dict, sources: list[dict], slots: list[dict]) -> None:
+    """Fill in what the cast dialog shows for one spell: the casting numbers of the spell's own
+    class (a spell from a species or feat: the first non-class source, else the first), and
+    whether a slot is left to cast it with - a cantrip or a ritual needs none."""
+    source = next((s for s in sources if s["id"] == cast["source"]), None)
+    if source is None:
+        source = next((s for s in sources if not s["id"].startswith("class:")), None)
+    source = source or (sources[0] if sources else {})
+    cast["ability"] = source.get("ability", "")
+    cast["modifier"] = f"{source.get('modifier', 0):+d}"
+    cast["dc"] = source.get("dc", "")
+    cast["attack"] = f"{source.get('attack', 0):+d}"
+    cast["available"] = (
+        cast["level"] == 0
+        or cast["ritual"]
+        or any(p["level"] >= cast["level"] and p["left"] > 0 for p in slots)
+    )
+
+
 def _spellbook(request, character: Character, stats, classes, can_edit: bool) -> dict:
     rows = _spellbook_rows(character, can_edit)
     bookmark_kind = "spell" if request.user.is_authenticated else None
@@ -604,6 +623,11 @@ def _spellbook(request, character: Character, stats, classes, can_edit: bool) ->
         for row in rows:
             row["bookmarked"] = str(row["pk"]) in bookmarked
     slots = _slots(character, stats, classes)
+    sources = _casting_sources(stats, classes)
+    for row in rows:
+        cast = row.get("cast")
+        if cast:
+            _finish_cast(cast, sources, slots)
     # Grouped by level for the spell list's own sticky headings, each with the slot pool(s) spent
     # at that level next to it (there can be more than one - a Pact Magic pool lands wherever its
     # own level is, alongside a multiclass table's slots of that same level, if both exist). A
@@ -630,7 +654,7 @@ def _spellbook(request, character: Character, stats, classes, can_edit: bool) ->
     # World Spells list, which has no such grouping of its own.
     filters = [f for f in _spell_filters(rows) if f["name"] not in ("level", "class")]
     return {
-        "sources": _casting_sources(stats, classes),
+        "sources": sources,
         "spell_groups": groups,
         "spells": rows,
         "spell_filters": filters,

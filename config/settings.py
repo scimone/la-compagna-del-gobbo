@@ -250,3 +250,7 @@ PWA_APP_ICONS_APPLE = [
 PWA_APP_SPLASH_SCREEN = []
 PWA_APP_DIR = "ltr"
 PWA_APP_LANG = "en-US"
+
+# Accounts (usernames, lower case) that may see and change every character, other accounts' too -
+# see `apps.characters.services.access.is_admin`.
+ADMIN_ACCOUNTS = ["anna"]

@@ -5,13 +5,10 @@
   <h3 data-cast-title></h3>
   <p class="cs-cast-ask">{% translate "Do you really want to cast this spell?" %}</p>
   <div class="cs-casting" data-casting>
-    <label class="cs-metric wide">
-      <span class="k">{% translate "Ability" %}</span>
-      <select data-casting-select data-cast-source aria-label="{% translate 'Spellcasting ability' %}"></select>
-    </label>
-    <div class="cs-metric"><span class="k">{% translate "Mod" %}</span><b data-casting-mod></b></div>
-    <div class="cs-metric"><span class="k">{% translate "DC" %}</span><b data-casting-dc></b></div>
-    <div class="cs-metric"><span class="k">{% translate "Atk" %}</span><b data-casting-atk></b></div>
+    <div class="cs-metric wide"><span class="k">{% translate "Ability" %}</span><b data-cast-ability></b></div>
+    <div class="cs-metric"><span class="k">{% translate "Mod" %}</span><b data-cast-mod></b></div>
+    <div class="cs-metric"><span class="k">{% translate "DC" %}</span><b data-cast-dc></b></div>
+    <div class="cs-metric"><span class="k">{% translate "Atk" %}</span><b data-cast-atk></b></div>
   </div>
   <label class="cs-cast-field" data-cast-slot-field><span class="k">{% translate "Spell slot" %}</span>
     <select data-cast-slot></select>
