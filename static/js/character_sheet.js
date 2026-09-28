@@ -472,7 +472,8 @@
     var ritual = dialog.querySelector("[data-cast-ritual]").checked;
     var slotField = dialog.querySelector("[data-cast-slot-field]");
     var slotSelect = dialog.querySelector("[data-cast-slot]");
-    var needsSlot = dialog._level > 0 && !ritual;
+    var free = dialog.querySelector("[data-cast-free]").checked;
+    var needsSlot = dialog._level > 0 && !ritual && !free;
     slotField.hidden = !needsSlot;
     dialog.querySelector("[data-cast-noslot]").hidden = !(needsSlot && !slotSelect.options.length);
     dialog.querySelector("[data-cast-confirm]").disabled = needsSlot && !slotSelect.options.length;
@@ -483,7 +484,7 @@
   function updateCastButtons() {
     root.querySelectorAll(".item-cast").forEach(function (button) {
       var level = Number(button.dataset.castLevel);
-      button.hidden = !(level === 0 || button.dataset.castRitual === "1" || castPools(level).length);
+      button.hidden = !(level === 0 || button.dataset.castRitual === "1" || button.dataset.castFree === "1" || castPools(level).length);
     });
   }
 
@@ -494,6 +495,7 @@
     var canSlot = button.dataset.castSlot === "1";
     var isRitual = button.dataset.castRitual === "1";
     dialog._spell = button.dataset.cast;
+    dialog._button = button;
     dialog._level = level;
     var name = button.closest("li").querySelector(".item-name");
     dialog.querySelector("[data-cast-title]").textContent = name ? name.textContent.trim() : "";
@@ -515,6 +517,11 @@
     ritual.checked = level > 0 && isRitual && !canSlot; // only castable as a ritual
     ritual.disabled = !canSlot;
     dialog.querySelector("[data-cast-ritual-field]").hidden = !(level > 0 && isRitual);
+    // A free cast (Magic Initiate's spell): offered, and ticked, while its once per long rest is left.
+    var canFree = level > 0 && button.dataset.castFree === "1";
+    var free = dialog.querySelector("[data-cast-free]");
+    free.checked = canFree && !ritual.checked;
+    dialog.querySelector("[data-cast-free-field]").hidden = !canFree;
     dialog.querySelector("[data-cast-concentration]").hidden = button.dataset.castConcentration !== "1";
     castRefresh(dialog);
     dialog.showModal();
@@ -533,16 +540,30 @@
       dialog.close();
     } else if (event.target.closest("[data-cast-confirm]")) {
       var ritual = dialog.querySelector("[data-cast-ritual]").checked;
+      var free = dialog.querySelector("[data-cast-free]").checked;
       var params = { action: "cast", spell: dialog._spell };
       if (ritual) params.ritual = "1";
+      else if (free) params.free = "1";
       else if (dialog._level > 0) params.slot = dialog.querySelector("[data-cast-slot]").value;
       dialog.close();
-      send(params);
+      var castButton = dialog._button;
+      send(params).then(function (accepted) {
+        if (accepted && params.free && castButton) {
+          castButton.dataset.castFree = "0"; // spent until the next long rest
+          updateCastButtons();
+        }
+      });
     }
   });
   root.addEventListener("change", function (event) {
     var dialog = event.target.closest("#cs-cast-dialog");
-    if (dialog && event.target.matches("[data-cast-ritual]")) castRefresh(dialog);
+    if (!dialog) return;
+    // A ritual and a free cast both skip the slot; picking one drops the other.
+    var other = event.target.matches("[data-cast-ritual]") ? "[data-cast-free]" : "[data-cast-ritual]";
+    if (event.target.checked && event.target.matches("[data-cast-ritual], [data-cast-free]")) {
+      dialog.querySelector(other).checked = false;
+    }
+    if (event.target.matches("[data-cast-ritual], [data-cast-free]")) castRefresh(dialog);
   });
 
   // A filter popover closes when you tap anywhere else.

@@ -554,6 +554,7 @@ def _spellbook_rows(character: Character, can_edit: bool) -> list[dict]:
                 "source": f"class:{cs.klass_id}" if cs.klass_id else "",
                 "ritual": cs.spell.ritual,
                 "slot": cs.spell.level > 0 and prepared,
+                "free": cs.free_cast and not cs.free_cast_used and cs.spell.level > 0,
                 "concentration": cs.spell.concentration,
             }
         rows.append(_spellbook_row(cs.spell, status, removable, cast))
@@ -611,6 +612,7 @@ def _finish_cast(cast: dict, sources: list[dict], slots: list[dict]) -> None:
     cast["available"] = (
         cast["level"] == 0
         or cast["ritual"]
+        or cast["free"]
         or any(p["level"] >= cast["level"] and p["left"] > 0 for p in slots)
     )
 
@@ -1024,7 +1026,8 @@ def _act_cast(character, post):
     stats = derived_stats.compute(character)
     classes = list(character.classes.select_related("klass"))
     pool = next((p for p in _slots(character, stats, classes) if p["key"] == key), None)
-    if pool is None and spell.level > 0 and post.get("ritual") != "1":
+    free = post.get("free") == "1"
+    if pool is None and spell.level > 0 and post.get("ritual") != "1" and not free:
         raise ValueError("no such spell slot")
     play.cast_spell(
         character,
@@ -1033,6 +1036,7 @@ def _act_cast(character, post):
         slot_max=pool["max"] if pool else 0,
         slot_level=pool["level"] if pool else 0,
         ritual=post.get("ritual") == "1",
+        free=free,
     )
     return {"message": _("Cast %(name)s") % {"name": spell.name}}
 

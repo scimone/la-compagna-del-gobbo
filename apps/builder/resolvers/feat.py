@@ -131,7 +131,9 @@ def apply_feat(grants, feat: Feat, chosen: dict, source: str, variant: str = "")
         for spell_id in [*spell.fixed, *chosen.get("cantrips", [])]:
             grants.add_spell(SpellRow(spell_id, f"feat:{feat.id}"))
         for spell_id in [chosen.get("spell")] if chosen.get("spell") else []:
-            grants.add_spell(SpellRow(spell_id, f"feat:{feat.id}", always_prepared=True))
+            grants.add_spell(
+                SpellRow(spell_id, f"feat:{feat.id}", always_prepared=True, free_cast=True)
+            )
     for value in chosen.get("proficiencies", []):
         category, _, name = value.partition(":")
         grants.add_proficiency("skill" if category == "skill" else "tool", name)

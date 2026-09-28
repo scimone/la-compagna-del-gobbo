@@ -541,3 +541,15 @@ def test_self_translated_badge_shows_on_individual_feature_and_subclass_cards(cl
     header, _, rest = body.partition('<div class="facts">')
     assert _BADGE not in header
     assert rest.count(_BADGE) == 1
+
+
+def test_world_searches_look_into_the_description_text(client, catalogs):
+    # "Sneak Attack" is in Rogue features' text (and the Rogue's own name is not in the query)
+    html = _get(client, "/world/classes/?q=sneak+attack", "en")
+    assert "Cunning Strike" in html and "<mark>" in html
+
+    html = _get(client, "/world/species/?q=darkvision", "en")
+    assert "Elf" in html and "<mark>" in html
+
+    html = _get(client, "/world/backgrounds/?q=temple", "en")
+    assert "Acolyte" in html

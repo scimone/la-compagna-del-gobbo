@@ -397,6 +397,7 @@ def cast_spell(
     slot_max: int = 0,
     slot_level: int = 0,
     ritual: bool = False,
+    free: bool = False,
 ) -> str:
     """Cast one of the character's spells, applying the SRD's spellcasting rules. Returns what was
     spent (`""`, `"cantrip"`, `"ritual"` or the slot key).
@@ -405,6 +406,8 @@ def cast_spell(
     - A spell with the Ritual tag can be cast as a ritual: no slot, and it need not be prepared
       when it is in the spellbook (`in_spellbook`), but it takes 10 minutes longer and cannot be
       upcast.
+    - A spell with a free cast (Magic Initiate's) can be cast once without a slot (`free`); the
+      use comes back on a long rest (`long_rest`).
     - Any other spell must be prepared (or always prepared) and expends one slot of the spell's
       level or higher - `slot_key` is the pool (`"1"`..`"9"` or `"pact"`), `slot_level` the level
       it casts at and `slot_max` how many slots the pool has (both derived by the caller).
@@ -422,6 +425,12 @@ def cast_spell(
         return "ritual"
     if not is_prepared:
         raise ValueError(f"{spell.name} is not prepared")
+    if free:
+        if not row.free_cast or row.free_cast_used:
+            raise ValueError(f"{spell.name} has no free cast left")
+        row.free_cast_used = True
+        row.save(update_fields=["free_cast_used"])
+        return "free"
     if slot_level < spell.level:
         raise ValueError("the slot is too low for this spell")
     spent = int(character.spell_slots_spent.get(slot_key, 0))
@@ -429,6 +438,11 @@ def cast_spell(
         raise ValueError("no spell slot of that level left")
     set_slots_spent(character, slot_key, spent + 1, slot_max)
     return slot_key
+
+
+def long_rest(character: Character) -> None:
+    """The part of a long rest the sheet tracks so far: free casts (Magic Initiate) come back."""
+    character.spells.filter(free_cast_used=True).update(free_cast_used=False)
 
 
 def remove_spell(character: Character, spell_id: str) -> None:

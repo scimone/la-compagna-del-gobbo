@@ -1521,3 +1521,12 @@ msgstr "Elimina personaggio"
 #: apps/frontend/templates/frontend/characters/list.html
 msgid "Do you really want to delete this character?"
 msgstr "Vuoi davvero eliminare questo personaggio?"
+
+#: apps/frontend/templates/frontend/characters/sheet/_cast_dialog.html
+msgid "Cast without a spell slot (once per long rest)"
+msgstr "Lancia senza slot incantesimo (una volta per riposo lungo)"
+
+#: apps/frontend/views.py
+#, python-format
+msgid "Feature of %(klass)s"
+msgstr "Privilegio di %(klass)s"

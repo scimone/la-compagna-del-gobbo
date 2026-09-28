@@ -19,6 +19,10 @@ class CharacterSpell(models.Model):
     ability is then recorded via `source`/`CharacterChoice`. `in_spellbook` is the Wizard's
     spellbook: it holds more spells than the wizard has prepared, so "known" and "prepared" are
     genuinely different sets for that class.
+
+    `free_cast` marks a spell that can be cast once without a spell slot (Magic Initiate's level 1
+    spell: "you regain the ability to cast it in that way when you finish a Long Rest"); the slot
+    can still be used as usual. `free_cast_used` is that one use, spent.
     """
 
     character = models.ForeignKey(
@@ -32,6 +36,8 @@ class CharacterSpell(models.Model):
     )
     in_spellbook = models.BooleanField(default=False)
     source = models.CharField(max_length=100, blank=True, default="")
+    free_cast = models.BooleanField(default=False)
+    free_cast_used = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["character", "spell"]

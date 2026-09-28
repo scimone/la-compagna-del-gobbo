@@ -600,6 +600,41 @@ def _search_query(request) -> str:
     return request.GET.get("q", "").strip()
 
 
+def _text_snippets(obj, fields, pattern, limit=2) -> list:
+    """Snippets (see `handbook_search`) of where `pattern` is in the text of `obj`'s `entries`-
+    shaped `fields` - the active language's text first, then the other's, so an English word is
+    found from the Italian site too (like `_by_name()` does for names). Empty if it is nowhere.
+    """
+    languages = ["it", "en"] if (get_language() or "en").startswith("it") else ["en", "it"]
+    for language in languages:
+        snippets = []
+        for field in fields:
+            value = getattr(obj, f"{field}_{language}", None)
+            if value:
+                snippets += find_hits(value, pattern, limit - len(snippets))[0]
+            if len(snippets) >= limit:
+                break
+        if snippets:
+            return snippets
+    return []
+
+
+def _text_matches(rows, q: str, fields, *, name=True):
+    """`(row, snippets)` for each of `rows` whose name (unless `name=False`) or `fields` text
+    contains `q` - what the World's Backgrounds/Classes/Species searches use instead of a bare
+    name filter, so the descriptions are searched too."""
+    pattern = query_pattern(q)
+    for row in rows:
+        snippets = _text_snippets(row, fields, pattern)
+        if snippets or (name and name_matches(row, pattern)):
+            yield row, snippets
+
+
+def _hit_detail(text: str, snippets: list):
+    """A row's detail line: its own `text`, then the snippets of where the query was found."""
+    return format_html("{}{}", text, mark_safe("".join(snippets)))
+
+
 def _by_name(queryset, q: str):
     """Rows whose English *or* Italian name contains `q` - a plain name filter only looks in the
     active language's column, so an English name wouldn't be found from the Italian site (and a
@@ -960,20 +995,20 @@ def handbook_section_detail(request, pk):
 
 def world_backgrounds(request):
     q = _search_query(request)
-    backgrounds = background_service.list_backgrounds()
+    backgrounds = [(b, []) for b in background_service.list_backgrounds()]
     if q:
-        backgrounds = _by_name(backgrounds, q)
+        backgrounds = _text_matches(background_service.list_backgrounds(), q, ("lore", "entries"))
     items = [
         {
             "pk": b.pk,
             "name": _badged_heading(b.name, _self_translated(b, "name")),
-            "detail": b.short_description,
+            "detail": _hit_detail(b.short_description, hits),
             "url": reverse("world-background-detail", args=[b.pk]),
             "image": _menu_image_url(
                 "backgrounds", f"{_BACKGROUND_IMAGE_SLUGS.get(b.id, b.id)}.jpeg"
             ),
         }
-        for b in backgrounds
+        for b, hits in backgrounds
     ]
     return _list_page(
         request,
@@ -1026,46 +1061,71 @@ def world_background_detail(request, pk):
 
 def world_classes(request):
     q = _search_query(request)
-    classes = class_service.list_classes()
+    classes = [(c, []) for c in class_service.list_classes()]
     if q:
-        classes = _by_name(classes, q)
+        classes = _text_matches(class_service.list_classes(), q, ("lore",))
     items = [
         {
             "pk": c.pk,
             "name": _badged_heading(c.name, _self_translated(c, "name")),
-            "detail": c.short_description,
+            "detail": _hit_detail(c.short_description, hits),
             "url": reverse("world-class-detail", args=[c.pk]),
             "image": _menu_image_url("classes", f"{c.id}-grey.png"),
         }
-        for c in classes
+        for c, hits in classes
     ]
     if q:
         # A class's own name isn't repeated in these two sub-object results (unlike the
         # `detail` above) - the class itself already appears as its own top-level `items` entry
         # when it matches, so its name lives in `item-name`, not `item-detail`, either way.
-        subclasses = _by_name(Subclass.objects.all(), q).select_related("klass")
+        # Their names and the text of their descriptions are searched, with snippets of where.
         items += [
             {
                 "name": _badged_heading(sc.name, _self_translated(sc, "name")),
-                "detail": _("Subclass of %(klass)s") % {"klass": sc.klass.name},
+                "detail": _hit_detail(_("Subclass of %(klass)s") % {"klass": sc.klass.name}, hits),
                 "url": f"{reverse('world-class-detail', args=[sc.klass_id])}?tab=subclasses",
             }
-            for sc in subclasses
+            for sc, hits in _text_matches(
+                Subclass.objects.select_related("klass"), q, ("description",)
+            )
         ]
-        features = _by_name(Feature.objects.filter(class_level__isnull=False), q).select_related(
-            "class_level__klass"
-        )
         items += [
             {
                 "name": _badged_heading(feature.name, _self_translated(feature, "name")),
-                "detail": _("Feature of %(klass)s (Level %(level)s)")
-                % {
-                    "klass": feature.class_level.klass.name,
-                    "level": feature.class_level.level,
-                },
+                "detail": _hit_detail(
+                    _("Feature of %(klass)s (Level %(level)s)")
+                    % {
+                        "klass": feature.class_level.klass.name,
+                        "level": feature.class_level.level,
+                    },
+                    hits,
+                ),
                 "url": reverse("world-feature-detail", args=[feature.pk]),
             }
-            for feature in features
+            for feature, hits in _text_matches(
+                Feature.objects.filter(class_level__isnull=False).select_related(
+                    "class_level__klass"
+                ),
+                q,
+                ("entries",),
+            )
+        ]
+        items += [
+            {
+                "name": _badged_heading(feature.name, _self_translated(feature, "name")),
+                "detail": _hit_detail(
+                    _("Feature of %(klass)s") % {"klass": feature.subclass_level.subclass.name},
+                    hits,
+                ),
+                "url": reverse("world-feature-detail", args=[feature.pk]),
+            }
+            for feature, hits in _text_matches(
+                Feature.objects.filter(subclass_level__isnull=False).select_related(
+                    "subclass_level__subclass"
+                ),
+                q,
+                ("entries",),
+            )
         ]
     return _list_page(
         request,
@@ -1547,30 +1607,33 @@ def _species_heading(species):
 
 def world_species(request):
     q = _search_query(request)
-    species_qs = species_service.list_species()
+    species_qs = [(sp, []) for sp in species_service.list_species()]
     if q:
-        species_qs = _by_name(species_qs, q)
+        species_qs = _text_matches(species_service.list_species(), q, ("lore", "entries"))
     items = [
         {
             "pk": s.pk,
             "name": _species_heading(s),
-            "detail": s.short_description,
+            "detail": _hit_detail(s.short_description, hits),
             "url": reverse("world-species-detail", args=[s.pk]),
             "image": _menu_image_url("species", f"{_SPECIES_IMAGE_SLUGS.get(s.id, s.id)}-grey.png"),
         }
-        for s in species_qs
+        for s, hits in species_qs
     ]
     if q:
-        traits = _by_name(Feature.objects.filter(species__isnull=False), q).select_related(
-            "species"
-        )
         items += [
             {
                 "name": _badged_heading(trait.name, _self_translated(trait, "name")),
-                "detail": _("Trait of %(species)s") % {"species": trait.species.name},
+                "detail": _hit_detail(
+                    _("Trait of %(species)s") % {"species": trait.species.name}, hits
+                ),
                 "url": f"{reverse('world-species-detail', args=[trait.species_id])}?tab=traits",
             }
-            for trait in traits
+            for trait, hits in _text_matches(
+                Feature.objects.filter(species__isnull=False).select_related("species"),
+                q,
+                ("entries",),
+            )
         ]
     return _list_page(
         request,

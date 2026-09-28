@@ -1383,7 +1383,11 @@ def test_a_character_in_creation_can_be_deleted_from_the_overview(signed_in, ali
 
 def test_a_cast_button_is_hidden_when_no_slot_is_left_for_the_spell(signed_in, alice):
     cleric = finished(alice, "cleric")
-    spell = cleric.spells.filter(spell__level=1, prepared=True, spell__ritual=False).first().spell
+    spell = (
+        cleric.spells.filter(spell__level=1, prepared=True, spell__ritual=False, free_cast=False)
+        .first()
+        .spell
+    )
     tag = f'data-cast="{spell.pk}"'
 
     html = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
@@ -1393,3 +1397,22 @@ def test_a_cast_button_is_hidden_when_no_slot_is_left_for_the_spell(signed_in, a
     play.set_slots_spent(cleric, "1", 2, 2)
     html = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
     assert "hidden" in re.search(r"<button[^>]*" + re.escape(tag) + r"[^>]*>", html).group(0)
+
+
+def test_a_magic_initiate_spell_can_be_cast_once_without_a_slot(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    row = cleric.spells.filter(spell__level=1, prepared=True, spell__ritual=False).first()
+    row.free_cast = True
+    row.save()
+    play.set_slots_spent(cleric, "1", 2, 2)  # every slot spent
+    tag = f'data-cast="{row.spell_id}"'
+
+    html = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
+    assert "hidden" not in re.search(r"<button[^>]*" + re.escape(tag) + r"[^>]*>", html).group(0)
+    assert act(signed_in, cleric, action="cast", spell=row.spell_id, free="1").status_code == 200
+    assert act(signed_in, cleric, action="cast", spell=row.spell_id, free="1").status_code == 400
+    cleric.refresh_from_db()
+    assert cleric.spell_slots_spent == {"1": 2}  # no slot was used
+
+    play.long_rest(cleric)
+    assert act(signed_in, cleric, action="cast", spell=row.spell_id, free="1").status_code == 200

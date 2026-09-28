@@ -13,6 +13,9 @@
   <label class="cs-cast-field" data-cast-slot-field><span class="k">{% translate "Spell slot" %}</span>
     <select data-cast-slot></select>
   </label>
+  <label class="cs-cast-field cs-cast-ritual" data-cast-free-field hidden>
+    <input type="checkbox" data-cast-free> {% translate "Cast without a spell slot (once per long rest)" %}
+  </label>
   <label class="cs-cast-field cs-cast-ritual" data-cast-ritual-field hidden>
     <input type="checkbox" data-cast-ritual> {% translate "Cast as a ritual (takes 10 minutes longer, no slot used)" %}
   </label>
