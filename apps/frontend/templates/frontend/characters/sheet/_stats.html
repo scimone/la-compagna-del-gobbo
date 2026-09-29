@@ -1,6 +1,6 @@
 {% load i18n %}
 {# The Stats tab: what changes during play, top to bottom in the order it is reached for - the rests, #}
-{# hit points, the numbers of a fight, inspiration / Hit Dice / death saves, resources, casting, XP.    #}
+{# hit points, the numbers of a fight, inspiration / Hit Dice / death saves, resources, XP.    #}
 {# Plain flowing cards (two columns on a wide screen); `data-bind`, `data-act` and the pip / box       #}
 {# classes are what `character_sheet.js` reads and redraws after a change.                              #}
 <div class="cs-scroll">
@@ -132,30 +132,6 @@
         </span>
       </div>
     {% endfor %}
-  </div>
-  {% endif %}
-
-  {# The spellcasting numbers (they used to sit above the Spellbook's list). #}
-  {% if spellbook.sources %}
-  <div class="st-card st-cast st-wide">
-    <span class="k">{% translate "Spellcasting" %}</span>
-    <section class="cs-casting" data-casting>
-      <label class="cs-metric wide">
-        <span class="k">{% translate "Ability" %}</span>
-        <select data-casting-select aria-label="{% translate 'Spellcasting ability' %}">
-          {% for s in spellbook.sources %}
-            <option value="{{ forloop.counter0 }}" data-id="{{ s.id }}" data-mod="{{ s.modifier|stringformat:'+d' }}" data-dc="{{ s.dc }}" data-atk="{{ s.attack|stringformat:'+d' }}">
-              {{ s.ability }}{% if s.origin and spellbook.sources|length > 1 %} ({{ s.origin }}){% endif %}
-            </option>
-          {% endfor %}
-        </select>
-      </label>
-      {% with first=spellbook.sources.0 %}
-        <div class="cs-metric"><span class="k">{% translate "Mod" %}</span><b data-casting-mod>{{ first.modifier|stringformat:"+d" }}</b></div>
-        <div class="cs-metric"><span class="k">{% translate "DC" %}</span><b data-casting-dc>{{ first.dc }}</b></div>
-        <div class="cs-metric"><span class="k">{% translate "Atk" %}</span><b data-casting-atk>{{ first.attack|stringformat:"+d" }}</b></div>
-      {% endwith %}
-    </section>
   </div>
   {% endif %}
 

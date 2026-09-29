@@ -103,15 +103,21 @@ def test_list_moves_bookmarked_entries_to_a_highlighted_block_above_the_list(cli
 
 def test_a_class_feature_bookmarks_under_its_own_kind_alongside_feats(client, feats, class_feature):
     # The merged Features list mixes Feat rows (kind "feat", a string pk) with Feature rows
-    # (kind "feature", an int pk) under the one shared bookmark form - each entry's own hidden
-    # `kind` override (see `_list_item.html`) must reach the right `BOOKMARK_MODELS` catalog, and
+    # (kind "feature", an int pk) under the one shared bookmark form - each entry's own
+    # `<kind>:<pk>` button value (see `_list_item.html`) must reach the right `BOOKMARK_MODELS`
+    # catalog, and
     # the int pk must still compare equal to `Bookmark.object_id`, a `CharField`.
     html = client.get("/world/feats/").content.decode()
     assert "Arcane Recovery" in html
     row = next(chunk for chunk in html.split("<li") if "Arcane Recovery" in chunk)
-    assert 'name="kind" value="feature"' in row
+    assert f'value="feature:{class_feature.pk}"' in row
 
+    # The list's own kind is "feat": the entry's prefix must win over it.
+    client.post("/bookmarks/toggle/", {"kind": "feat", "object_id": f"feature:{class_feature.pk}"})
+    client.post("/bookmarks/toggle/", {"kind": "feat", "object_id": "feature:nope"})
+    client.post("/bookmarks/toggle/", {"kind": "feature", "object_id": "alert"})
     _toggle(client, "feature", str(class_feature.pk), next="/world/feats/")
+    client.post("/bookmarks/toggle/", {"kind": "feat", "object_id": f"feature:{class_feature.pk}"})
     assert Bookmark.objects.filter(kind="feature", object_id=str(class_feature.pk)).exists()
 
     html = client.get("/world/feats/").content.decode()

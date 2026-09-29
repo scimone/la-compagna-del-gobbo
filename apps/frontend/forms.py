@@ -16,6 +16,17 @@ class SignInForm(forms.Form):
     )
 
 
+class NameForm(forms.Form):
+    """Asked once, after the first Google sign-in: what the person wants to be called."""
+
+    name = forms.CharField(
+        label=_("Your name"),
+        max_length=150,
+        strip=True,
+        widget=forms.TextInput(attrs={"autocomplete": "given-name", "autofocus": True}),
+    )
+
+
 class LogEntryForm(forms.ModelForm):
     """The Logbook's add/edit form. The date is pre-filled with today by the view (a new entry's
     `initial`), not hard-wired here, so editing an old entry shows its own date."""

@@ -18,7 +18,6 @@
   .log-head .who { flex: 1; min-width: 0; }
   .log-date { font-size: 0.8rem; font-weight: 600; color: var(--accent); }
   .log-title { font-weight: 600; overflow-wrap: anywhere; }
-  .log-meta { color: var(--muted); font-size: 0.85rem; overflow-wrap: anywhere; }
   .log mark { padding: 0 0.1em; border-radius: 0.2em; background: var(--accent); color: var(--accent-text); }
   .log-actions { display: flex; flex-shrink: 0; margin: -0.3rem -0.5rem 0 0; }
   .log-actions a, .log-actions button { appearance: none; display: flex; align-items: center; justify-content: center; width: 2.4rem; height: 2.4rem; padding: 0; border: 0; background: none; color: var(--muted); cursor: pointer; border-radius: 0.5rem; touch-action: manipulation; }
@@ -52,7 +51,6 @@
                 <div class="who">
                   <div class="log-date">{{ e.date|date:"DATE_FORMAT" }}</div>
                   {% if row.fields.title %}<div class="log-title">{{ row.fields.title }}{{ row.badges.title }}</div>{% endif %}
-                  {% if e.author %}<div class="log-meta">{{ row.author_name }}</div>{% endif %}
                 </div>
                 {% if row.can_edit %}
                   <div class="log-actions">

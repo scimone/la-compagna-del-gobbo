@@ -150,6 +150,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.csp.ContentSecurityPolicyMiddleware",
     "apps.frontend.cloudflare_access.CloudflareAccessMiddleware",
+    "apps.frontend.cloudflare_access.RequireNameMiddleware",
     "apps.frontend.middleware.TrackLastSectionUrlMiddleware",
     "apps.frontend.middleware.InteractionMiddleware",
 ]
@@ -236,7 +237,8 @@ PWA_SERVICE_WORKER_PATH = str(BASE_DIR / "static" / "js" / "serviceworker.js")
 PWA_APP_NAME = "La Compagna del Gobbo"
 PWA_APP_DESCRIPTION = "D&D 5.5e (2024) player backend"
 PWA_APP_THEME_COLOR = "#7a1f1f"
-PWA_APP_BACKGROUND_COLOR = "#f7f5f2"
+# The app's own dark background (`--bg` in base.html): the splash screen has one colour only.
+PWA_APP_BACKGROUND_COLOR = "#1a1513"
 PWA_APP_DISPLAY = "standalone"
 PWA_APP_SCOPE = "/"
 PWA_APP_ORIENTATION = "any"

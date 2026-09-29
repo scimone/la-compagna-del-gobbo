@@ -1,0 +1,16 @@
+{% extends "frontend/account.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div class="account">
+    <p>{% translate "Welcome! Before you start, tell us your name: it is what the other players will see." %}</p>
+    <form method="post" action="{% url 'welcome' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next_url }}">
+      <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+      {{ form.name }}
+      {{ form.name.errors }}
+      <button type="submit" class="account-submit">{% translate "Continue" %}</button>
+    </form>
+  </div>
+{% endblock %}

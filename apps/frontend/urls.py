@@ -96,6 +96,7 @@ urlpatterns = [
     path("logbook/<int:pk>/edit/", logbook_views.logbook_edit, name="logbook-edit"),
     path("logbook/<int:pk>/delete/", logbook_views.logbook_delete, name="logbook-delete"),
     path("account/", views.account, name="account"),
+    path("welcome/", views.welcome, name="welcome"),
     path("account/logout/", views.account_logout, name="account-logout"),
     path("bookmarks/toggle/", views.bookmark_toggle, name="bookmark-toggle"),
     path("world/", views.world, name="world-overview"),

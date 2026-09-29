@@ -13,12 +13,15 @@ without a valid token is refused outright (403).
 
 import logging
 from functools import lru_cache
+from urllib.parse import quote
 
 import jwt
 from django.conf import settings
 from django.contrib.auth import get_user_model, login
 from django.db import IntegrityError
 from django.http import HttpResponseForbidden
+from django.shortcuts import redirect
+from django.urls import reverse
 
 log = logging.getLogger(__name__)
 
@@ -83,6 +86,31 @@ def get_or_create_user_by_email(email: str):
         except IntegrityError:  # a concurrent first request created it
             user = User.objects.get(username__iexact=email)
     return user
+
+
+class RequireNameMiddleware:
+    """Right after the first Google sign-in the account has no name: send every page load to the
+    welcome page until one is given. Only under Cloudflare Access (the password-less sign-in
+    already asks for a name)."""
+
+    _EXEMPT_PREFIXES = ("/welcome/", "/static/", "/media/", "/i18n/", "/account/logout/")
+    _EXEMPT_PATHS = ("/manifest.json", "/serviceworker.js", "/favicon.ico")
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        user = request.user
+        if (
+            is_enabled()
+            and request.method == "GET"
+            and user.is_authenticated
+            and not (user.first_name or "").strip()
+            and not request.path.startswith(self._EXEMPT_PREFIXES)
+            and request.path not in self._EXEMPT_PATHS
+        ):
+            return redirect(f"{reverse('welcome')}?next={quote(request.get_full_path())}")
+        return self.get_response(request)
 
 
 class CloudflareAccessMiddleware:

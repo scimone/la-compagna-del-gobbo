@@ -31,7 +31,7 @@ from apps.builder.services.store import STEPS, Draft, read_values
 from apps.characters.models import Character
 from apps.characters.services import access
 from apps.characters.services import character as character_service
-from apps.frontend import translations, units
+from apps.frontend import accounts, translations, units
 from apps.frontend.entries_render import render_entries
 from apps.frontend.views import (
     _BACKGROUND_IMAGE_SLUGS,
@@ -119,7 +119,9 @@ def characters_list(request):
                 {
                     "character": c,
                     "url": _step_url(c, creation.get_state(c)["current"]),
-                    "owner": c.owner.get_username() if c.owner_id != request.user.id else "",
+                    "owner": accounts.display_name(c.owner)
+                    if c.owner_id != request.user.id
+                    else "",
                 }
                 for c in drafts
             ],
@@ -152,7 +154,7 @@ def _summary(character: Character, can_delete: bool = False) -> dict:
         "detail": " · ".join(
             x for x in (character.species.name if character.species else "", *classes) if x
         ),
-        "owner": character.owner.get_username() if character.owner else "",
+        "owner": accounts.display_name(character.owner) if character.owner else "",
         "can_delete": can_delete,
         # Only the owner's own list shows it, and only once the XP reach the next level.
         "level_up_url": (

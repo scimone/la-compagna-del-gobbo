@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n assets %}
 <div class="cs-scroll">
 {# Who the character is, moved here from the old header: the portrait on the left, everything    #}
 {# else (name, level, class, species, background, size, alignment) as properties on the right.   #}
@@ -34,7 +34,7 @@
     <div class="cs-lvl">
       <span class="cs-level">{% translate "Level" %} {{ header.level }}</span>
       {% if character.owner and not can_edit %}
-        <span class="cs-owner">{% blocktranslate with name=character.owner.get_username %}by {{ name }}{% endblocktranslate %}</span>
+        <span class="cs-owner">{% blocktranslate with name=character.owner|display_name %}by {{ name }}{% endblocktranslate %}</span>
       {% endif %}
       <span class="cs-class">
         {% for c in identity.classes %}<a href="{{ c.url }}">{{ c.name }}</a>{% if identity.multiclass %} {{ c.level }}{% endif %}{% if c.subclass %} <span class="dim">· {{ c.subclass }}</span>{% endif %}{% if not forloop.last %} / {% endif %}{% endfor %}

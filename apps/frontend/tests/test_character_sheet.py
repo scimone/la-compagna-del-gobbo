@@ -320,7 +320,7 @@ def test_spellbook_shows_the_casting_numbers_the_slots_and_the_spells(signed_in,
     sticky = html.split('<div class="cs-sticky">')[1].split('<div class="cs-scroll">')[0]
     assert "data-casting-dc" not in sticky  # the casting numbers live on the stats tab now
     stats = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "stats")
-    assert "Wisdom" in stats and "data-casting-dc" in stats
+    assert "data-casting-dc" not in stats  # the stats tab has no spellcasting card
     assert "My Spells" not in html
     assert 'name="q"' in sticky and "filter-popover" in sticky  # metrics, search and filters stick
     assert 'data-slot="1"' in html and html.count('class="pip-btn on"') == 2  # two 1st-level slots

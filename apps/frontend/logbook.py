@@ -36,16 +36,10 @@ def queue_translation(entry: LogEntry) -> None:
 
 def search(entries: list[LogEntry], q: str) -> list[LogEntry]:
     """The entries with `q` in any text - as written or in either language's translation,
-    ignoring case and accents - plus the author's name."""
+    ignoring case and accents."""
     pattern = query_pattern(q)
     haystacks = translations.search_text("logentry", {e.pk: texts(e) for e in entries})
-    return [
-        e
-        for e in entries
-        if pattern.search(
-            fold(haystacks[e.pk] + "\n" + (e.author.get_username() if e.author else ""))
-        )
-    ]
+    return [e for e in entries if pattern.search(fold(haystacks[e.pk]))]
 
 
 def display(entries: list[LogEntry]) -> dict[int, dict[str, tuple[str, bool]]]:

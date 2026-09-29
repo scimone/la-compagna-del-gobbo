@@ -726,9 +726,9 @@
         <a
           href="{% url 'account' %}?next={{ request.get_full_path|urlencode:'' }}"
           class="account-link signed-in"
-          aria-label="{% blocktranslate with name=user.get_username %}Account: {{ name }}{% endblocktranslate %}"
-          title="{{ user.get_username }}"
-        ><span aria-hidden="true">{{ user.get_username|first|upper }}</span></a>
+          aria-label="{% blocktranslate with name=user|display_name %}Account: {{ name }}{% endblocktranslate %}"
+          title="{{ user|display_name }}"
+        ><span aria-hidden="true">{{ user|display_name|first|upper }}</span></a>
       {% else %}
         <a
           href="{% url 'account' %}?next={{ request.get_full_path|urlencode:'' }}"

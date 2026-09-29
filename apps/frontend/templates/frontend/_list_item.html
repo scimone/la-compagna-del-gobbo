@@ -37,19 +37,14 @@
     {# `bookmark_form_id` (default "bookmark-list-form", `list.html`'s own id) lets more than one #}
     {# such form coexist in the same DOM - the character sheet's tabs are all present at once     #}
     {# (just `hidden`), so its Features and Spellbook tabs each pass their own distinct id here.   #}
-    {% if item.kind %}
-      {# Overrides the shared form's own `kind` input for this one entry (see `_list_page()`'s #}
-      {# docstring on mixed-kind pages) - `form`-associated but placed after that input in the   #}
-      {# DOM, so it wins as the last same-name value per the HTML forms spec's tree order.        #}
-      <input type="hidden" form="{{ bookmark_form_id|default:'bookmark-list-form' }}" name="kind" value="{{ item.kind }}">
-    {% endif %}
     {# Submits the list's one shared form (`#bookmark-list-form` in list.html) with this #}
-    {# entry's pk as `object_id` - the `form` attribute ties the button to it from here.    #}
+    {# entry's pk as `object_id` - the `form` attribute ties the button to it from here. An entry #}
+    {# of another kind than the list's (see `_list_page()`) sends `<kind>:<pk>` instead.       #}
     <button
       type="submit"
       form="{{ bookmark_form_id|default:'bookmark-list-form' }}"
       name="object_id"
-      value="{{ item.pk }}"
+      value="{% if item.kind %}{{ item.kind }}:{% endif %}{{ item.pk }}"
       class="item-bookmark{% if item.bookmarked %} active{% endif %}"
       aria-pressed="{% if item.bookmarked %}true{% else %}false{% endif %}"
       aria-label="{% if item.bookmarked %}{% translate 'Remove bookmark' %}{% else %}{% translate 'Add bookmark' %}{% endif %}"

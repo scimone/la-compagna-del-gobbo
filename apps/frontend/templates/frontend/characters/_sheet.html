@@ -14,7 +14,7 @@
 
 <h3>{% translate "Abilities and saving throws" %}</h3>
 <table class="tbl">
-  <tr><th></th><th>{% translate "Score" %}</th><th>{% translate "Mod" %}</th><th>{% translate "Save" %}</th></tr>
+  <tr><th></th><th>{% translate "Score" %}</th><th>{% translate "Mod" %}</th><th>{% translate "Save" context "saving throw" %}</th></tr>
   {% for r in ability_rows %}
     <tr><td>{{ r.name }}{% if r.manual %} <span class="tag">{% translate "manual" %}</span>{% endif %}</td>
       <td>{{ r.score }}</td><td>{{ r.modifier|stringformat:"+d" }}</td>
@@ -36,15 +36,5 @@
   <table class="tbl">
     <tr><th></th><th>{% translate "Attack" %}</th><th>{% translate "Damage" %}</th></tr>
     {% for a in attack_rows %}<tr><td>{{ a.name }}</td><td>{{ a.attack_bonus|stringformat:"+d" }}</td><td>{{ a.damage }} {{ a.damage_type }}</td></tr>{% endfor %}
-  </table>
-{% endif %}
-
-{% if stats.spellcasting %}
-  <h3>{% translate "Spellcasting" %}</h3>
-  <table class="tbl">
-    {% for c in stats.spellcasting %}
-      <tr><td>{{ c.source }} <span class="dim">({{ c.ability }})</span></td>
-        <td>{% translate "DC" %} {{ c.save_dc }}</td><td>{{ c.attack_bonus|stringformat:"+d" }}</td></tr>
-    {% endfor %}
   </table>
 {% endif %}

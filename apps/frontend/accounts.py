@@ -14,6 +14,11 @@ from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 
 
+def display_name(user) -> str:
+    """What to call `user` on screen: the name they gave on first sign-in, else the username."""
+    return (user.first_name or "").strip() or user.get_username()
+
+
 def get_or_create_passwordless_user(username: str):
     """The account called `username` (case-insensitive), created if it doesn't exist yet - or
     `None` if it exists but is a real, password-protected account.

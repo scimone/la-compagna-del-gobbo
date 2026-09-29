@@ -11,7 +11,7 @@
           <span class="cs-ab-score">{{ a.score }}</span>
           <span class="cs-ab-save">
             <i class="pip{% if a.save.proficient %} proficient{% endif %}"></i>
-            {% translate "Save" %} <b>{{ a.save.modifier|stringformat:"+d" }}</b>
+            {% translate "Save" context "saving throw" %} <b>{{ a.save.modifier|stringformat:"+d" }}</b>
             {% if a.save.proficient %}<span class="sr">({% translate "proficient" %})</span>{% endif %}
           </span>
         </div>

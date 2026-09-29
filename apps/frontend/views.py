@@ -30,7 +30,7 @@ from apps.frontend.entries_render import (
     render_trait_cards,
     self_translated_badge,
 )
-from apps.frontend.forms import SignInForm
+from apps.frontend.forms import NameForm, SignInForm
 from apps.frontend.handbook_search import find_hits, name_matches, query_pattern
 from apps.frontend.models import Bookmark
 from apps.rules.models import Ability, Class, Equipment, Feature, Subclass
@@ -825,6 +825,26 @@ def account(request):
     return response
 
 
+def welcome(request):
+    """First sign-in through Cloudflare Access: the account exists but has no name yet, so ask
+    for one (`RequireNameMiddleware` sends every page here until it is given)."""
+    next_url = _safe_next_url(request, "index")
+    if not request.user.is_authenticated:
+        return redirect(reverse("account"))
+    form = NameForm(request.POST or None, initial={"name": request.user.first_name})
+    if request.method == "POST" and form.is_valid():
+        request.user.first_name = form.cleaned_data["name"]
+        request.user.save(update_fields=["first_name"])
+        return redirect(next_url)
+    response = render(
+        request,
+        "frontend/welcome.html",
+        {"page_title": _("Welcome"), "form": form, "next_url": next_url},
+    )
+    add_never_cache_headers(response)
+    return response
+
+
 @require_POST
 def account_logout(request):
     logout(request)
@@ -844,8 +864,16 @@ def bookmark_toggle(request):
 
     kind = request.POST.get("kind", "")
     object_id = request.POST.get("object_id", "")
+    if ":" in object_id:  # an entry of another kind than the list's own: "<kind>:<pk>"
+        kind, object_id = object_id.split(":", 1)
     model = BOOKMARK_MODELS.get(kind)
-    if model is None or not model.objects.filter(pk=object_id).exists():
+    if model is None or not object_id:
+        raise Http404
+    try:
+        exists = model.objects.filter(pk=object_id).exists()
+    except (ValueError, TypeError):  # e.g. a slug sent for `Feature`, whose pk is an integer
+        exists = False
+    if not exists:
         raise Http404
     _bookmark, created = Bookmark.objects.get_or_create(
         user=request.user, kind=kind, object_id=object_id

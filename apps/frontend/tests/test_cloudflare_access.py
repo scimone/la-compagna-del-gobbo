@@ -47,12 +47,21 @@ def get(client, jwt_value=None):
 @pytest.mark.django_db
 def test_first_visit_creates_and_signs_in_the_account(client, private_key):
     response = get(client, token(private_key, "Gino@Example.com"))
-    assert response.status_code == 200
     user = User.objects.get(email="gino@example.com")
     assert user.username == "gino@example.com"
     assert not user.has_usable_password()
     assert response.wsgi_request.user == user
-    assert b"gino@example.com" in response.content
+    # No name yet: every page leads to the welcome page, which asks for one.
+    assert response.status_code == 302 and response["Location"].startswith("/welcome/")
+    jwt_value = token(private_key, "Gino@Example.com")
+    headers = {"HTTP_CF_ACCESS_JWT_ASSERTION": jwt_value}
+    assert (
+        client.post("/welcome/", {"name": "Gino", "next": "/account/"}, **headers).status_code
+        == 302
+    )
+    user.refresh_from_db()
+    assert user.first_name == "Gino"
+    assert b"Gino" in get(client, jwt_value).content
 
 
 @pytest.mark.django_db
@@ -116,6 +125,9 @@ def test_off_when_not_configured(client, settings):
 
 @pytest.mark.django_db
 def test_account_page_signs_out_through_access(client, private_key):
+    User.objects.create_user(
+        username="gino@example.com", email="gino@example.com", first_name="Gino"
+    )
     response = get(client, token(private_key))
     assert f"{ISSUER}/cdn-cgi/access/logout".encode() in response.content
 

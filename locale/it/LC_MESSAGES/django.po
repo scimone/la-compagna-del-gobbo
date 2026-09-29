@@ -809,6 +809,10 @@ msgid "Mod"
 msgstr "Mod"
 
 msgid "Save"
+msgstr "Salva"
+
+msgctxt "saving throw"
+msgid "Save"
 msgstr "TS"
 
 msgid "manual"
@@ -1929,3 +1933,16 @@ msgstr "Apri immagine"
 #: apps/frontend/templates/frontend/characters/detail.html
 msgid "Close"
 msgstr "Chiudi"
+
+#: apps/frontend/templates/frontend/welcome.html
+msgid "Welcome"
+msgstr "Benvenuto"
+
+msgid "Welcome! Before you start, tell us your name: it is what the other players will see."
+msgstr "Benvenuto! Prima di iniziare, dicci il tuo nome: è quello che vedranno gli altri giocatori."
+
+msgid "Your name"
+msgstr "Il tuo nome"
+
+msgid "Continue"
+msgstr "Continua"

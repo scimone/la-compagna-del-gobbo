@@ -36,7 +36,6 @@ def logbook_list(request):
             "entry": entry,
             "can_edit": logbook.can_edit(request.user, entry),
             "fields": {name: mark(text) for name, (text, _t) in shown[entry.pk].items()},
-            "author_name": mark(entry.author.get_username()) if entry.author else "",
             "badges": {
                 name: mark_safe(machine_translated_badge()) if was else ""
                 for name, (_text, was) in shown[entry.pk].items()

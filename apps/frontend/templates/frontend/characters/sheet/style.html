@@ -168,7 +168,6 @@
 
   /* Spellcasting */
   .cs-casting { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 0.5rem; }
-  .st-cast .cs-metric { padding: 0.45rem 0.4rem; background: var(--bg); }
   @media (max-width: 30rem) { .cs-casting { grid-template-columns: repeat(3, 1fr); } .cs-casting .cs-metric.wide { grid-column: 1 / -1; } }
 
   /* Experience */
@@ -277,6 +276,11 @@
   /* Spellbook. */
   .cs-casting { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 0.4rem; }
   .cs-card .cs-casting { margin-top: 0.4rem; }
+  /* In the cast dialog the ability name is squeezed so Ability / Mod / DC / Atk share one line. */
+  dialog.cs-cast .cs-casting { grid-template-columns: minmax(0, 1fr) auto auto auto; gap: 0.3rem; }
+  dialog.cs-cast .cs-casting .cs-metric.wide { grid-column: auto; }
+  dialog.cs-cast .cs-metric { padding: 0.25rem 0.5rem; }
+  dialog.cs-cast .cs-metric b { font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
   .cs-card .cs-metric { padding: 0.35rem 0.4rem; }
   dialog.cs-cast { max-width: 24rem; width: calc(100% - 2rem); padding: 1rem; border: 1px solid var(--border); border-radius: 0.8rem; background: var(--surface); color: var(--text); }
   dialog.cs-cast::backdrop { background: rgba(0,0,0,.5); }

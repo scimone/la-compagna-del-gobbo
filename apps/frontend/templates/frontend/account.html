@@ -1,5 +1,5 @@
 {% extends "frontend/base.html" %}
-{% load i18n %}
+{% load i18n assets %}
 
 {% block extra_style %}
   .account {
@@ -84,7 +84,7 @@
         <button type="submit" class="account-submit">{% translate "Sign in" %}</button>
       </form>
     {% else %}
-      <p>{% blocktranslate with name=user.get_username %}Signed in as <strong>{{ name }}</strong>.{% endblocktranslate %}</p>
+      <p>{% blocktranslate with name=user|display_name %}Signed in as <strong>{{ name }}</strong>.{% endblocktranslate %}</p>
       {% if access_logout_url %}
         {# Signed in by Cloudflare Access: ending the Access session is the only real sign-out. #}
         <a href="{{ access_logout_url }}" class="account-submit secondary" style="text-align: center; text-decoration: none;">{% translate "Sign out" %}</a>
