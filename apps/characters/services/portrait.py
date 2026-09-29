@@ -16,8 +16,9 @@ from apps.characters.models import Character
 
 #: Largest upload accepted, in bytes (a phone photo is a few MB).
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
-#: The stored picture fits in this box (portrait-shaped; the sheet only shows it small).
-MAX_SIZE = (600, 800)
+#: The stored picture fits in this box. The sheet and the overview show it square (1:1, cropped
+#: to fit), and large enough that 600 px would look soft.
+MAX_SIZE = (1024, 1024)
 #: Refuse anything with more pixels than this before decoding it (a decompression bomb).
 MAX_PIXELS = 50_000_000
 FORMATS = {"JPEG", "PNG", "WEBP", "GIF"}

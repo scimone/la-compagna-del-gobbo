@@ -39,7 +39,7 @@ def test_an_upload_is_stored_as_a_shrunk_webp(hero, media):
 
     hero.refresh_from_db()
     image = stored(hero)
-    assert image.format == "WEBP" and image.width <= 600 and image.height <= 800
+    assert image.format == "WEBP" and image.width <= 1024 and image.height <= 1024
     assert image.width / image.height == pytest.approx(4 / 3, abs=0.01)  # same shape, just smaller
     assert hero.portrait.name.startswith("portraits/") and (media / hero.portrait.name).exists()
 

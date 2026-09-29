@@ -150,6 +150,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.csp.ContentSecurityPolicyMiddleware",
     "apps.frontend.middleware.TrackLastSectionUrlMiddleware",
+    "apps.frontend.middleware.InteractionMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"

@@ -1893,3 +1893,15 @@ msgstr "Torna alla scheda del personaggio"
 #: apps/frontend/levelup_views.py apps/builder/services/progression.py
 msgid "Level up"
 msgstr "Sali di livello"
+
+#: apps/frontend/templates/frontend/characters/list.html
+msgid "View"
+msgstr "Vista"
+
+#: apps/frontend/templates/frontend/characters/list.html
+msgid "Pictures"
+msgstr "Immagini"
+
+#: apps/frontend/templates/frontend/characters/list.html
+msgid "List"
+msgstr "Elenco"

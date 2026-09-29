@@ -1201,6 +1201,19 @@ shows "English"/"Italiano" as hardcoded literals in `base.html`, not via Django'
 *current* language (so it'd render "Italian" while browsing in English), not each language's
 own autonym, which is the correct convention for a language switcher.
 
+#### Interactions (activity tracking)
+
+`frontend.Interaction` has one row per page opened (`kind="view"`) and per change posted
+(`kind="action"`), written by `InteractionMiddleware` for every request that is not a static file,
+the manifest/service worker or a portrait: who (`user`/`username`, or a short `session` hash when
+signed out), where (`route` = the URL name, `path`, `object_id` = the page's pk/slug), what
+(`action` = a posted `action` name such as `hp_delta`, `query` = the search box's text, typed
+letter by letter it is one row), the `status`, the `language` and the time. **Request bodies, IP
+addresses and browser strings are never stored**, so it says who used what and when without copying
+what they wrote. A failure to record is logged and never breaks the page. `manage.py
+interaction_report [--days N]` prints per-user, per-page and per-action counts, and `--prune
+--days N` deletes older rows.
+
 #### Logbook and automatic translation
 
 `/logbook/` is the party's shared journal: a vertical timeline (`LogEntry`, `logbook.py`,

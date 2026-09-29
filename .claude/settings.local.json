@@ -3,7 +3,10 @@
     "allow": [
       "mcp__notion__notion-fetch",
       "mcp__notion__notion-query-data-sources",
-      "mcp__notion__notion-update-page"
+      "mcp__notion__notion-update-page",
+      "Bash(bash update-app.sh)",
+      "Bash(git add *)",
+      "Bash(git commit -q -m 'Interaction tracking, picture grid for the characters overview, large square portrait in the biography *)"
     ]
   }
 }

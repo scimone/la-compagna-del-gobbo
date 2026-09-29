@@ -104,3 +104,47 @@ class TranslationJob(models.Model):
 
     def __str__(self) -> str:
         return f"{self.kind}:{self.object_id} {self.source_lang}->{self.target_lang} {self.status}"
+
+
+class Interaction(models.Model):
+    """One thing a visitor did in the app: a page they opened (`kind="view"`) or a change they
+    posted (`kind="action"`), written by `middleware.InteractionMiddleware` for every request that
+    is not a static file. It records *where* and *what*, never request bodies: no typed text
+    (except the search box's, `query`), no passwords, no addresses or browser strings - so the
+    table can answer "who used what, when" without becoming a copy of the users' data.
+
+    `user` is nulled if the account is deleted; `username` keeps the name as it was, and `session`
+    (a short hash, never the session key itself) groups the visits of someone not signed in.
+    """
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="interactions",
+    )
+    username = models.CharField(max_length=150, blank=True)
+    session = models.CharField(max_length=16, blank=True)
+    kind = models.CharField(max_length=10)  # "view" (GET) or "action" (anything else)
+    route = models.CharField(
+        max_length=100, blank=True
+    )  # the URL's name, e.g. "world-spell-detail"
+    path = models.CharField(max_length=300)
+    method = models.CharField(max_length=8)
+    status = models.PositiveSmallIntegerField()
+    object_id = models.CharField(max_length=100, blank=True)  # the page's pk/slug, when it has one
+    action = models.CharField(max_length=50, blank=True)  # a posted `action` (e.g. "hp_delta")
+    query = models.CharField(max_length=200, blank=True)  # the search box's text
+    language = models.CharField(max_length=8, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ["-id"]
+        indexes = [
+            models.Index(fields=["user", "created_at"]),
+            models.Index(fields=["route", "created_at"]),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.username or 'anonymous'} {self.method} {self.path} {self.status}"
