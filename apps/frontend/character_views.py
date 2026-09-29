@@ -131,15 +131,15 @@ def characters_list(request):
 
 
 def _summary(character: Character, can_delete: bool = False) -> dict:
-    classes = ", ".join(
-        f"{c.klass.name} {_('Level').lower()} {c.level}"
+    classes = [
+        f"{c.klass.name} · {_('Level')} {c.level}"
         for c in character.classes.select_related("klass")
-    )
+    ]
     return {
         "character": character,
         "url": reverse("character-detail", args=[character.pk]),
         "detail": " · ".join(
-            x for x in (character.species.name if character.species else "", classes) if x
+            x for x in (character.species.name if character.species else "", *classes) if x
         ),
         "owner": character.owner.get_username() if character.owner else "",
         "can_delete": can_delete,

@@ -1,0 +1,104 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+{% block extra_style %}
+  main { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .log { width: 100%; max-width: 44rem; margin: 0 auto; display: flex; flex-direction: column; flex: 1; }
+  .log .empty { flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--muted); }
+  /* The timeline: one vertical line down the left, one dot on it per entry. Each entry draws the
+     stretch from its own dot down to the next one, so the line ends at the last dot. */
+  .log-entries { list-style: none; margin: 0; padding: 0; }
+  .log-entry { position: relative; padding: 0 0 1rem 1.7rem; }
+  .log-entry::before { content: ""; position: absolute; left: 0.4rem; top: 0.55rem; bottom: -0.55rem; width: 2px; background: var(--border); }
+  .log-entry:last-child::before { display: none; }
+  .log-entry:last-child { padding-bottom: 0.5rem; }
+  .log-dot { position: absolute; left: 0; top: 0.55rem; width: 0.9rem; height: 0.9rem; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg); box-shadow: 0 0 0 2px var(--accent); }
+  .log-card { background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; padding: 0.6rem 0.9rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .log-head { display: flex; align-items: flex-start; gap: 0.5rem; }
+  .log-head .who { flex: 1; min-width: 0; }
+  .log-date { font-size: 0.8rem; font-weight: 600; color: var(--accent); }
+  .log-title { font-weight: 600; overflow-wrap: anywhere; }
+  .log-meta { color: var(--muted); font-size: 0.85rem; overflow-wrap: anywhere; }
+  .log-actions { display: flex; flex-shrink: 0; margin: -0.3rem -0.5rem 0 0; }
+  .log-actions a, .log-actions button { appearance: none; display: flex; align-items: center; justify-content: center; width: 2.4rem; height: 2.4rem; padding: 0; border: 0; background: none; color: var(--muted); cursor: pointer; border-radius: 0.5rem; touch-action: manipulation; }
+  .log-actions a:active, .log-actions button:active { background: var(--bg); color: var(--accent); }
+  .log-actions svg { width: 1.15rem; height: 1.15rem; }
+  .log-field h3 { margin: 0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  .log-field p { margin: 0.1rem 0 0; white-space: pre-line; overflow-wrap: anywhere; font-size: 0.95rem; line-height: 1.4; }
+  dialog.del-dialog { max-width: 22rem; width: calc(100% - 2rem); padding: 1rem; border: 1px solid var(--border); border-radius: 0.8rem; background: var(--surface); color: var(--text); }
+  dialog.del-dialog::backdrop { background: rgba(0,0,0,.5); }
+  dialog.del-dialog p { margin: 0 0 1rem; }
+  dialog.del-dialog .row { display: flex; justify-content: flex-end; gap: 0.6rem; }
+  dialog.del-dialog button { padding: 0.45rem 1rem; border-radius: 1rem; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 600; cursor: pointer; }
+  dialog.del-dialog button.danger { background: #b3261e; border-color: #b3261e; color: #fff; }
+  /* Sticks to the bottom-right of the scrolling area, above the bottom nav. */
+  .fab { position: sticky; bottom: 0.5rem; align-self: flex-end; margin-top: auto; flex-shrink: 0; width: 3.4rem; height: 3.4rem; border-radius: 50%;
+    background: var(--accent); color: var(--accent-text); display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; line-height: 1; text-decoration: none; box-shadow: 0 0.2rem 0.7rem rgba(0,0,0,.3); }
+  .fab:active { background: var(--accent-strong); }
+{% endblock %}
+{% block content %}
+  <div class="log">
+    {% if entries %}
+      <ol class="log-entries">
+        {% for row in entries %}
+          {% with e=row.entry %}
+          <li class="log-entry" id="entry-{{ e.pk }}">
+            <span class="log-dot" aria-hidden="true"></span>
+            <div class="log-card">
+              <div class="log-head">
+                <div class="who">
+                  <div class="log-date">{{ e.date|date:"DATE_FORMAT" }}</div>
+                  {% if e.title %}<div class="log-title">{{ e.title }}</div>{% endif %}
+                  {% if e.location %}<div class="log-meta">{{ e.location }}</div>{% endif %}
+                  {% if e.author %}<div class="log-meta">{{ e.author.get_username }}</div>{% endif %}
+                </div>
+                {% if row.can_edit %}
+                  <div class="log-actions">
+                    <a href="{% url 'logbook-edit' e.pk %}" aria-label="{% translate 'Edit entry' %}">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>
+                    </a>
+                    <button type="button" class="del" data-delete-url="{% url 'logbook-delete' e.pk %}" aria-label="{% translate 'Delete entry' %}">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"></path><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path></svg>
+                    </button>
+                  </div>
+                {% endif %}
+              </div>
+              {% if e.characters_met %}<div class="log-field"><h3>{% translate "Characters met" %}</h3><p>{{ e.characters_met }}</p></div>{% endif %}
+              {% if e.fights %}<div class="log-field"><h3>{% translate "Fights" %}</h3><p>{{ e.fights }}</p></div>{% endif %}
+              {% if e.objectives %}<div class="log-field"><h3>{% translate "Objectives" %}</h3><p>{{ e.objectives }}</p></div>{% endif %}
+              {% if e.insights %}<div class="log-field"><h3>{% translate "Insights" %}</h3><p>{{ e.insights }}</p></div>{% endif %}
+              {% if e.notes %}<div class="log-field"><h3>{% translate "Other notes" %}</h3><p>{{ e.notes }}</p></div>{% endif %}
+            </div>
+          </li>
+          {% endwith %}
+        {% endfor %}
+      </ol>
+    {% else %}
+      <p class="empty">{% translate "No entries yet. Tap + to write the first one." %}</p>
+    {% endif %}
+    <dialog class="del-dialog" id="del-dialog">
+      <form method="post" id="del-form">
+        {% csrf_token %}
+        <p>{% translate "Do you really want to delete this entry?" %}</p>
+        <div class="row">
+          <button type="button" id="del-cancel">{% translate "Cancel" %}</button>
+          <button type="submit" class="danger">{% translate "Delete" %}</button>
+        </div>
+      </form>
+    </dialog>
+    <script>
+      (function () {
+        var dialog = document.getElementById("del-dialog");
+        if (!dialog) return;
+        document.querySelectorAll(".log .del").forEach(function (button) {
+          button.addEventListener("click", function () {
+            document.getElementById("del-form").action = button.dataset.deleteUrl;
+            dialog.showModal();
+          });
+        });
+        document.getElementById("del-cancel").addEventListener("click", function () { dialog.close(); });
+      })();
+    </script>
+    <a class="fab" href="{% url 'logbook-new' %}" aria-label="{% translate 'New entry' %}">+</a>
+  </div>
+{% endblock %}

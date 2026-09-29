@@ -28,6 +28,7 @@ def _html(client, url):
         "/characters/",
         "/handbook/",
         "/handbook/rules-glossary/",
+        "/logbook/",
         "/world/backgrounds/",
         "/world/classes/",
         "/world/species/",
@@ -98,7 +99,12 @@ def test_handbook_tabs_switch_between_chapters_and_glossary(client, db):
 
 def test_bottom_nav_items_declare_their_menu_and_the_script_is_loaded(client, db):
     html = _html(client, "/handbook/")
-    roots = {"characters": "/characters/", "handbook": "/handbook/", "world": "/world/backgrounds/"}
+    roots = {
+        "characters": "/characters/",
+        "handbook": "/handbook/",
+        "logbook": "/logbook/",
+        "world": "/world/backgrounds/",
+    }
     for menu, root in roots.items():
         # `data-root` is where tapping the menu you are already in leads: World's first tab.
         pattern = rf'<a\s+href="[^"]+"\s+data-menu="{menu}"\s+data-root="{root}"'

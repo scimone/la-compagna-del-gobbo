@@ -1617,3 +1617,67 @@ msgstr "MP"
 #: apps/frontend/character_sheet.py
 msgid "EP"
 msgstr "ME"
+
+#: apps/frontend/templates/frontend/base.html
+msgid "Logbook"
+msgstr "Diario"
+
+#: apps/frontend/forms.py
+msgid "Date"
+msgstr "Data"
+
+#: apps/frontend/forms.py
+msgid "Title"
+msgstr "Titolo"
+
+#: apps/frontend/forms.py
+msgid "Location"
+msgstr "Luogo"
+
+#: apps/frontend/forms.py
+msgid "Characters met"
+msgstr "Personaggi incontrati"
+
+#: apps/frontend/forms.py
+msgid "Fights"
+msgstr "Combattimenti"
+
+#: apps/frontend/forms.py
+msgid "Objectives"
+msgstr "Obiettivi"
+
+#: apps/frontend/forms.py
+msgid "Insights"
+msgstr "Intuizioni"
+
+#: apps/frontend/forms.py
+msgid "Other notes"
+msgstr "Altre note"
+
+#: apps/frontend/logbook_views.py
+msgid "New entry"
+msgstr "Nuova voce"
+
+#: apps/frontend/logbook_views.py
+msgid "Edit entry"
+msgstr "Modifica voce"
+
+#: apps/frontend/templates/frontend/logbook/list.html
+msgid "Delete entry"
+msgstr "Elimina voce"
+
+#: apps/frontend/templates/frontend/logbook/list.html
+msgid "No entries yet. Tap + to write the first one."
+msgstr "Ancora nessuna voce. Tocca + per scrivere la prima."
+
+#: apps/frontend/templates/frontend/logbook/list.html
+msgid "Do you really want to delete this entry?"
+msgstr "Vuoi davvero eliminare questa voce?"
+
+#: apps/frontend/views.py
+msgid "Search classes"
+msgstr "Cerca classi"
+
+#: apps/frontend/views.py
+msgid "Search species"
+msgstr "Cerca specie"

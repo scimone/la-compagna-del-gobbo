@@ -1,0 +1,79 @@
+"""The Logbook menu: the party's shared journal, a vertical timeline of session entries."""
+
+from django.http import Http404
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.cache import add_never_cache_headers
+from django.utils.translation import gettext as _
+from django.views.decorators.http import require_POST
+
+from apps.frontend import logbook
+from apps.frontend.forms import LogEntryForm
+from apps.frontend.models import LogEntry
+
+
+def _sign_in_redirect(request):
+    return redirect(f"{reverse('account')}?next={request.get_full_path()}")
+
+
+def logbook_list(request):
+    entries = [
+        {"entry": entry, "can_edit": logbook.can_edit(request.user, entry)}
+        for entry in logbook.list_entries()
+    ]
+    response = render(
+        request,
+        "frontend/logbook/list.html",
+        {"page_title": _("Logbook"), "entries": entries},
+    )
+    add_never_cache_headers(response)
+    return response
+
+
+def _editable_entry(request, pk):
+    entry = get_object_or_404(LogEntry, pk=pk)
+    if not logbook.can_edit(request.user, entry):
+        raise Http404
+    return entry
+
+
+def _form_page(request, form, title):
+    response = render(
+        request,
+        "frontend/logbook/form.html",
+        {"page_title": title, "back_url": reverse("logbook-list"), "form": form},
+    )
+    add_never_cache_headers(response)
+    return response
+
+
+def logbook_new(request):
+    if not request.user.is_authenticated:
+        return _sign_in_redirect(request)
+    form = LogEntryForm(request.POST or None, initial={"date": timezone.localdate()})
+    if request.method == "POST" and form.is_valid():
+        entry = form.save(commit=False)
+        entry.author = request.user
+        entry.save()
+        return redirect(f"{reverse('logbook-list')}#entry-{entry.pk}")
+    return _form_page(request, form, _("New entry"))
+
+
+def logbook_edit(request, pk):
+    if not request.user.is_authenticated:
+        return _sign_in_redirect(request)
+    entry = _editable_entry(request, pk)
+    form = LogEntryForm(request.POST or None, instance=entry)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        return redirect(f"{reverse('logbook-list')}#entry-{entry.pk}")
+    return _form_page(request, form, _("Edit entry"))
+
+
+@require_POST
+def logbook_delete(request, pk):
+    if not request.user.is_authenticated:
+        return _sign_in_redirect(request)
+    _editable_entry(request, pk).delete()
+    return redirect("logbook-list")

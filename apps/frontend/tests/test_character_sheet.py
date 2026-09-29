@@ -1457,7 +1457,7 @@ def test_the_overview_shows_a_picture_and_level_wording(signed_in, alice):
 
     html = signed_in.get("/characters/").content.decode()
 
-    assert 'class="pic"' in html and "Monk level 1" in html
+    assert 'class="item-thumb pic-empty"' in html and "Monk · Level 1" in html
 
 
 def test_the_purse_uses_the_italian_coin_abbreviations(signed_in, alice):

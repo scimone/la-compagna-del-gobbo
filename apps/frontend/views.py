@@ -1133,7 +1133,7 @@ def world_classes(request):
         items,
         world_tabs=True,
         search_query=q,
-        search_placeholder=_("Search classes, subclasses and features"),
+        search_placeholder=_("Search classes"),
         bookmark_kind="class",
     )
 
@@ -1641,7 +1641,7 @@ def world_species(request):
         items,
         world_tabs=True,
         search_query=q,
-        search_placeholder=_("Search species and traits"),
+        search_placeholder=_("Search species"),
         bookmark_kind="species",
     )
 

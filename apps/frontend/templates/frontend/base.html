@@ -824,15 +824,32 @@
       data-root="{% url 'handbook-overview' %}"
       class="bottom-nav-item{% if '/handbook/' in request.path %} active{% endif %}"
     >
-      {# A spiral-bound notebook: the front cover with its ruled lines, the spiral's rings down    #}
-      {# the left edge, three index tabs down the right edge. #}
+      {# An open book seen from above: a spine with a small headband loop on top and a gentle V at #}
+      {# the foot, a mirrored page on each side, the pages themselves left empty. #}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="6" y="3" width="14" height="18" rx="2"></rect>
-        <path d="M9.5 8h7M9.5 11.3h7M9.5 14.6h7M9.5 17.9h4.5"></path>
-        <path d="M5.2 5.5h.01M5.2 9h.01M5.2 12.5h.01M5.2 16h.01M5.2 19.5h.01"></path>
-        <path d="M20 7h2M20 12h2M20 17h2"></path>
+        <path d="M12 6v14.5"></path>
+        <path d="M12 6c-1.2-1.5-3.6-2.3-7-2.3a1.5 1.5 0 0 0-1.5 1.5v11a1.5 1.5 0 0 0 1.5 1.5c3.4 0 5.8.8 7 2.3"></path>
+        <path d="M12 6c1.2-1.5 3.6-2.3 7-2.3a1.5 1.5 0 0 1 1.5 1.5v11a1.5 1.5 0 0 1-1.5 1.5c-3.4 0-5.8.8-7 2.3"></path>
+        <path d="M10.5 3.7C10.5 2.5 13.5 2.5 13.5 3.7"></path>
       </svg>
       <span>{% translate "Handbook" %}</span>
+    </a>
+    <a
+      href="{% url 'logbook-list' %}"
+      data-menu="logbook"
+      data-root="{% url 'logbook-list' %}"
+      class="bottom-nav-item{% if '/logbook/' in request.path %} active{% endif %}"
+    >
+      {# A spiral-bound notebook: the cover with five open rings down the left edge and a feather #}
+      {# quill across it, plume out past the top-right corner, nib at the lower left. #}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="6" y="4" width="13" height="17" rx="2"></rect>
+        <path d="M6 6.5H3.8M6 9.8H3.8M6 13.1H3.8M6 16.4H3.8M6 19.7H3.8"></path>
+        <path d="M21.5 1.8c-3.8.2-7 2.6-8.4 6.6l-1.7 5"></path>
+        <path d="M21.5 1.8c.3 3.6-1.8 6.6-6.2 7.4"></path>
+        <path d="M11.4 13.4 10 17.2"></path>
+      </svg>
+      <span>{% translate "Logbook" %}</span>
     </a>
     <a
       href="{{ last_world_url }}"

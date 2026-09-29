@@ -1,0 +1,28 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+{% block extra_style %}
+  main { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .logform { width: 100%; max-width: 32rem; margin: 0 auto; }
+  .logform form { display: flex; flex-direction: column; gap: 0.8rem; }
+  .logform .field { display: flex; flex-direction: column; gap: 0.25rem; }
+  .logform label { font-size: 0.85rem; font-weight: 600; }
+  .logform input, .logform textarea { appearance: none; width: 100%; padding: 0.6rem 0.8rem; font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; }
+  .logform textarea { resize: vertical; }
+  .logform .errorlist { margin: 0; padding: 0; list-style: none; color: #b3261e; font-size: 0.85rem; }
+  .logform button { appearance: none; border: 0; background: var(--accent); color: var(--accent-text); font: inherit; font-weight: 600; padding: 0.65rem 1rem; border-radius: 0.6rem; cursor: pointer; }
+{% endblock %}
+{% block content %}
+  <div class="logform">
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="field">
+          {{ field.label_tag }}
+          {{ field }}
+          {{ field.errors }}
+        </div>
+      {% endfor %}
+      <button type="submit">{% translate "Save" %}</button>
+    </form>
+  </div>
+{% endblock %}

@@ -5,27 +5,19 @@
   .chars { width: 100%; max-width: 44rem; margin: 0 auto; display: flex; flex-direction: column; gap: 0.6rem; flex: 1; }
   .chars h2 { margin: 0.4rem 0 0; font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
   .chars ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
-  .chars li a { display: flex; flex-direction: row; align-items: center; gap: 0.7rem; padding: 0.65rem 0.9rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; color: var(--text); text-decoration: none; }
-  .chars li a:active { background: var(--bg); }
-  .chars li.has-delete { display: flex; gap: 0.4rem; align-items: stretch; }
-  .chars li.has-delete a { flex: 1; min-width: 0; }
-  .chars .del { flex-shrink: 0; width: 2.9rem; display: flex; align-items: center; justify-content: center; background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; color: var(--muted); cursor: pointer; padding: 0; }
-  .chars .del:active { color: var(--accent); background: var(--bg); }
-  .chars .del svg { width: 1.2rem; height: 1.2rem; }
+  {# Same rows as the World lists (classes, species): the shared card style, thumbnail on the left. #}
+  {% include "frontend/_item_list_style.html" %}
   dialog.del-dialog { max-width: 22rem; width: calc(100% - 2rem); padding: 1rem; border: 1px solid var(--border); border-radius: 0.8rem; background: var(--surface); color: var(--text); }
   dialog.del-dialog::backdrop { background: rgba(0,0,0,.5); }
   dialog.del-dialog p { margin: 0 0 1rem; }
   dialog.del-dialog .row { display: flex; justify-content: flex-end; gap: 0.6rem; }
   dialog.del-dialog button { padding: 0.45rem 1rem; border-radius: 1rem; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 600; cursor: pointer; }
   dialog.del-dialog button.danger { background: #b3261e; border-color: #b3261e; color: #fff; }
-  .chars li.new a { border-color: var(--accent); border-left-width: 0.3rem; }
-  .chars li.draft a { border-style: dashed; }
-  .chars .who { display: flex; flex-direction: column; min-width: 0; }
-  .chars .pic { flex-shrink: 0; width: 3rem; height: 3rem; border-radius: 50%; overflow: hidden; background: var(--bg); border: 1px solid var(--border); display: flex; align-items: flex-end; justify-content: center; }
-  .chars .pic img { width: 100%; height: 100%; object-fit: cover; }
-  .chars .pic svg { width: 78%; height: 78%; fill: var(--muted); }
-  .chars .name { font-weight: 600; }
-  .chars .detail { color: var(--muted); font-size: 0.85rem; }
+  .chars .item-list li.new { border-color: var(--accent); border-left-width: 0.3rem; }
+  .chars .item-list li.draft { border-style: dashed; }
+  /* No portrait yet: the same silhouette as before, in the thumbnail's box. */
+  .chars .item-thumb.pic-empty { display: flex; align-items: flex-end; justify-content: center; overflow: hidden; border: 1px solid var(--border); }
+  .chars .item-thumb.pic-empty svg { width: 78%; height: 78%; fill: var(--muted); }
   .chars .empty { flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--muted); }
   /* Sticks to the bottom-right of the scrolling area, above the bottom nav. */
   .fab { position: sticky; bottom: 0.5rem; align-self: flex-end; margin-top: auto; width: 3.4rem; height: 3.4rem; border-radius: 50%;
@@ -37,10 +29,10 @@
   <div class="chars">
     {% if drafts %}
       <h2>{% translate "In creation" %}</h2>
-      <ul>
+      <ul class="item-list">
         {% for d in drafts %}
-          <li class="draft has-delete"><a href="{{ d.url }}"><span class="name">{{ d.character.name }}</span><span class="detail">{% translate "Resume creating this character" %}{% if d.owner %} · {{ d.owner }}{% endif %}</span></a>
-            <button type="button" class="del" data-delete-url="{% url 'character-delete' d.character.pk %}" data-name="{{ d.character.name }}" aria-label="{% translate 'Delete character' %}">
+          <li class="draft"><a href="{{ d.url }}"><div class="item-text"><span class="item-name">{{ d.character.name }}</span><div class="item-detail">{% translate "Resume creating this character" %}{% if d.owner %} · {{ d.owner }}{% endif %}</div></div></a>
+            <button type="button" class="del item-remove" data-delete-url="{% url 'character-delete' d.character.pk %}" data-name="{{ d.character.name }}" aria-label="{% translate 'Delete character' %}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"></path><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path></svg>
             </button>
           </li>
@@ -49,13 +41,13 @@
     {% endif %}
     {% if characters %}
       <h2>{% translate "Characters" %}</h2>
-      <ul>
+      <ul class="item-list">
         {% for c in characters %}
-          <li class="{% if new_id == c.character.pk|stringformat:"d" %}new{% endif %}{% if c.can_delete %} has-delete{% endif %}">
-            <a href="{{ c.url }}"><span class="pic">{% if c.portrait %}<img src="{{ c.portrait }}" alt="" loading="lazy">{% else %}<svg viewBox="0 0 90 120" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><circle cx="45" cy="44" r="17"/><path d="M11 121c0-27 14-43 34-43s34 16 34 43z"/></svg>{% endif %}</span><span class="who"><span class="name">{{ c.character.name }}</span>
-              <span class="detail">{{ c.detail }}{% if c.owner %} · {{ c.owner }}{% endif %}</span></span></a>
+          <li class="{% if new_id == c.character.pk|stringformat:"d" %}new{% endif %}">
+            <a href="{{ c.url }}" class="menu-thumb">{% if c.portrait %}<img class="item-thumb" src="{{ c.portrait }}" alt="" loading="lazy">{% else %}<span class="item-thumb pic-empty"><svg viewBox="0 0 90 120" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><circle cx="45" cy="44" r="17"/><path d="M11 121c0-27 14-43 34-43s34 16 34 43z"/></svg></span>{% endif %}<div class="item-text"><span class="item-name">{{ c.character.name }}</span>
+              <div class="item-detail">{{ c.detail }}{% if c.owner %} · {{ c.owner }}{% endif %}</div></div></a>
             {% if c.can_delete %}
-              <button type="button" class="del" data-delete-url="{% url 'character-delete' c.character.pk %}" data-name="{{ c.character.name }}" aria-label="{% translate 'Delete character' %}">
+              <button type="button" class="del item-remove" data-delete-url="{% url 'character-delete' c.character.pk %}" data-name="{{ c.character.name }}" aria-label="{% translate 'Delete character' %}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"></path><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path></svg>
               </button>
             {% endif %}

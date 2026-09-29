@@ -1,5 +1,5 @@
 /*
- * In-app navigation: one history stack per bottom-nav menu (Characters / Handbook / World).
+ * In-app navigation: one history stack per bottom-nav menu (Characters / Handbook / Logbook / World).
  *
  * The pages are server-rendered, so the browser's own history is a single linear list that
  * knows nothing about menus. That is wrong for this app in three ways this file fixes:
@@ -32,7 +32,7 @@
   "use strict";
 
   var STORAGE_KEY = "dnd.navigation.v1";
-  var MENUS = ["characters", "handbook", "world"];
+  var MENUS = ["characters", "handbook", "logbook", "world"];
   // Pages that are a detour from wherever they were opened, not a place of their own: leaving
   // the menu for another one must not park the account form on top of that menu's stack.
   var TRANSIENT_PATHS = ["/account/"];
@@ -42,7 +42,7 @@
   // --- state --------------------------------------------------------------------------------
 
   function freshState() {
-    return { active: null, pending: null, stacks: { characters: [], handbook: [], world: [] } };
+    return { active: null, pending: null, stacks: { characters: [], handbook: [], logbook: [], world: [] } };
   }
 
   function read() {

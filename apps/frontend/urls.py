@@ -1,6 +1,6 @@
 from django.urls import path
 
-from apps.frontend import character_sheet, character_views, views
+from apps.frontend import character_sheet, character_views, logbook_views, views
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -75,6 +75,10 @@ urlpatterns = [
         views.handbook_section_detail,
         name="handbook-section-detail",
     ),
+    path("logbook/", logbook_views.logbook_list, name="logbook-list"),
+    path("logbook/new/", logbook_views.logbook_new, name="logbook-new"),
+    path("logbook/<int:pk>/edit/", logbook_views.logbook_edit, name="logbook-edit"),
+    path("logbook/<int:pk>/delete/", logbook_views.logbook_delete, name="logbook-delete"),
     path("account/", views.account, name="account"),
     path("account/logout/", views.account_logout, name="account-logout"),
     path("bookmarks/toggle/", views.bookmark_toggle, name="bookmark-toggle"),

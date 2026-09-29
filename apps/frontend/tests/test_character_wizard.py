@@ -492,3 +492,16 @@ def test_a_later_background_removes_a_now_duplicate_class_skill_and_says_so(sign
     state = creation.get_state(character)
     assert {s["key"]: s["status"] for s in state["steps"]}["class"] == "incomplete"
     assert any(i["path"] == "class.skills" for s in state["steps"] for i in s["issues"])
+
+
+def test_the_overview_row_separates_species_class_and_level_with_dots(signed_in, alice):
+    from apps.builder.services import creation as _creation
+    from apps.builder.tests.conftest import build_character
+
+    character = build_character(alice, "wizard", "sage", "human", "Mira")
+    _creation.finalize(character)
+
+    html = signed_in.get("/characters/").content.decode()
+
+    assert "Human · Wizard · Level 1" in html
+    assert 'class="item-thumb pic-empty"' in html
