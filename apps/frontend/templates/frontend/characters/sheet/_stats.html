@@ -1,70 +1,16 @@
 {% load i18n %}
-{# Everything that changes during play, as a dashboard of cards that fills the tab: the rows share the #}
-{# height by weight (`--w`) and what is inside scales with it (see the Stats tab CSS), so nothing      #}
-{# scrolls on a normal screen. `data-bind` and the `data-*` on the pips are what                       #}
-{# `character_sheet.js` redraws after a change.                                                        #}
+{# The Stats tab: what changes during play, top to bottom in the order it is reached for - hit points, #}
+{# the rests, the numbers of a fight, inspiration / Hit Dice / death saves, resources, casting, XP.    #}
+{# Plain flowing cards (two columns on a wide screen); `data-bind`, `data-act` and the pip / box       #}
+{# classes are what `character_sheet.js` reads and redraws after a change.                              #}
 <div class="cs-scroll">
-<section class="cs-stats" aria-label="{% translate 'Quick stats' %}">
+<section class="st" aria-label="{% translate 'Quick stats' %}">
 
-  {# Rests: what they restore is in `play.short_rest`/`play.long_rest`; the dialogs are in _rest_dialog.html. #}
-  {% if can_edit %}
-  <div class="cs-row" style="--w: 0.6">
-    <button type="button" class="cs-card cs-tile half cs-rest" data-rest="short">
-      <span class="k">{% translate "Short Rest" %}</span>
-    </button>
-    <button type="button" class="cs-card cs-tile half cs-rest" data-rest="long">
-      <span class="k">{% translate "Long Rest" %}</span>
-    </button>
-  </div>
-  {% endif %}
-
-  {# Armor Class, Initiative, Speed: the numbers of a fight. #}
-  <div class="cs-row" style="--w: 1.6">
-  <div class="cs-card cs-tile third">
-    <span class="ac-emblem">
-      <svg viewBox="0 0 24 26" aria-hidden="true"><path d="M12 1.5 21.5 5v7.5c0 5.6-3.9 10-9.5 12-5.6-2-9.5-6.4-9.5-12V5z"/></svg>
-      <b class="v" data-bind="ac">{{ strip.armor_class }}</b>
-    </span>
-    <span class="k">{% translate "Armor Class" %}</span>
-    {% if strip.shield_item %}
-      <button type="button" class="cs-shield{% if strip.shield_worn %} on{% endif %}" data-act="equip" data-item="{{ strip.shield_item }}"
-              data-value="{% if strip.shield_worn %}0{% else %}1{% endif %}" aria-pressed="{% if strip.shield_worn %}true{% else %}false{% endif %}"
-              title="{% translate 'Shield' %}"{% if not can_edit %} disabled{% endif %}>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20 5.5v6c0 5-3.4 8.8-8 10.5-4.6-1.7-8-5.5-8-10.5v-6z"/></svg>
-        {% translate "Shield" %}
-      </button>
-    {% endif %}
-  </div>
-  <div class="cs-card cs-tile third">
-    <span class="v">{{ strip.initiative|stringformat:"+d" }}</span>
-    <span class="k">{% translate "Initiative" %}</span>
-  </div>
-  <div class="cs-card cs-tile third">
-    <span class="v">{{ header.speed }}</span>
-    <span class="k">{% translate "Speed" %}</span>
-  </div>
-
-  </div>
-
-  <div class="cs-row" style="--w: 1">
-  <div class="cs-card cs-tile half">
-    <span class="v">{{ header.passive_perception }}</span>
-    <span class="k">{% translate "Passive Perception" %}</span>
-  </div>
-  <button type="button" class="cs-card cs-tile half cs-insp{% if strip.inspiration %} on{% endif %}" data-act="inspiration"
-          data-value="{% if strip.inspiration %}0{% else %}1{% endif %}" aria-pressed="{% if strip.inspiration %}true{% else %}false{% endif %}"{% if not can_edit %} disabled{% endif %}>
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.8 2.7 5.9 6.4.7-4.8 4.3 1.4 6.3L12 16.8 6.3 20l1.4-6.3L2.9 9.4l6.4-.7z"/></svg>
-    <span class="k">{% translate "Heroic Inspiration" %}</span>
-  </button>
-
-  </div>
-
-  {# Hit points: the biggest thing on the page, right above what is spent to get them back. #}
-  <div class="cs-row" style="--w: 2.2">
-  <div class="cs-card cs-hp">
-    <div class="cs-card-head">
+  {# Hit points: the centrepiece. #}
+  <div class="st-card st-hp st-wide">
+    <div class="st-head">
       <span class="k">{% translate "Hit Points" %}</span>
-      <label class="cs-temp"><span class="k">{% translate "Temp HP" %}</span>
+      <label class="st-temp"><span class="k">{% translate "Temp HP" %}</span>
         {% if can_edit %}
           <input type="number" min="0" inputmode="numeric" value="{{ strip.temp_hp }}" data-act="temp_hp" data-bind="temp_hp">
         {% else %}
@@ -72,7 +18,7 @@
         {% endif %}
       </label>
     </div>
-    <div class="cs-hp-main">
+    <div class="st-hp-main">
       {% if can_edit %}<button type="button" class="step" data-act="hp_delta" data-delta="-1" aria-label="{% translate 'Lose 1 hit point' %}">−</button>{% endif %}
       <span class="hp-val">
         {% if can_edit %}
@@ -87,11 +33,59 @@
     <div class="cs-bar hp" data-hp-bar style="--pct: {{ strip.hp_percent }}%"><i></i></div>
   </div>
 
+  {# Rests: what they restore is in `play.short_rest`/`play.long_rest`; the dialogs are in _rest_dialog.html. #}
+  {% if can_edit %}
+  <div class="st-rests st-wide">
+    <button type="button" class="st-rest" data-rest="short">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+      <span>{% translate "Short Rest" %}</span>
+    </button>
+    <button type="button" class="st-rest" data-rest="long">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6M3 18h18M3 14h18M5 10V7a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/></svg>
+      <span>{% translate "Long Rest" %}</span>
+    </button>
+  </div>
+  {% endif %}
+
+  {# Armor Class, Initiative, Speed, Passive Perception: the numbers of a fight. #}
+  <div class="st-tiles st-wide">
+    <div class="st-tile st-ac">
+      <span class="ac-emblem">
+        <svg viewBox="0 0 24 26" aria-hidden="true"><path d="M12 1.5 21.5 5v7.5c0 5.6-3.9 10-9.5 12-5.6-2-9.5-6.4-9.5-12V5z"/></svg>
+        <b class="v" data-bind="ac">{{ strip.armor_class }}</b>
+      </span>
+      <span class="k">{% translate "Armor Class" %}</span>
+      {% if strip.shield_item %}
+        <button type="button" class="cs-shield{% if strip.shield_worn %} on{% endif %}" data-act="equip" data-item="{{ strip.shield_item }}"
+                data-value="{% if strip.shield_worn %}0{% else %}1{% endif %}" aria-pressed="{% if strip.shield_worn %}true{% else %}false{% endif %}"
+                title="{% translate 'Shield' %}"{% if not can_edit %} disabled{% endif %}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20 5.5v6c0 5-3.4 8.8-8 10.5-4.6-1.7-8-5.5-8-10.5v-6z"/></svg>
+          {% translate "Shield" %}
+        </button>
+      {% endif %}
+    </div>
+    <div class="st-tile">
+      <b class="v">{{ strip.initiative|stringformat:"+d" }}</b>
+      <span class="k">{% translate "Initiative" %}</span>
+    </div>
+    <div class="st-tile">
+      <b class="v">{{ header.speed }}</b>
+      <span class="k">{% translate "Speed" %}</span>
+    </div>
+    <div class="st-tile">
+      <b class="v">{{ header.passive_perception }}</b>
+      <span class="k">{% translate "Passive Perception" %}</span>
+    </div>
   </div>
 
-  {# What is spent and recovered: one pip per Hit Die (tap a full one to spend it), then death saves. #}
-  <div class="cs-row" style="--w: 1.5">
-  <div class="cs-card half">
+  {# Heroic Inspiration, then what is spent and recovered: one pip per Hit Die (tap a full one to spend it). #}
+  <button type="button" class="st-card st-insp cs-insp{% if strip.inspiration %} on{% endif %}" data-act="inspiration"
+          data-value="{% if strip.inspiration %}0{% else %}1{% endif %}" aria-pressed="{% if strip.inspiration %}true{% else %}false{% endif %}"{% if not can_edit %} disabled{% endif %}>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.8 2.7 5.9 6.4.7-4.8 4.3 1.4 6.3L12 16.8 6.3 20l1.4-6.3L2.9 9.4l6.4-.7z"/></svg>
+    <span class="k">{% translate "Heroic Inspiration" %}</span>
+  </button>
+
+  <div class="st-card st-dice">
     <span class="k">{% translate "Hit Dice" %}</span>
     {% for hd in strip.hit_dice %}
       <div class="cs-hd-row" data-hd="{{ hd.die }}" data-total="{{ hd.total }}">
@@ -106,46 +100,45 @@
       </div>
     {% endfor %}
   </div>
-  <div class="cs-card half cs-death">
-    <span class="k">{% translate "Death Saves" %}</span>
-    {% for kind, label, symbol, count in strip.death_rows %}
-      <div class="death-line" data-death="{{ kind }}">
-        <span class="lbl"><i aria-hidden="true">{{ symbol }}</i> <span class="txt">{{ label }}</span></span>
-        <span class="boxes">
-          {% for i in "123" %}
-            <button type="button" class="box{% if forloop.counter <= count %} on{% endif %} {{ kind }}" data-act="death_toggle" data-kind="{{ kind }}" data-index="{{ forloop.counter }}"
-                    aria-label="{{ label }} {{ forloop.counter }}"{% if not can_edit %} disabled{% endif %}></button>
-          {% endfor %}
-        </span>
-      </div>
-    {% endfor %}
-  </div>
-  </div>
 
-  {# Limited-use resources (Rage, Bardic Inspiration, ...): spent with the buttons, restored by rests. #}
-  {% if strip.resources %}
-  <div class="cs-row" style="--w: 1.2">
-    <div class="cs-card">
-      <span class="k">{% translate "Resources" %}</span>
-      {% for r in strip.resources %}
-        <div class="cs-res-row">
-          <span class="lbl">{{ r.name }}</span>
-          <span class="ctl">
-            {% if can_edit %}<button type="button" class="step small" data-act="resource" data-id="{{ r.pk }}" data-delta="-1" aria-label="{% translate 'Spend one use' %}">−</button>{% endif %}
-            <span class="cnt"><b data-bind="resources.{{ r.pk }}.current">{{ r.current }}</b>/{{ r.max }}</span>
-            {% if can_edit %}<button type="button" class="step small" data-act="resource" data-id="{{ r.pk }}" data-delta="1" aria-label="{% translate 'Regain one use' %}">+</button>{% endif %}
+  <div class="st-card st-death st-wide">
+    <span class="k">{% translate "Death Saves" %}</span>
+    <div class="st-death-lines">
+      {% for kind, label, symbol, count in strip.death_rows %}
+        <div class="death-line" data-death="{{ kind }}">
+          <span class="lbl"><i aria-hidden="true">{{ symbol }}</i> {{ label }}</span>
+          <span class="boxes">
+            {% for i in "123" %}
+              <button type="button" class="box{% if forloop.counter <= count %} on{% endif %} {{ kind }}" data-act="death_toggle" data-kind="{{ kind }}" data-index="{{ forloop.counter }}"
+                      aria-label="{{ label }} {{ forloop.counter }}"{% if not can_edit %} disabled{% endif %}></button>
+            {% endfor %}
           </span>
         </div>
       {% endfor %}
     </div>
   </div>
+
+  {# Limited-use resources (Rage, Bardic Inspiration, ...): spent with the buttons, restored by rests. #}
+  {% if strip.resources %}
+  <div class="st-card st-res st-wide">
+    <span class="k">{% translate "Resources" %}</span>
+    {% for r in strip.resources %}
+      <div class="cs-res-row">
+        <span class="lbl">{{ r.name }}</span>
+        <span class="ctl">
+          {% if can_edit %}<button type="button" class="step small" data-act="resource" data-id="{{ r.pk }}" data-delta="-1" aria-label="{% translate 'Spend one use' %}">−</button>{% endif %}
+          <span class="cnt"><b data-bind="resources.{{ r.pk }}.current">{{ r.current }}</b>/{{ r.max }}</span>
+          {% if can_edit %}<button type="button" class="step small" data-act="resource" data-id="{{ r.pk }}" data-delta="1" aria-label="{% translate 'Regain one use' %}">+</button>{% endif %}
+        </span>
+      </div>
+    {% endfor %}
+  </div>
   {% endif %}
 
   {# The spellcasting numbers (they used to sit above the Spellbook's list). #}
   {% if spellbook.sources %}
-  <div class="cs-row" style="--w: 1.2">
-    <div class="cs-card">
-      <span class="k">{% translate "Spellcasting" %}</span>
+  <div class="st-card st-cast st-wide">
+    <span class="k">{% translate "Spellcasting" %}</span>
     <section class="cs-casting" data-casting>
       <label class="cs-metric wide">
         <span class="k">{% translate "Ability" %}</span>
@@ -163,15 +156,16 @@
         <div class="cs-metric"><span class="k">{% translate "Atk" %}</span><b data-casting-atk>{{ first.attack|stringformat:"+d" }}</b></div>
       {% endwith %}
     </section>
-    </div>
   </div>
   {% endif %}
 
-  {# Experience: the number, and how far it is to the next level. #}
-  <div class="cs-row" style="--w: {% if can_edit and header.can_level_up %}1.15{% else %}0.9{% endif %}">
-  <div class="cs-card cs-xp">
-    <div class="cs-card-head">
-      <label class="k" for="cs-xp">{% translate "Experience Points" %}</label>
+  {# Experience: the level, the number, how far it is to the next level, and the way up. #}
+  <div class="st-card st-xp st-wide">
+    <div class="st-head">
+      <span class="k"><label for="cs-xp">{% translate "Experience Points" %}</label></span>
+      <span class="st-level">{% translate "Level" %} {{ header.level }}</span>
+    </div>
+    <div class="st-xp-line">
       <span class="xp-val">
         {% if can_edit %}
           <input id="cs-xp" type="number" min="0" inputmode="numeric" value="{{ header.xp }}" data-act="xp" data-bind="xp">
@@ -187,7 +181,6 @@
     {% if can_edit and header.can_level_up %}
       <a class="cs-levelup{% if header.xp_ready %} ready{% endif %}" href="{% url 'character-levelup' character.pk %}" data-nav="push">{% translate "Level up" %}</a>
     {% endif %}
-  </div>
   </div>
 </section>
 </div>

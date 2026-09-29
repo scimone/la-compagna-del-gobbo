@@ -132,7 +132,7 @@ def test_the_stats_tab_holds_every_number_that_changes_during_play(signed_in, al
     assert html.count('<div class="cs-scroll">') == 1
 
 
-def test_hit_points_sit_right_above_the_hit_dice_and_death_saves_which_share_a_line(
+def test_the_stats_tab_reads_hit_points_first_then_the_fight_numbers_then_what_is_spent(
     signed_in, alice
 ):
     cleric = finished(alice, "cleric")
@@ -141,12 +141,20 @@ def test_hit_points_sit_right_above_the_hit_dice_and_death_saves_which_share_a_l
 
     order = [
         html.index(name)
-        for name in ("Armor Class", "Passive Perception", "Hit Points", "Hit Dice", "Death Saves")
+        for name in (
+            "Hit Points",
+            "Short Rest",
+            "Armor Class",
+            "Passive Perception",
+            "Hit Dice",
+            "Death Saves",
+            "Experience Points",
+        )
     ]
-    assert order == sorted(order)  # hit points come after the combat numbers, then the resources
-    # Two half-width cards, so they sit on one line:
-    assert re.search(r'class="cs-card half">\s*<span class="k">Hit Dice', html)
-    assert re.search(r'class="cs-card half cs-death">\s*<span class="k">Death Saves', html)
+    assert order == sorted(order)
+    # The cards flow in a plain grid (no height-weighted rows), so nothing can overlap.
+    assert 'class="st-card st-hp st-wide"' in html and "cs-row" not in html
+    assert 'class="st-card st-dice"' in html and 'class="st-card st-death st-wide"' in html
 
 
 def test_the_stats_tab_shows_progress_bars_and_one_pip_per_hit_die(signed_in, alice):

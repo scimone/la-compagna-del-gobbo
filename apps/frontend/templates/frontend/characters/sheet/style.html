@@ -61,110 +61,102 @@
   .cs-facts dt { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
   .cs-facts dd { margin: 0; font-size: 0.88rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-  /* The Stats tab: a dashboard of cards on a 12-column grid. Small cards are 4 or 6 wide, big ones
-     span the row. Hit Dice and Death Saves share a line even on a phone, so they are kept narrow:
-     the death save labels shrink to their symbol there. */
-  .cs-stats { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 0.6rem; }
-  .cs-card { grid-column: span 12; min-width: 0; padding: 0.8rem 0.9rem; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04); }
-  .cs-card.third { grid-column: span 4; }
-  .cs-card.half { grid-column: span 6; }
-  .cs-card .k { font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; line-height: 1.2; }
-  .cs-card-head { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
-  .cs-card input[type="number"] { text-align: center; background: var(--bg); }
-  .cs-bar { height: 0.5rem; margin-top: 0.6rem; overflow: hidden; background: var(--bg); border: 1px solid var(--border); border-radius: 1rem; }
+  /* The Stats tab: flowing cards, top to bottom in the order they are reached for. One column on a
+     phone, two on a wide screen (`.st-wide` cards span both); nothing is sized by the screen's
+     height, so nothing overlaps or is squeezed - the tab simply scrolls if it must. */
+  .st { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; padding-bottom: 0.5rem; }
+  .st-wide { grid-column: 1 / -1; }
+  .st-card { min-width: 0; padding: 0.85rem 0.95rem; display: flex; flex-direction: column; gap: 0.55rem;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); text-align: left; }
+  .st .k { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; line-height: 1.2; }
+  .st-head { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
+  .st input[type="number"] { text-align: center; background: var(--bg); }
+  .cs-bar { height: 0.55rem; overflow: hidden; background: var(--bg); border: 1px solid var(--border); border-radius: 1rem; }
   .cs-bar i { display: block; width: var(--pct); height: 100%; background: var(--accent); border-radius: 1rem; transition: width 0.25s; }
-  .cs-bar.hp { height: 0.7rem; margin-top: 0.8rem; }
-  .xp-val { display: inline-flex; align-items: baseline; gap: 0.35rem; font-size: 0.95rem; }
-  #cs .xp-val input { width: 5rem; padding: 0.15rem 0; font-size: 1rem; font-weight: 700; }
-  .xp-val b { font-size: 1.1rem; }
-  /* The owner's Level up button under the XP bar - filled once the XP reach the next level. */
-  .cs-levelup { display: block; margin-top: 0.6rem; padding: 0.4rem 0.8rem; text-align: center; font-weight: 700; font-size: 0.9rem;
-    text-decoration: none; border-radius: 0.6rem; color: var(--accent); border: 1px solid var(--accent); background: none; }
-  .cs-levelup.ready { background: var(--accent); color: var(--accent-text); }
-  .cs-levelup:active { background: var(--accent-strong); color: var(--accent-text); }
-  .xp-val .of { color: var(--muted); }
-  /* Hit points: the centrepiece. */
-  .cs-hp { background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 7%, var(--surface)), var(--surface)); }
-  .cs-temp { display: inline-flex; align-items: center; gap: 0.4rem; }
-  #cs .cs-temp input { width: 3.4rem; padding: 0.1rem 0; font-weight: 700; }
-  .cs-hp-main { display: flex; align-items: center; justify-content: center; gap: 1.1rem; margin-top: 0.5rem; }
+  .cs-bar.hp { height: 0.75rem; }
+  .st-level { padding: 0.1rem 0.7rem; background: var(--accent); border-radius: 1rem; color: var(--accent-text); font-size: 0.75rem; font-weight: 700; }
+
+  /* Hit points */
+  .st-hp { background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 9%, var(--surface)), var(--surface) 70%); padding-top: 0.95rem; padding-bottom: 1rem; }
+  .st-temp { display: inline-flex; align-items: center; gap: 0.45rem; }
+  #cs .st-temp input { width: 3.6rem; padding: 0.2rem 0; font-weight: 700; }
+  .st-hp-main { display: flex; align-items: center; justify-content: center; gap: 1.3rem; padding: 0.2rem 0; }
   .hp-val { display: inline-flex; align-items: baseline; gap: 0.4rem; }
-  #cs .hp-val input, .hp-val b { width: 5.2rem; padding: 0; font-size: 2.6rem; font-weight: 800; line-height: 1.15; text-align: center; }
+  #cs .hp-val input, .hp-val b { width: 5.4rem; padding: 0; font-size: 3.1rem; font-weight: 800; line-height: 1.15; text-align: center; background: transparent; border-color: transparent; }
+  #cs .hp-val input:focus { background: var(--bg); border-color: var(--border); }
   .hp-val b { width: auto; }
-  .hp-val .of { color: var(--muted); font-size: 1.3rem; font-weight: 600; }
-  .step { flex-shrink: 0; width: 2.9rem; height: 2.9rem; padding: 0; line-height: 1; font-size: 1.6rem; font-weight: 600; background: var(--surface); border: 1px solid var(--border); border-radius: 50%; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); cursor: pointer; }
+  .hp-val .of { color: var(--muted); font-size: 1.4rem; font-weight: 600; }
+  .step { flex-shrink: 0; width: 3.1rem; height: 3.1rem; padding: 0; line-height: 1; font-size: 1.7rem; font-weight: 600; background: var(--surface); border: 1px solid var(--border); border-radius: 50%; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); cursor: pointer; }
   .step:active:not(:disabled) { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
-  /* Combat tiles: the number big, its name under it. */
-  .cs-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.35rem; padding: 0.9rem 0.4rem; text-align: center; }
-  .cs-tile .v { font-size: 2rem; font-weight: 800; line-height: 1; }
-  .ac-emblem { position: relative; display: grid; place-items: center; width: 3.3rem; height: 3.6rem; }
+  .step.small { width: 2.1rem; height: 2.1rem; font-size: 1.2rem; }
+
+  /* Rests */
+  .st-rests { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+  .st-rest { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.7rem 0.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); font-weight: 700; font-size: 0.9rem; cursor: pointer; }
+  .st-rest svg { width: 1.3rem; height: 1.3rem; fill: none; stroke: var(--accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .st-rest:active { background: var(--bg); }
+
+  /* The numbers of a fight: four tiles in a row (two by two on a narrow phone). */
+  .st-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.7rem; }
+  @media (max-width: 22rem) { .st-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 30rem) { .st-tile { min-height: 6.4rem; } .st-tile .v { font-size: 1.7rem; } }
+  .st-tile { min-width: 0; padding: 0.85rem 0.3rem 0.7rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.35rem; text-align: center;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+  .st-tile .v { font-size: 2rem; font-weight: 800; line-height: 1; }
+  .st-tile .k { font-size: 0.56rem; letter-spacing: 0.03em; overflow-wrap: normal; }
+  .ac-emblem { position: relative; display: grid; place-items: center; width: 3.1rem; height: 3.4rem; }
   .ac-emblem svg { position: absolute; inset: 0; width: 100%; height: 100%; fill: color-mix(in srgb, var(--accent) 13%, var(--surface)); stroke: var(--accent); stroke-width: 1.4; stroke-linejoin: round; }
-  .ac-emblem .v { position: relative; font-size: 1.6rem; margin-top: -0.15rem; }
-  .cs-shield { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.1rem 0.6rem 0.1rem 0.45rem; background: var(--bg); border: 1px solid var(--border); border-radius: 1rem; color: var(--muted); font-size: 0.7rem; font-weight: 600; cursor: pointer; }
+  .ac-emblem .v { position: relative; font-size: 1.5rem; margin-top: -0.15rem; }
+  .cs-shield { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.1rem 0.6rem 0.1rem 0.45rem; background: var(--bg); border: 1px solid var(--border); border-radius: 1rem; color: var(--muted); font-size: 0.68rem; font-weight: 700; cursor: pointer; }
   .cs-shield svg { width: 0.85rem; height: 0.85rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
   .cs-shield.on { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
   .cs-shield.on svg { fill: currentColor; }
-  button.cs-insp { cursor: pointer; }
-  button.cs-insp:disabled { cursor: default; }
-  .cs-insp svg { width: 2.1rem; height: 2.1rem; fill: none; stroke: var(--muted); stroke-width: 1.6; stroke-linejoin: round; }
+
+  /* Heroic Inspiration and Hit Dice: side by side */
+  .st-insp { align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; font: inherit; }
+  .st-insp:disabled { cursor: default; }
+  .cs-insp svg { width: 2.4rem; height: 2.4rem; fill: none; stroke: var(--muted); stroke-width: 1.6; stroke-linejoin: round; }
   .cs-insp.on { background: color-mix(in srgb, var(--accent) 12%, var(--surface)); border-color: var(--accent); }
   .cs-insp.on svg { fill: var(--accent); stroke: var(--accent); }
-  /* Resources: hit dice pips (the Spellbook's pip look) and the death save boxes. */
-  .cs-hd-row { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.6rem; }
-  .cs-hd-row .lbl { flex: 0 0 auto; min-width: 1.8rem; font-size: 0.95rem; font-weight: 700; }
-  .cs-hd-row .cnt, .cs-slot-row .cnt { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+  .cs-hd-row { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem 0.6rem; }
+  .cs-hd-row .lbl { flex: 0 0 auto; font-size: 1rem; font-weight: 800; }
+  .cs-hd-row .cs-pips { flex: 1 1 auto; gap: 0.3rem; }
+  .cs-hd-row .cnt { font-size: 0.85rem; color: var(--muted); white-space: nowrap; }
   .cs-hd-row .cnt b { color: var(--text); }
-  .cs-hd-row .cs-pips { flex: 1; }
-  .cs-death .death-line { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; margin-top: 0.6rem; }
-  .death-line .lbl { font-size: 0.9rem; font-weight: 600; }
+  .cs-hd-row .pip-btn { width: 1.3rem; height: 1.3rem; border-width: 2px; }
+
+  /* Death saves: successes and failures side by side */
+  .st-death-lines { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem 1rem; }
+  .death-line { display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; }
+  .death-line .lbl { font-size: 0.85rem; font-weight: 700; }
   .death-line .lbl i { display: inline-block; width: 1rem; color: var(--muted); font-style: normal; }
-  .death-line .boxes { display: inline-flex; gap: 0.35rem; }
-  .box { width: 1.5rem; height: 1.5rem; padding: 0; border: 2px solid var(--muted); border-radius: 50%; background: none; cursor: pointer; }
+  .death-line .boxes { display: inline-flex; gap: 0.5rem; }
+  .box { width: 1.7rem; height: 1.7rem; padding: 0; border: 2px solid var(--muted); border-radius: 50%; background: none; cursor: pointer; }
   .box.on.successes { background: var(--accent); border-color: var(--accent); }
   .box.on.failures { background: var(--text); border-color: var(--text); }
-  @media (max-width: 40rem) {
-    .cs-death .death-line { justify-content: flex-start; gap: 0.5rem; }
-    .death-line .lbl .txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-    .death-line .lbl i { width: auto; font-size: 1.1rem; }
-    .cs-hd-row { gap: 0.4rem; }
-  }
 
-  /* The dashboard fills the whole height of the tab and never scrolls on a normal screen: the rows
-     share the height by weight (`--w`, set in _stats.html), and what is inside scales with the
-     height of the dashboard itself (`cqh` = 1% of it), between a floor and the usual size. Only
-     a screen too short for even the floors (`min-height`) makes the tab scroll. */
-  .cs-scroll:has(.cs-stats) { padding-top: 0.5rem; padding-bottom: 0.5rem; }
-  .cs-stats { display: flex; flex-direction: column; gap: 0.4rem; flex: 1 1 0; min-height: 31rem; container-type: size; }
-  .cs-row { flex: var(--w, 1) 1 0; min-height: 0; display: flex; gap: 0.4rem; }
-  .cs-row > .cs-card { flex: 1 1 0; min-width: 0; min-height: 0; overflow: hidden; }
-  .cs-stats .cs-card { padding: clamp(0.25rem, 1.2cqh, 0.6rem) 0.7rem; display: flex; flex-direction: column; justify-content: center; }
-  .cs-stats .cs-tile { padding: 0.2rem 0.3rem; gap: clamp(0.05rem, 0.6cqh, 0.3rem); }
-  .cs-stats .cs-tile .v { font-size: clamp(1.1rem, 5.2cqh, 2rem); }
-  .ac-emblem { width: clamp(2rem, 7cqh, 3.3rem); height: clamp(2.2rem, 7.6cqh, 3.6rem); }
-  .ac-emblem .v { font-size: clamp(1rem, 3.6cqh, 1.6rem) !important; }
-  .cs-insp svg { width: clamp(1.2rem, 4.6cqh, 2.1rem); height: clamp(1.2rem, 4.6cqh, 2.1rem); }
-  .cs-hp .cs-hp-main { flex: 1; margin-top: 0; }
-  #cs .hp-val input, .hp-val b { font-size: clamp(1.8rem, 7.5cqh, 2.6rem); }
-  .step { width: clamp(2.2rem, 6.5cqh, 2.9rem); height: clamp(2.2rem, 6.5cqh, 2.9rem); }
-  .cs-hp .cs-bar.hp { margin-top: 0.3rem; flex-shrink: 0; }
-  /* Hit Dice and Death Saves: compact, so both fit side by side without taking much height. */
-  .cs-hd-row { margin-top: 0.3rem; gap: 0.4rem; }
-  .cs-hd-row .lbl { min-width: 1.6rem; font-size: 0.85rem; }
-  .cs-hd-row .pip-btn { width: 1.1rem; height: 1.1rem; border-width: 1.5px; }
-  .cs-hd-row .cs-pips { gap: 0.25rem; }
-  .cs-death .death-line { margin-top: 0.3rem; }
-  .death-line .lbl { font-size: 0.8rem; }
-  .box { width: 1.2rem; height: 1.2rem; border-width: 1.5px; }
-  .death-line .boxes { gap: 0.3rem; }
+  /* Resources */
+  .cs-res-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.15rem 0; }
+  .cs-res-row + .cs-res-row { border-top: 1px solid var(--border); padding-top: 0.5rem; }
+  .cs-res-row .lbl { font-size: 0.95rem; font-weight: 700; }
+  .cs-res-row .ctl { display: inline-flex; align-items: center; gap: 0.7rem; }
+  .cs-res-row .cnt { min-width: 2.6rem; text-align: center; font-size: 1rem; color: var(--muted); }
+  .cs-res-row .cnt b { color: var(--text); font-size: 1.15rem; }
 
-  .cs-rest { cursor: pointer; }
-  .cs-stats .cs-rest { padding-top: 0; padding-bottom: 0; }
-  .cs-rest:active { background: var(--bg); }
-  .cs-rest .k { font-size: 0.8rem; color: var(--text); }
-  .cs-res-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; margin-top: 0.3rem; }
-  .cs-res-row .lbl { font-size: 0.85rem; font-weight: 600; }
-  .cs-res-row .ctl { display: inline-flex; align-items: center; gap: 0.5rem; }
-  .step.small { width: 1.9rem; height: 1.9rem; font-size: 1.1rem; }
+  /* Spellcasting */
+  .cs-casting { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 0.5rem; }
+  .st-cast .cs-metric { padding: 0.45rem 0.4rem; background: var(--bg); }
+  @media (max-width: 30rem) { .cs-casting { grid-template-columns: repeat(3, 1fr); } .cs-casting .cs-metric.wide { grid-column: 1 / -1; } }
+
+  /* Experience */
+  .st-xp-line { display: flex; align-items: baseline; }
+  .xp-val { display: inline-flex; align-items: baseline; gap: 0.4rem; font-size: 0.95rem; }
+  #cs .xp-val input { width: 6rem; padding: 0.25rem 0; font-size: 1.15rem; font-weight: 800; }
+  .xp-val b { font-size: 1.3rem; }
+  .xp-val .of { color: var(--muted); }
+  .cs-levelup { display: block; padding: 0.55rem 0.8rem; text-align: center; font-weight: 700; font-size: 0.95rem; text-decoration: none; border-radius: 0.7rem; color: var(--accent); border: 1px solid var(--accent); background: none; }
+  .cs-levelup.ready { background: var(--accent); color: var(--accent-text); }
+  .cs-levelup:active { background: var(--accent-strong); color: var(--accent-text); }
   .cs-cast-field input[type="number"] { padding: 0.3rem; }
 
   /* Tabs: the same underline strip as the World's, but buttons - they switch panels in place. */
