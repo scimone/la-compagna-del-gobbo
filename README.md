@@ -750,6 +750,11 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
       a full one to spend it, an empty one to recover it) and Death Saves (3 + 3 boxes; on a phone
       their labels shrink to a tick and a cross to fit). Everything is read-only for anyone but the
       owner (no controls are rendered, and the endpoint answers 403).
+    - *Gallery* (Biography tab): the extra pictures are one swipeable row of small thumbnails (plus a
+      "+" tile for the owner), so any number of them takes a single line. Tapping one opens a
+      full-screen viewer (`character_sheet.js`, built on `<body>`): a scroll-snap track swiped
+      sideways, a counter, arrow keys / buttons on a desktop, Esc or a tap on the dark area to
+      close, and - for the owner - a trash button removing the picture on screen.
     - *Portrait* (in the Biography tab): the owner taps the picture (a "+" badge marks it) to choose
       a file, and an "x" badge removes it. `POST /characters/<id>/portrait/` takes the multipart
       `file` (or `remove=1`);
@@ -1230,6 +1235,10 @@ interaction_report [--days N]` prints per-user, per-page and per-action counts, 
 `/logbook/` is the party's shared journal: a vertical timeline (`LogEntry`, `logbook.py`,
 `logbook_views.py`), readable by anyone, written by anyone signed in, edited/deleted by the author
 or an admin, searchable live (as written *and* in either language's translation).
+An entry's *Visited locations* is a text block like *Characters met*. The edit form starts from the
+text as the reader sees it, so an entry can be corrected while reading its machine translation;
+saving overwrites the stored original with the submitted text and queues the translation back into
+the other language (a form left unchanged saves nothing).
 
 Text written in one language (Logbook entries, character backstories) is machine-translated into the
 other one, so each reader sees their own language. The web app only queues a `TranslationJob`

@@ -38,3 +38,11 @@ def imported_rules(django_db_setup, django_db_blocker):
     yield
     with django_db_blocker.unblock():
         Command()._delete_existing()
+
+
+@pytest.fixture(autouse=True)
+def _cloudflare_access_off(settings):
+    """The deployment's `.env` turns Cloudflare Access on; the tests speak to the app directly.
+    `test_cloudflare_access.py` switches it back on for itself."""
+    settings.CF_ACCESS_TEAM_DOMAIN = ""
+    settings.CF_ACCESS_AUD = ""

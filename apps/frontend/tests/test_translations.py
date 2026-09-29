@@ -255,3 +255,42 @@ def test_a_search_marks_the_matches_in_the_shown_text_escaped(client, alice):
     assert html.count("<mark>") == 3
     assert "<mark>Drago</mark> &lt;b&gt;" in html and "<mark>DRAGO</mark> dorme" in html
     assert "<b>" not in html.split('id="search-results"')[1]
+
+
+def test_editing_the_translated_version_overwrites_the_original(client, alice):
+    entry = _entry(alice, title="Il drago", location="Waterdeep")
+    _finish(
+        translations.enqueue(
+            "logentry", entry.pk, {"title": "Il drago", "location": "Waterdeep"}, "it"
+        ),
+        {"title": "The dragon", "location": "Waterdeep"},
+    )
+    client.force_login(alice)  # reading English: the form starts from the translation
+    html = client.get(f"/logbook/{entry.pk}/edit/").content.decode()
+    assert 'value="The dragon"' in html
+
+    client.post(
+        f"/logbook/{entry.pk}/edit/",
+        {"date": "2026-09-01", "title": "The red dragon", "location": "Waterdeep"},
+    )
+
+    entry.refresh_from_db()
+    assert entry.title == "The red dragon"  # the Italian original is gone
+    job = TranslationJob.objects.filter(status=TranslationJob.PENDING).get()
+    assert (job.source_lang, job.target_lang) == ("en", "it")
+    assert job.source["title"] == "The red dragon"
+
+
+def test_saving_an_unchanged_translated_form_keeps_the_original(client, alice):
+    entry = _entry(alice, title="Il drago")
+    _finish(
+        translations.enqueue("logentry", entry.pk, {"title": "Il drago"}, "it"),
+        {"title": "The dragon"},
+    )
+    client.force_login(alice)
+
+    client.post(f"/logbook/{entry.pk}/edit/", {"date": "2026-09-01", "title": "The dragon"})
+
+    entry.refresh_from_db()
+    assert entry.title == "Il drago"
+    assert not TranslationJob.objects.filter(status=TranslationJob.PENDING).exists()

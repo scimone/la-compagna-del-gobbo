@@ -51,7 +51,7 @@ class LogEntry(models.Model):
     )
     date = models.DateField()
     title = models.CharField(max_length=150, blank=True)
-    location = models.CharField(max_length=150, blank=True)
+    location = models.TextField(blank=True)  # the visited locations, one per line like the rest
     characters_met = models.TextField(blank=True)
     fights = models.TextField(blank=True)
     objectives = models.TextField(blank=True)

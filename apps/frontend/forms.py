@@ -35,7 +35,7 @@ class LogEntryForm(forms.ModelForm):
         labels = {
             "date": _("Date"),
             "title": _("Title"),
-            "location": _("Location"),
+            "location": _("Visited locations"),
             "characters_met": _("Characters met"),
             "fights": _("Fights"),
             "objectives": _("Objectives"),
@@ -44,6 +44,7 @@ class LogEntryForm(forms.ModelForm):
         }
         widgets = {
             "date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
+            "location": forms.Textarea(attrs={"rows": 3}),
             "characters_met": forms.Textarea(attrs={"rows": 3}),
             "fights": forms.Textarea(attrs={"rows": 3}),
             "objectives": forms.Textarea(attrs={"rows": 3}),

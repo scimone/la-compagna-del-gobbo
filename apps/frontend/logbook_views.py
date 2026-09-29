@@ -92,13 +92,19 @@ def logbook_new(request):
 
 
 def logbook_edit(request, pk):
+    """The form starts from the text as the reader sees it - the machine translation, when they
+    read one - so an entry can be corrected in either language. Saving makes the submitted text the
+    entry's original (the previous original is overwritten) and queues its translation into the
+    other language."""
     if not request.user.is_authenticated:
         return _sign_in_redirect(request)
     entry = _editable_entry(request, pk)
-    form = LogEntryForm(request.POST or None, instance=entry)
+    shown = logbook.display([entry])[entry.pk]
+    initial = {name: text for name, (text, _translated) in shown.items()}
+    form = LogEntryForm(request.POST or None, instance=entry, initial=initial)
     if request.method == "POST" and form.is_valid():
-        form.save()
         if form.has_changed():
+            form.save()
             logbook.queue_translation(entry)
         return redirect(f"{reverse('logbook-list')}#entry-{entry.pk}")
     return _form_page(request, form, _("Edit entry"))

@@ -866,16 +866,94 @@
       sendPortrait(body, root.dataset.galleryUrl);
     });
   });
-  root.addEventListener("click", function (event) {
-    var remove = event.target.closest("[data-gallery-remove]");
-    if (!remove) return;
-    var id = remove.dataset.galleryRemove;
-    (remove.dataset.confirm ? window.appConfirm(remove.dataset.confirm) : Promise.resolve(true)).then(function (ok) {
-      if (!ok) return;
-      var body = new FormData();
-      body.append("remove", id);
-      sendPortrait(body, root.dataset.galleryUrl);
+  // The gallery viewer: tapping a thumbnail opens every picture full screen, swiped sideways (a CSS
+  // scroll-snap track, so the browser does the gestures), with arrow keys / buttons on a desktop.
+  // The owner can remove the picture on screen. Built on <body> so a sheet refresh never removes it.
+  var SVG_NS = '<svg viewBox="0 0 24 24" aria-hidden="true">';
+  var ICON_X = SVG_NS + '<path d="M6 6l12 12M18 6L6 18"/></svg>';
+  var ICON_TRASH = SVG_NS + '<path d="M4 7h16"/><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/></svg>';
+  var ICON_PREV = SVG_NS + '<path d="M15 5l-7 7 7 7"/></svg>';
+  var ICON_NEXT = SVG_NS + '<path d="M9 5l7 7-7 7"/></svg>';
+  var viewer = null;
+
+  function closeViewer() {
+    if (!viewer) return;
+    document.removeEventListener("keydown", viewer.onKey);
+    viewer.el.remove();
+    viewer = null;
+  }
+
+  function openViewer(items, start, canRemove) {
+    closeViewer();
+    var el = document.createElement("div");
+    el.className = "cs-viewer";
+    el.setAttribute("role", "dialog");
+    el.setAttribute("aria-modal", "true");
+    el.innerHTML =
+      '<div class="cs-viewer-bar"><span data-count></span><span style="flex:1"></span>' +
+      (canRemove ? '<button type="button" data-remove aria-label="' + (root.dataset.removeLabel || "Remove") + '">' + ICON_TRASH + "</button>" : "") +
+      '<button type="button" data-close aria-label="' + (root.dataset.closeLabel || "Close") + '">' + ICON_X + "</button></div>" +
+      '<div class="cs-viewer-track"></div>' +
+      '<button type="button" class="cs-viewer-nav prev" data-step="-1" aria-hidden="true" tabindex="-1">' + ICON_PREV + "</button>" +
+      '<button type="button" class="cs-viewer-nav next" data-step="1" aria-hidden="true" tabindex="-1">' + ICON_NEXT + "</button>";
+    var track = el.querySelector(".cs-viewer-track");
+    var count = el.querySelector("[data-count]");
+    items.forEach(function (item) {
+      var slide = document.createElement("div");
+      slide.className = "cs-viewer-slide";
+      var img = document.createElement("img");
+      img.src = item.src;
+      img.alt = "";
+      slide.appendChild(img);
+      track.appendChild(slide);
     });
+    function index() { return Math.round(track.scrollLeft / (track.clientWidth || 1)); }
+    function show() { count.textContent = index() + 1 + " / " + items.length; }
+    function go(i) {
+      i = Math.max(0, Math.min(items.length - 1, i));
+      track.scrollTo({ left: i * track.clientWidth, behavior: "smooth" });
+    }
+    track.addEventListener("scroll", show);
+    el.addEventListener("click", function (event) {
+      var target = event.target;
+      if (target.closest("[data-close]") || target.classList.contains("cs-viewer-slide")) return closeViewer();
+      var step = target.closest("[data-step]");
+      if (step) return go(index() + parseInt(step.dataset.step, 10));
+      if (target.closest("[data-remove]")) {
+        var id = items[index()].id;
+        var ask = root.dataset.removeConfirm;
+        (ask ? window.appConfirm(ask) : Promise.resolve(true)).then(function (ok) {
+          if (!ok) return;
+          closeViewer();
+          var body = new FormData();
+          body.append("remove", id);
+          sendPortrait(body, root.dataset.galleryUrl);
+        });
+      }
+    });
+    function onKey(event) {
+      if (event.key === "Escape") closeViewer();
+      else if (event.key === "ArrowLeft") go(index() - 1);
+      else if (event.key === "ArrowRight") go(index() + 1);
+    }
+    document.addEventListener("keydown", onKey);
+    document.body.appendChild(el);
+    viewer = { el: el, onKey: onKey };
+    track.scrollLeft = start * track.clientWidth; // jump, no animation
+    show();
+    el.querySelector("[data-close]").focus();
+  }
+
+  root.addEventListener("click", function (event) {
+    var thumb = event.target.closest("[data-gallery-open]");
+    if (!thumb) return;
+    var strip = thumb.closest("[data-gallery-strip]");
+    var thumbs = Array.prototype.slice.call(strip.querySelectorAll("[data-gallery-open]"));
+    openViewer(
+      thumbs.map(function (t) { return { id: t.dataset.galleryOpen, src: t.dataset.src }; }),
+      thumbs.indexOf(thumb),
+      !!strip.dataset.canRemove
+    );
   });
   root.addEventListener("click", function (event) {
     var remove = event.target.closest("[data-portrait-remove]");

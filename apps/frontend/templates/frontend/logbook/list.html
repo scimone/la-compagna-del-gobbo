@@ -52,7 +52,6 @@
                 <div class="who">
                   <div class="log-date">{{ e.date|date:"DATE_FORMAT" }}</div>
                   {% if row.fields.title %}<div class="log-title">{{ row.fields.title }}{{ row.badges.title }}</div>{% endif %}
-                  {% if row.fields.location %}<div class="log-meta">{{ row.fields.location }}{{ row.badges.location }}</div>{% endif %}
                   {% if e.author %}<div class="log-meta">{{ row.author_name }}</div>{% endif %}
                 </div>
                 {% if row.can_edit %}
@@ -66,6 +65,7 @@
                   </div>
                 {% endif %}
               </div>
+              {% if row.fields.location %}<div class="log-field"><h3>{% translate "Visited locations" %}{{ row.badges.location }}</h3><p>{{ row.fields.location }}</p></div>{% endif %}
               {% if row.fields.characters_met %}<div class="log-field"><h3>{% translate "Characters met" %}{{ row.badges.characters_met }}</h3><p>{{ row.fields.characters_met }}</p></div>{% endif %}
               {% if row.fields.fights %}<div class="log-field"><h3>{% translate "Fights" %}{{ row.badges.fights }}</h3><p>{{ row.fields.fights }}</p></div>{% endif %}
               {% if row.fields.objectives %}<div class="log-field"><h3>{% translate "Objectives" %}{{ row.badges.objectives }}</h3><p>{{ row.fields.objectives }}</p></div>{% endif %}

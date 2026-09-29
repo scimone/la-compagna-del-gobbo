@@ -49,19 +49,17 @@
   </div>
 </section>
 
-{# The gallery: any number of extra pictures, shown as a grid; the owner adds and removes them. #}
+{# The gallery: a single row of small thumbnails, swiped sideways; tapping one opens the full-screen  #}
+{# viewer (`character_sheet.js`), which swipes through them and lets the owner remove the current one. #}
 {% if biography.pictures or can_edit %}
 <section class="cs-group cs-gallery">
-  <h3>{% translate "Gallery" %}</h3>
-  <div class="cs-gal-grid">
+  <h3>{% translate "Gallery" %}{% if biography.pictures %} <span class="cs-gal-count">{{ biography.pictures|length }}</span>{% endif %}</h3>
+  <div class="cs-gal-strip" data-gallery-strip {% if can_edit %}data-can-remove="1"{% endif %}>
     {% for p in biography.pictures %}
-      <div class="cs-gal-item">
-        <a href="{{ p.url }}" target="_blank" rel="noopener"><img src="{{ p.url }}" alt="" loading="lazy"></a>
-        {% if can_edit %}
-          <button type="button" class="cs-pic-x" data-gallery-remove="{{ p.id }}" data-confirm="{% translate 'Remove the picture?' %}"
-                  aria-label="{% translate 'Remove picture' %}" title="{% translate 'Remove picture' %}">×</button>
-        {% endif %}
-      </div>
+      <button type="button" class="cs-gal-item" data-gallery-open="{{ p.id }}" data-src="{{ p.url }}"
+              aria-label="{% translate 'Open picture' %} {{ forloop.counter }}">
+        <img src="{{ p.url }}" alt="" loading="lazy">
+      </button>
     {% endfor %}
     {% if can_edit %}
       <label class="cs-gal-item cs-gal-add" title="{% translate 'Add a picture' %}">

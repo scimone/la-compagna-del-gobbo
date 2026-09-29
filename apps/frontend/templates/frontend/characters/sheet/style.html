@@ -43,12 +43,29 @@
   /* Small badges for the owner: "+" (choose a picture) at the bottom, "x" (remove it) at the corner. */
   .cs-pic-add { position: absolute; right: 0.5rem; bottom: 0.5rem; display: grid; place-items: center; width: 2rem; height: 2rem; background: var(--accent); border-radius: 50%; box-shadow: 0 0 0 2px var(--surface); }
   .cs-pic-add svg { width: 1.2rem; height: 1.2rem; fill: none; stroke: var(--accent-text); stroke-width: 3; stroke-linecap: round; }
-  .cs-gallery .cs-gal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr)); gap: 0.6rem; }
-  .cs-gal-item { position: relative; display: block; aspect-ratio: 1 / 1; overflow: hidden; border: 1px solid var(--border); border-radius: 0.6rem; }
+  /* The gallery: one swipeable row of small thumbnails, so any number of pictures takes one line. */
+  .cs-gal-count { margin-left: 0.3rem; color: var(--muted); font-weight: 400; }
+  .cs-gal-strip { display: flex; gap: 0.5rem; overflow-x: auto; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; padding-bottom: 0.2rem; scrollbar-width: none; }
+  .cs-gal-strip::-webkit-scrollbar { display: none; }
+  .cs-gal-item { position: relative; flex: 0 0 5.5rem; width: 5.5rem; height: 5.5rem; scroll-snap-align: start; overflow: hidden; padding: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; cursor: pointer; }
   .cs-gal-item img { display: block; width: 100%; height: 100%; object-fit: cover; }
   .cs-gal-add { display: grid; place-items: center; border-style: dashed; cursor: pointer; color: var(--muted); }
   .cs-gal-add:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .cs-gal-add svg { width: 2rem; height: 2rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+  .cs-gal-add svg { width: 1.8rem; height: 1.8rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+  /* The full-screen viewer (built by `character_sheet.js` on <body>): a horizontal scroll-snap track,
+     one picture per screen, swiped or arrow-keyed; tap the dark area or press Esc to close. */
+  .cs-viewer { position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; background: rgba(0, 0, 0, 0.94); color: #fff; }
+  .cs-viewer-bar { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: max(0.5rem, env(safe-area-inset-top)) 0.6rem 0.5rem; font-size: 0.9rem; }
+  .cs-viewer-bar button { appearance: none; display: grid; place-items: center; width: 2.6rem; height: 2.6rem; padding: 0; border: 0; border-radius: 50%; background: rgba(255, 255, 255, 0.12); color: #fff; font-size: 1.6rem; line-height: 1; cursor: pointer; }
+  .cs-viewer-bar button svg { width: 1.3rem; height: 1.3rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .cs-viewer-track { flex: 1; min-height: 0; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .cs-viewer-track::-webkit-scrollbar { display: none; }
+  .cs-viewer-slide { flex: 0 0 100%; height: 100%; display: grid; place-items: center; scroll-snap-align: center; scroll-snap-stop: always; padding: 0 0.5rem max(0.75rem, env(safe-area-inset-bottom)); box-sizing: border-box; }
+  .cs-viewer-slide img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 0.4rem; }
+  .cs-viewer-nav { position: absolute; top: 50%; transform: translateY(-50%); appearance: none; display: none; place-items: center; width: 2.8rem; height: 2.8rem; padding: 0; border: 0; border-radius: 50%; background: rgba(255, 255, 255, 0.14); color: #fff; cursor: pointer; }
+  .cs-viewer-nav svg { width: 1.4rem; height: 1.4rem; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  .cs-viewer-nav.prev { left: 0.6rem; } .cs-viewer-nav.next { right: 0.6rem; }
+  @media (hover: hover) and (pointer: fine) { .cs-viewer-nav { display: grid; } }
   .cs-pic-x { position: absolute; top: 0.5rem; right: 0.5rem; display: grid; place-items: center; width: 1.8rem; height: 1.8rem; padding: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 50%; color: var(--muted); font-size: 1.2rem; line-height: 1; cursor: pointer; }
   .cs-who { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.4rem; }
   .cs-name-row { display: flex; align-items: center; gap: 0.3rem; }

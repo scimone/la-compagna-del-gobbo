@@ -1917,3 +1917,15 @@ msgstr "Aggiungi un'immagine"
 #: apps/characters/services/portrait.py
 msgid "The gallery is full."
 msgstr "La galleria è piena."
+
+#: apps/frontend/forms.py apps/frontend/templates/frontend/logbook/list.html
+msgid "Visited locations"
+msgstr "Luoghi visitati"
+
+#: apps/frontend/templates/frontend/characters/sheet/_biography.html
+msgid "Open picture"
+msgstr "Apri immagine"
+
+#: apps/frontend/templates/frontend/characters/detail.html
+msgid "Close"
+msgstr "Chiudi"
