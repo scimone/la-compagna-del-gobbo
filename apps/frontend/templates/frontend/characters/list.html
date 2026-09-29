@@ -13,9 +13,9 @@
   .view-toggle { display: flex; align-self: flex-end; border: 1px solid var(--border); border-radius: 1rem; overflow: hidden; }
   .view-toggle a { padding: 0.25rem 0.8rem; font-size: 0.8rem; font-weight: 600; color: var(--muted); text-decoration: none; background: var(--surface); }
   .view-toggle a.on { background: var(--accent); color: var(--accent-text); }
-  /* The grid: two columns of cards, three on a wider screen; the picture is a 1:1 square. */
-  .cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
-  @media (min-width: 34rem) { .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  /* The grid: two columns of cards; the picture is a 1:1 square. */
+  /* `.chars ul` above makes lists a column, so this needs the same weight to win. */
+  .chars ul.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
   .cards li { position: relative; display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: 0.8rem; overflow: hidden; }
   .cards li.new { border-color: var(--accent); border-width: 2px; }
   .cards a.card-link { display: flex; flex-direction: column; color: var(--text); text-decoration: none; min-width: 0; }
