@@ -1,4 +1,4 @@
-{% load i18n pwa static %}
+{% load i18n pwa static assets %}
 <!doctype html>
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
@@ -1075,8 +1075,8 @@
   {% endif %}
 
   <script>window.APP_CONFIRM_LABELS = { cancel: "{% translate 'Cancel' %}", ok: "{% translate 'Confirm' %}" };</script>
-  <script src="{% static 'js/confirm.js' %}"></script>
-  <script src="{% static 'js/filter_clear.js' %}"></script>
-  <script src="{% static 'js/navigation.js' %}"></script>
+  <script src="{% static_v 'js/confirm.js' %}"></script>
+  <script src="{% static_v 'js/filter_clear.js' %}"></script>
+  <script src="{% static_v 'js/navigation.js' %}"></script>
 </body>
 </html>

@@ -109,7 +109,7 @@ def test_bottom_nav_items_declare_their_menu_and_the_script_is_loaded(client, db
         # `data-root` is where tapping the menu you are already in leads: World's first tab.
         pattern = rf'<a\s+href="[^"]+"\s+data-menu="{menu}"\s+data-root="{root}"'
         assert re.search(pattern, html), menu
-    assert '<script src="/static/js/navigation.js"></script>' in html
+    assert re.search(r'<script src="/static/js/navigation\.js\?v=\d+"></script>', html)
 
 
 def test_account_forms_leave_the_navigation_history(client, db):

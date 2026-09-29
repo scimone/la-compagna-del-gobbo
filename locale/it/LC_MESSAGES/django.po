@@ -1681,3 +1681,7 @@ msgstr "Cerca classi"
 #: apps/frontend/views.py
 msgid "Search species"
 msgstr "Cerca specie"
+
+#: apps/frontend/views.py
+msgid "Search features, feats and traits"
+msgstr "Cerca privilegi, talenti e tratti"

@@ -1,5 +1,5 @@
 {% extends "frontend/base.html" %}
-{% load i18n static %}
+{% load i18n static assets %}
 {# A finished character's sheet. One page holding every tab; `static/js/character_sheet.js`     #}
 {# switches between the panels, posts the play-state changes and redraws what they touch.      #}
 {# Everything inside `#cs-swap` is what the script re-fetches and swaps after a change that    #}
@@ -93,5 +93,5 @@
     <p id="cs-toast" class="cs-toast" role="alert" hidden></p>
   </div>
   <noscript><style>.cs-panel[hidden] { display: block; }</style></noscript>
-  <script src="{% static 'js/character_sheet.js' %}" defer></script>
+  <script src="{% static_v 'js/character_sheet.js' %}" defer></script>
 {% endblock %}

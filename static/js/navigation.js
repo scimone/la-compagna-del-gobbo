@@ -308,7 +308,7 @@
           location.assign(root);
           return;
         }
-        var stack = state.stacks[menu].slice();
+        var stack = (state.stacks[menu] || []).slice();
         dropTransients(stack);
         // Resume where this menu was left; the link's own href (the server's last page for it,
         // or its landing page) only when this session has nothing for it yet.
