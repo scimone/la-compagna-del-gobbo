@@ -10,6 +10,7 @@ from django.views.decorators.http import require_POST
 
 from apps.frontend import logbook
 from apps.frontend.forms import LogEntryForm
+from apps.frontend.handbook_search import highlight, query_pattern
 from apps.frontend.models import LogEntry
 
 
@@ -23,11 +24,17 @@ def logbook_list(request):
     if q:
         found = logbook.search(found, q)
     shown = logbook.display(found)
+    pattern = query_pattern(q) if q else None
+
+    def mark(text):
+        return highlight(text, pattern) if pattern else text
+
     entries = [
         {
             "entry": entry,
             "can_edit": logbook.can_edit(request.user, entry),
-            "fields": {name: text for name, (text, _t) in shown[entry.pk].items()},
+            "fields": {name: mark(text) for name, (text, _t) in shown[entry.pk].items()},
+            "author_name": mark(entry.author.get_username()) if entry.author else "",
             "translated": any(was for _text, was in shown[entry.pk].values()),
         }
         for entry in found

@@ -19,6 +19,7 @@
   .log-date { font-size: 0.8rem; font-weight: 600; color: var(--accent); }
   .log-title { font-weight: 600; overflow-wrap: anywhere; }
   .log-meta { color: var(--muted); font-size: 0.85rem; overflow-wrap: anywhere; }
+  .log mark { padding: 0 0.1em; border-radius: 0.2em; background: var(--accent); color: var(--accent-text); }
   .log-actions { display: flex; flex-shrink: 0; margin: -0.3rem -0.5rem 0 0; }
   .log-actions a, .log-actions button { appearance: none; display: flex; align-items: center; justify-content: center; width: 2.4rem; height: 2.4rem; padding: 0; border: 0; background: none; color: var(--muted); cursor: pointer; border-radius: 0.5rem; touch-action: manipulation; }
   .log-actions a:active, .log-actions button:active { background: var(--bg); color: var(--accent); }
@@ -52,7 +53,7 @@
                   <div class="log-date">{{ e.date|date:"DATE_FORMAT" }}</div>
                   {% if row.fields.title %}<div class="log-title">{{ row.fields.title }}</div>{% endif %}
                   {% if row.fields.location %}<div class="log-meta">{{ row.fields.location }}</div>{% endif %}
-                  {% if e.author %}<div class="log-meta">{{ e.author.get_username }}{% if row.translated %} · {% translate "Translated automatically" %}{% endif %}</div>{% elif row.translated %}<div class="log-meta">{% translate "Translated automatically" %}</div>{% endif %}
+                  {% if e.author %}<div class="log-meta">{{ row.author_name }}{% if row.translated %} · {% translate "Translated automatically" %}{% endif %}</div>{% elif row.translated %}<div class="log-meta">{% translate "Translated automatically" %}</div>{% endif %}
                 </div>
                 {% if row.can_edit %}
                   <div class="log-actions">

@@ -136,6 +136,19 @@ def _snippet(path: tuple[str, ...], text: str, pattern: re.Pattern) -> SafeStrin
     return mark_safe(f'<span class="hit">{label}{body}</span>')
 
 
+def highlight(text: str, pattern: re.Pattern) -> SafeString:
+    """All of `text`, escaped, with every match of `pattern` wrapped in `<mark>` (positions in
+    `fold(text)` are positions in `text`, see `fold()`)."""
+    pieces = []
+    last = 0
+    for match in pattern.finditer(fold(text)):
+        pieces.append(escape(text[last : match.start()]))
+        pieces.append(f"<mark>{escape(text[match.start() : match.end()])}</mark>")
+        last = match.end()
+    pieces.append(escape(text[last:]))
+    return mark_safe("".join(pieces))
+
+
 def find_hits(
     entries, pattern: re.Pattern, limit: int = SNIPPETS_PER_ENTRY
 ) -> tuple[list[SafeString], int]:

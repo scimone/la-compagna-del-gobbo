@@ -6,7 +6,7 @@ import time
 from datetime import timedelta
 
 from django.core.management.base import BaseCommand
-from django.db import transaction
+from django.db import DatabaseError, close_old_connections, transaction
 from django.utils import timezone
 
 from apps.frontend import llm
@@ -19,6 +19,7 @@ MAX_ATTEMPTS = 3
 #: some) cannot run up the LLM's bill or keep it busy for good.
 MAX_JOBS_PER_HOUR = 120
 IDLE_SECONDS = 3
+DB_RETRY_SECONDS = 15
 STALE_RUNNING = timedelta(minutes=20)
 
 
@@ -89,9 +90,15 @@ class Command(BaseCommand):
                     status=TranslationJob.RUNNING, updated_at__lt=timezone.now() - STALE_RUNNING
                 ).update(status=TranslationJob.PENDING)
                 busy = work_once()
-            except Exception:  # noqa: BLE001 - the database may not be migrated/reachable yet
-                log.exception("translate worker: database error")
-                busy = False
+            except DatabaseError as error:
+                # Normal for a moment after a deploy: this container can start before the web
+                # container has migrated. One line, then wait - not a traceback every 3 seconds.
+                log.warning(
+                    "translate worker: database not ready (%s), retrying", type(error).__name__
+                )
+                close_old_connections()
+                time.sleep(DB_RETRY_SECONDS)
+                continue
             if options["once"] and not busy:
                 return
             if not busy:

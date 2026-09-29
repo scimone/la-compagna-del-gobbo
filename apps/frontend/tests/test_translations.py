@@ -101,7 +101,7 @@ def test_search_finds_text_as_written_or_in_its_translation(client, alice):
     # Read in English the entry shows its translation; the Italian original is searchable too.
     for q in ("drago", "dragon"):
         hit = client.get(f"/logbook/?q={q}").content.decode()
-        assert "The dragon" in hit and "Altro" not in hit
+        assert "The <mark>" in hit and "Altro" not in hit
     assert "No entries match" in client.get("/logbook/?q=zzz").content.decode()
     assert "Waterdeep" in client.get("/logbook/?q=WATERDEEP").content.decode()
 
@@ -241,3 +241,13 @@ def test_the_web_container_is_given_no_llm_credentials():
     web = compose.split("dnd-translator:")[0]
     for name in ("LLM_BASE_URL", "LLM_API_KEY", "LLM_MODEL"):
         assert f'{name}: ""' in web
+
+
+def test_a_search_marks_the_matches_in_the_shown_text_escaped(client, alice):
+    _entry(alice, title="Il Drago <b>", notes="Un drago rosso. Il DRAGO dorme.")
+
+    html = client.get("/logbook/?q=drago").content.decode()
+
+    assert html.count("<mark>") == 3
+    assert "<mark>Drago</mark> &lt;b&gt;" in html and "<mark>DRAGO</mark> dorme" in html
+    assert "<b>" not in html.split('id="search-results"')[1]
