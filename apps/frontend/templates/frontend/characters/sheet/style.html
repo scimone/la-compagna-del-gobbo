@@ -77,6 +77,11 @@
   .xp-val { display: inline-flex; align-items: baseline; gap: 0.35rem; font-size: 0.95rem; }
   #cs .xp-val input { width: 5rem; padding: 0.15rem 0; font-size: 1rem; font-weight: 700; }
   .xp-val b { font-size: 1.1rem; }
+  /* The owner's Level up button under the XP bar - filled once the XP reach the next level. */
+  .cs-levelup { display: block; margin-top: 0.6rem; padding: 0.4rem 0.8rem; text-align: center; font-weight: 700; font-size: 0.9rem;
+    text-decoration: none; border-radius: 0.6rem; color: var(--accent); border: 1px solid var(--accent); background: none; }
+  .cs-levelup.ready { background: var(--accent); color: var(--accent-text); }
+  .cs-levelup:active { background: var(--accent-strong); color: var(--accent-text); }
   .xp-val .of { color: var(--muted); }
   /* Hit points: the centrepiece. */
   .cs-hp { background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 7%, var(--surface)), var(--surface)); }

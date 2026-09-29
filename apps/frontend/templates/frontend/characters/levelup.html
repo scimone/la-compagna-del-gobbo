@@ -1,0 +1,108 @@
+{% extends "frontend/characters/wizard_base.html" %}
+{% load i18n %}
+{% block step_style %}
+  .lu-note { color: var(--muted); font-size: 0.9rem; margin: 0; line-height: 1.45; }
+  .lu-card { background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; padding: 0.7rem 0.9rem; display: flex; flex-direction: column; gap: 0.6rem; }
+  .lu-card h3 { margin: 0; font-size: 1rem; }
+  .lu-hp label.hp-opt { display: flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0; }
+  .lu-hp input[type="radio"] { accent-color: var(--accent); }
+  .lu-hp .hp-roll { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+  .lu-hp .hp-roll input[type="number"] { width: 5rem; }
+  .lu-hp .hp-detail { color: var(--muted); font-size: 0.85rem; margin: 0; }
+  .lu-features { margin: 0; padding-left: 1.2rem; }
+  .lu-features a { color: var(--accent); }
+  .opts-list li.disabled { opacity: 0.55; }
+  .opts-list li.disabled label { cursor: default; }
+  .opts-list .lvl { color: var(--accent); font-size: 0.8rem; font-weight: 600; }
+  .opts-list .why { color: var(--accent); font-size: 0.8rem; }
+{% endblock %}
+{% block step %}
+  <p class="lu-note">
+    {% blocktranslate with level=total next=total|add:1 %}You are level {{ level }}. Levelling up takes you to level {{ next }}.{% endblocktranslate %}
+    {% if not xp_ready %}{% translate "Your Experience Points are below the next level's threshold - fine if your table levels up by milestones." %}{% endif %}
+  </p>
+  <form method="post" data-live>
+    {% csrf_token %}
+    <div class="lu-card">
+      <h3>{% translate "Class" %}</h3>
+      <p class="lu-note">{% translate "Pick the class to advance - a class you already have, or a new one (multiclassing needs 13 in the primary ability of the new class and of every class you have)." %}</p>
+      <ul class="item-list opts-list">
+        {% for o in options %}
+          {% if not plan or o.selected %}
+          <li class="{% if o.selected %}selected{% endif %}{% if not o.allowed %} disabled{% endif %}">
+            <label class="pick menu-thumb">
+              <input type="radio" name="klass" value="{{ o.id }}" data-select{% if o.selected %} checked{% endif %}{% if not o.allowed %} disabled{% endif %}>
+              {% if o.image %}<img class="item-thumb" src="{{ o.image }}" alt="">{% endif %}
+              <div class="item-text">
+                <span class="item-name">{{ o.name }}</span>
+                {% if o.level %}<div class="lvl">{% blocktranslate with a=o.level b=o.level|add:1 %}Level {{ a }} → {{ b }}{% endblocktranslate %}</div>
+                {% else %}<div class="item-detail">{% translate "New class" %} · {{ o.detail }}</div>{% endif %}
+                {% if o.reason %}<div class="why">{{ o.reason }}</div>{% endif %}
+              </div>
+            </label>
+            <a class="pick-read" href="{{ o.url }}">{% translate "Read" %}</a>
+          </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+      {% if plan %}<a class="lu-note" href="{% url 'character-levelup' character.pk %}" data-nav="replace">{% translate "Choose another class" %}</a>{% endif %}
+    </div>
+
+    {% if plan %}
+      {% for section in plan.sections %}
+        {% if section.key == "hp" %}
+          <div class="lu-card lu-hp">
+            <h3>{% translate "Hit points" %}</h3>
+            <label class="hp-opt"><input type="radio" name="lu.hp_mode" value="fixed"{% if plan.hp.mode == "fixed" %} checked{% endif %}>
+              {% blocktranslate with n=plan.hp.fixed die=plan.hp.die %}Take the average ({{ n }}, from your {{ die }} hit die){% endblocktranslate %}</label>
+            <label class="hp-opt"><input type="radio" name="lu.hp_mode" value="roll"{% if plan.hp.mode == "roll" %} checked{% endif %}>
+              {% blocktranslate with die=plan.hp.die %}Roll your {{ die }}{% endblocktranslate %}</label>
+            <div class="hp-roll">
+              <input type="number" name="lu.hp_roll" min="1" max="{{ plan.hp.faces }}" inputmode="numeric" value="{{ plan.hp.roll|default_if_none:'' }}" aria-label="{% translate 'Your roll' %}">
+              <button type="button" class="btn secondary small" data-roll="{{ plan.hp.faces }}">{% translate "Roll for me" %}</button>
+            </div>
+            {% for path, message in issue_paths.items %}{% if path == "lu.hp_roll" %}<p class="field-error">{{ message }}</p>{% endif %}{% endfor %}
+            <p class="hp-detail">
+              {% blocktranslate with mod=plan.hp.con_mod %}Your Constitution modifier ({{ mod }}) is added.{% endblocktranslate %}
+              {% if plan.hp.per_level %}{% blocktranslate with n=plan.hp.per_level %}+{{ n }} more from your feats and features.{% endblocktranslate %}{% endif %}
+              {% if plan.hp.retro %}{% blocktranslate with n=plan.hp.retro %}Your new Constitution modifier also changes the hit points of your earlier levels ({{ n }}).{% endblocktranslate %}{% endif %}
+            </p>
+          </div>
+        {% elif section.pickers %}
+          <div class="lu-card">
+            <h3>{{ section.title }}</h3>
+            {% if section.hint %}<p class="lu-note">{{ section.hint }}</p>{% endif %}
+            {% include "frontend/characters/_pickers.html" with pickers=section.pickers %}
+          </div>
+        {% endif %}
+      {% endfor %}
+
+      {% if features %}
+        <div class="lu-card">
+          <h3>{% translate "You gain" %}</h3>
+          <ul class="lu-features">{% for f in features %}<li><a href="{{ f.url }}">{{ f.name }}</a></li>{% endfor %}</ul>
+        </div>
+      {% endif %}
+
+      <div class="actions">
+        <a class="btn secondary" href="{% url 'character-detail' character.pk %}">{% translate "Cancel" %}</a>
+        <button type="submit" name="action" value="commit" class="btn">{% blocktranslate with klass=plan.klass.name level=plan.new_level %}Level up: {{ klass }} {{ level }}{% endblocktranslate %}</button>
+      </div>
+    {% else %}
+      <div class="actions"><a class="btn secondary" href="{% url 'character-detail' character.pk %}">{% translate "Cancel" %}</a></div>
+    {% endif %}
+  </form>
+{% endblock %}
+{% block footer %}{% endblock %}
+{% block extra_script %}
+  <script>
+    // "Roll for me": fills the hit die roll and switches the choice to it.
+    document.addEventListener("click", function (event) {
+      var button = event.target.closest && event.target.closest("[data-roll]");
+      if (!button) return;
+      var form = button.closest("form");
+      form.querySelector('input[name="lu.hp_roll"]').value = 1 + Math.floor(Math.random() * parseInt(button.dataset.roll, 10));
+      form.querySelector('input[name="lu.hp_mode"][value="roll"]').checked = true;
+    });
+  </script>
+{% endblock %}

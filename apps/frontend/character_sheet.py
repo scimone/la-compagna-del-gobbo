@@ -27,7 +27,7 @@ from django.views.decorators.http import require_GET, require_POST
 
 from apps.builder import tables
 from apps.builder.resolvers.proficiency import WeaponProficiency
-from apps.builder.services import creation, derived_stats
+from apps.builder.services import creation, derived_stats, progression
 from apps.characters.models import Character, CharacterChoice
 from apps.characters.services import access, play, portrait
 from apps.frontend import translations, units
@@ -40,6 +40,7 @@ from apps.frontend.character_views import (
     _step_url,
     _warning_text,
 )
+from apps.frontend.entries_render import machine_translated_badge
 from apps.frontend.views import (
     _CASTING_TIME_FILTER_LABELS,
     _SCHOOL_LABELS,
@@ -137,6 +138,8 @@ def _header(character: Character, stats) -> dict:
         "level": stats.level,
         "xp": xp,
         "next_xp": next_xp,
+        "can_level_up": progression.can_level_up(character),
+        "xp_ready": progression.xp_ready(character),
         # How far along the way to the next level, for the Stats tab's bar (a character levelled
         # by milestone can sit outside its level's XP range, hence the clamp).
         "xp_progress": (
@@ -943,7 +946,7 @@ def _biography(character: Character) -> dict:
     )[character.pk]["backstory"]
     return {
         "backstory": story,
-        "backstory_translated": translated,
+        "backstory_badge": mark_safe(machine_translated_badge()) if translated else "",
         "alignment": next(
             (name for code, name, _abbr in tables.ALIGNMENTS if code == character.alignment), ""
         ),

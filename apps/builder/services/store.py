@@ -115,6 +115,8 @@ class Picker:
     #: skill changes who can take Expertise), so the screen re-reads the step when it changes.
     refresh: bool = False
     hint: str = ""
+    #: An optional pick (a swap on level-up): leaving it empty is fine, choosing is allowed.
+    optional: bool = False
 
     @property
     def candidate_ids(self) -> set[str]:
@@ -150,6 +152,8 @@ def picker_issues(step: str, pickers: list[Picker]) -> list[Issue]:
     found: list[Issue] = []
     for picker in pickers:
         chosen = picker.selected
+        if picker.optional and not chosen:
+            continue
         if len(chosen) != picker.count or len(set(chosen)) != len(chosen):
             code = "wrong_count"
             message = _("%(label)s: choose %(count)d.") % {

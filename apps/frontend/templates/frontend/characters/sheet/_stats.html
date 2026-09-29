@@ -168,7 +168,7 @@
   {% endif %}
 
   {# Experience: the number, and how far it is to the next level. #}
-  <div class="cs-row" style="--w: 0.9">
+  <div class="cs-row" style="--w: {% if can_edit and header.can_level_up %}1.15{% else %}0.9{% endif %}">
   <div class="cs-card cs-xp">
     <div class="cs-card-head">
       <label class="k" for="cs-xp">{% translate "Experience Points" %}</label>
@@ -183,6 +183,9 @@
     </div>
     {% if header.next_xp %}
       <div class="cs-bar" role="progressbar" aria-label="{% translate 'Progress to the next level' %}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ header.xp_progress }}" style="--pct: {{ header.xp_progress }}%"><i></i></div>
+    {% endif %}
+    {% if can_edit and header.can_level_up %}
+      <a class="cs-levelup{% if header.xp_ready %} ready{% endif %}" href="{% url 'character-levelup' character.pk %}" data-nav="push">{% translate "Level up" %}</a>
     {% endif %}
   </div>
   </div>

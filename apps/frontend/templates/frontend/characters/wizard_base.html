@@ -86,7 +86,7 @@
 
 {% block content %}
   <div class="wiz">
-    <nav class="wiz-steps" aria-label="{% translate 'Steps' %}">
+    {% if steps %}<nav class="wiz-steps" aria-label="{% translate 'Steps' %}">
       {% for s in steps %}
         {% if s.url %}
           <a href="{{ s.url }}" data-nav="replace" class="{{ s.status }}{% if s.current %} current{% endif %}">{{ s.label }}</a>
@@ -94,7 +94,7 @@
           <span class="locked">{{ s.label }}</span>
         {% endif %}
       {% endfor %}
-    </nav>
+    </nav>{% endif %}
 
     <h2>{{ step_label }}</h2>
 
@@ -219,4 +219,5 @@
       });
     })();
   </script>
+  {% block extra_script %}{% endblock %}
 {% endblock %}

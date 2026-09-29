@@ -51,9 +51,9 @@
               <div class="log-head">
                 <div class="who">
                   <div class="log-date">{{ e.date|date:"DATE_FORMAT" }}</div>
-                  {% if row.fields.title %}<div class="log-title">{{ row.fields.title }}</div>{% endif %}
-                  {% if row.fields.location %}<div class="log-meta">{{ row.fields.location }}</div>{% endif %}
-                  {% if e.author %}<div class="log-meta">{{ row.author_name }}{% if row.translated %} · {% translate "Translated automatically" %}{% endif %}</div>{% elif row.translated %}<div class="log-meta">{% translate "Translated automatically" %}</div>{% endif %}
+                  {% if row.fields.title %}<div class="log-title">{{ row.fields.title }}{{ row.badges.title }}</div>{% endif %}
+                  {% if row.fields.location %}<div class="log-meta">{{ row.fields.location }}{{ row.badges.location }}</div>{% endif %}
+                  {% if e.author %}<div class="log-meta">{{ row.author_name }}</div>{% endif %}
                 </div>
                 {% if row.can_edit %}
                   <div class="log-actions">
@@ -66,11 +66,11 @@
                   </div>
                 {% endif %}
               </div>
-              {% if row.fields.characters_met %}<div class="log-field"><h3>{% translate "Characters met" %}</h3><p>{{ row.fields.characters_met }}</p></div>{% endif %}
-              {% if row.fields.fights %}<div class="log-field"><h3>{% translate "Fights" %}</h3><p>{{ row.fields.fights }}</p></div>{% endif %}
-              {% if row.fields.objectives %}<div class="log-field"><h3>{% translate "Objectives" %}</h3><p>{{ row.fields.objectives }}</p></div>{% endif %}
-              {% if row.fields.insights %}<div class="log-field"><h3>{% translate "Insights" %}</h3><p>{{ row.fields.insights }}</p></div>{% endif %}
-              {% if row.fields.notes %}<div class="log-field"><h3>{% translate "Other notes" %}</h3><p>{{ row.fields.notes }}</p></div>{% endif %}
+              {% if row.fields.characters_met %}<div class="log-field"><h3>{% translate "Characters met" %}{{ row.badges.characters_met }}</h3><p>{{ row.fields.characters_met }}</p></div>{% endif %}
+              {% if row.fields.fights %}<div class="log-field"><h3>{% translate "Fights" %}{{ row.badges.fights }}</h3><p>{{ row.fields.fights }}</p></div>{% endif %}
+              {% if row.fields.objectives %}<div class="log-field"><h3>{% translate "Objectives" %}{{ row.badges.objectives }}</h3><p>{{ row.fields.objectives }}</p></div>{% endif %}
+              {% if row.fields.insights %}<div class="log-field"><h3>{% translate "Insights" %}{{ row.badges.insights }}</h3><p>{{ row.fields.insights }}</p></div>{% endif %}
+              {% if row.fields.notes %}<div class="log-field"><h3>{% translate "Other notes" %}{{ row.badges.notes }}</h3><p>{{ row.fields.notes }}</p></div>{% endif %}
             </div>
           </li>
           {% endwith %}

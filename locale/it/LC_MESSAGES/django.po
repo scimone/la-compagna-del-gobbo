@@ -1697,3 +1697,199 @@ msgstr "Nessuna voce corrisponde alla ricerca."
 #: apps/frontend/templates/frontend/logbook/list.html
 msgid "Translated automatically"
 msgstr "Tradotto automaticamente"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Needs 13 in the primary ability of %(classes)s."
+msgstr "Serve 13 nella caratteristica primaria di %(classes)s."
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Ability Score Improvement"
+msgstr "Aumento dei punteggi di caratteristica"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "+2 to one ability score"
+msgstr "+2 a un punteggio di caratteristica"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "+1 to two ability scores"
+msgstr "+1 a due punteggi di caratteristica"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "The ability score to raise by 2"
+msgstr "Il punteggio da aumentare di 2"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "The two ability scores to raise by 1"
+msgstr "I due punteggi da aumentare di 1"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Ability score +1"
+msgstr "Punteggio di caratteristica +1"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Skills and languages"
+msgstr "Abilità e lingue"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Metamagic"
+msgstr "Metamagia"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Replace a Metamagic option"
+msgstr "Sostituisci un'opzione di Metamagia"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "...with"
+msgstr "...con"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Maneuvers"
+msgstr "Manovre"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Replace a maneuver"
+msgstr "Sostituisci una manovra"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Replace an invocation"
+msgstr "Sostituisci una supplica"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Class options"
+msgstr "Opzioni di classe"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Replace a spell"
+msgstr "Sostituisci un incantesimo"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Mystic Arcanum (level %(level)d)"
+msgstr "Arcanum mistico (livello %(level)d)"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Musical instrument"
+msgstr "Strumento musicale"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "New class"
+msgstr "Nuova classe"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Proficiencies you gain as a new class."
+msgstr "Le competenze che ottieni entrando in una nuova classe."
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Spell from your subclass"
+msgstr "Incantesimo della tua sottoclasse"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Land"
+msgstr "Terreno"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Subclass spells"
+msgstr "Incantesimi della sottoclasse"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "An Ability Score Improvement is a feat: pick it to raise your ability scores."
+msgstr "L'Aumento dei punteggi di caratteristica è un talento: sceglilo per aumentare i tuoi punteggi."
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Ability Score Improvement or feat"
+msgstr "Aumento dei punteggi di caratteristica o talento"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Hit points"
+msgstr "Punti ferita"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "A replacement needs both the choice to drop and its replacement."
+msgstr "Una sostituzione richiede sia ciò che lasci sia ciò che lo rimpiazza."
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Choose how to raise your ability scores."
+msgstr "Scegli come aumentare i tuoi punteggi di caratteristica."
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Enter the number you rolled on the hit die (1-%(n)d)."
+msgstr "Inserisci il risultato del tiro del dado vita (1-%(n)d)."
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "%(klass)s level %(level)d"
+msgstr "%(klass)s livello %(level)d"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "+%(hp)d hit points"
+msgstr "+%(hp)d punti ferita"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Level up to level %(level)d"
+msgstr "Sali al livello %(level)d"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "You are level %(level)s. Levelling up takes you to level %(next)s."
+msgstr "Sei al livello %(level)s. Salire di livello ti porta al livello %(next)s."
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Your Experience Points are below the next level's threshold - fine if your table levels up by milestones."
+msgstr "I tuoi Punti Esperienza sono sotto la soglia del livello successivo: va bene se al tuo tavolo si sale di livello per tappe."
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Pick the class to advance - a class you already have, or a new one (multiclassing needs 13 in the primary ability of the new class and of every class you have)."
+msgstr "Scegli la classe da far avanzare: una che hai già, o una nuova (per il multiclasse servono 13 nella caratteristica primaria della nuova classe e di ogni classe che hai)."
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Level %(a)s → %(b)s"
+msgstr "Livello %(a)s → %(b)s"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Choose another class"
+msgstr "Scegli un'altra classe"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Take the average (%(n)s, from your %(die)s hit die)"
+msgstr "Prendi la media (%(n)s, dal tuo dado vita %(die)s)"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Roll your %(die)s"
+msgstr "Tira il tuo %(die)s"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Your roll"
+msgstr "Il tuo tiro"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Your Constitution modifier (%(mod)s) is added."
+msgstr "Si aggiunge il tuo modificatore di Costituzione (%(mod)s)."
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "+%(n)s more from your feats and features."
+msgstr "+%(n)s in più da talenti e privilegi."
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Your new Constitution modifier also changes the hit points of your earlier levels (%(n)s)."
+msgstr "Il nuovo modificatore di Costituzione cambia anche i punti ferita dei livelli precedenti (%(n)s)."
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "You gain"
+msgstr "Ottieni"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Level up: %(klass)s %(level)s"
+msgstr "Sali di livello: %(klass)s %(level)s"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "%(name)s is now level %(level)s"
+msgstr "%(name)s è ora di livello %(level)s"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "New features"
+msgstr "Nuovi privilegi"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Back to the character sheet"
+msgstr "Torna alla scheda del personaggio"
+
+#: apps/frontend/levelup_views.py apps/builder/services/progression.py
+msgid "Level up"
+msgstr "Sali di livello"

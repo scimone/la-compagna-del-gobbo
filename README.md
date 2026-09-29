@@ -562,7 +562,7 @@ little to no persistent state of its own; it reads/writes `characters` models by
 data.
 
 **Level-1 character creation is implemented** (see [Character creation](#character-creation)
-below); level-up, multiclass and prerequisites are not. The frontend calls the services directly,
+below), and so is **level-up with multiclassing** (see [Levelling up](#levelling-up)). The frontend calls the services directly,
 like the World views call `rules`. Builder is an actual rules engine (per-class choice validation,
 prerequisite checking, multiclass spell-slot math, ...) and was designed in
 [docs/character_creation_plan.md](docs/character_creation_plan.md).
@@ -576,7 +576,7 @@ docstring-only placeholders from the design doc):
 | `choices.py` | Resolving/validating individual builder choices |
 | `validation.py` | Whole-character validation (what's missing/invalid) |
 | `prerequisites.py` | Prerequisite checks for feats/features/choices |
-| `progression.py` | Level-up preview/commit logic |
+| `progression.py` ✅ | Level-up `plan()` / `commit()` - see [Levelling up](#levelling-up) |
 | `effects.py` | Applying `rules.Effect` grants onto a character |
 | `derived_stats.py` | Computing derived statistics (AC, HP, saves, etc.) |
 
@@ -620,6 +620,40 @@ map of the code.
 - **Derived stats** (`derived_stats.compute`) are computed from rows, never stored: AC (armor + Dex
   cap, shield, Barbarian/Monk Unarmored Defense - best single calculation), saves, all skills,
   passive Perception, attacks, spell DC/attack, warnings (untrained armor, Strength requirement).
+
+#### Levelling up
+
+`services/progression.py` (rules that `db/` only states in prose: `progression_spec.py`) advances a
+*finished* character one level, from the sheet's owner (`/characters/<id>/levelup/`, the **Level up**
+button under the XP bar of the Stats tab - highlighted once the XP reach the next level, available
+anyway for milestone tables - and a pill on the owner's row of the Characters list once the XP
+allow it). A finished character's rows are its own, so this does not recompute from choices like
+the wizard: `plan(character, class_id, values)` reads the rows as they are and returns the
+`Plan` (the `Section`s of `Picker`s the level asks for, hit points, the features gained, issues);
+`commit()` applies the same `values` in one transaction. The page re-renders on each change (the
+wizard's live pattern) and saves nothing until *Level up*.
+
+What a level does: pick the class to advance (a new class needs 13 in the primary ability of the new
+class *and* of every class the character has, "and"/"or" per class); hit points (average or a roll,
++ Constitution, + Tough / Dwarven Toughness, + Draconic Resilience; a Constitution raise also
+changes the earlier levels); the subclass at its level, with the subclass features, its always-
+prepared spells (Domain/Oath/Circle/Patron, the Circle of the Land's land) and a Wizard school's
+Savant spells; the class features of the level; the feat or Ability Score Improvement at its
+levels (the ASI is a feat: +2 / +1 +1 capped at 20, half feats +1, Epic Boon capped at 30; feat
+prerequisites are checked against level, ability scores, armor training and spellcasting; the
+feat's own picks - skills, expertise, saving throw, spells, a spellcasting ability - are asked);
+the class's own choices (Expertise, Fighting Style, Weapon Mastery, Metamagic, Maneuvers, Eldritch
+Invocations - with the level-up swap -, Primal Knowledge, Scholar, Deft Explorer, Student of War,
+Lore's skills); spells (cantrips and prepared spells by the class table, the Wizard's two spellbook
+spells, a swap for the classes that may, Mystic Arcanum, Eldritch Knight / Arcane Trickster casting
+from the subclass's own tables); the limited-use resources (`LEVEL_RESOURCES`: Rage, Channel
+Divinity, Action Surge, Indomitable, Focus Points, Sorcery Points, Superiority Dice, ...); and the
+Experience Points if they were below the new level. A **multiclass entry** also gives the SRD's
+multiclass proficiencies (`MULTICLASS_GAINS`), the class's level-1 features and choices, and
+its own Hit Die pool. Spell slots of a multiclass caster combine as the SRD says (the sheet already
+did). Not modelled: the subclass choices that are only prose with no row to write (Hunter's
+Prey, Blessed Strikes, Rage of the Wilds ... are read in the feature's text), resistances from
+feats, swapping Weapon Mastery or Expertise at a rest.
 
 **Access** (`apps/characters/services/access.py`): every character is *visible* to every account
 (another account's *unfinished* one is not); only its owner edits or deletes it. `can_view(user,

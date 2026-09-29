@@ -13,6 +13,7 @@ from apps.rules.models import ClassLevel, Skill
 
 from .. import tables
 from ..class_spec import CLASS_SPEC
+from ..progression_spec import SUBCLASS_CASTING
 from ..resolvers.proficiency import WeaponProficiency
 
 _ARMOR_CATEGORY = {"la": "light", "ma": "medium", "ha": "heavy"}
@@ -96,7 +97,7 @@ def _armor_class(mods, worn_armor, worn_shield, has_feature):
 
 
 def compute(character: Character) -> Derived:
-    classes = list(character.classes.select_related("klass"))
+    classes = list(character.classes.select_related("klass", "subclass"))
     level = sum(c.level for c in classes) or 1
     pb = tables.proficiency_bonus(level)
     scores = {
@@ -240,23 +241,38 @@ def _spellcasting(classes, choices, mods, pb) -> list[dict]:
     feat spells (which use the ability the player chose)."""
     result = []
     for c in classes:
-        ability = c.klass.spellcasting_ability_id
+        third = (
+            SUBCLASS_CASTING.get((c.klass_id, c.subclass.name))
+            if c.subclass and c.level >= 3
+            else None
+        )
+        ability = c.klass.spellcasting_ability_id or (third.ability if third else None)
         if not ability:
             continue
         row = ClassLevel.objects.filter(klass=c.klass, level=c.level).first()
+        if third:  # Eldritch Knight / Arcane Trickster: the subclass's own tables
+            slots, cantrips = list(third.slots[c.level - 1]), third.cantrips[c.level - 1]
+            prepared, pact = third.prepared[c.level - 1], None
+        else:
+            slots = list(row.spell_slots) if row and row.spell_slots else []
+            cantrips = row.cantrips_known if row else None
+            prepared = row.spells_known_or_prepared if row else None
+            pact = _pact(row)
         result.append(
             {
                 "source": f"class:{c.klass_id}",
                 "ability": ability,
                 "save_dc": 8 + mods[ability] + pb,
                 "attack_bonus": mods[ability] + pb,
-                "slots": list(row.spell_slots) if row and row.spell_slots else [],
-                "pact": _pact(row),
-                "cantrips": row.cantrips_known if row else None,
-                "prepared": row.spells_known_or_prepared if row else None,
+                "slots": slots,
+                "pact": pact,
+                "cantrips": cantrips,
+                "prepared": prepared,
             }
         )
-    for key, source in (("species.spell_ability", "species"), ("background.feat", "feat")):
+    feat_sources = [("species.spell_ability", "species"), ("background.feat", "feat")]
+    feat_sources += [(key, "feat") for key in choices if key.startswith("levelup.feat.")]
+    for key, source in feat_sources:
         value = choices.get(key)
         ability = value.get("spell_ability") if isinstance(value, dict) else value
         if ability in mods:

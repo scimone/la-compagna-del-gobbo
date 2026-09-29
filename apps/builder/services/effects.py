@@ -226,6 +226,10 @@ def _write_character(character: Character, draft: Draft) -> None:
     character.experience_points = tables.xp_for_level(draft.level)
     if draft.klass:
         con = tables.ability_modifier(character.constitution)
-        character.max_hit_points = max(1, tables.hp_first_level(draft.klass.hit_die, con))
+        from .progression import hit_point_bonus_per_level  # local: progression -> resolvers
+
+        first = tables.hp_first_level(draft.klass.hit_die, con)
+        # Tough / Dwarven Toughness add to every level, the first included.
+        character.max_hit_points = max(1, first) + hit_point_bonus_per_level(character)
         character.current_hit_points = character.max_hit_points
     character.save()

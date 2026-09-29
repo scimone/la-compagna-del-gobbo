@@ -24,6 +24,7 @@ from apps.builder.services import (
     creation,
     derived_stats,
     origins,
+    progression,
     validation,
 )
 from apps.builder.services.store import STEPS, Draft, read_values
@@ -143,6 +144,12 @@ def _summary(character: Character, can_delete: bool = False) -> dict:
         ),
         "owner": character.owner.get_username() if character.owner else "",
         "can_delete": can_delete,
+        # Only the owner's own list shows it, and only once the XP reach the next level.
+        "level_up_url": (
+            reverse("character-levelup", args=[character.pk])
+            if can_delete and progression.xp_ready(character)
+            else ""
+        ),
         "portrait": (
             f"{reverse('character-portrait', args=[character.pk])}?v={character.portrait.name}"
             if character.portrait

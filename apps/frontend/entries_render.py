@@ -222,6 +222,17 @@ def self_translated_badge(is_self_translated: bool) -> str:
     )
 
 
+def machine_translated_badge() -> str:
+    """The same badge, for player-written text (Logbook, backstory) that the background worker
+    machine-translated into the language being read - shown in either language, unlike
+    `self_translated_badge()`, since here the text itself is what changed language."""
+    if get_language() == "it":
+        label, title = "Traduzione", "Tradotto automaticamente dal testo scritto dall'autore"
+    else:
+        label, title = "Translation", "Automatically translated from the author's text"
+    return f' <span class="self-translated-badge" title="{title}">{label}</span>'
+
+
 def homebrew_badge() -> str:
     """A small "Homebrew" badge for content that isn't part of the official 2024 rules (today only
     the Grung species - see `HOMEBREW_SPECIES` in `views.py`). Shown in every language, unlike

@@ -1,0 +1,21 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+{% block extra_style %}
+  main { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .done { width: 100%; max-width: 32rem; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; }
+  .done h2 { margin: 0; font-size: 1.3rem; }
+  .done ul { margin: 0; padding-left: 1.2rem; line-height: 1.6; }
+  .done a.btn { display: block; text-align: center; padding: 0.65rem 1rem; border-radius: 0.6rem; background: var(--accent); color: var(--accent-text); font-weight: 600; text-decoration: none; }
+  .done li a { color: var(--accent); }
+{% endblock %}
+{% block content %}
+  <div class="done">
+    <h2>{% blocktranslate with name=character.name level=level %}{{ name }} is now level {{ level }}{% endblocktranslate %}</h2>
+    <ul>{% for line in lines %}<li>{{ line }}</li>{% endfor %}</ul>
+    {% if features %}
+      <h3>{% translate "New features" %}</h3>
+      <ul>{% for f in features %}<li><a href="{{ f.url }}">{{ f.name }}</a></li>{% endfor %}</ul>
+    {% endif %}
+    <a class="btn" href="{{ sheet_url }}">{% translate "Back to the character sheet" %}</a>
+  </div>
+{% endblock %}

@@ -51,12 +51,11 @@
 
 {# The player's own words. The owner edits them in place (saved when the field loses focus). #}
 <section class="cs-group">
-  <h3>{% translate "Backstory" %}</h3>
+  <h3>{% translate "Backstory" %}{{ biography.backstory_badge }}</h3>
   {% if can_edit %}
     <textarea class="cs-text" rows="8" data-act="text" data-field="backstory" aria-label="{% translate 'Backstory' %}">{{ character.backstory }}</textarea>
   {% else %}
     <p class="cs-prose">{{ biography.backstory|linebreaksbr|default:"—" }}</p>
-    {% if biography.backstory_translated %}<p class="cs-prose" style="color: var(--muted); font-size: 0.8rem;">{% translate "Translated automatically" %}</p>{% endif %}
   {% endif %}
 </section>
 </div>

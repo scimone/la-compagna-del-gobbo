@@ -7,6 +7,8 @@
   .chars ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
   {# Same rows as the World lists (classes, species): the shared card style, thumbnail on the left. #}
   {% include "frontend/_item_list_style.html" %}
+  /* "Level up" pill beside a row (owner only, once the XP allow it). */
+  .chars .item-list a.lvl-pill { flex: 0 0 auto; align-self: center; margin: 0 0.3rem; padding: 0.3rem 0.7rem; border: 1px solid var(--accent); border-radius: 1rem; background: var(--accent); color: var(--accent-text); font-weight: 600; font-size: 0.8rem; text-decoration: none; }
   dialog.del-dialog { max-width: 22rem; width: calc(100% - 2rem); padding: 1rem; border: 1px solid var(--border); border-radius: 0.8rem; background: var(--surface); color: var(--text); }
   dialog.del-dialog::backdrop { background: rgba(0,0,0,.5); }
   dialog.del-dialog p { margin: 0 0 1rem; }
@@ -46,6 +48,7 @@
           <li class="{% if new_id == c.character.pk|stringformat:"d" %}new{% endif %}">
             <a href="{{ c.url }}" class="menu-thumb">{% if c.portrait %}<img class="item-thumb" src="{{ c.portrait }}" alt="" loading="lazy">{% else %}<span class="item-thumb pic-empty"><svg viewBox="0 0 90 120" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><circle cx="45" cy="44" r="17"/><path d="M11 121c0-27 14-43 34-43s34 16 34 43z"/></svg></span>{% endif %}<div class="item-text"><span class="item-name">{{ c.character.name }}</span>
               <div class="item-detail">{{ c.detail }}{% if c.owner %} · {{ c.owner }}{% endif %}</div></div></a>
+            {% if c.level_up_url %}<a class="lvl-pill" href="{{ c.level_up_url }}">{% translate "Level up" %}</a>{% endif %}
             {% if c.can_delete %}
               <button type="button" class="del item-remove" data-delete-url="{% url 'character-delete' c.character.pk %}" data-name="{{ c.character.name }}" aria-label="{% translate 'Delete character' %}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"></path><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path></svg>

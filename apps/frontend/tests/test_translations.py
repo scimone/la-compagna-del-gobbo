@@ -52,7 +52,11 @@ def test_the_other_language_reads_the_translation_and_the_writer_the_original(cl
     _it(client)
     italian = client.get("/logbook/").content.decode()
 
-    assert "The dragon" in english and "Translated automatically" in english
+    assert (
+        "The dragon" in english
+        and "self-translated-badge" in english
+        and ">Translation<" in english
+    )
     assert "Il drago" in italian and "The dragon" not in italian
 
 
