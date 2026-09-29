@@ -1321,7 +1321,7 @@ def test_every_search_form_with_filters_has_a_clear_filters_button(signed_in, al
     sheet = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
     assert panel(sheet, "spellbook").count("data-filter-clear") == 1
     assert panel(sheet, "features").count("data-filter-clear") == 1
-    assert '<script src="/static/js/filter_clear.js"></script>' in sheet
+    assert re.search(r'<script src="/static/js/filter_clear\.js\?v=\d+"></script>', sheet)
 
 
 def test_a_search_form_without_filters_has_no_clear_filters_button(signed_in):

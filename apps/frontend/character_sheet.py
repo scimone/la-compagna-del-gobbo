@@ -30,7 +30,7 @@ from apps.builder.resolvers.proficiency import WeaponProficiency
 from apps.builder.services import creation, derived_stats
 from apps.characters.models import Character, CharacterChoice
 from apps.characters.services import access, play, portrait
-from apps.frontend import units
+from apps.frontend import translations, units
 from apps.frontend.bookmarks import bookmarked_ids
 from apps.frontend.character_views import (
     _DESCRIBERS,
@@ -936,7 +936,14 @@ def _identity(character: Character, classes) -> dict:
 
 
 def _biography(character: Character) -> dict:
+    # Everyone but the owner (who edits the original in a textarea) reads the backstory in the
+    # active language: machine-translated if it was written in the other one.
+    story, translated = translations.translated_texts(
+        "backstory", {character.pk: {"backstory": character.backstory}}
+    )[character.pk]["backstory"]
     return {
+        "backstory": story,
+        "backstory_translated": translated,
         "alignment": next(
             (name for code, name, _abbr in tables.ALIGNMENTS if code == character.alignment), ""
         ),
@@ -1089,8 +1096,16 @@ _ACTIONS = {
     "hit_dice": _act_hit_dice,
     "slots": _act_slots,
     "coin": lambda c, p: play.set_coin(c, p.get("coin", ""), _int(p, "value")),
-    "text": lambda c, p: play.set_text(c, p.get("field", ""), p.get("value", "")),
+    "text": lambda c, p: _act_text(c, p),
 }
+
+
+def _act_text(character, post):
+    field, value = post.get("field", ""), post.get("value", "")
+    changed = field in play.TEXT_FIELDS and getattr(character, field) != value
+    play.set_text(character, field, value)
+    if changed and field == "backstory":
+        translations.enqueue("backstory", character.pk, {"backstory": character.backstory})
 
 
 def _act_spell_add(character, post):

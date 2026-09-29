@@ -1685,3 +1685,15 @@ msgstr "Cerca specie"
 #: apps/frontend/views.py
 msgid "Search features, feats and traits"
 msgstr "Cerca privilegi, talenti e tratti"
+
+#: apps/frontend/logbook_views.py
+msgid "Search logbook"
+msgstr "Cerca nel diario"
+
+#: apps/frontend/templates/frontend/logbook/list.html
+msgid "No entries match your search."
+msgstr "Nessuna voce corrisponde alla ricerca."
+
+#: apps/frontend/templates/frontend/logbook/list.html
+msgid "Translated automatically"
+msgstr "Tradotto automaticamente"

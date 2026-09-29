@@ -13,10 +13,10 @@ docker compose build
 
 # Stop the specific containers
 echo "Stopping container..."
-docker compose down dnd-web
+docker compose down dnd-web dnd-translator
 
 # Start the containers in detached mode
 echo "Starting container..."
-docker compose up -d dnd-web
+docker compose up -d dnd-web dnd-translator
 
 echo "Update complete!"

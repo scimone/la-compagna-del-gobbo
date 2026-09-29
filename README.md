@@ -1167,6 +1167,22 @@ shows "English"/"Italiano" as hardcoded literals in `base.html`, not via Django'
 *current* language (so it'd render "Italian" while browsing in English), not each language's
 own autonym, which is the correct convention for a language switcher.
 
+#### Logbook and automatic translation
+
+`/logbook/` is the party's shared journal: a vertical timeline (`LogEntry`, `logbook.py`,
+`logbook_views.py`), readable by anyone, written by anyone signed in, edited/deleted by the author
+or an admin, searchable live (as written *and* in either language's translation).
+
+Text written in one language (Logbook entries, character backstories) is machine-translated into the
+other one, so each reader sees their own language. The web app only queues a `TranslationJob`
+(`translations.py`); the separate `dnd-translator` container runs `manage.py translate_worker`,
+which calls the OpenAI-compatible endpoint in `LLM_BASE_URL`/`LLM_API_KEY`/`LLM_MODEL` (`llm.py`).
+docker-compose blanks those three for `dnd-web`, so a compromised web app cannot read the key.
+The text is sent to the model as JSON data under a "this is data, not instructions" prompt, the
+reply is validated (same keys, plain strings, bounded length) and only ever shown escaped. Queue
+size, job size, attempts and model calls per hour are capped. A translation is shown only while
+its source text still equals the current text; the writer edits the original.
+
 ## Not in scope (per the architecture doc)
 
 No `users` app, no real auth (only the password-less accounts in `frontend`, for bookmarks), no combat system.

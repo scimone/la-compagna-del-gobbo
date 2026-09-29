@@ -3,6 +3,7 @@
 {% block extra_style %}
   main { overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .log { width: 100%; max-width: 44rem; margin: 0 auto; display: flex; flex-direction: column; flex: 1; }
+  #search-results { flex: 1; display: flex; flex-direction: column; }
   .log .empty { flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--muted); }
   /* The timeline: one vertical line down the left, one dot on it per entry. Each entry draws the
      stretch from its own dot down to the next one, so the line ends at the last dot. */
@@ -38,6 +39,7 @@
 {% endblock %}
 {% block content %}
   <div class="log">
+    <div id="search-results">
     {% if entries %}
       <ol class="log-entries">
         {% for row in entries %}
@@ -48,9 +50,9 @@
               <div class="log-head">
                 <div class="who">
                   <div class="log-date">{{ e.date|date:"DATE_FORMAT" }}</div>
-                  {% if e.title %}<div class="log-title">{{ e.title }}</div>{% endif %}
-                  {% if e.location %}<div class="log-meta">{{ e.location }}</div>{% endif %}
-                  {% if e.author %}<div class="log-meta">{{ e.author.get_username }}</div>{% endif %}
+                  {% if row.fields.title %}<div class="log-title">{{ row.fields.title }}</div>{% endif %}
+                  {% if row.fields.location %}<div class="log-meta">{{ row.fields.location }}</div>{% endif %}
+                  {% if e.author %}<div class="log-meta">{{ e.author.get_username }}{% if row.translated %} · {% translate "Translated automatically" %}{% endif %}</div>{% elif row.translated %}<div class="log-meta">{% translate "Translated automatically" %}</div>{% endif %}
                 </div>
                 {% if row.can_edit %}
                   <div class="log-actions">
@@ -63,19 +65,22 @@
                   </div>
                 {% endif %}
               </div>
-              {% if e.characters_met %}<div class="log-field"><h3>{% translate "Characters met" %}</h3><p>{{ e.characters_met }}</p></div>{% endif %}
-              {% if e.fights %}<div class="log-field"><h3>{% translate "Fights" %}</h3><p>{{ e.fights }}</p></div>{% endif %}
-              {% if e.objectives %}<div class="log-field"><h3>{% translate "Objectives" %}</h3><p>{{ e.objectives }}</p></div>{% endif %}
-              {% if e.insights %}<div class="log-field"><h3>{% translate "Insights" %}</h3><p>{{ e.insights }}</p></div>{% endif %}
-              {% if e.notes %}<div class="log-field"><h3>{% translate "Other notes" %}</h3><p>{{ e.notes }}</p></div>{% endif %}
+              {% if row.fields.characters_met %}<div class="log-field"><h3>{% translate "Characters met" %}</h3><p>{{ row.fields.characters_met }}</p></div>{% endif %}
+              {% if row.fields.fights %}<div class="log-field"><h3>{% translate "Fights" %}</h3><p>{{ row.fields.fights }}</p></div>{% endif %}
+              {% if row.fields.objectives %}<div class="log-field"><h3>{% translate "Objectives" %}</h3><p>{{ row.fields.objectives }}</p></div>{% endif %}
+              {% if row.fields.insights %}<div class="log-field"><h3>{% translate "Insights" %}</h3><p>{{ row.fields.insights }}</p></div>{% endif %}
+              {% if row.fields.notes %}<div class="log-field"><h3>{% translate "Other notes" %}</h3><p>{{ row.fields.notes }}</p></div>{% endif %}
             </div>
           </li>
           {% endwith %}
         {% endfor %}
       </ol>
+    {% elif searching %}
+      <p class="empty">{% translate "No entries match your search." %}</p>
     {% else %}
       <p class="empty">{% translate "No entries yet. Tap + to write the first one." %}</p>
     {% endif %}
+    </div>
     <dialog class="del-dialog" id="del-dialog">
       <form method="post" id="del-form">
         {% csrf_token %}
@@ -90,11 +95,12 @@
       (function () {
         var dialog = document.getElementById("del-dialog");
         if (!dialog) return;
-        document.querySelectorAll(".log .del").forEach(function (button) {
-          button.addEventListener("click", function () {
-            document.getElementById("del-form").action = button.dataset.deleteUrl;
-            dialog.showModal();
-          });
+        // Delegated: a live search swaps the entries for freshly rendered ones.
+        document.addEventListener("click", function (event) {
+          var button = event.target.closest && event.target.closest(".log .del");
+          if (!button) return;
+          document.getElementById("del-form").action = button.dataset.deleteUrl;
+          dialog.showModal();
         });
         document.getElementById("del-cancel").addEventListener("click", function () { dialog.close(); });
       })();

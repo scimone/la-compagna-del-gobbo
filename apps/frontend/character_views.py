@@ -30,7 +30,7 @@ from apps.builder.services.store import STEPS, Draft, read_values
 from apps.characters.models import Character
 from apps.characters.services import access
 from apps.characters.services import character as character_service
-from apps.frontend import units
+from apps.frontend import translations, units
 from apps.frontend.entries_render import render_entries
 from apps.frontend.views import (
     _BACKGROUND_IMAGE_SLUGS,
@@ -794,7 +794,10 @@ def _alignment_step(request, character):
 
 def _story_step(request, character):
     if request.method == "POST":
+        before = character.backstory
         creation.save_backstory(character, request.POST.get("backstory", ""))
+        if character.backstory != before:
+            translations.enqueue("backstory", character.pk, {"backstory": character.backstory})
         return _advance(character, "story")
     return {"questions": BACKSTORY_QUESTIONS, "backstory": character.backstory}
 

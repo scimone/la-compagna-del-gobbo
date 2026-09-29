@@ -64,3 +64,43 @@ class LogEntry(models.Model):
 
     def __str__(self) -> str:
         return f"{self.date} {self.title or self.location}".strip()
+
+
+class TranslationJob(models.Model):
+    """One piece of player-written text waiting for, or holding, its machine translation
+    between the site's two languages (Logbook entries, character backstories).
+
+    The web process only ever *writes* jobs (`translations.enqueue`); the separate
+    `translate_worker` process - the only one given the LLM credentials - fills in `result`.
+    `source` snapshots the text as it was when queued, so a translation is shown only while it
+    still matches the current text (`translations.translated`): editing the original never
+    displays a stale translation. Nothing here is trusted - `result` comes from a language
+    model that read user-written text - so it is only ever rendered escaped, as plain text.
+    """
+
+    PENDING = "pending"
+    RUNNING = "running"
+    DONE = "done"
+    FAILED = "failed"
+    STATUS_CHOICES = [(s, s) for s in (PENDING, RUNNING, DONE, FAILED)]
+
+    kind = models.CharField(max_length=20)
+    object_id = models.PositiveIntegerField()
+    source_lang = models.CharField(max_length=8)
+    target_lang = models.CharField(max_length=8)
+    source = models.JSONField()  # {field: text}
+    result = models.JSONField(null=True, blank=True)  # {field: translated text}
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PENDING)
+    attempts = models.PositiveSmallIntegerField(default=0)
+    error = models.CharField(max_length=200, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["kind", "object_id"]),
+            models.Index(fields=["status", "id"]),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.kind}:{self.object_id} {self.source_lang}->{self.target_lang} {self.status}"

@@ -12,11 +12,34 @@ services:
         condition: service_healthy
     env_file:
       - .env
+    # The web app (the part exposed to the internet) never gets the LLM credentials: only
+    # `dnd-translator` below holds them, so a compromised web process cannot read the key.
+    # Empty values here override the ones `env_file` just loaded.
+    environment:
+      LLM_BASE_URL: ""
+      LLM_API_KEY: ""
+      LLM_MODEL: ""
     volumes:
       - ./media:/app/media
     restart: unless-stopped
     networks:
       - dnd-external
+      - dnd-internal
+
+  # Background worker translating Logbook entries and backstories between Italian and English
+  # (see apps/frontend/translations.py). No published port, not on the external network: it only
+  # talks to the database and to the LLM endpoint.
+  dnd-translator:
+    build: .
+    container_name: dnd-translator
+    command: uv run manage.py translate_worker
+    depends_on:
+      dnd-db:
+        condition: service_healthy
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
       - dnd-internal
 
   dnd-db:

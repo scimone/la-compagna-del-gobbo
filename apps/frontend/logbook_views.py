@@ -18,14 +18,32 @@ def _sign_in_redirect(request):
 
 
 def logbook_list(request):
+    q = request.GET.get("q", "").strip()
+    found = list(logbook.list_entries())
+    if q:
+        found = logbook.search(found, q)
+    shown = logbook.display(found)
     entries = [
-        {"entry": entry, "can_edit": logbook.can_edit(request.user, entry)}
-        for entry in logbook.list_entries()
+        {
+            "entry": entry,
+            "can_edit": logbook.can_edit(request.user, entry),
+            "fields": {name: text for name, (text, _t) in shown[entry.pk].items()},
+            "translated": any(was for _text, was in shown[entry.pk].values()),
+        }
+        for entry in found
     ]
     response = render(
         request,
         "frontend/logbook/list.html",
-        {"page_title": _("Logbook"), "entries": entries},
+        {
+            "page_title": _("Logbook"),
+            "entries": entries,
+            "searching": bool(q),
+            "searchable": True,
+            "search_query": q,
+            "search_placeholder": _("Search logbook"),
+            "filters": [],
+        },
     )
     add_never_cache_headers(response)
     return response
@@ -56,6 +74,7 @@ def logbook_new(request):
         entry = form.save(commit=False)
         entry.author = request.user
         entry.save()
+        logbook.queue_translation(entry)
         return redirect(f"{reverse('logbook-list')}#entry-{entry.pk}")
     return _form_page(request, form, _("New entry"))
 
@@ -67,6 +86,8 @@ def logbook_edit(request, pk):
     form = LogEntryForm(request.POST or None, instance=entry)
     if request.method == "POST" and form.is_valid():
         form.save()
+        if form.has_changed():
+            logbook.queue_translation(entry)
         return redirect(f"{reverse('logbook-list')}#entry-{entry.pk}")
     return _form_page(request, form, _("Edit entry"))
 
