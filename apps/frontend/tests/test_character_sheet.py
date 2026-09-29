@@ -132,9 +132,7 @@ def test_the_stats_tab_holds_every_number_that_changes_during_play(signed_in, al
     assert html.count('<div class="cs-scroll">') == 1
 
 
-def test_the_stats_tab_reads_hit_points_first_then_the_fight_numbers_then_what_is_spent(
-    signed_in, alice
-):
+def test_the_stats_tab_reads_the_rests_then_hit_points_then_the_fight_numbers(signed_in, alice):
     cleric = finished(alice, "cleric")
 
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "stats")
@@ -142,8 +140,8 @@ def test_the_stats_tab_reads_hit_points_first_then_the_fight_numbers_then_what_i
     order = [
         html.index(name)
         for name in (
-            "Hit Points",
             "Short Rest",
+            "Hit Points",
             "Armor Class",
             "Passive Perception",
             "Hit Dice",

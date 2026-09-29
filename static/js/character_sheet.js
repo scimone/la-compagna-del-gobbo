@@ -824,9 +824,9 @@
 
   // Post the chosen picture (or a removal) to the portrait endpoint, one request at a time like
   // every other change, then redraw the header.
-  function sendPortrait(body) {
+  function sendPortrait(body, url) {
     var job = queue.then(function () {
-      return fetch(root.dataset.portraitUrl, {
+      return fetch(url || root.dataset.portraitUrl, {
         method: "POST",
         body: body,
         credentials: "same-origin",
@@ -852,6 +852,30 @@
     body.append("file", input.files[0]);
     input.value = ""; // choosing the same file again must fire `change` again
     sendPortrait(body);
+  });
+  // The gallery: every chosen file is its own request (a failed one shows its error and the
+  // rest still go), each removal names the picture's id.
+  root.addEventListener("change", function (event) {
+    var input = event.target.closest("[data-gallery-file]");
+    if (!input || !input.files.length) return;
+    var files = Array.prototype.slice.call(input.files);
+    input.value = "";
+    files.forEach(function (file) {
+      var body = new FormData();
+      body.append("file", file);
+      sendPortrait(body, root.dataset.galleryUrl);
+    });
+  });
+  root.addEventListener("click", function (event) {
+    var remove = event.target.closest("[data-gallery-remove]");
+    if (!remove) return;
+    var id = remove.dataset.galleryRemove;
+    (remove.dataset.confirm ? window.appConfirm(remove.dataset.confirm) : Promise.resolve(true)).then(function (ok) {
+      if (!ok) return;
+      var body = new FormData();
+      body.append("remove", id);
+      sendPortrait(body, root.dataset.galleryUrl);
+    });
   });
   root.addEventListener("click", function (event) {
     var remove = event.target.closest("[data-portrait-remove]");

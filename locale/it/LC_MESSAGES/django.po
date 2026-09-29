@@ -1905,3 +1905,15 @@ msgstr "Immagini"
 #: apps/frontend/templates/frontend/characters/list.html
 msgid "List"
 msgstr "Elenco"
+
+#: apps/frontend/templates/frontend/characters/sheet/_biography.html
+msgid "Gallery"
+msgstr "Galleria"
+
+#: apps/frontend/templates/frontend/characters/sheet/_biography.html
+msgid "Add a picture"
+msgstr "Aggiungi un'immagine"
+
+#: apps/characters/services/portrait.py
+msgid "The gallery is full."
+msgstr "La galleria è piena."

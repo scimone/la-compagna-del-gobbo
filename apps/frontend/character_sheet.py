@@ -945,6 +945,10 @@ def _biography(character: Character) -> dict:
         "backstory", {character.pk: {"backstory": character.backstory}}
     )[character.pk]["backstory"]
     return {
+        "pictures": [
+            {"id": p.pk, "url": reverse("character-gallery-picture", args=[character.pk, p.pk])}
+            for p in character.pictures.all()
+        ],
         "backstory": story,
         "backstory_badge": mark_safe(machine_translated_badge()) if translated else "",
         "alignment": next(
@@ -1690,5 +1694,41 @@ def character_portrait(request, pk):
         raise Http404 from None
     response = HttpResponse(data, content_type="image/webp")
     # The URL carries the file's name (`?v=`), which changes with every upload.
+    response["Cache-Control"] = "private, max-age=86400"
+    return response
+
+
+def character_picture(request, pk, picture_id=None):
+    """The character's gallery. POST (the owner only) adds the `file` field, or deletes the
+    picture in `remove`; GET serves one picture to whoever may see the character."""
+    character = get_object_or_404(Character, pk=pk)
+    if request.method == "POST":
+        if character.status != Character.STATUS_COMPLETE or not access.can_edit(
+            request.user, character
+        ):
+            return JsonResponse({"error": "forbidden"}, status=403)
+        try:
+            if request.POST.get("remove", "").isdigit():
+                portrait.remove_picture(character, int(request.POST["remove"]))
+            elif request.FILES.get("file"):
+                portrait.add_picture(character, request.FILES["file"])
+            else:
+                raise ValueError(_("Choose a picture."))
+        except ValueError as error:
+            return JsonResponse({"error": str(error)}, status=400)
+        response = JsonResponse({"ok": True, "refresh": True})
+        add_never_cache_headers(response)
+        return response
+    if request.method != "GET" or picture_id is None:
+        return HttpResponse(status=405)
+    picture = get_object_or_404(character.pictures, pk=picture_id)
+    if not access.can_view(request.user, character):
+        raise Http404
+    try:
+        with picture.image.open("rb") as file:
+            data = file.read()
+    except FileNotFoundError:
+        raise Http404 from None
+    response = HttpResponse(data, content_type="image/webp")
     response["Cache-Control"] = "private, max-age=86400"
     return response

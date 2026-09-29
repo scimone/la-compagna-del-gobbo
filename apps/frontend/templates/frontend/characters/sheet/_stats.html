@@ -1,10 +1,24 @@
 {% load i18n %}
-{# The Stats tab: what changes during play, top to bottom in the order it is reached for - hit points, #}
-{# the rests, the numbers of a fight, inspiration / Hit Dice / death saves, resources, casting, XP.    #}
+{# The Stats tab: what changes during play, top to bottom in the order it is reached for - the rests, #}
+{# hit points, the numbers of a fight, inspiration / Hit Dice / death saves, resources, casting, XP.    #}
 {# Plain flowing cards (two columns on a wide screen); `data-bind`, `data-act` and the pip / box       #}
 {# classes are what `character_sheet.js` reads and redraws after a change.                              #}
 <div class="cs-scroll">
 <section class="st" aria-label="{% translate 'Quick stats' %}">
+
+  {# Rests: what they restore is in `play.short_rest`/`play.long_rest`; the dialogs are in _rest_dialog.html. #}
+  {% if can_edit %}
+  <div class="st-rests st-wide">
+    <button type="button" class="st-rest" data-rest="short">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+      <span>{% translate "Short Rest" %}</span>
+    </button>
+    <button type="button" class="st-rest" data-rest="long">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6M3 18h18M3 14h18M5 10V7a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/></svg>
+      <span>{% translate "Long Rest" %}</span>
+    </button>
+  </div>
+  {% endif %}
 
   {# Hit points: the centrepiece. #}
   <div class="st-card st-hp st-wide">
@@ -32,20 +46,6 @@
     </div>
     <div class="cs-bar hp" data-hp-bar style="--pct: {{ strip.hp_percent }}%"><i></i></div>
   </div>
-
-  {# Rests: what they restore is in `play.short_rest`/`play.long_rest`; the dialogs are in _rest_dialog.html. #}
-  {% if can_edit %}
-  <div class="st-rests st-wide">
-    <button type="button" class="st-rest" data-rest="short">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
-      <span>{% translate "Short Rest" %}</span>
-    </button>
-    <button type="button" class="st-rest" data-rest="long">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6M3 18h18M3 14h18M5 10V7a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/></svg>
-      <span>{% translate "Long Rest" %}</span>
-    </button>
-  </div>
-  {% endif %}
 
   {# Armor Class, Initiative, Speed, Passive Perception: the numbers of a fight. #}
   <div class="st-tiles st-wide">
@@ -179,7 +179,7 @@
       <div class="cs-bar" role="progressbar" aria-label="{% translate 'Progress to the next level' %}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ header.xp_progress }}" style="--pct: {{ header.xp_progress }}%"><i></i></div>
     {% endif %}
     {% if can_edit and header.can_level_up %}
-      <a class="cs-levelup{% if header.xp_ready %} ready{% endif %}" href="{% url 'character-levelup' character.pk %}" data-nav="push">{% translate "Level up" %}</a>
+      <a class="cs-levelup ready" href="{% url 'character-levelup' character.pk %}" data-nav="push">{% translate "Level up" %}</a>
     {% endif %}
   </div>
 </section>

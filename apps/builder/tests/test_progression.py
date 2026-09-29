@@ -214,7 +214,13 @@ def test_a_level_up_that_is_not_ready_changes_nothing(owner):
 def test_only_a_finished_character_below_20_can_level_up(owner):
     draft = creation.start_draft(owner, "Draft")
     assert not progression.can_level_up(draft)
-    assert progression.can_level_up(finished(owner, "rogue"))
+    rogue = finished(owner, "rogue")
+    assert not progression.can_level_up(rogue)  # the XP are not full
+    rogue.experience_points = 300
+    assert progression.can_level_up(rogue)
+    rogue.experience_points = 10**6
+    rogue.classes.update(level=20)
+    assert not progression.can_level_up(rogue)
 
 
 def test_tough_adds_two_hit_points_a_level(owner):

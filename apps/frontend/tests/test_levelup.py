@@ -25,9 +25,12 @@ def signed_in(client, alice):
     return client
 
 
-def finished(owner, class_id="fighter", background="soldier"):
+def finished(owner, class_id="fighter", background="soldier", xp=300):
+    """A finished level 1 character; 300 XP is what level 2 asks for."""
     character = build_character(owner, class_id, background)
     creation.finalize(character)
+    character.experience_points = xp
+    character.save()
     character.refresh_from_db()
     return character
 
@@ -37,17 +40,17 @@ def stats_panel(html):
 
 
 def test_the_stats_tab_has_a_level_up_button_for_the_owner_only(client, alice, bob):
-    character = finished(alice)
+    character = finished(alice, xp=0)
 
     client.force_login(alice)
     html = stats_panel(client.get(f"/characters/{character.pk}/").content.decode())
-    assert f'href="/characters/{character.pk}/levelup/"' in html
-    assert "cs-levelup ready" not in html  # 0 XP: available, not highlighted
+    assert "/levelup/" not in html  # the XP are not full yet
+    assert client.get(f"/characters/{character.pk}/levelup/").status_code == 302
 
     character.experience_points = 300
     character.save()
     html = stats_panel(client.get(f"/characters/{character.pk}/").content.decode())
-    assert "cs-levelup ready" in html
+    assert f'href="/characters/{character.pk}/levelup/"' in html
 
     client.force_login(bob)
     assert "/levelup/" not in client.get(f"/characters/{character.pk}/").content.decode()
@@ -55,7 +58,7 @@ def test_the_stats_tab_has_a_level_up_button_for_the_owner_only(client, alice, b
 
 
 def test_the_list_shows_a_level_up_pill_to_the_owner_once_the_xp_allow_it(client, alice, bob):
-    character = finished(alice)
+    character = finished(alice, xp=0)
     client.force_login(alice)
     assert 'class="lvl-pill"' not in client.get("/characters/").content.decode()
     character.experience_points = 300

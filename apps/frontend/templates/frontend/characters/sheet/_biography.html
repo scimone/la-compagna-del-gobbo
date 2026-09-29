@@ -49,6 +49,31 @@
   </div>
 </section>
 
+{# The gallery: any number of extra pictures, shown as a grid; the owner adds and removes them. #}
+{% if biography.pictures or can_edit %}
+<section class="cs-group cs-gallery">
+  <h3>{% translate "Gallery" %}</h3>
+  <div class="cs-gal-grid">
+    {% for p in biography.pictures %}
+      <div class="cs-gal-item">
+        <a href="{{ p.url }}" target="_blank" rel="noopener"><img src="{{ p.url }}" alt="" loading="lazy"></a>
+        {% if can_edit %}
+          <button type="button" class="cs-pic-x" data-gallery-remove="{{ p.id }}" data-confirm="{% translate 'Remove the picture?' %}"
+                  aria-label="{% translate 'Remove picture' %}" title="{% translate 'Remove picture' %}">×</button>
+        {% endif %}
+      </div>
+    {% endfor %}
+    {% if can_edit %}
+      <label class="cs-gal-item cs-gal-add" title="{% translate 'Add a picture' %}">
+        <input class="sr" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple data-gallery-file
+               aria-label="{% translate 'Add a picture' %}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg>
+      </label>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+
 {# The player's own words. The owner edits them in place (saved when the field loses focus). #}
 <section class="cs-group">
   <h3>{% translate "Backstory" %}{{ biography.backstory_badge }}</h3>

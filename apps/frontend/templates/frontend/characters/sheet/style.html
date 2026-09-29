@@ -43,6 +43,12 @@
   /* Small badges for the owner: "+" (choose a picture) at the bottom, "x" (remove it) at the corner. */
   .cs-pic-add { position: absolute; right: 0.5rem; bottom: 0.5rem; display: grid; place-items: center; width: 2rem; height: 2rem; background: var(--accent); border-radius: 50%; box-shadow: 0 0 0 2px var(--surface); }
   .cs-pic-add svg { width: 1.2rem; height: 1.2rem; fill: none; stroke: var(--accent-text); stroke-width: 3; stroke-linecap: round; }
+  .cs-gallery .cs-gal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr)); gap: 0.6rem; }
+  .cs-gal-item { position: relative; display: block; aspect-ratio: 1 / 1; overflow: hidden; border: 1px solid var(--border); border-radius: 0.6rem; }
+  .cs-gal-item img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .cs-gal-add { display: grid; place-items: center; border-style: dashed; cursor: pointer; color: var(--muted); }
+  .cs-gal-add:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .cs-gal-add svg { width: 2rem; height: 2rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
   .cs-pic-x { position: absolute; top: 0.5rem; right: 0.5rem; display: grid; place-items: center; width: 1.8rem; height: 1.8rem; padding: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 50%; color: var(--muted); font-size: 1.2rem; line-height: 1; cursor: pointer; }
   .cs-who { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.4rem; }
   .cs-name-row { display: flex; align-items: center; gap: 0.3rem; }

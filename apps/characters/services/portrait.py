@@ -12,7 +12,7 @@ from django.core.files.base import ContentFile
 from django.utils.translation import gettext as _
 from PIL import Image, ImageOps, UnidentifiedImageError
 
-from apps.characters.models import Character
+from apps.characters.models import Character, CharacterPicture
 
 #: Largest upload accepted, in bytes (a phone photo is a few MB).
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
@@ -24,9 +24,8 @@ MAX_PIXELS = 50_000_000
 FORMATS = {"JPEG", "PNG", "WEBP", "GIF"}
 
 
-def set_portrait(character: Character, upload) -> None:
-    """Replace the portrait with `upload` (a file-like object). Raises `ValueError` when it is not
-    a usable picture; the old one is kept then."""
+def _encode(upload) -> bytes:
+    """The upload as a shrunk, upright WebP. Raises `ValueError` when it is not a usable picture."""
     if getattr(upload, "size", 0) > MAX_UPLOAD_BYTES:
         raise ValueError(_("That picture is too big (10 MB at most)."))
     data = upload.read(MAX_UPLOAD_BYTES + 1)
@@ -45,12 +44,16 @@ def set_portrait(character: Character, upload) -> None:
         raise ValueError(_("That file is not a picture.")) from error
     out = BytesIO()
     picture.save(out, "WEBP", quality=85)
+    return out.getvalue()
 
+
+def set_portrait(character: Character, upload) -> None:
+    """Replace the portrait with `upload` (a file-like object). Raises `ValueError` when it is not
+    a usable picture; the old one is kept then."""
+    data = _encode(upload)
     old = character.portrait.name
     # A new name each time: the browser (and any cache) never shows the previous picture.
-    character.portrait.save(
-        f"{character.pk}-{token_hex(4)}.webp", ContentFile(out.getvalue()), save=False
-    )
+    character.portrait.save(f"{character.pk}-{token_hex(4)}.webp", ContentFile(data), save=False)
     character.save(update_fields=["portrait"])
     if old:
         character.portrait.storage.delete(old)
@@ -64,3 +67,30 @@ def clear_portrait(character: Character) -> None:
     character.portrait = ""
     character.save(update_fields=["portrait"])
     character.portrait.storage.delete(name)
+
+
+#: Pictures a character's gallery can hold.
+MAX_GALLERY = 30
+
+
+def add_picture(character: Character, upload) -> CharacterPicture:
+    """Add `upload` to the character's gallery. Raises `ValueError` when it is not a usable
+    picture or the gallery is full."""
+    if character.pictures.count() >= MAX_GALLERY:
+        raise ValueError(_("The gallery is full."))
+    data = _encode(upload)
+    picture = CharacterPicture(character=character)
+    picture.image.save(f"{character.pk}-{token_hex(4)}.webp", ContentFile(data), save=False)
+    picture.save()
+    return picture
+
+
+def remove_picture(character: Character, picture_id: int) -> None:
+    """Delete one gallery picture (and its file); an unknown id is ignored."""
+    picture = character.pictures.filter(pk=picture_id).first()
+    if picture is None:
+        return
+    name = picture.image.name
+    storage = picture.image.storage
+    picture.delete()
+    storage.delete(name)

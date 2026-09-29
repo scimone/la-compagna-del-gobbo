@@ -9,6 +9,7 @@ from .character_feature import CharacterFeature
 from .character_inventory_item import CharacterInventoryItem
 from .character_language import CharacterLanguage
 from .character_optional_feature import CharacterOptionalFeature
+from .character_picture import CharacterPicture
 from .character_proficiency import CharacterProficiency
 from .character_resource import CharacterResource
 from .character_sense import CharacterSense
@@ -26,6 +27,7 @@ __all__ = [
     "CharacterInventoryItem",
     "CharacterLanguage",
     "CharacterOptionalFeature",
+    "CharacterPicture",
     "CharacterProficiency",
     "CharacterResource",
     "CharacterSense",

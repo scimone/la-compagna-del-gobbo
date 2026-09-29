@@ -82,12 +82,12 @@ def scores(character: Character) -> dict[str, int]:
 
 
 def can_level_up(character: Character) -> bool:
-    return character.status == Character.STATUS_COMPLETE and total_level(character) < spec.MAX_LEVEL
+    """A finished character below the maximum level whose Experience Points reach the next one."""
+    return character.status == Character.STATUS_COMPLETE and xp_ready(character)
 
 
 def xp_ready(character: Character) -> bool:
-    """Whether the Experience Points already reach the next level (the button's emphasis; a
-    character levelled by milestone can level up without)."""
+    """Whether the Experience Points already reach the next level."""
     level = total_level(character)
     return level < spec.MAX_LEVEL and character.experience_points >= tables.xp_for_level(level + 1)
 
