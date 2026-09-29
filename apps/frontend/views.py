@@ -16,7 +16,7 @@ from django.utils.translation import get_language
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
-from apps.frontend import accounts, units
+from apps.frontend import accounts, cloudflare_access, units
 from apps.frontend.bookmarks import BOOKMARK_MODELS, bookmarked_ids, is_bookmarked
 from apps.frontend.entries_render import (
     homebrew_badge,
@@ -816,6 +816,9 @@ def account(request):
             "back_url": next_url,
             "form": form,
             "next_url": next_url,
+            "access_logout_url": cloudflare_access.logout_url()
+            if cloudflare_access.is_enabled()
+            else "",
         },
     )
     add_never_cache_headers(response)

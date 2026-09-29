@@ -149,6 +149,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.csp.ContentSecurityPolicyMiddleware",
+    "apps.frontend.cloudflare_access.CloudflareAccessMiddleware",
     "apps.frontend.middleware.TrackLastSectionUrlMiddleware",
     "apps.frontend.middleware.InteractionMiddleware",
 ]
@@ -255,3 +256,12 @@ PWA_APP_LANG = "en-US"
 # Accounts (usernames, lower case) that may see and change every character, other accounts' too -
 # see `apps.characters.services.access.is_admin`.
 ADMIN_ACCOUNTS = ["anna"]
+
+# Cloudflare Access sits in front of the app (via the tunnel) and signs every request it lets
+# through with a JWT; `CloudflareAccessMiddleware` verifies it and signs the visitor in as the
+# `auth.User` with that Google e-mail (creating it on the first visit). Both values come from
+# the Access application (team name: `<team>.cloudflareaccess.com`; AUD tag: its Overview tab).
+# Leave either empty - a local run, the tests - and the middleware is off, with the password-less
+# sign-in of `apps/frontend/accounts.py` still working.
+CF_ACCESS_TEAM_DOMAIN = os.environ.get("CF_ACCESS_TEAM_DOMAIN", "").strip()
+CF_ACCESS_AUD = os.environ.get("CF_ACCESS_AUD", "").strip()

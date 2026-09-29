@@ -950,8 +950,19 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     already has a usable password (e.g. a `createsuperuser` admin). The header's account button
     (right of the language switch) links to the account page: signed in it is a circle with the
     first letter of the name (accent-coloured); signed out it reads "Login" and is shaped exactly
-    like the language button. Nothing else is per-account yet:
-    `characters` still has no ownership.
+    like the language button.
+  - **Cloudflare Access sign-in** (`cloudflare_access.py`): the app is exposed through a
+    Cloudflare tunnel with Access (Google) in front. When `CF_ACCESS_TEAM_DOMAIN` and
+    `CF_ACCESS_AUD` are both set, `CloudflareAccessMiddleware` requires the signed
+    `Cf-Access-Jwt-Assertion` on every request (403 otherwise; the plain e-mail header is never
+    trusted), verifies it (PyJWT: signature against the team's `/cdn-cgi/access/certs`, audience,
+    issuer, expiry) and signs the visitor in as the `auth.User` whose `email` matches, creating it on
+    the first visit with the *full e-mail as username* (so `anna@elsewhere` can never become the
+    `ADMIN_ACCOUNTS` entry `anna`) and an unusable password. Existing accounts are attached to an
+    address with `manage.py link_account_email <username> <email>`; do that *before* that person's
+    first visit or they get a fresh, empty account. The account page's "Sign out" then points at
+    Access's own logout. With either setting empty (local runs, tests) the middleware is off and the
+    password-less sign-in above applies.
   - `_list_item.html` gives an item with a `page` (a Handbook chapter section, a Glossary `Rule`)
     a "Page N" detail line under its name - no icon.
   - `apps/frontend/entries_render.py` turns the raw 5etools `entries` JSON blobs (used by
