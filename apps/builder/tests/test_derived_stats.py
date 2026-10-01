@@ -5,7 +5,7 @@ import pytest
 from apps.builder.services import class_choices, creation, derived_stats, origins
 from apps.builder.services.store import Draft
 from apps.characters.models import CharacterInventoryItem
-from apps.rules.models import Equipment
+from apps.rules.models import Equipment, Feat
 
 from .conftest import build_character
 
@@ -54,7 +54,7 @@ def test_expertise_doubles_the_proficiency_bonus(owner):
 
 
 def test_saving_throws_and_proficiency_bonus(owner):
-    c = build_character(owner, "fighter")
+    c = no_feats(build_character(owner, "fighter"))
     stats = derived_stats.compute(c)
 
     assert stats.proficiency_bonus == 2 and stats.level == 1
@@ -129,6 +129,7 @@ def test_armor_warnings(owner):
 def test_weapon_attacks_use_the_right_ability_and_proficiency(owner):
     fighter = build_character(owner, "fighter")
     set_scores(fighter, str=16, dex=12)
+    no_feats(fighter)  # set_scores re-derives the rows, so strip the feats after it
     wear(fighter, "greatsword", "longbow", "dagger")
     attacks = {a["equipment_id"]: a for a in derived_stats.compute(fighter).attacks}
 
@@ -207,7 +208,54 @@ def test_manual_overrides_flow_through_to_the_numbers(owner):
     c = build_character(owner, "fighter")
     before = derived_stats.compute(c).armor_class["value"]
     set_scores(c, dex=30)
+    no_feats(c)
     assert derived_stats.compute(c).initiative == 10
     creation.reset_manual(c)
     c.refresh_from_db()
     assert derived_stats.compute(c).armor_class["value"] == before
+
+
+def no_feats(character):
+    """The fixture fighter has a background feat and a Fighting Style; strip them so a test sees
+    the bare formulas."""
+    character.feats.all().delete()
+    return character
+
+
+def give_feat(character, name):
+    character.feats.create(feat=Feat.objects.get(name_en=name), granted_at_level=1)
+
+
+def test_defense_adds_one_ac_only_while_armored(owner):
+    c = no_feats(build_character(owner, "fighter"))
+    set_scores(c, dex=14)
+    give_feat(c, "Defense")
+    wear(c, "chain-shirt")
+    assert derived_stats.compute(c).armor_class["value"] == 16  # 13 + Dex +2, + 1 Defense
+    wear(c)
+    assert derived_stats.compute(c).armor_class["value"] == 12  # no armor, no bonus
+
+
+def test_medium_armor_master_raises_the_dex_cap(owner):
+    c = no_feats(build_character(owner, "fighter"))
+    set_scores(c, dex=18)
+    give_feat(c, "Medium Armor Master")
+    wear(c, "chain-shirt")
+    assert derived_stats.compute(c).armor_class["value"] == 16  # 13 + Dex capped at +3
+
+
+def test_archery_dueling_alert_and_speedy(owner):
+    c = no_feats(build_character(owner, "fighter"))
+    set_scores(c, str=16, dex=12)
+    for feat in ("Archery", "Dueling", "Alert", "Speedy"):
+        give_feat(c, feat)
+    wear(c, "longsword", "greatsword", "longbow")
+    stats = derived_stats.compute(c)
+    attacks = {a["equipment_id"]: a for a in stats.attacks}
+    assert attacks["longbow"]["attack_bonus"] == 1 + 2 + 2
+    assert attacks["longsword"]["damage"] == "1d8+5"
+    assert attacks["greatsword"]["damage"] == "2d6+3"  # two-handed: no Dueling
+    assert stats.initiative == 1 + 2
+    assert (
+        stats.speed == derived_stats.compute(no_feats(build_character(owner, "fighter"))).speed + 10
+    )

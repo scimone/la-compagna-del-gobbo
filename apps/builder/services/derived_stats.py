@@ -59,10 +59,16 @@ def weapon_proficiency(names) -> WeaponProficiency:
     return proficiency
 
 
-def _armor_class(mods, worn_armor, worn_shield, has_feature):
+#: Unarmored Movement: Speed bonus by Monk level (needs no armor and no shield).
+_UNARMORED_MOVEMENT = ((18, 30), (14, 25), (10, 20), (6, 15), (2, 10))
+
+
+def _armor_class(mods, worn_armor, worn_shield, has_feature, feats=frozenset(), names=frozenset()):
     dex = mods["dex"]
     if worn_armor:
         cap = tables.ARMOR_DEX_CAP[worn_armor.type_id]
+        if cap == 2 and "Medium Armor Master" in feats:
+            cap = 3
         # Heavy armor (cap 0) ignores Dexterity altogether - a negative modifier included.
         bonus = 0 if cap == 0 else (dex if cap is None else min(dex, cap))
         base = (worn_armor.ac or 10) + bonus
@@ -71,6 +77,8 @@ def _armor_class(mods, worn_armor, worn_shield, has_feature):
         base, formula = 10 + dex, "unarmored"
     if worn_shield:
         base += worn_shield.ac or 2
+    if worn_armor and "Defense" in feats:  # the Fighting Style: +1 in any armor
+        base += 1
     best = {
         "value": base,
         "formula": formula,
@@ -78,6 +86,15 @@ def _armor_class(mods, worn_armor, worn_shield, has_feature):
         "armor_id": worn_armor.id if worn_armor else None,
     }
     if not worn_armor:
+        if "Draconic Resilience" in names:  # Draconic Sorcerer: 10 + Dex + Cha, shield allowed
+            value = 10 + dex + mods["cha"] + ((worn_shield.ac or 2) if worn_shield else 0)
+            if value > best["value"]:
+                best = {
+                    "value": value,
+                    "formula": "draconic resilience",
+                    "shield": bool(worn_shield),
+                    "armor_id": None,
+                }
         for class_id, spec in CLASS_SPEC.items():
             if not spec.unarmored_defense or not has_feature(class_id):
                 continue
@@ -113,6 +130,8 @@ def compute(character: Character) -> Derived:
     held = {(p.category, p.name): p.level for p in prof_rows}
     choices = {c.key: c.value for c in CharacterChoice.objects.filter(character=character)}
     warnings: list[str] = []
+    feature_names = set(character.features.values_list("feature__name_en", flat=True))
+    feat_names = {f.feat.name_en for f in character.feats.select_related("feat")}
 
     saves = {
         a: {
@@ -130,10 +149,14 @@ def compute(character: Character) -> Derived:
     for skill in Skill.objects.select_related("ability").order_by("name"):
         state = held.get(("skill", skill.id))
         extra = max(1, mods["wis"]) if skill.id in bonus_skills and skill.ability_id == "int" else 0
+        jack = pb // 2 if not state and "Jack of All Trades" in feature_names else 0
         skills[skill.id] = {
             "ability": skill.ability_id,
             "state": state or "none",
-            "modifier": mods[skill.ability_id] + pb * _LEVEL_MULTIPLIER.get(state, 0) + extra,
+            "modifier": mods[skill.ability_id]
+            + pb * _LEVEL_MULTIPLIER.get(state, 0)
+            + extra
+            + jack,
             "bonus": extra,
         }
 
@@ -145,14 +168,24 @@ def compute(character: Character) -> Derived:
     worn = [i.equipment for i in items if i.equipped]
     worn_armor = next((e for e in worn if e.type_id in _ARMOR_CATEGORY), None)
     worn_shield = next((e for e in worn if e.type_id == tables.SHIELD_TYPE_ID), None)
-    feature_names = set(character.features.values_list("feature__name", flat=True))
 
     def has_feature(class_id: str) -> bool:
         return "Unarmored Defense" in feature_names and any(c.klass_id == class_id for c in classes)
 
-    ac = _armor_class(mods, worn_armor, worn_shield, has_feature)
+    ac = _armor_class(mods, worn_armor, worn_shield, has_feature, feat_names, feature_names)
 
     speed = _speed(character, choices)
+    heavy = bool(worn_armor and worn_armor.type_id == "ha")
+    if "Speedy" in feat_names:
+        speed += 10
+    for c in classes:
+        if c.klass_id == "barbarian" and c.level >= 5 and "Fast Movement" in feature_names:
+            speed += 0 if heavy else 10
+        elif c.klass_id == "ranger" and c.level >= 6 and "Roving" in feature_names:
+            speed += 0 if heavy else 10
+        elif c.klass_id == "monk" and "Unarmored Movement" in feature_names:
+            if not (worn_armor or worn_shield):
+                speed += next((v for lvl, v in _UNARMORED_MOVEMENT if c.level >= lvl), 0)
     for piece in (worn_armor, worn_shield):
         if piece is None:
             continue
@@ -175,7 +208,8 @@ def compute(character: Character) -> Derived:
         eq = item.equipment
         if eq.weapon_category not in ("simple", "martial") or eq.type_id not in ("m", "r"):
             continue
-        finesse = "f" in {p.id for p in eq.properties.all()}
+        props = {p.id for p in eq.properties.all()}
+        finesse = "f" in props
         if eq.type_id == "r":
             ability = "dex"
         elif finesse:
@@ -183,15 +217,17 @@ def compute(character: Character) -> Derived:
         else:
             ability = "str"
         proficient = weapons.covers(eq)
+        hit_extra = 2 if "Archery" in feat_names and eq.type_id == "r" else 0
+        # Dueling: a melee weapon held in one hand (not Two-Handed; the other hand free).
+        dueling = "Dueling" in feat_names and eq.type_id == "m" and "2h" not in props
+        dmg = mods[ability] + (2 if dueling else 0)
         attacks.append(
             {
                 "equipment_id": eq.id,
                 "ability": ability,
                 "proficient": proficient,
-                "attack_bonus": mods[ability] + (pb if proficient else 0),
-                "damage": f"{eq.damage_dice}{mods[ability]:+d}"
-                if mods[ability]
-                else eq.damage_dice,
+                "attack_bonus": mods[ability] + (pb if proficient else 0) + hit_extra,
+                "damage": f"{eq.damage_dice}{dmg:+d}" if dmg else eq.damage_dice,
                 "damage_type": eq.damage_type,
                 "masteries": [m.id for m in eq.masteries.all()]
                 if eq.id in (choices.get("class.weapon_mastery") or [])
@@ -205,6 +241,12 @@ def compute(character: Character) -> Derived:
         entry["total"] += c.level
         entry["spent"] += c.hit_dice_spent
 
+    initiative_bonus = 0
+    if "Alert" in feat_names:
+        initiative_bonus = pb
+    elif "Jack of All Trades" in feature_names:
+        initiative_bonus = pb // 2
+
     return Derived(
         level=level,
         proficiency_bonus=pb,
@@ -212,7 +254,7 @@ def compute(character: Character) -> Derived:
         saving_throws=saves,
         skills=skills,
         passive_perception=10 + skills["perception"]["modifier"],
-        initiative=mods["dex"],
+        initiative=mods["dex"] + initiative_bonus,
         speed=speed,
         armor_class=ac,
         hit_dice=hit_dice,
