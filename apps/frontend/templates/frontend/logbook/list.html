@@ -24,6 +24,11 @@
   .log-actions a:active, .log-actions button:active { background: var(--bg); color: var(--accent); }
   .log-actions svg { width: 1.15rem; height: 1.15rem; }
   .log-field h3 { margin: 0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  .log-field.log-text p, .log-field.log-text ul, .log-field.log-text ol, .log-field.log-text blockquote, .log-field.log-text h3 { margin: 0.1rem 0 0.5rem; overflow-wrap: anywhere; font-size: 0.95rem; line-height: 1.4; }
+  .log-field.log-text > :last-child { margin-bottom: 0; }
+  .log-field.log-text ul, .log-field.log-text ol { padding-left: 1.3rem; }
+  .log-field.log-text h3 { font-size: 1rem; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .log-field.log-text blockquote { padding-left: 0.7rem; border-left: 3px solid var(--border); color: var(--muted); }
   .log-field p { margin: 0.1rem 0 0; white-space: pre-line; overflow-wrap: anywhere; font-size: 0.95rem; line-height: 1.4; }
   /* Personal entries (a character's own words): a tinted card with the character's round picture,
      the text set as a quote - clearly not the objective record. */
@@ -83,7 +88,7 @@
                   </div>
                 {% endif %}
               </div>
-              {% if row.fields.text %}<div class="log-field log-text"><p>{{ row.fields.text }}{{ row.badges.text }}</p></div>{% endif %}
+              {% if row.fields.text %}<div class="log-field log-text">{{ row.fields.text }}{% if row.badges.text %}<p>{{ row.badges.text }}</p>{% endif %}</div>{% endif %}
             </div>
           </li>
           {% endwith %}

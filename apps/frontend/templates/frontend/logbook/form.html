@@ -1,5 +1,5 @@
 {% extends "frontend/base.html" %}
-{% load i18n %}
+{% load i18n assets %}
 {% block extra_style %}
   main { overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .logform { width: 100%; max-width: 32rem; margin: 0 auto; }
@@ -13,7 +13,19 @@
   .logform input, .logform textarea { appearance: none; width: 100%; padding: 0.6rem 0.8rem; font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; }
   .logform textarea { resize: vertical; }
   .logform .errorlist { margin: 0; padding: 0; list-style: none; color: #b3261e; font-size: 0.85rem; }
-  .logform button { appearance: none; border: 0; background: var(--accent); color: var(--accent-text); font: inherit; font-weight: 600; padding: 0.65rem 1rem; border-radius: 0.6rem; cursor: pointer; }
+  /* The rich-text editor (`logbook_editor.js`); without JS the plain textarea (Markdown) stays. */
+  .rte[hidden] { display: none; }
+  .rte-bar { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.4rem; }
+  .logform .rte-bar button { appearance: none; min-width: 2.4rem; height: 2.4rem; padding: 0 0.5rem; border: 1px solid var(--border); border-radius: 0.5rem; background: var(--surface); color: var(--text); font: inherit; font-weight: 700; cursor: pointer; touch-action: manipulation; }
+  .logform .rte-bar button.on { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+  .rte-bar button svg { width: 1.1rem; height: 1.1rem; vertical-align: middle; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+  .rte-body { min-height: 12rem; padding: 0.6rem 0.8rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; overflow-wrap: anywhere; line-height: 1.4; }
+  .rte-body:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .rte-body p, .rte-body ul, .rte-body ol, .rte-body blockquote, .rte-body h3 { margin: 0 0 0.5rem; }
+  .rte-body ul, .rte-body ol { padding-left: 1.3rem; }
+  .rte-body h3 { font-size: 1.05rem; }
+  .rte-body blockquote { padding-left: 0.7rem; border-left: 3px solid var(--border); color: var(--muted); }
+  .logform button[type=submit] { appearance: none; border: 0; background: var(--accent); color: var(--accent-text); font: inherit; font-weight: 600; padding: 0.65rem 1rem; border-radius: 0.6rem; cursor: pointer; }
 {% endblock %}
 {% block content %}
   <div class="logform">
@@ -25,6 +37,19 @@
       {% for field in form %}
         <div class="field">
           {{ field.label_tag }}
+          {% if field.name == "text" %}
+            <div class="rte" data-rte hidden>
+              <div class="rte-bar" role="toolbar" aria-label="{% translate 'Formatting' %}">
+                <button type="button" data-cmd="bold" aria-label="{% translate 'Bold' %}" title="{% translate 'Bold' %}"><b>B</b></button>
+                <button type="button" data-cmd="italic" aria-label="{% translate 'Italic' %}" title="{% translate 'Italic' %}"><i>I</i></button>
+                <button type="button" data-cmd="heading" aria-label="{% translate 'Heading' %}" title="{% translate 'Heading' %}">H</button>
+                <button type="button" data-cmd="insertUnorderedList" aria-label="{% translate 'Bullet list' %}" title="{% translate 'Bullet list' %}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg></button>
+                <button type="button" data-cmd="insertOrderedList" aria-label="{% translate 'Numbered list' %}" title="{% translate 'Numbered list' %}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6h10M10 12h10M10 18h10M4 5l1.5-1v4M3.5 14.5c0-1 2.5-1 2.5 0.3 0 1-2.5 2.2-2.5 2.2h2.7"/></svg></button>
+                <button type="button" data-cmd="quote" aria-label="{% translate 'Quote' %}" title="{% translate 'Quote' %}">&ldquo;</button>
+              </div>
+              <div class="rte-body" contenteditable="true" role="textbox" aria-multiline="true" aria-label="{{ field.label }}">{{ text_html }}</div>
+            </div>
+          {% endif %}
           {{ field }}
           {{ field.errors }}
         </div>
@@ -32,4 +57,5 @@
       <button type="submit">{% translate "Save" %}</button>
     </form>
   </div>
+  <script src="{% static_v 'js/logbook_editor.js' %}" defer></script>
 {% endblock %}

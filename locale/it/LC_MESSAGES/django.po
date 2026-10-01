@@ -1973,3 +1973,27 @@ msgstr "Modifica l'immagine del profilo rotonda"
 
 msgid "Invalid frame."
 msgstr "Inquadratura non valida."
+
+msgid "Grid"
+msgstr "Griglia"
+
+msgid "Formatting"
+msgstr "Formattazione"
+
+msgid "Bold"
+msgstr "Grassetto"
+
+msgid "Italic"
+msgstr "Corsivo"
+
+msgid "Heading"
+msgstr "Titolo"
+
+msgid "Bullet list"
+msgstr "Elenco puntato"
+
+msgid "Numbered list"
+msgstr "Elenco numerato"
+
+msgid "Quote"
+msgstr "Citazione"

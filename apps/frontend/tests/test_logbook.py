@@ -161,3 +161,19 @@ def test_an_objective_entry_has_no_character_picture(client, alice):
 
     html = client.get("/logbook/").content.decode()
     assert "log-avatar" not in html.split("<ol")[1] and "personal" not in html.split("<ol")[1]
+
+
+def test_the_form_has_the_editor_and_the_list_renders_the_formatting(client, alice):
+    client.force_login(alice)
+    page = client.get("/logbook/new/").content.decode()
+    assert "data-rte" in page and "logbook_editor.js" in page
+
+    client.post(
+        "/logbook/new/", {"date": "2026-09-20", "title": "T", "text": "**bold**\n\n- a\n- b"}
+    )
+    html = client.get("/logbook/").content.decode()
+    assert "<strong>bold</strong>" in html and "<ul><li>a</li><li>b</li></ul>" in html
+
+    entry = LogEntry.objects.get()
+    edit = client.get(f"/logbook/{entry.pk}/edit/").content.decode()
+    assert "<strong>bold</strong>" in edit  # the editor starts from the stored text, rendered

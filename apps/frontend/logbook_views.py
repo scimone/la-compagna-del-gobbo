@@ -10,7 +10,7 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
 from apps.characters.models import Character
-from apps.frontend import logbook
+from apps.frontend import logbook, logbook_markup
 from apps.frontend.entries_render import machine_translated_badge
 from apps.frontend.forms import ObjectiveEntryForm, PersonalEntryForm
 from apps.frontend.handbook_search import highlight, query_pattern
@@ -38,7 +38,10 @@ def logbook_list(request):
             "can_edit": logbook.can_edit(request.user, entry),
             "personal": entry.kind == LogEntry.PERSONAL,
             "avatar": logbook.avatar_url(entry),
-            "fields": {name: mark(text) for name, (text, _t) in shown[entry.pk].items()},
+            "fields": {
+                name: logbook_markup.render(text, pattern) if name == "text" else mark(text)
+                for name, (text, _t) in shown[entry.pk].items()
+            },
             "badges": {
                 name: mark_safe(machine_translated_badge()) if was else ""
                 for name, (_text, was) in shown[entry.pk].items()
@@ -79,6 +82,7 @@ def _form_page(request, form, title, kind=None):
             "page_title": title,
             "back_url": reverse("logbook-list"),
             "form": form,
+            "text_html": logbook_markup.render(form["text"].value() or ""),
             "kind": kind,
             "kind_links": (
                 [
