@@ -24,10 +24,6 @@
 </div>
 
 <div class="cs-scroll">
-{% if inventory.warning_texts %}
-  <ul class="cs-warnings">{% for w in inventory.warning_texts %}<li>{{ w }}</li>{% endfor %}</ul>
-{% endif %}
-
 {% if inventory.sections %}
   <div id="cs-inventory">
     {% for sec in inventory.sections %}
@@ -63,6 +59,7 @@
                   </div>
                 {% endif %}
               </div>
+              {% if c.warnings %}<ul class="cs-warnings">{% for w in c.warnings %}<li>{{ w }}</li>{% endfor %}</ul>{% endif %}
             </li>
           {% endfor %}
         </ul>

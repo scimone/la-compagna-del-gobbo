@@ -766,6 +766,11 @@ def _inventory(character: Character, stats) -> dict:
         pack_name = row.parent.equipment.name if row.parent_id else ""
         card = _item_card("catalog", row, pack_name)
         total_weight += card["weight"]
+        card["warnings"] = (
+            [_warning_text(w) for w in stats.item_warnings.get(row.equipment_id, [])]
+            if row.equipped
+            else []
+        )
         sections[section_of.get(row.equipment.type_id, "misc")]["cards"].append(card)
     for row in character.custom_items.all():
         card = _item_card("custom", row)
@@ -777,7 +782,6 @@ def _inventory(character: Character, stats) -> dict:
         "coins": _coins(character),
         "sections": [s for s in sections.values() if s["cards"]],
         "total_weight": _weight_text(total_weight) if total_weight else "",
-        "warning_texts": [_warning_text(w) for w in stats.warnings],
     }
 
 

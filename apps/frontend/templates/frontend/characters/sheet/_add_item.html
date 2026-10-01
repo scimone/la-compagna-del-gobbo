@@ -39,7 +39,7 @@
               {# is left after) from the purse it can see live, since this sheet is never re-fetched. #}
               <button type="button" class="equip buy" data-buy="1" data-act="item_buy" data-equipment="{{ e.id }}" data-cost="{{ e.cost }}">{% translate "Buy" %}</button>
             {% endif %}
-            <button type="button" class="equip add" data-act="item_add" data-equipment="{{ e.id }}">{% translate "Add" %}</button>
+            <button type="button" class="equip add" data-act="item_add" data-equipment="{{ e.id }}" data-done="{% translate 'Added' %}" data-again="1">{% translate "Add" %}</button>
           </div>
         </div>
       </li>

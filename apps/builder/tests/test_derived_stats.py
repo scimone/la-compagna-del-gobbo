@@ -259,3 +259,18 @@ def test_archery_dueling_alert_and_speedy(owner):
     assert (
         stats.speed == derived_stats.compute(no_feats(build_character(owner, "fighter"))).speed + 10
     )
+
+
+def test_armor_warnings_are_kept_per_worn_item(owner):
+    c = no_feats(build_character(owner, "wizard"))
+    wear(c, "chain-mail")
+    stats = derived_stats.compute(c)
+    assert "not_proficient:heavy" in stats.item_warnings["chain-mail"]
+    assert "stealth_disadvantage" in stats.item_warnings["chain-mail"]
+
+
+def test_boon_of_speed_adds_thirty_feet(owner):
+    c = no_feats(build_character(owner, "fighter"))
+    before = derived_stats.compute(c).speed
+    give_feat(c, "Boon of Speed")
+    assert derived_stats.compute(c).speed == before + 30

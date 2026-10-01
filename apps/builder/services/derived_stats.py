@@ -42,6 +42,8 @@ class Derived:
     attacks: list[dict]
     spellcasting: list[dict]
     warnings: list[str] = field(default_factory=list)
+    #: The same warnings, by the equipment id of the worn piece they belong to.
+    item_warnings: dict[str, list[str]] = field(default_factory=dict)
 
 
 def weapon_proficiency(names) -> WeaponProficiency:
@@ -174,10 +176,18 @@ def compute(character: Character) -> Derived:
 
     ac = _armor_class(mods, worn_armor, worn_shield, has_feature, feat_names, feature_names)
 
+    item_warnings: dict[str, list[str]] = {}
+
+    def warn(piece, code: str) -> None:
+        warnings.append(code)
+        item_warnings.setdefault(piece.id, []).append(code)
+
     speed = _speed(character, choices)
     heavy = bool(worn_armor and worn_armor.type_id == "ha")
     if "Speedy" in feat_names:
         speed += 10
+    if "Boon of Speed" in feat_names:
+        speed += 30
     for c in classes:
         if c.klass_id == "barbarian" and c.level >= 5 and "Fast Movement" in feature_names:
             speed += 0 if heavy else 10
@@ -191,16 +201,17 @@ def compute(character: Character) -> Derived:
             continue
         category = _ARMOR_CATEGORY.get(piece.type_id, "shield")
         if ("armor", category) not in held:
-            warnings.append(f"not_proficient:{category}")  # d20 disadvantage on Str/Dex, no spells
+            # d20 disadvantage on Str/Dex, no spells
+            warn(piece, f"not_proficient:{category}")
     if (
         worn_armor
         and worn_armor.strength_requirement
         and scores["str"] < worn_armor.strength_requirement
     ):
         speed -= 10
-        warnings.append("strength_requirement")
+        warn(worn_armor, "strength_requirement")
     if worn_armor and worn_armor.stealth_disadvantage:
-        warnings.append("stealth_disadvantage")
+        warn(worn_armor, "stealth_disadvantage")
 
     weapons = weapon_proficiency(n for c, n in held if c == "weapon")
     attacks = []
@@ -261,6 +272,7 @@ def compute(character: Character) -> Derived:
         attacks=attacks,
         spellcasting=_spellcasting(classes, choices, mods, pb),
         warnings=warnings,
+        item_warnings=item_warnings,
     )
 
 
@@ -284,7 +296,7 @@ def _spellcasting(classes, choices, mods, pb) -> list[dict]:
     result = []
     for c in classes:
         third = (
-            SUBCLASS_CASTING.get((c.klass_id, c.subclass.name))
+            SUBCLASS_CASTING.get((c.klass_id, c.subclass.name_en))
             if c.subclass and c.level >= 3
             else None
         )

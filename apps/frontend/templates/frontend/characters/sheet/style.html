@@ -216,7 +216,6 @@
      heading's own padding instead. */
   .cs-scroll:has(#cs-spells), .cs-scroll:has(#cs-inventory) { padding-top: 0; }
   #cs-spells, #cs-inventory { display: flex; flex-direction: column; gap: 1rem; }
-  .cs-scroll:has(#cs-inventory) > .cs-warnings { margin-top: 1rem; }
   .cs-level-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.3rem 0.6rem; padding: 0.6rem 0 0.35rem; background: var(--bg); border-bottom: 1px solid var(--border); }
   #cs .cs-level-head h3 { margin: 0; font-size: 0.95rem; }
   .cs-level-group .cs-list, .cs-level-group .item-list { margin-top: 0.6rem; }
@@ -329,7 +328,7 @@
   .cs-add-btn { flex-shrink: 0; white-space: nowrap; padding: 0.3rem 0.9rem; background: var(--accent); border: 0; border-radius: 1rem; color: var(--accent-text); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
   .cs-weight { margin: 0; font-size: 0.85rem; color: var(--muted); }
   .cs-weight b { color: var(--text); }
-  .cs-warnings { margin: 0; padding: 0.6rem 0.9rem 0.6rem 1.6rem; border: 1px dashed var(--border); border-radius: 0.6rem; color: var(--muted); font-size: 0.9rem; }
+  .cs-warnings { margin: 0.3rem 0 0.2rem; padding: 0.4rem 0.9rem 0.4rem 1.6rem; border: 1px dashed var(--border); border-radius: 0.6rem; color: var(--muted); font-size: 0.85rem; }
   /* Gear rows are the Features/Spellbook rows; the Equip pill, the quick Sell button, or (in the
      "add an item" sheet) the Buy pill sit over the row, left of its chevron, in one small cluster
      (`.cs-actions`). The reserved margin is generous - up to two pills can share the cluster. */

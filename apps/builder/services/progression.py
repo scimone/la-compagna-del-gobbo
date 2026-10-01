@@ -234,7 +234,7 @@ def hit_point_bonus_per_level(character: Character) -> int:
         spec.HP_PER_LEVEL_FEATS.get(feat_id, 0)
         for feat_id in character.feats.values_list("feat_id", flat=True)
     )
-    names = set(character.features.values_list("feature__name", flat=True))
+    names = set(character.features.values_list("feature__name_en", flat=True))
     return bonus + sum(n for name, n in spec.HP_PER_LEVEL_FEATURES.items() if name in names)
 
 
@@ -252,8 +252,8 @@ def _hp_plan(ctx: _Ctx, new_con_mod: int, old_con_mod: int, subclass: Subclass |
     per_level = hit_point_bonus_per_level(ctx.character)
     gain = max(1, base + new_con_mod) + per_level
     # Draconic Sorcery: +1 per Sorcerer level (3 at once when the subclass is taken).
-    if subclass and (ctx.klass.id, subclass.name) in spec.HP_PER_CLASS_LEVEL_SUBCLASS:
-        extra = spec.HP_PER_CLASS_LEVEL_SUBCLASS[(ctx.klass.id, subclass.name)]
+    if subclass and (ctx.klass.id, subclass.name_en) in spec.HP_PER_CLASS_LEVEL_SUBCLASS:
+        extra = spec.HP_PER_CLASS_LEVEL_SUBCLASS[(ctx.klass.id, subclass.name_en)]
         gain += extra * (ctx.new_level if ctx.new_subclass else 1)
     retro = (ctx.total_after - 1) * (new_con_mod - old_con_mod)
     return {
@@ -478,10 +478,10 @@ def _has_marker(rows: list[Feature], *names: str) -> bool:
 
 def _is_placeholder(feature: Feature, klass: Class) -> bool:
     return (
-        feature.name in spec.ASI_FEATURES
-        or feature.name == spec.SUBCLASS_MARKER
-        or feature.name == f"{klass.name} Subclass"
-        or feature.name in spec.REFERENCE_FEATURES
+        feature.name_en in spec.ASI_FEATURES
+        or feature.name_en == spec.SUBCLASS_MARKER
+        or feature.name_en == f"{klass.name_en} Subclass"
+        or feature.name_en in spec.REFERENCE_FEATURES
     )
 
 
@@ -556,7 +556,7 @@ def _class_sections(ctx: _Ctx) -> list[Section]:
     sections: list[Section] = []
     class_spec = spec_for(klass.id)
     subclass = ctx.subclass or ctx.new_subclass
-    subclass_name = subclass.name if subclass else ""
+    subclass_name = subclass.name_en if subclass else ""
 
     # Expertise ...
     expertise = spec.EXPERTISE_AT.get(klass.id, {}).get(new, 0)
@@ -856,7 +856,7 @@ def _casting(ctx: _Ctx) -> dict | None:
     (Eldritch Knight / Arcane Trickster included once their subclass is known)."""
     klass, new, old = ctx.klass, ctx.new_level, ctx.old_level
     subclass = ctx.subclass or ctx.new_subclass
-    third = spec.SUBCLASS_CASTING.get((klass.id, subclass.name)) if subclass else None
+    third = spec.SUBCLASS_CASTING.get((klass.id, subclass.name_en)) if subclass else None
     if klass.spellcasting_ability_id:
         row_new = ClassLevel.objects.filter(klass=klass, level=new).first()
         row_old = ClassLevel.objects.filter(klass=klass, level=old).first() if old else None
@@ -1140,7 +1140,7 @@ def plan(character: Character, class_id: str, values: Values | None = None) -> P
     if asi_rows and not ctx.entering:
         categories = (
             ("General", "Epic Boon")
-            if any(f.name == "Epic Boon" for f in asi_rows)
+            if any(f.name_en == "Epic Boon" for f in asi_rows)
             else ("General",)
         )
         feats = eligible_feats(ctx, categories)
@@ -1314,6 +1314,13 @@ def _add_feat(character: Character, feat: Feat, level: int, source: str) -> None
                 )
     for name in feat_resolver.fixed_weapon_grants(feat):
         _set_proficiency(character, "weapon", name)
+    if feat.id == "boon-of-fortitude":  # "Your Hit Point maximum increases by 40"
+        character.max_hit_points += 40
+        character.current_hit_points += 40
+        character.save(update_fields=["max_hit_points", "current_hit_points"])
+    if feat.id == "boon-of-skill":  # "You gain proficiency in all skills"
+        for skill in Skill.objects.all():
+            _set_proficiency(character, "skill", skill.id)
 
 
 def _add_spell(character, spell_id_, klass_id, source, **flags) -> None:
@@ -1381,7 +1388,7 @@ def _update_resources(
     wanted: dict[str, tuple[int, str]] = {}
     for res in spec.LEVEL_RESOURCES.get(ctx.klass.id, ()):
         if level < res.from_level or (
-            res.subclass and (not subclass or subclass.name != res.subclass)
+            res.subclass and (not subclass or subclass.name_en != res.subclass)
         ):
             continue
         maximum = _resource_maximum(ctx, res, level, mods)

@@ -83,7 +83,7 @@
 
   function paramsOf(el) {
     var params = { action: el.dataset.act };
-    var skip = ["act", "bind", "describe", "label", "toggle", "tab", "confirm", "done", "buy", "cost"];
+    var skip = ["act", "bind", "describe", "label", "toggle", "tab", "confirm", "done", "again", "buy", "cost"];
     Object.keys(el.dataset).forEach(function (key) {
       if (skip.indexOf(key) === -1) params[key] = el.dataset[key];
     });
@@ -264,8 +264,14 @@
         if (!ok) return;
         send(paramsOf(button)).then(function (accepted) {
           if (accepted && button.dataset.done) {
+            var before = button.textContent;
             button.textContent = button.dataset.done;
-            button.disabled = true;
+            if (button.dataset.again) {
+              // An item can be added again: the confirmation only flashes.
+              setTimeout(function () { button.textContent = before; }, 1500);
+            } else {
+              button.disabled = true;
+            }
           }
         });
       });

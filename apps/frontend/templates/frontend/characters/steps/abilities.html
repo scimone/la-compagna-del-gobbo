@@ -25,10 +25,11 @@
   </form>
 
   {% if method %}
-    <form method="post"{% if method == "pointbuy" %} data-point-buy data-budget="{{ options.point_buy_budget }}"
+    <form method="post" data-abilities{% if method == "pointbuy" %} data-point-buy data-budget="{{ options.point_buy_budget }}"
           data-fmt-spent="{% translate '%(n)d/%(budget)d points spent.' %}"{% endif %}>
       {% csrf_token %}
       <input type="hidden" name="method" value="{{ method }}">
+      {{ options.bonus_spreads|json_script:"bonus-spreads" }}
       {% if method == "pointbuy" %}{{ options.point_buy_costs|json_script:"pb-costs" }}{% endif %}
 
       {% if method == "standard" %}
@@ -58,8 +59,8 @@
             {% if r.bonus_allowed %}
               <select name="bonus.{{ r.id }}" class="num">{% for b in "012" %}<option value="{{ b }}"{% if r.bonus|stringformat:"d" == b %} selected{% endif %}>+{{ b }}</option>{% endfor %}</select>
             {% else %}<span class="num">—</span>{% endif %}
-            <span class="num">{{ r.final }}</span>
-            <span class="num">{{ r.modifier|stringformat:"+d" }}</span>
+            <span class="num" data-total>{{ r.final }}</span>
+            <span class="num" data-mod>{{ r.modifier|stringformat:"+d" }}</span>
           {% endfor %}
         </div>
         {% for path, message in issue_paths.items %}{% if path == "base" or path == "bonus" or path == "method" %}<p class="field-error">{{ message }}</p>{% endif %}{% endfor %}

@@ -163,6 +163,68 @@
       }
       initPointBuy();
 
+      // Abilities (every method): Total and Mod follow the selects as they change, and the
+      // background bonus can only be set to what its allowed spreads (+2/+1, +1/+1/+1) still fit -
+      // an option that would make the bonus invalid (a third +2) is disabled, never offered.
+      function initAbilities() {
+        var form = wiz.querySelector("form[data-abilities]");
+        var spreadsEl = document.getElementById("bonus-spreads");
+        if (!form) return;
+        var spreads = spreadsEl ? JSON.parse(spreadsEl.textContent) : [];
+        var cap = 20;
+        var rows = [];
+        form.querySelectorAll('select[name^="base."]').forEach(function (base) {
+          var id = base.name.slice(5);
+          var bonus = form.querySelector('select[name="bonus.' + id + '"]');
+          var total = base.closest(".abl").querySelectorAll("[data-total]")[rows.length];
+          var mod = base.closest(".abl").querySelectorAll("[data-mod]")[rows.length];
+          rows.push({ base: base, bonus: bonus, total: total, mod: mod });
+        });
+        // Can this multiset of non-zero bonuses still grow into one of the allowed spreads?
+        function fits(values) {
+          return spreads.some(function (spread) {
+            var left = spread.slice();
+            return values.every(function (v) {
+              var at = left.indexOf(v);
+              if (at === -1) return false;
+              left.splice(at, 1);
+              return true;
+            });
+          });
+        }
+        function update() {
+          rows.forEach(function (r) {
+            var b = r.bonus ? Number(r.bonus.value) : 0;
+            if (r.base.value === "") {
+              r.total.textContent = "—";
+              r.mod.textContent = "—";
+              return;
+            }
+            var t = Number(r.base.value) + b;
+            var m = Math.floor((t - 10) / 2);
+            r.total.textContent = t;
+            r.mod.textContent = (m >= 0 ? "+" : "") + m;
+          });
+          if (!spreads.length) return;
+          rows.forEach(function (r) {
+            if (!r.bonus) return;
+            var others = [];
+            rows.forEach(function (o) {
+              if (o !== r && o.bonus && Number(o.bonus.value)) others.push(Number(o.bonus.value));
+            });
+            Array.prototype.forEach.call(r.bonus.options, function (opt) {
+              var v = Number(opt.value);
+              var ok = v === 0 || fits(others.concat([v]));
+              if (ok && v && r.base.value !== "" && Number(r.base.value) + v > cap) ok = false;
+              opt.disabled = !ok;
+            });
+          });
+        }
+        form.addEventListener("change", update);
+        update();
+      }
+      initAbilities();
+
       // Live steps (class / background / species): picking a row, or changing an answer other
       // answers depend on, saves the page's state and swaps the step in place - so the row's own
       // choices open right under it without pressing "Save and continue". The server answers with
