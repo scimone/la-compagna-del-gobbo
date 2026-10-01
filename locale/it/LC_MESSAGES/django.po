@@ -1946,3 +1946,30 @@ msgstr "Il tuo nome"
 
 msgid "Continue"
 msgstr "Continua"
+
+msgid "Objective"
+msgstr "Oggettiva"
+
+msgid "Personal"
+msgstr "Personale"
+
+msgid "Entry"
+msgstr "Voce"
+
+msgid "Enlarge picture"
+msgstr "Ingrandisci l'immagine"
+
+msgid "Profile picture frame"
+msgstr "Inquadratura dell'immagine del profilo"
+
+msgid "Drag to move the picture, use the slider to zoom."
+msgstr "Trascina per spostare l'immagine, usa il cursore per ingrandire."
+
+msgid "Zoom"
+msgstr "Ingrandimento"
+
+msgid "Edit the round profile picture"
+msgstr "Modifica l'immagine del profilo rotonda"
+
+msgid "Invalid frame."
+msgstr "Inquadratura non valida."

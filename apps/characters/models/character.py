@@ -58,6 +58,12 @@ class Character(models.Model):
     #: The picture the owner uploaded for the sheet (already shrunk and re-encoded by
     #: `characters.services.portrait`), stored under `settings.MEDIA_ROOT`.
     portrait = models.ImageField(upload_to="portraits/", blank=True, default="")
+    #: The round avatar (Logbook, ...) is cut from the portrait: `portrait_cx`/`_cy` are the
+    #: centre of the cut as fractions of the picture's width/height, `portrait_zoom` (1 = the
+    #: largest square that fits, higher = closer). See `portrait.avatar_bytes`.
+    portrait_cx = models.FloatField(default=0.5)
+    portrait_cy = models.FloatField(default=0.5)
+    portrait_zoom = models.FloatField(default=1.0)
     notes = models.TextField(blank=True, default="")
 
     strength = models.PositiveSmallIntegerField(default=10)

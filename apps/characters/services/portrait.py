@@ -47,14 +47,54 @@ def _encode(upload) -> bytes:
     return out.getvalue()
 
 
-def set_portrait(character: Character, upload) -> None:
-    """Replace the portrait with `upload` (a file-like object). Raises `ValueError` when it is not
-    a usable picture; the old one is kept then."""
+#: Zoom range of the round avatar's frame, and the avatar's side in pixels.
+MAX_ZOOM = 4.0
+AVATAR_SIZE = 256
+
+
+def _frame(cx, cy, zoom) -> tuple[float, float, float]:
+    """The three frame numbers, clamped into range. Raises `ValueError` for non-numbers."""
+    try:
+        cx, cy, zoom = float(cx), float(cy), float(zoom)
+    except (TypeError, ValueError) as error:
+        raise ValueError(_("Invalid frame.")) from error
+    if not all(x == x and abs(x) != float("inf") for x in (cx, cy, zoom)):  # NaN / infinity
+        raise ValueError(_("Invalid frame."))
+    return (min(max(cx, 0.0), 1.0), min(max(cy, 0.0), 1.0), min(max(zoom, 1.0), MAX_ZOOM))
+
+
+def set_frame(character: Character, cx, cy, zoom) -> None:
+    """Change which part of the portrait the round avatar shows."""
+    character.portrait_cx, character.portrait_cy, character.portrait_zoom = _frame(cx, cy, zoom)
+    character.save(update_fields=["portrait_cx", "portrait_cy", "portrait_zoom"])
+
+
+def avatar_bytes(character: Character) -> bytes:
+    """The portrait cut to the character's frame, as a small square WebP (shown round by CSS)."""
+    with character.portrait.open("rb") as file:
+        picture = Image.open(BytesIO(file.read()))
+        picture.load()
+    width, height = picture.size
+    side = min(width, height) / character.portrait_zoom
+    left = min(max(character.portrait_cx * width - side / 2, 0), width - side)
+    top = min(max(character.portrait_cy * height - side / 2, 0), height - side)
+    picture = picture.crop((round(left), round(top), round(left + side), round(top + side)))
+    picture = picture.resize((AVATAR_SIZE, AVATAR_SIZE), Image.LANCZOS)
+    out = BytesIO()
+    picture.save(out, "WEBP", quality=85)
+    return out.getvalue()
+
+
+def set_portrait(character: Character, upload, frame=(0.5, 0.5, 1.0)) -> None:
+    """Replace the portrait with `upload` (a file-like object), framed by `frame` (cx, cy, zoom).
+    Raises `ValueError` when it is not a usable picture; the old one is kept then."""
+    frame = _frame(*frame)
     data = _encode(upload)
+    character.portrait_cx, character.portrait_cy, character.portrait_zoom = frame
     old = character.portrait.name
     # A new name each time: the browser (and any cache) never shows the previous picture.
     character.portrait.save(f"{character.pk}-{token_hex(4)}.webp", ContentFile(data), save=False)
-    character.save(update_fields=["portrait"])
+    character.save(update_fields=["portrait", "portrait_cx", "portrait_cy", "portrait_zoom"])
     if old:
         character.portrait.storage.delete(old)
 

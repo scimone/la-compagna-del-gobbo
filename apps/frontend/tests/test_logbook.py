@@ -24,8 +24,8 @@ def _entry(author, **fields):
 
 
 def test_the_list_is_public_newest_first_with_one_dot_per_entry(client, alice):
-    _entry(alice, date=datetime.date(2026, 8, 1), title="Old tale", fights="Goblin ambush")
-    _entry(alice, date=datetime.date(2026, 9, 1), title="New tale", location="Waterdeep")
+    _entry(alice, date=datetime.date(2026, 8, 1), title="Old tale", text="Goblin ambush")
+    _entry(alice, date=datetime.date(2026, 9, 1), title="New tale", text="Waterdeep")
 
     html = client.get("/logbook/").content.decode()
 
@@ -57,24 +57,21 @@ def test_a_new_entry_form_prefills_today_and_saves_with_the_author(client, alice
         "/logbook/new/",
         {
             "date": "2026-09-20",
-            "location": "Neverwinter",
-            "characters_met": "Sildar",
-            "fights": "Wolves",
-            "objectives": "Find the map",
-            "insights": "The duke lies",
+            "title": "The map",
+            "text": "The duke lies",
         },
     )
 
     entry = LogEntry.objects.get()
     assert response.url == f"/logbook/#entry-{entry.pk}"
     assert entry.author == alice and entry.date == datetime.date(2026, 9, 20)
-    assert entry.characters_met == "Sildar" and entry.insights == "The duke lies"
+    assert entry.kind == "objective" and entry.title == "The map" and entry.text == "The duke lies"
 
 
 def test_an_entry_needs_a_date(client, alice):
     client.force_login(alice)
 
-    response = client.post("/logbook/new/", {"date": "", "location": "Nowhere"})
+    response = client.post("/logbook/new/", {"date": "", "text": "Nowhere"})
 
     assert response.status_code == 200 and LogEntry.objects.count() == 0
 
@@ -101,3 +98,66 @@ def test_only_the_author_or_an_admin_edits_or_deletes(client, alice, bob, settin
     client.force_login(bob)
     assert client.post(f"/logbook/{entry.pk}/delete/").status_code == 302
     assert LogEntry.objects.count() == 0
+
+
+def _hero(owner, name="Hero", **fields):
+    from apps.characters.models import Character
+
+    return Character.objects.create(name=name, owner=owner, **fields)
+
+
+def test_a_personal_entry_needs_a_character_and_shows_it_apart(client, alice, settings, tmp_path):
+    settings.MEDIA_ROOT = tmp_path
+    hero = _hero(alice, "Gobbo")
+    client.force_login(alice)
+
+    page = client.get("/logbook/new/?kind=personal").content.decode()
+    assert "Gobbo" in page and f'value="{hero.pk}" selected' in page  # own character preselected
+
+    assert (
+        client.post("/logbook/new/?kind=personal", {"date": "2026-09-02", "text": "x"}).status_code
+        == 200
+    )
+    assert LogEntry.objects.count() == 0
+
+    response = client.post(
+        "/logbook/new/?kind=personal",
+        {"date": "2026-09-02", "character": hero.pk, "text": "I did not like the duke."},
+    )
+    entry = LogEntry.objects.get()
+    assert response.status_code == 302
+    assert entry.kind == "personal" and entry.character == hero and entry.title == ""
+
+    html = client.get("/logbook/").content.decode()
+    assert "log-entry personal" in html and "Gobbo" in html and "log-avatar" in html
+    assert "I did not like the duke." in html
+
+
+def test_a_personal_entry_shows_the_characters_round_picture(client, alice, settings, tmp_path):
+    from io import BytesIO
+
+    from django.core.files.uploadedfile import SimpleUploadedFile
+    from PIL import Image
+
+    from apps.characters.services import portrait
+
+    settings.MEDIA_ROOT = tmp_path
+    hero = _hero(alice)
+    raw = BytesIO()
+    Image.new("RGB", (200, 400), "teal").save(raw, "PNG")
+    portrait.set_portrait(hero, SimpleUploadedFile("x.png", raw.getvalue()), (0.5, 0.2, 2))
+    _entry(alice, kind="personal", character=hero, text="Hi")
+
+    html = client.get("/logbook/").content.decode()
+    assert f"/characters/{hero.pk}/avatar/?v=" in html
+
+    avatar = client.get(f"/characters/{hero.pk}/avatar/")
+    image = Image.open(BytesIO(avatar.content))
+    assert avatar.status_code == 200 and image.size == (256, 256)
+
+
+def test_an_objective_entry_has_no_character_picture(client, alice):
+    _entry(alice, title="Tale", text="Body")
+
+    html = client.get("/logbook/").content.decode()
+    assert "log-avatar" not in html.split("<ol")[1] and "personal" not in html.split("<ol")[1]

@@ -54,6 +54,11 @@ urlpatterns = [
         name="character-portrait",
     ),
     path(
+        "characters/<int:pk>/avatar/",
+        character_sheet.character_avatar,
+        name="character-avatar",
+    ),
+    path(
         "characters/<int:pk>/gallery/",
         character_sheet.character_picture,
         name="character-gallery",

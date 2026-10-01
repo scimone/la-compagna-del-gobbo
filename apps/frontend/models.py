@@ -34,13 +34,18 @@ class Bookmark(models.Model):
 
 
 class LogEntry(models.Model):
-    """One entry of the party's shared Logbook: what happened at a session. Lives in `frontend`
-    next to `Bookmark` - it is user-written content, not `rules` data, so `import_rules_data`
-    never touches it. Every field but the date is optional free text, so an entry can be a
-    single line or a full recap. Anyone signed in may add one; only its author (or an
-    administrator, see `logbook.can_edit`) changes or deletes it. `author` is kept as NULL if
-    the account is ever removed - the story stays.
+    """One entry of the party's shared Logbook. Lives in `frontend` next to `Bookmark` - it is
+    user-written content, not `rules` data, so `import_rules_data` never touches it. Two kinds:
+    an *objective* entry (a dated title and a text: what happened at a session) and a *personal*
+    one (a dated text written by one of the characters, who is `character`, in their own voice).
+    Anyone signed in may add one; only its author (or an administrator, see `logbook.can_edit`)
+    changes or deletes it. `author` is kept as NULL if the account is ever removed - the story
+    stays.
     """
+
+    OBJECTIVE = "objective"
+    PERSONAL = "personal"
+    KIND_CHOICES = [(OBJECTIVE, "Objective"), (PERSONAL, "Personal")]
 
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -49,21 +54,25 @@ class LogEntry(models.Model):
         on_delete=models.SET_NULL,
         related_name="log_entries",
     )
+    kind = models.CharField(max_length=10, choices=KIND_CHOICES, default=OBJECTIVE)
+    #: Whose entry a personal one is; kept as NULL if the character is deleted.
+    character = models.ForeignKey(
+        "characters.Character",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="log_entries",
+    )
     date = models.DateField()
-    title = models.CharField(max_length=150, blank=True)
-    location = models.TextField(blank=True)  # the visited locations, one per line like the rest
-    characters_met = models.TextField(blank=True)
-    fights = models.TextField(blank=True)
-    objectives = models.TextField(blank=True)
-    insights = models.TextField(blank=True)
-    notes = models.TextField(blank=True)
+    title = models.CharField(max_length=150, blank=True)  # objective entries only
+    text = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["-date", "-created_at"]
 
     def __str__(self) -> str:
-        return f"{self.date} {self.title or self.location}".strip()
+        return f"{self.date} {self.title or self.text[:40]}".strip()
 
 
 class TranslationJob(models.Model):

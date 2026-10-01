@@ -13,7 +13,8 @@
  *  - the spellbook's search and filter buttons filter the rows on the spot; so do those of the
  *    "add an item", "add a spell" and "add a feature" overlays, which are fetched the first time
  *    they are opened.
- *  - the portrait: choosing a file (or removing it) posts to its own endpoint (`data-portrait-url`).
+ *  - the portrait: choosing a file (after framing its round avatar), changing the frame or removing it
+ *    posts to its own endpoint (`data-portrait-url`); tapping it enlarges it.
  *
  * Nothing here is a rule: the numbers come from the server.
  */
@@ -851,13 +852,140 @@
     return job;
   }
 
+  // The round profile picture's frame: a circle to drag the picture around in, and a zoom slider.
+  // `cx`/`cy` (the centre of the cut, as fractions of the picture) and `zoom` (1 = the largest
+  // square that fits) are what the server cuts the avatar by (`portrait.avatar_bytes`).
+  function openFrameEditor(src, frame, onSave) {
+    var data = root.dataset;
+    var el = document.createElement("div");
+    el.className = "cs-frame";
+    el.setAttribute("role", "dialog");
+    el.setAttribute("aria-modal", "true");
+    var box = document.createElement("div");
+    box.className = "cs-frame-box";
+    var title = document.createElement("h4");
+    title.textContent = data.frameTitle || "Profile picture frame";
+    var view = document.createElement("div");
+    view.className = "cs-frame-view";
+    var img = document.createElement("img");
+    view.appendChild(img);
+    var zoomInput = document.createElement("input");
+    zoomInput.type = "range";
+    zoomInput.min = "1";
+    zoomInput.max = "4";
+    zoomInput.step = "0.01";
+    zoomInput.setAttribute("aria-label", data.frameZoom || "Zoom");
+    var hint = document.createElement("p");
+    hint.className = "cs-frame-hint";
+    hint.textContent = data.frameHint || "";
+    var row = document.createElement("div");
+    row.className = "cs-frame-row";
+    var cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.textContent = data.frameCancel || "Cancel";
+    var save = document.createElement("button");
+    save.type = "button";
+    save.className = "primary";
+    save.textContent = data.frameSave || "Save";
+    row.appendChild(cancel);
+    row.appendChild(save);
+    [title, view, zoomInput, hint, row].forEach(function (n) { box.appendChild(n); });
+    el.appendChild(box);
+
+    var cx = frame.cx, cy = frame.cy, zoom = frame.zoom;
+    zoomInput.value = zoom;
+    var W = 0, H = 0;
+
+    function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+    // The cut is a square of side min(W, H) / zoom image pixels, centred on (cx, cy) but kept
+    // inside the picture - the same maths as the server's.
+    function draw() {
+      if (!W) return;
+      var S = view.clientWidth;
+      var side = Math.min(W, H) / zoom;
+      cx = clamp(cx, side / 2 / W, 1 - side / 2 / W);
+      cy = clamp(cy, side / 2 / H, 1 - side / 2 / H);
+      var scale = S / side;
+      img.style.width = W * scale + "px";
+      img.style.height = H * scale + "px";
+      img.style.left = S / 2 - cx * W * scale + "px";
+      img.style.top = S / 2 - cy * H * scale + "px";
+    }
+    img.onload = function () { W = img.naturalWidth; H = img.naturalHeight; draw(); };
+    img.src = src;
+
+    var drag = null;
+    view.addEventListener("pointerdown", function (event) {
+      drag = { x: event.clientX, y: event.clientY, cx: cx, cy: cy };
+      view.setPointerCapture(event.pointerId);
+      view.style.cursor = "grabbing";
+    });
+    view.addEventListener("pointermove", function (event) {
+      if (!drag || !W) return;
+      var scale = view.clientWidth / (Math.min(W, H) / zoom);
+      cx = drag.cx - (event.clientX - drag.x) / (W * scale);
+      cy = drag.cy - (event.clientY - drag.y) / (H * scale);
+      draw();
+    });
+    function endDrag() { drag = null; view.style.cursor = ""; }
+    view.addEventListener("pointerup", endDrag);
+    view.addEventListener("pointercancel", endDrag);
+    zoomInput.addEventListener("input", function () { zoom = parseFloat(zoomInput.value) || 1; draw(); });
+
+    function close() {
+      document.removeEventListener("keydown", onKey);
+      el.remove();
+    }
+    function onKey(event) { if (event.key === "Escape") close(); }
+    document.addEventListener("keydown", onKey);
+    cancel.addEventListener("click", close);
+    el.addEventListener("click", function (event) { if (event.target === el) close(); });
+    save.addEventListener("click", function () {
+      close();
+      onSave({ cx: cx, cy: cy, zoom: zoom });
+    });
+    document.body.appendChild(el);
+    save.focus();
+  }
+
+  function frameBody(body, frame) {
+    body.append("cx", frame.cx.toFixed(4));
+    body.append("cy", frame.cy.toFixed(4));
+    body.append("zoom", frame.zoom.toFixed(3));
+    return body;
+  }
+
+  // Choosing a picture first asks for its frame; nothing is sent until that is saved.
   root.addEventListener("change", function (event) {
     var input = event.target.closest("[data-portrait-file]");
     if (!input || !input.files.length) return;
-    var body = new FormData();
-    body.append("file", input.files[0]);
+    var file = input.files[0];
     input.value = ""; // choosing the same file again must fire `change` again
-    sendPortrait(body);
+    var url = URL.createObjectURL(file);
+    openFrameEditor(url, { cx: 0.5, cy: 0.5, zoom: 1 }, function (frame) {
+      var body = new FormData();
+      body.append("file", file);
+      sendPortrait(frameBody(body, frame));
+      setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+    });
+  });
+  // Changing the frame of the picture already there.
+  root.addEventListener("click", function (event) {
+    if (!event.target.closest("[data-portrait-frame]")) return;
+    var box = event.target.closest("[data-portrait-box]");
+    if (!box || !box.dataset.src) return;
+    openFrameEditor(
+      box.dataset.src,
+      { cx: parseFloat(box.dataset.cx), cy: parseFloat(box.dataset.cy), zoom: parseFloat(box.dataset.zoom) },
+      function (frame) { sendPortrait(frameBody(new FormData(), frame)); }
+    );
+  });
+  // Tapping the biography picture enlarges it, in the same viewer as the gallery.
+  root.addEventListener("click", function (event) {
+    var open = event.target.closest("[data-portrait-open]");
+    if (!open) return;
+    var box = open.closest("[data-portrait-box]");
+    openViewer([{ id: "", src: box.dataset.src }], 0, false);
   });
   // The gallery: every chosen file is its own request (a failed one shows its error and the
   // rest still go), each removal names the picture's id.

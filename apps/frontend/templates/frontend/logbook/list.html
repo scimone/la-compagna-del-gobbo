@@ -25,6 +25,17 @@
   .log-actions svg { width: 1.15rem; height: 1.15rem; }
   .log-field h3 { margin: 0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
   .log-field p { margin: 0.1rem 0 0; white-space: pre-line; overflow-wrap: anywhere; font-size: 0.95rem; line-height: 1.4; }
+  /* Personal entries (a character's own words): a tinted card with the character's round picture,
+     the text set as a quote - clearly not the objective record. */
+  .log-entry.personal .log-dot { background: var(--surface); box-shadow: 0 0 0 2px var(--accent); }
+  .log-entry.personal .log-card { background: color-mix(in srgb, var(--accent) 9%, var(--surface)); border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); border-left-width: 4px; }
+  .log-entry.personal .log-text p { font-style: italic; }
+  .log-avatar { flex-shrink: 0; width: 2.6rem; height: 2.6rem; border-radius: 50%; overflow: hidden; border: 2px solid var(--accent); background: var(--bg); }
+  .log-avatar img, .log-avatar svg { display: block; width: 100%; height: 100%; }
+  .log-avatar img { object-fit: cover; }
+  .log-avatar svg { fill: color-mix(in srgb, var(--muted) 55%, transparent); }
+  .log-kind { display: inline-block; margin-left: 0.4rem; padding: 0 0.45rem; border-radius: 1rem; background: var(--accent); color: var(--accent-text); font-size: 0.65rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; }
+  .log-char { font-weight: 600; overflow-wrap: anywhere; }
   dialog.del-dialog { max-width: 22rem; width: calc(100% - 2rem); padding: 1rem; border: 1px solid var(--border); border-radius: 0.8rem; background: var(--surface); color: var(--text); }
   dialog.del-dialog::backdrop { background: rgba(0,0,0,.5); }
   dialog.del-dialog p { margin: 0 0 1rem; }
@@ -44,13 +55,22 @@
       <ol class="log-entries">
         {% for row in entries %}
           {% with e=row.entry %}
-          <li class="log-entry" id="entry-{{ e.pk }}">
+          <li class="log-entry{% if row.personal %} personal{% endif %}" id="entry-{{ e.pk }}">
             <span class="log-dot" aria-hidden="true"></span>
             <div class="log-card">
               <div class="log-head">
+                {% if row.personal %}
+                  <span class="log-avatar" aria-hidden="true">
+                    {% if row.avatar %}<img src="{{ row.avatar }}" alt="" loading="lazy">{% else %}<svg viewBox="0 0 90 90" preserveAspectRatio="xMidYMax slice"><circle cx="45" cy="34" r="15"/><path d="M12 91c0-23 14-37 33-37s33 14 33 37z"/></svg>{% endif %}
+                  </span>
+                {% endif %}
                 <div class="who">
-                  <div class="log-date">{{ e.date|date:"DATE_FORMAT" }}</div>
-                  {% if row.fields.title %}<div class="log-title">{{ row.fields.title }}{{ row.badges.title }}</div>{% endif %}
+                  <div class="log-date">{{ e.date|date:"DATE_FORMAT" }}{% if row.personal %}<span class="log-kind">{% translate "Personal" %}</span>{% endif %}</div>
+                  {% if row.personal %}
+                    <div class="log-char">{{ e.character.name|default:"—" }}</div>
+                  {% elif row.fields.title %}
+                    <div class="log-title">{{ row.fields.title }}{{ row.badges.title }}</div>
+                  {% endif %}
                 </div>
                 {% if row.can_edit %}
                   <div class="log-actions">
@@ -63,12 +83,7 @@
                   </div>
                 {% endif %}
               </div>
-              {% if row.fields.location %}<div class="log-field"><h3>{% translate "Visited locations" %}{{ row.badges.location }}</h3><p>{{ row.fields.location }}</p></div>{% endif %}
-              {% if row.fields.characters_met %}<div class="log-field"><h3>{% translate "Characters met" %}{{ row.badges.characters_met }}</h3><p>{{ row.fields.characters_met }}</p></div>{% endif %}
-              {% if row.fields.fights %}<div class="log-field"><h3>{% translate "Fights" %}{{ row.badges.fights }}</h3><p>{{ row.fields.fights }}</p></div>{% endif %}
-              {% if row.fields.objectives %}<div class="log-field"><h3>{% translate "Objectives" %}{{ row.badges.objectives }}</h3><p>{{ row.fields.objectives }}</p></div>{% endif %}
-              {% if row.fields.insights %}<div class="log-field"><h3>{% translate "Insights" %}{{ row.badges.insights }}</h3><p>{{ row.fields.insights }}</p></div>{% endif %}
-              {% if row.fields.notes %}<div class="log-field"><h3>{% translate "Other notes" %}{{ row.badges.notes }}</h3><p>{{ row.fields.notes }}</p></div>{% endif %}
+              {% if row.fields.text %}<div class="log-field log-text"><p>{{ row.fields.text }}{{ row.badges.text }}</p></div>{% endif %}
             </div>
           </li>
           {% endwith %}

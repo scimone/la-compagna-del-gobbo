@@ -9,6 +9,7 @@
   <div id="cs" data-act-url="{% url 'character-act' character.pk %}" data-portrait-url="{% url 'character-portrait' character.pk %}" data-gallery-url="{% url 'character-gallery' character.pk %}" data-editable="{% if can_edit %}1{% else %}0{% endif %}"
        data-error="{% translate 'Could not save that change.' %}"
        data-remove-label="{% translate 'Remove picture' %}" data-close-label="{% translate 'Close' %}" data-remove-confirm="{% translate 'Remove the picture?' %}"
+       data-frame-title="{% translate 'Profile picture frame' %}" data-frame-hint="{% translate 'Drag to move the picture, use the slider to zoom.' %}" data-frame-save="{% translate 'Save' %}" data-frame-cancel="{% translate 'Cancel' %}" data-frame-zoom="{% translate 'Zoom' %}"
        data-fmt-gp="{{ buy_fmt.gp }}" data-fmt-sp="{{ buy_fmt.sp }}" data-fmt-cp="{{ buy_fmt.cp }}"
        data-fmt-buy-confirm="{{ buy_fmt.confirm }}" data-fmt-buy-left="{{ buy_fmt.left }}">
     {% csrf_token %}

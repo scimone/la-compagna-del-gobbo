@@ -9,9 +9,10 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
+from apps.characters.models import Character
 from apps.frontend import logbook
 from apps.frontend.entries_render import machine_translated_badge
-from apps.frontend.forms import LogEntryForm
+from apps.frontend.forms import ObjectiveEntryForm, PersonalEntryForm
 from apps.frontend.handbook_search import highlight, query_pattern
 from apps.frontend.models import LogEntry
 
@@ -35,6 +36,8 @@ def logbook_list(request):
         {
             "entry": entry,
             "can_edit": logbook.can_edit(request.user, entry),
+            "personal": entry.kind == LogEntry.PERSONAL,
+            "avatar": logbook.avatar_url(entry),
             "fields": {name: mark(text) for name, (text, _t) in shown[entry.pk].items()},
             "badges": {
                 name: mark_safe(machine_translated_badge()) if was else ""
@@ -67,27 +70,59 @@ def _editable_entry(request, pk):
     return entry
 
 
-def _form_page(request, form, title):
+def _form_page(request, form, title, kind=None):
+    """`kind` is given for a new entry: the page then offers switching between the two kinds."""
     response = render(
         request,
         "frontend/logbook/form.html",
-        {"page_title": title, "back_url": reverse("logbook-list"), "form": form},
+        {
+            "page_title": title,
+            "back_url": reverse("logbook-list"),
+            "form": form,
+            "kind": kind,
+            "kind_links": (
+                [
+                    (_("Objective"), reverse("logbook-new"), kind == LogEntry.OBJECTIVE),
+                    (
+                        _("Personal"),
+                        f"{reverse('logbook-new')}?kind={LogEntry.PERSONAL}",
+                        kind == LogEntry.PERSONAL,
+                    ),
+                ]
+                if kind
+                else []
+            ),
+        },
     )
     add_never_cache_headers(response)
     return response
 
 
+def _form_class(kind):
+    return PersonalEntryForm if kind == LogEntry.PERSONAL else ObjectiveEntryForm
+
+
 def logbook_new(request):
     if not request.user.is_authenticated:
         return _sign_in_redirect(request)
-    form = LogEntryForm(request.POST or None, initial={"date": timezone.localdate()})
+    kind = request.GET.get("kind")
+    kind = LogEntry.PERSONAL if kind == LogEntry.PERSONAL else LogEntry.OBJECTIVE
+    initial = {"date": timezone.localdate()}
+    if kind == LogEntry.PERSONAL:
+        own = Character.objects.filter(
+            owner=request.user, status=Character.STATUS_COMPLETE
+        ).order_by("name", "pk")
+        if (mine := own.first()) is not None:
+            initial["character"] = mine.pk
+    form = _form_class(kind)(request.POST or None, initial=initial)
     if request.method == "POST" and form.is_valid():
         entry = form.save(commit=False)
+        entry.kind = kind
         entry.author = request.user
         entry.save()
         logbook.queue_translation(entry)
         return redirect(f"{reverse('logbook-list')}#entry-{entry.pk}")
-    return _form_page(request, form, _("New entry"))
+    return _form_page(request, form, _("New entry"), kind)
 
 
 def logbook_edit(request, pk):
@@ -99,8 +134,11 @@ def logbook_edit(request, pk):
         return _sign_in_redirect(request)
     entry = _editable_entry(request, pk)
     shown = logbook.display([entry])[entry.pk]
-    initial = {name: text for name, (text, _translated) in shown.items()}
-    form = LogEntryForm(request.POST or None, instance=entry, initial=initial)
+    form_class = _form_class(entry.kind)
+    initial = {
+        name: text for name, (text, _translated) in shown.items() if name in form_class._meta.fields
+    }
+    form = form_class(request.POST or None, instance=entry, initial=initial)
     if request.method == "POST" and form.is_valid():
         if form.has_changed():
             form.save()

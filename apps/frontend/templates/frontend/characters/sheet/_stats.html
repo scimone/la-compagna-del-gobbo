@@ -47,7 +47,7 @@
     <div class="cs-bar hp" data-hp-bar style="--pct: {{ strip.hp_percent }}%"><i></i></div>
   </div>
 
-  {# Armor Class, Initiative, Speed, Passive Perception: the numbers of a fight. #}
+  {# Armor Class, Initiative, Speed: the numbers of a fight. #}
   <div class="st-tiles st-wide">
     <div class="st-tile st-ac">
       <span class="ac-emblem">
@@ -72,19 +72,22 @@
       <b class="v">{{ header.speed }}</b>
       <span class="k">{% translate "Speed" %}</span>
     </div>
-    <div class="st-tile">
-      <b class="v">{{ header.passive_perception }}</b>
-      <span class="k">{% translate "Passive Perception" %}</span>
-    </div>
   </div>
 
-  {# Heroic Inspiration, then what is spent and recovered: one pip per Hit Die (tap a full one to spend it). #}
+  {# Heroic Inspiration beside Passive Perception, then Hit Dice (one pip each, tap a full one to spend it) beside Death Saves. #}
+  <div class="st-pair st-wide">
   <button type="button" class="st-card st-insp cs-insp{% if strip.inspiration %} on{% endif %}" data-act="inspiration"
           data-value="{% if strip.inspiration %}0{% else %}1{% endif %}" aria-pressed="{% if strip.inspiration %}true{% else %}false{% endif %}"{% if not can_edit %} disabled{% endif %}>
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.8 2.7 5.9 6.4.7-4.8 4.3 1.4 6.3L12 16.8 6.3 20l1.4-6.3L2.9 9.4l6.4-.7z"/></svg>
     <span class="k">{% translate "Heroic Inspiration" %}</span>
   </button>
+    <div class="st-tile st-pp">
+      <b class="v">{{ header.passive_perception }}</b>
+      <span class="k">{% translate "Passive Perception" %}</span>
+    </div>
+  </div>
 
+  <div class="st-pair st-wide st-vitals">
   <div class="st-card st-dice">
     <span class="k">{% translate "Hit Dice" %}</span>
     {% for hd in strip.hit_dice %}
@@ -101,7 +104,7 @@
     {% endfor %}
   </div>
 
-  <div class="st-card st-death st-wide">
+  <div class="st-card st-death">
     <span class="k">{% translate "Death Saves" %}</span>
     <div class="st-death-lines">
       {% for kind, label, symbol, count in strip.death_rows %}
@@ -116,6 +119,7 @@
         </div>
       {% endfor %}
     </div>
+  </div>
   </div>
 
   {# Limited-use resources (Rage, Bardic Inspiration, ...): spent with the buttons, restored by rests. #}

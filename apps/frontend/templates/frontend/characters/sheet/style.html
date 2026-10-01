@@ -36,19 +36,36 @@
   .cs-portrait { position: relative; display: block; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; border: 1px solid var(--border); border-radius: 0.7rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     background: linear-gradient(170deg, color-mix(in srgb, var(--accent) 20%, var(--bg)), var(--bg)); }
-  label.cs-portrait { cursor: pointer; }
+  label.cs-portrait, button.cs-portrait { cursor: pointer; }
+  button.cs-portrait { appearance: none; padding: 0; }
   label.cs-portrait:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
   .cs-portrait svg { display: block; width: 100%; height: 100%; fill: color-mix(in srgb, var(--muted) 55%, transparent); }
   .cs-portrait img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 20%; }
   /* Small badges for the owner: "+" (choose a picture) at the bottom, "x" (remove it) at the corner. */
   .cs-pic-add { position: absolute; right: 0.5rem; bottom: 0.5rem; display: grid; place-items: center; width: 2rem; height: 2rem; background: var(--accent); border-radius: 50%; box-shadow: 0 0 0 2px var(--surface); }
+  label.cs-pic-add { cursor: pointer; }
+  label.cs-pic-add:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .cs-pic-frame { position: absolute; left: 0.5rem; bottom: 0.5rem; display: grid; place-items: center; width: 2rem; height: 2rem; padding: 0; background: var(--accent); border: 0; border-radius: 50%; box-shadow: 0 0 0 2px var(--surface); cursor: pointer; }
+  .cs-pic-frame svg { width: 1.2rem; height: 1.2rem; fill: none; stroke: var(--accent-text); stroke-width: 2; }
   .cs-pic-add svg { width: 1.2rem; height: 1.2rem; fill: none; stroke: var(--accent-text); stroke-width: 3; stroke-linecap: round; }
   /* The gallery: one swipeable row of small thumbnails, so any number of pictures takes one line. */
+  /* The round-picture editor (built by `character_sheet.js` on <body>): drag the picture inside the
+     circle, zoom with the slider. */
+  .cs-frame { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 1rem; background: rgba(0, 0, 0, 0.6); }
+  .cs-frame-box { width: 100%; max-width: 21rem; display: flex; flex-direction: column; align-items: center; gap: 0.9rem; padding: 1rem; background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 1rem; }
+  .cs-frame-box h4 { margin: 0; font-size: 1rem; }
+  .cs-frame-view { position: relative; width: 15rem; height: 15rem; border-radius: 50%; overflow: hidden; background: var(--bg); border: 2px solid var(--accent); touch-action: none; cursor: grab; }
+  .cs-frame-view img { position: absolute; max-width: none; user-select: none; -webkit-user-drag: none; pointer-events: none; }
+  .cs-frame-box input[type=range] { width: 100%; }
+  .cs-frame-hint { margin: 0; font-size: 0.8rem; color: var(--muted); text-align: center; }
+  .cs-frame-row { display: flex; justify-content: flex-end; gap: 0.6rem; width: 100%; }
+  .cs-frame-row button { padding: 0.45rem 1rem; border-radius: 1rem; border: 1px solid var(--border); background: var(--bg); color: var(--text); font: inherit; font-weight: 600; cursor: pointer; }
+  .cs-frame-row button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
   .cs-gal-count { margin-left: 0.3rem; color: var(--muted); font-weight: 400; }
   .cs-gal-strip { display: flex; gap: 0.5rem; overflow-x: auto; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; padding-bottom: 0.2rem; scrollbar-width: none; }
   .cs-gal-strip::-webkit-scrollbar { display: none; }
   .cs-gal-item { position: relative; flex: 0 0 5.5rem; width: 5.5rem; height: 5.5rem; scroll-snap-align: start; overflow: hidden; padding: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; cursor: pointer; }
-  .cs-gal-item img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .cs-gal-item img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center top; }
   .cs-gal-add { display: grid; place-items: center; border-style: dashed; cursor: pointer; color: var(--muted); }
   .cs-gal-add:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
   .cs-gal-add svg { width: 1.8rem; height: 1.8rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
@@ -82,6 +99,7 @@
   .cs-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr)); gap: 0.5rem 0.8rem; margin: 0; padding-top: 0.5rem; border-top: 1px solid var(--border); }
   .cs-facts > div { min-width: 0; }
   .cs-facts dt { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+  .cs-facts dd.wrap { overflow: visible; text-overflow: clip; white-space: normal; overflow-wrap: anywhere; }
   .cs-facts dd { margin: 0; font-size: 0.88rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   /* The Stats tab: flowing cards, top to bottom in the order they are reached for. One column on a
@@ -119,9 +137,8 @@
   .st-rest svg { width: 1.3rem; height: 1.3rem; fill: none; stroke: var(--accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   .st-rest:active { background: var(--bg); }
 
-  /* The numbers of a fight: four tiles in a row (two by two on a narrow phone). */
-  .st-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.7rem; }
-  @media (max-width: 22rem) { .st-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  /* The numbers of a fight: three tiles in a row. */
+  .st-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.7rem; }
   @media (max-width: 30rem) { .st-tile { min-height: 6.4rem; } .st-tile .v { font-size: 1.7rem; } }
   .st-tile { min-width: 0; padding: 0.85rem 0.3rem 0.7rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.35rem; text-align: center;
     background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
@@ -135,7 +152,11 @@
   .cs-shield.on { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
   .cs-shield.on svg { fill: currentColor; }
 
-  /* Heroic Inspiration and Hit Dice: side by side */
+  /* Side-by-side pairs: Heroic Inspiration | Passive Perception, Hit Dice | Death Saves. */
+  .st-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
+  .st-pair > * { min-width: 0; }
+  .st-pp { flex-direction: column; }
+  .st-vitals { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); align-items: stretch; }
   .st-insp { align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; font: inherit; }
   .st-insp:disabled { cursor: default; }
   .cs-insp svg { width: 2.4rem; height: 2.4rem; fill: none; stroke: var(--muted); stroke-width: 1.6; stroke-linejoin: round; }
@@ -148,12 +169,12 @@
   .cs-hd-row .cnt b { color: var(--text); }
   .cs-hd-row .pip-btn { width: 1.3rem; height: 1.3rem; border-width: 2px; }
 
-  /* Death saves: successes and failures side by side */
-  .st-death-lines { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem 1rem; }
-  .death-line { display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; }
+  /* Death saves: successes and failures, each on one line (label, then its three boxes) */
+  .st-death-lines { display: flex; flex-direction: column; gap: 0.5rem; }
+  .death-line { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.35rem 0.6rem; }
   .death-line .lbl { font-size: 0.85rem; font-weight: 700; }
   .death-line .lbl i { display: inline-block; width: 1rem; color: var(--muted); font-style: normal; }
-  .death-line .boxes { display: inline-flex; gap: 0.5rem; }
+  .death-line .boxes { display: inline-flex; gap: 0.4rem; }
   .box { width: 1.7rem; height: 1.7rem; padding: 0; border: 2px solid var(--muted); border-radius: 50%; background: none; cursor: pointer; }
   .box.on.successes { background: var(--accent); border-color: var(--accent); }
   .box.on.failures { background: var(--text); border-color: var(--text); }

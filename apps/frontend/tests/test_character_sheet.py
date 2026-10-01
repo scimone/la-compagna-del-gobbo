@@ -152,7 +152,7 @@ def test_the_stats_tab_reads_the_rests_then_hit_points_then_the_fight_numbers(si
     assert order == sorted(order)
     # The cards flow in a plain grid (no height-weighted rows), so nothing can overlap.
     assert 'class="st-card st-hp st-wide"' in html and "cs-row" not in html
-    assert 'class="st-card st-dice"' in html and 'class="st-card st-death st-wide"' in html
+    assert 'class="st-card st-dice"' in html and 'class="st-card st-death"' in html
 
 
 def test_the_stats_tab_shows_progress_bars_and_one_pip_per_hit_die(signed_in, alice):
@@ -1148,6 +1148,32 @@ def test_the_owner_uploads_a_portrait_and_everyone_sees_it_in_the_biography_tab(
     theirs = panel(client.get(f"/characters/{cleric.pk}/").content.decode(), "biography")
     assert "<img" in theirs and "data-portrait-file" not in theirs
     assert client.get(f"/characters/{cleric.pk}/portrait/").status_code == 200
+
+
+def test_the_avatar_frame_is_chosen_at_upload_and_changeable_later(
+    signed_in, client, media, alice, bob
+):
+    cleric = finished(alice, "cleric")
+    upload(signed_in, cleric, cx="0.3", cy="0.7", zoom="2.5")
+    cleric.refresh_from_db()
+    assert (cleric.portrait_cx, cleric.portrait_cy, cleric.portrait_zoom) == (0.3, 0.7, 2.5)
+    bio = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "biography")
+    assert (
+        'data-zoom="2.500"' in bio and "data-portrait-open" in bio and "data-portrait-frame" in bio
+    )
+
+    # Only the frame changes: no new file, the picture stays.
+    kept = cleric.portrait.name
+    response = signed_in.post(
+        f"/characters/{cleric.pk}/portrait/", {"cx": "0.9", "cy": "-3", "zoom": "99"}
+    )
+    cleric.refresh_from_db()
+    assert response.status_code == 200 and cleric.portrait.name == kept
+    assert (cleric.portrait_cx, cleric.portrait_cy, cleric.portrait_zoom) == (0.9, 0.0, 4.0)
+
+    assert signed_in.post(f"/characters/{cleric.pk}/portrait/", {"zoom": "abc"}).status_code == 400
+    client.force_login(bob)
+    assert client.post(f"/characters/{cleric.pk}/portrait/", {"zoom": "2"}).status_code == 403
 
 
 def test_without_a_portrait_there_is_nothing_to_serve(signed_in, alice):

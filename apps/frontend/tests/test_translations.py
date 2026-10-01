@@ -36,7 +36,7 @@ def test_saving_in_italian_queues_an_english_translation(client, alice):
     client.force_login(alice)
     _it(client)
 
-    client.post("/logbook/new/", {"date": "2026-09-01", "title": "Il drago", "fights": ""})
+    client.post("/logbook/new/", {"date": "2026-09-01", "title": "Il drago", "text": ""})
 
     job = TranslationJob.objects.get()
     assert (job.source_lang, job.target_lang) == ("it", "en")
@@ -95,7 +95,7 @@ def test_the_queue_and_job_size_are_bounded(alice, monkeypatch):
 
 
 def test_search_finds_text_as_written_or_in_its_translation(client, alice):
-    entry = _entry(alice, title="Il drago", location="Waterdeep")
+    entry = _entry(alice, title="Il drago", text="Waterdeep")
     _entry(alice, title="Altro")
     _finish(
         translations.enqueue("logentry", entry.pk, {"title": "Il drago"}, "it"),
@@ -248,7 +248,7 @@ def test_the_web_container_is_given_no_llm_credentials():
 
 
 def test_a_search_marks_the_matches_in_the_shown_text_escaped(client, alice):
-    _entry(alice, title="Il Drago <b>", notes="Un drago rosso. Il DRAGO dorme.")
+    _entry(alice, title="Il Drago <b>", text="Un drago rosso. Il DRAGO dorme.")
 
     html = client.get("/logbook/?q=drago").content.decode()
 
@@ -258,12 +258,12 @@ def test_a_search_marks_the_matches_in_the_shown_text_escaped(client, alice):
 
 
 def test_editing_the_translated_version_overwrites_the_original(client, alice):
-    entry = _entry(alice, title="Il drago", location="Waterdeep")
+    entry = _entry(alice, title="Il drago", text="Waterdeep")
     _finish(
         translations.enqueue(
-            "logentry", entry.pk, {"title": "Il drago", "location": "Waterdeep"}, "it"
+            "logentry", entry.pk, {"title": "Il drago", "text": "Waterdeep"}, "it"
         ),
-        {"title": "The dragon", "location": "Waterdeep"},
+        {"title": "The dragon", "text": "Waterdeep"},
     )
     client.force_login(alice)  # reading English: the form starts from the translation
     html = client.get(f"/logbook/{entry.pk}/edit/").content.decode()
@@ -271,7 +271,7 @@ def test_editing_the_translated_version_overwrites_the_original(client, alice):
 
     client.post(
         f"/logbook/{entry.pk}/edit/",
-        {"date": "2026-09-01", "title": "The red dragon", "location": "Waterdeep"},
+        {"date": "2026-09-01", "title": "The red dragon", "text": "Waterdeep"},
     )
 
     entry.refresh_from_db()

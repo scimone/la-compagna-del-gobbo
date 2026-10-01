@@ -1,5 +1,7 @@
 """The Logbook's rules: who may change an entry, and the list a page shows."""
 
+from django.urls import reverse
+
 from apps.characters.services import access
 from apps.frontend import translations
 from apps.frontend.handbook_search import fold, query_pattern
@@ -8,7 +10,19 @@ from apps.frontend.models import LogEntry
 
 def list_entries():
     """Newest session first (see `LogEntry.Meta.ordering`)."""
-    return LogEntry.objects.select_related("author")
+    return LogEntry.objects.select_related("author", "character")
+
+
+def avatar_url(entry: LogEntry) -> str:
+    """The round picture of a personal entry's character, or "" (a silhouette is shown then)."""
+    character = entry.character
+    if character is None or not character.portrait:
+        return ""
+    version = (
+        f"{character.portrait.name}-{character.portrait_cx:.4f}-"
+        f"{character.portrait_cy:.4f}-{character.portrait_zoom:.3f}"
+    )
+    return f"{reverse('character-avatar', args=[character.pk])}?v={version}"
 
 
 def can_edit(user, entry: LogEntry) -> bool:
@@ -22,11 +36,11 @@ def can_edit(user, entry: LogEntry) -> bool:
     )
 
 
-TEXT_FIELDS = ("title", "location", "characters_met", "fights", "objectives", "insights", "notes")
+TEXT_FIELDS = ("title", "text")
 
 
 def texts(entry: LogEntry) -> dict[str, str]:
-    """What of an entry is translated: every free-text field (not the date)."""
+    """What of an entry is translated: its title and text (not the date)."""
     return {name: getattr(entry, name) for name in TEXT_FIELDS}
 
 

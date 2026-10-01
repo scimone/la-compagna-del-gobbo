@@ -153,6 +153,11 @@ def _header(character: Character, stats) -> dict:
             if character.portrait
             else ""
         ),
+        "portrait_frame": {
+            "cx": character.portrait_cx,
+            "cy": character.portrait_cy,
+            "zoom": character.portrait_zoom,
+        },
     }
 
 
@@ -1666,6 +1671,27 @@ def character_item(request, pk, kind, ref):
     return response
 
 
+def _frame_of(post) -> tuple[str, str, str]:
+    return post.get("cx", "0.5"), post.get("cy", "0.5"), post.get("zoom", "1")
+
+
+def character_avatar(request, pk):
+    """The round avatar: the portrait cut to the character's frame (the URL carries the frame,
+    so a changed frame is never a cached old one)."""
+    character = get_object_or_404(Character, pk=pk)
+    if request.method != "GET":
+        return HttpResponse(status=405)
+    if not access.can_view(request.user, character) or not character.portrait:
+        raise Http404
+    try:
+        data = portrait.avatar_bytes(character)
+    except (FileNotFoundError, OSError):
+        raise Http404 from None
+    response = HttpResponse(data, content_type="image/webp")
+    response["Cache-Control"] = "private, max-age=86400"
+    return response
+
+
 def character_portrait(request, pk):
     """The character's picture. GET serves it to whoever may see the character; POST (the owner
     only) uploads a new one from the `file` field, or removes it with `remove=1`."""
@@ -1679,7 +1705,9 @@ def character_portrait(request, pk):
             if request.POST.get("remove"):
                 portrait.clear_portrait(character)
             elif request.FILES.get("file"):
-                portrait.set_portrait(character, request.FILES["file"])
+                portrait.set_portrait(character, request.FILES["file"], _frame_of(request.POST))
+            elif character.portrait and "zoom" in request.POST:
+                portrait.set_frame(character, *_frame_of(request.POST))
             else:
                 raise ValueError(_("Choose a picture."))
         except ValueError as error:
