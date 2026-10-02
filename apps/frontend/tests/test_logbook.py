@@ -134,6 +134,7 @@ def test_a_player_writes_a_personal_entry_as_their_only_character(
     assert "log-entry personal" in html and "Gobbo" in html and "log-avatar" in html
     assert "log-bubble" in html and "log-kind" not in html and "?kind=personal" in html
     assert "I did not like the duke." in html
+    assert f'href="/characters/{hero.pk}/?tab=biography"' in html and "full backstory" in html
 
 
 def test_a_player_with_several_characters_chooses_among_their_own(client, alice, bob):

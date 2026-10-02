@@ -50,6 +50,8 @@
   .log-bubble .log-head { align-items: center; margin-bottom: 0.2rem; }
   .log-bubble .who { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 0.5rem; }
   .log-bubble .log-actions { margin: -0.3rem -0.6rem -0.3rem 0; }
+  .log-bubble .log-more { margin: 0.5rem 0 0; font-size: 0.85rem; }
+  .log-bubble .log-more a { color: var(--accent); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
   .log-char { font-weight: 700; overflow-wrap: anywhere; }
   .log-bubble .log-date { color: var(--muted); font-weight: 400; }
   dialog.del-dialog { max-width: 22rem; width: calc(100% - 2rem); padding: 1rem; border: 1px solid var(--border); border-radius: 0.8rem; background: var(--surface); color: var(--text); }
@@ -85,6 +87,7 @@
                 {% include "frontend/logbook/_actions.html" %}
               </div>
               <div class="log-field log-text">{{ row.fields.text }}{% if row.badges.text %}<p>{{ row.badges.text }}</p>{% endif %}</div>
+              {% if e.character %}<p class="log-more"><a href="{% url 'character-detail' e.character.pk %}?tab=biography">{% translate "Here you can read my full backstory" %}</a></p>{% endif %}
             </div>
           </li>
           {% else %}

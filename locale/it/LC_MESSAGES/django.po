@@ -2009,3 +2009,6 @@ msgstr "Nuova voce del diario"
 
 msgid "You need a finished character to write a personal message."
 msgstr "Serve un personaggio completo per scrivere un messaggio personale."
+
+msgid "Here you can read my full backstory"
+msgstr "Qui puoi leggere la mia storia completa"
