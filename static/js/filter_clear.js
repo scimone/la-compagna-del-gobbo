@@ -20,6 +20,9 @@
     form.querySelectorAll(".world-pills input[type=radio]").forEach(function (radio) {
       radio.checked = !radio.value;
     });
+    form.querySelectorAll(".world-pills input[type=checkbox]").forEach(function (box) {
+      box.checked = false;
+    });
     form.querySelectorAll(".filter-popover").forEach(function (popover) {
       popover.querySelectorAll("input[type=checkbox]").forEach(function (box) { box.checked = false; });
       popover.open = false;

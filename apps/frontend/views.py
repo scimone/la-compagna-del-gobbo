@@ -643,7 +643,7 @@ def _by_name(queryset, q: str):
     return queryset.filter(Q(name_en__icontains=q) | Q(name_it__icontains=q))
 
 
-def _pill_filter(request, name, label, options, *, all_label=None, only=None):
+def _pill_filter(request, name, label, options, *, all_label=None, only=None, multiple=False):
     """One `{kind, name, label, value, options, all_label}` entry for `_list_page`'s `filters` -
     a single-select row of clickable pills (radio inputs under the hood, one implicit "any" pill
     first, labeled `all_label`) in the world-search form (see base.html). `value` is read
@@ -656,10 +656,15 @@ def _pill_filter(request, name, label, options, *, all_label=None, only=None):
     (see `character_sheet.py`'s local `checkbox()`) - `_search_form.html` starts it `hidden`
     unconditionally whenever `only` is set, and JS (`filterRows()` there, `syncOnlyFilters()` in
     base.html here) reveals the right one once it knows the controlling filter's value.
+
+    `multiple` makes the pills toggles instead (checkboxes, no "any" pill - none picked means no
+    filter): the picked ones are `values`, read with `getlist`.
     """
     return {
         "kind": "radio",
+        "multiple": multiple,
         "name": name,
+        "values": {v.strip() for v in request.GET.getlist(name) if v.strip()},
         "label": label,
         "value": request.GET.get(name, "").strip(),
         "options": options,
@@ -693,11 +698,10 @@ def _select_filter(request, name, label, options, *, all_label=None, only=None, 
     }
 
 
-def _checklist_filter(request, name, label, options, *, only=None):
+def _checklist_filter(request, name, label, options):
     """Multi-select sibling of `_pill_filter()`: a filter button that opens a popover of
     checkboxes, `?<name>=` read with `getlist` so more than one value can be selected at once
-    (e.g. Spell level/school). `only` is the same conditional-visibility mechanism
-    `_pill_filter()` documents.
+    (e.g. Spell level/school).
     """
     return {
         "kind": "checkbox",
@@ -705,7 +709,6 @@ def _checklist_filter(request, name, label, options, *, only=None):
         "label": label,
         "values": set(request.GET.getlist(name)),
         "options": options,
-        "only": only,
     }
 
 
@@ -1300,7 +1303,7 @@ def world_class_detail(request, pk):
 
 def world_feats(request):
     q = _search_query(request)
-    type_filter = _checklist_filter(
+    type_filter = _pill_filter(
         request,
         "type",
         _("Type"),
@@ -1310,6 +1313,7 @@ def world_feats(request):
             ("subclass", _("Subclass Features")),
             ("species", _("Species Traits")),
         ],
+        multiple=True,
     )
     # Several types can be ticked at once; none ticked means all of them.
     selected_types = type_filter["values"]
@@ -1322,12 +1326,13 @@ def world_feats(request):
     # unconditionally (not just while its own type is selected) so the page can still render
     # every filter's options up front - the base.html script reveals the right one with no
     # reload the moment `type` changes, instead of re-fetching this whole form.
-    category_filter = _checklist_filter(
+    category_filter = _pill_filter(
         request,
         "category",
         _("Category"),
         [(c, _format_feat_category(c)) for c in feat_service.list_categories()],
         only="feat",
+        multiple=True,
     )
     level_filter = _select_filter(
         request,

@@ -28,17 +28,19 @@
   {% for filter in filters %}
     {% if filter.kind == "radio" %}
       <div class="world-pills world-pills-scroll" role="radiogroup" aria-label="{{ filter.label }}"{% if filter.only %} data-only="{{ filter.only }}" hidden{% endif %}>
-        <label class="pill">
-          <input type="radio" name="{{ filter.name }}" value=""{% if not filter.value %} checked{% endif %}>
-          {{ filter.all_label }}
-        </label>
+        {% if not filter.multiple %}
+          <label class="pill">
+            <input type="radio" name="{{ filter.name }}" value=""{% if not filter.value %} checked{% endif %}>
+            {{ filter.all_label }}
+          </label>
+        {% endif %}
         {% for value, label in filter.options %}
           <label class="pill">
             <input
-              type="radio"
+              type="{% if filter.multiple %}checkbox{% else %}radio{% endif %}"
               name="{{ filter.name }}"
               value="{{ value }}"
-              {% if value == filter.value %}checked{% endif %}
+              {% if filter.multiple %}{% if value in filter.values %}checked{% endif %}{% elif value == filter.value %}checked{% endif %}
             >
             {{ label }}
           </label>
