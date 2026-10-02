@@ -36,6 +36,7 @@ def logbook_list(request):
             "personal": entry.kind == LogEntry.PERSONAL,
             "dm": entry.as_dm,
             "avatar": logbook.avatar_url(entry),
+            "full": logbook.full_url(entry),
             "fields": {
                 name: logbook_markup.render(text, pattern) if name == "text" else mark(text)
                 for name, (text, _t) in shown[entry.pk].items()

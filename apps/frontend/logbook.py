@@ -40,6 +40,16 @@ def avatar_url(entry: LogEntry) -> str:
     return f"{reverse('character-avatar', args=[character.pk])}?v={version}"
 
 
+def full_url(entry: LogEntry) -> str:
+    """The whole, unzoomed picture behind `avatar_url`, or "" when there is none."""
+    if entry.as_dm:
+        return avatar_url(entry)
+    character = entry.character
+    if character is None or not character.portrait:
+        return ""
+    return f"{reverse('character-portrait', args=[character.pk])}?v={character.portrait.name}"
+
+
 def can_edit(user, entry: LogEntry) -> bool:
     """The author, or an administrator. Anyone else - and a signed-out visitor - only reads."""
     if access.is_admin(user):

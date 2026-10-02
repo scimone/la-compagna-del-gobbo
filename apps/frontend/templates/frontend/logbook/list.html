@@ -53,18 +53,20 @@
   .log-bubble .log-actions { margin: -0.3rem -0.6rem -0.3rem 0; }
   .log-char { font-weight: 700; overflow-wrap: anywhere; }
   .log-bubble .log-date { color: var(--muted); font-weight: 400; }
-  /* The DM speaks louder than the characters: a dark parchment bubble with a gold frame, a larger
-     serif voice and a gold-ringed, zoomed-in portrait. */
-  .log-entry.dm { --bubble-line: #c9a227; }
-  .log-entry.dm .log-avatar { width: 3rem; height: 3rem; left: -1.1rem; box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px #c9a227, 0 0 0.9rem rgba(201, 162, 39, 0.65); }
+  /* The DM stands out within the app's own palette: the accent (burgundy) instead of the
+     characters' blue, a heavier frame, a larger zoomed-in portrait and a "DM" badge. */
+  .log-entry.dm { --bubble-line: var(--accent); }
+  .log-entry.dm .log-avatar { width: 3rem; height: 3rem; left: -1.1rem; }
   .log-entry.dm .log-avatar img { transform: scale(1.6); transform-origin: 50% 30%; }
-  .log-entry.dm .log-bubble { --bubble-bg: linear-gradient(160deg, #2b1d3f, #17101f); color: #f3e9d2; border: 2px solid #c9a227; box-shadow: 0 0 0 1px rgba(201, 162, 39, 0.35), 0 0.25rem 1rem rgba(60, 20, 90, 0.45); background: var(--bubble-bg); font-family: Georgia, "Times New Roman", serif; }
-  .log-entry.dm .log-bubble::before { background: #2b1d3f; border-color: #c9a227; border-width: 2px; }
-  .log-entry.dm .log-char { color: #e8c547; text-transform: uppercase; letter-spacing: 0.12em; }
-  .log-entry.dm .log-bubble .log-date, .log-entry.dm .log-actions a, .log-entry.dm .log-actions button { color: #c9b98a; }
-  .log-entry.dm .log-field.log-text p, .log-entry.dm .log-field.log-text li { font-size: 1.02rem; }
-  .log-entry.dm .log-field.log-text a, .log-entry.dm .log-field.log-text h3 { color: #e8c547; }
-  .log-entry.dm .log-field.log-text blockquote { color: #c9b98a; border-left-color: #c9a227; }
+  .log-entry.dm .log-bubble { --bubble-bg: color-mix(in srgb, var(--accent) 12%, var(--surface)); border-width: 2px; box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 30%, transparent); }
+  .log-entry.dm .log-bubble::before { border-width: 2px; }
+  .log-entry.dm .log-char { padding: 0.05rem 0.55rem; border-radius: 1rem; background: var(--accent); color: var(--accent-text); font-size: 0.8rem; letter-spacing: 0.06em; }
+  .log-entry.dm .log-field.log-text p, .log-entry.dm .log-field.log-text li { font-weight: 500; }
+  /* Pictures open full-size, unzoomed, in a lightbox. */
+  button.log-avatar { appearance: none; padding: 0; border: 0; cursor: zoom-in; }
+  dialog.pic-dialog { max-width: 94vw; max-height: 90vh; padding: 0; border: 0; background: transparent; overflow: visible; }
+  dialog.pic-dialog::backdrop { background: rgba(0,0,0,.8); }
+  dialog.pic-dialog img { display: block; max-width: 94vw; max-height: 88vh; border-radius: 0.6rem; }
   dialog.del-dialog { max-width: 22rem; width: calc(100% - 2rem); padding: 1rem; border: 1px solid var(--border); border-radius: 0.8rem; background: var(--surface); color: var(--text); }
   dialog.del-dialog::backdrop { background: rgba(0,0,0,.5); }
   dialog.del-dialog p { margin: 0 0 1rem; }
@@ -89,9 +91,13 @@
           {% if row.personal %}
           {# A personal message: the character's picture sits on the timeline, the text is a speech bubble. #}
           <li class="log-entry personal{% if row.dm %} dm{% endif %}" id="entry-{{ e.pk }}">
+            {% if row.avatar and row.full %}
+            <button type="button" class="log-avatar" data-full="{{ row.full }}" aria-label="{% translate 'Enlarge picture' %}"><img src="{{ row.avatar }}" alt="" loading="lazy"></button>
+            {% else %}
             <span class="log-avatar" aria-hidden="true">
               {% if row.avatar %}<img src="{{ row.avatar }}" alt="" loading="lazy">{% else %}<svg viewBox="0 0 90 90" preserveAspectRatio="xMidYMax slice"><circle cx="45" cy="34" r="15"/><path d="M12 91c0-23 14-37 33-37s33 14 33 37z"/></svg>{% endif %}
             </span>
+            {% endif %}
             <div class="log-bubble">
               <div class="log-head">
                 <div class="who"><span class="log-char">{% if row.dm %}{% translate "DM" %}{% else %}{{ e.character.name|default:"—" }}{% endif %}</span><span class="log-date">{{ e.date|date:"DATE_FORMAT" }}</span></div>
@@ -124,6 +130,7 @@
       <p class="empty">{% translate "No entries yet. Tap + to write the first one." %}</p>
     {% endif %}
     </div>
+    <dialog class="pic-dialog" id="pic-dialog"><img src="" alt=""></dialog>
     <dialog class="del-dialog" id="del-dialog">
       <form method="post" id="del-form">
         {% csrf_token %}
@@ -135,6 +142,19 @@
       </form>
     </dialog>
     <script>
+      (function () {
+        var pic = document.getElementById("pic-dialog");
+        document.addEventListener("click", function (event) {
+          var t = event.target;
+          var button = t.closest && t.closest(".log-avatar[data-full]");
+          if (button) {
+            pic.querySelector("img").src = button.dataset.full;
+            pic.showModal();
+          } else if (t === pic || t.parentNode === pic) {
+            pic.close();
+          }
+        });
+      })();
       (function () {
         var dialog = document.getElementById("del-dialog");
         if (!dialog) return;
