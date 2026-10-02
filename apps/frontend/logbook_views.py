@@ -5,12 +5,10 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.cache import add_never_cache_headers
-from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
 from apps.frontend import logbook, logbook_markup
-from apps.frontend.entries_render import machine_translated_badge
 from apps.frontend.forms import ObjectiveEntryForm, PersonalEntryForm
 from apps.frontend.handbook_search import highlight, query_pattern
 from apps.frontend.models import LogEntry
@@ -40,10 +38,6 @@ def logbook_list(request):
             "fields": {
                 name: logbook_markup.render(text, pattern) if name == "text" else mark(text)
                 for name, (text, _t) in shown[entry.pk].items()
-            },
-            "badges": {
-                name: mark_safe(machine_translated_badge()) if was else ""
-                for name, (_text, was) in shown[entry.pk].items()
             },
         }
         for entry in found

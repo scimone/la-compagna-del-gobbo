@@ -234,3 +234,22 @@ def test_links_in_the_text_become_links_but_only_safe_ones(client, alice):
     assert '<a href="/characters/1/?tab=biography">bio</a>.' in html
     assert '<a href="javascript' not in html
     assert '<a href="https://e.org" target="_blank" rel="noopener noreferrer">y</a>' in html
+
+
+def test_messages_sit_under_the_entries_of_their_day_oldest_first(client, alice):
+    from apps.characters.models import Character
+
+    hero = Character.objects.create(name="Gobbo", owner=alice)
+    day, earlier = datetime.date(2026, 9, 6), datetime.date(2026, 9, 1)
+    _entry(alice, date=day, kind="personal", character=hero, text="msg-one")
+    _entry(alice, date=day, kind="personal", character=hero, text="msg-two")
+    _entry(alice, date=day, title="entry-b", text="x")
+    _entry(alice, date=earlier, title="entry-old", text="y")
+    _entry(alice, date=day, title="entry-c", text="x")
+
+    html = client.get("/logbook/").content.decode()
+    order = [html.index(x) for x in ("entry-c", "entry-b", "msg-one", "msg-two", "entry-old")]
+
+    assert order == sorted(order)
+    assert "Adventure Log of Sept. 6, 2026" in html
+    assert "machine-translated" not in html.lower()

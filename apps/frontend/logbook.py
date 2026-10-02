@@ -8,9 +8,16 @@ from apps.frontend.handbook_search import fold, query_pattern
 from apps.frontend.models import LogEntry
 
 
-def list_entries():
-    """Newest session first (see `LogEntry.Meta.ordering`)."""
-    return LogEntry.objects.select_related("author", "character")
+def _order(entry: LogEntry) -> tuple:
+    personal = entry.kind == LogEntry.PERSONAL
+    written = entry.created_at.timestamp()
+    return (-entry.date.toordinal(), personal, written if personal else -written, entry.pk)
+
+
+def list_entries() -> list[LogEntry]:
+    """Newest day first. Within a day the objective entries come first (newest first) and the
+    personal messages follow under them, in the order they were written - a conversation."""
+    return sorted(LogEntry.objects.select_related("author", "character"), key=_order)
 
 
 def avatar_url(entry: LogEntry) -> str:

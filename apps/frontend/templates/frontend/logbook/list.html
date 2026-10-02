@@ -85,7 +85,7 @@
                 <div class="who"><span class="log-char">{{ e.character.name|default:"—" }}</span><span class="log-date">{{ e.date|date:"DATE_FORMAT" }}</span></div>
                 {% include "frontend/logbook/_actions.html" %}
               </div>
-              <div class="log-field log-text">{{ row.fields.text }}{% if row.badges.text %}<p>{{ row.badges.text }}</p>{% endif %}</div>
+              <div class="log-field log-text">{{ row.fields.text }}</div>
             </div>
           </li>
           {% else %}
@@ -94,12 +94,12 @@
             <div class="log-card">
               <div class="log-head">
                 <div class="who">
-                  <div class="log-date">{{ e.date|date:"DATE_FORMAT" }}</div>
-                  {% if row.fields.title %}<div class="log-title">{{ row.fields.title }}{{ row.badges.title }}</div>{% endif %}
+                  <div class="log-date">{% blocktranslate with day=e.date|date:"DATE_FORMAT" %}Adventure Log of {{ day }}{% endblocktranslate %}</div>
+                  {% if row.fields.title %}<div class="log-title">{{ row.fields.title }}</div>{% endif %}
                 </div>
                 {% include "frontend/logbook/_actions.html" %}
               </div>
-              {% if row.fields.text %}<div class="log-field log-text">{{ row.fields.text }}{% if row.badges.text %}<p>{{ row.badges.text }}</p>{% endif %}</div>{% endif %}
+              {% if row.fields.text %}<div class="log-field log-text">{{ row.fields.text }}</div>{% endif %}
             </div>
           </li>
           {% endif %}

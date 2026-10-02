@@ -2018,3 +2018,10 @@ msgstr "Collegamento"
 
 msgid "Link address (a page of this site or https://...)"
 msgstr "Indirizzo del collegamento (una pagina di questo sito o https://...)"
+
+msgid "No characters yet."
+msgstr "Nessun personaggio per ora."
+
+#, python-format
+msgid "Adventure Log of %(day)s"
+msgstr "Diario d'avventura del %(day)s"

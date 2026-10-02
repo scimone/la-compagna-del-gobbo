@@ -37,12 +37,25 @@ def step(pk, name):
 # --- the list, the + button, access ---------------------------------------
 
 
-def test_list_is_public_and_shows_the_plus_button(client, db):
+def test_list_is_public_and_only_admins_get_the_plus_button(client, alice, settings):
     response = client.get("/characters/")
 
     assert response.status_code == 200
     html = response.content.decode()
-    assert 'href="/characters/new/"' in html and "No characters yet" in html
+    assert 'href="/characters/new/"' not in html and "No characters yet." in html
+
+    settings.ADMIN_ACCOUNTS = ["alice"]
+    client.force_login(alice)
+    html = client.get("/characters/").content.decode()
+    assert 'href="/characters/new/"' in html and "Tap + to create" in html
+
+
+def test_only_admins_create_characters(client, alice, settings):
+    client.force_login(alice)
+
+    assert client.get("/characters/new/").status_code == 404
+    assert client.post("/characters/new/", {"name": "Mira"}).status_code == 404
+    assert not Character.objects.filter(name="Mira").exists()
 
 
 def test_signed_out_plus_goes_to_sign_in_and_back(client, db):
@@ -52,7 +65,8 @@ def test_signed_out_plus_goes_to_sign_in_and_back(client, db):
     assert response.url.startswith("/account/?next=/characters/new/")
 
 
-def test_starting_a_character_creates_an_owned_draft_at_the_class_step(signed_in, alice):
+def test_starting_a_character_creates_an_owned_draft_at_the_class_step(signed_in, alice, settings):
+    settings.ADMIN_ACCOUNTS = ["alice"]
     response = signed_in.post("/characters/new/", {"name": "Mira"})
 
     character = Character.objects.get(name="Mira")
@@ -105,7 +119,8 @@ def test_a_step_that_needs_an_earlier_one_redirects_to_it(signed_in, alice):
 # --- the whole wizard over HTTP -------------------------------------------
 
 
-def test_a_fighter_created_entirely_through_the_forms(signed_in, alice):
+def test_a_fighter_created_entirely_through_the_forms(signed_in, alice, settings):
+    settings.ADMIN_ACCOUNTS = ["alice"]
     pk = signed_in.post("/characters/new/", {"name": "Brienne"}).url.split("/")[2]
 
     def submit(name, data, expect=None):
@@ -288,7 +303,8 @@ def test_the_bottom_nav_keeps_characters_active_inside_the_wizard(signed_in, ali
 # --- Italian ---------------------------------------------------------------
 
 
-def test_the_wizard_and_character_page_are_in_italian_and_metric(signed_in, alice):
+def test_the_wizard_and_character_page_are_in_italian_and_metric(signed_in, alice, settings):
+    settings.ADMIN_ACCOUNTS = ["alice"]
     character = build_character(alice, "wizard", "acolyte", "elf")
     creation.finalize(character)
     signed_in.cookies["django_language"] = "it"

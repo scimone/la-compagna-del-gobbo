@@ -115,6 +115,7 @@ def characters_list(request):
         "frontend/characters/list.html",
         {
             "page_title": _("Characters"),
+            "can_create": access.is_admin(request.user),
             "drafts": [
                 {
                     "character": c,
@@ -171,9 +172,12 @@ def _summary(character: Character, can_delete: bool = False) -> dict:
 
 
 def character_new(request):
-    """Ask for a name, then start a draft and drop the player into the first step."""
+    """Ask for a name, then start a draft and drop the player into the first step. Only an
+    administrator creates characters."""
     if not request.user.is_authenticated:
         return _sign_in_redirect(request)
+    if not access.is_admin(request.user):
+        raise Http404
     if request.method == "POST":
         character = creation.start_draft(request.user, request.POST.get("name", ""))
         return redirect(_step_url(character, "class"))
