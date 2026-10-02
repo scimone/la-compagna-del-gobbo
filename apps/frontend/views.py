@@ -315,6 +315,32 @@ def _format_ability_choice(raw_list):
     return f" {_('or')} ".join(alternatives)
 
 
+def _format_feat_ability(raw_list):
+    """`Feat.ability`: the feat's ability score increase - "Charisma +1" for a fixed one, "Strength
+    or Dexterity +1" for a choice, with the cap the source gives (30 for Epic Boons, otherwise the
+    usual 20). "" when the feat has none (entries flagged `hidden` are the source's own way of
+    saying not to show it).
+    """
+    ability_names = _ability_names()
+    parts = []
+    for entry in raw_list or []:
+        if entry.get("hidden"):
+            continue
+        choose = entry.get("choose")
+        if choose:
+            names = f" {_('or')} ".join(ability_names.get(c, c) for c in choose.get("from", []))
+            if len(choose.get("from", [])) >= 6:
+                names = _("One ability score of your choice")
+            parts.append(f"{names} +{choose.get('amount', choose.get('count', 1))}")
+            cap = entry.get("max", 20)
+        else:
+            parts.extend(f"{ability_names.get(c, c)} +{n}" for c, n in entry.items() if c != "max")
+            cap = entry.get("max", 20)
+    if not parts:
+        return ""
+    return f"{', '.join(parts)} ({_('maximum')} {cap})"
+
+
 _WEAPON_PROPERTY_LABELS = {
     "light": ("Light", "Leggera"),
     "finesse": ("Finesse", "Accurata"),
@@ -1614,6 +1640,8 @@ def world_feat_detail(request, pk):
     facts = [(_("Category"), _format_feat_category(feat.category))]
     if feat.prerequisite:
         facts.append((_("Prerequisite"), _format_prerequisite(feat.prerequisite)))
+    if ability := _format_feat_ability(feat.ability):
+        facts.append((_("Ability Score Increase"), ability))
     facts.append((_("Page"), feat.page))
 
     description_heading = _badged_heading(_("Description"), _self_translated(feat, "entries"))

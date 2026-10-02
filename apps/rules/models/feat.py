@@ -26,6 +26,10 @@ class Feat(models.Model):
     instruments", Crafter: "3 artisan tools") are otherwise only English prose. Ability-score
     choices stay in `ChoiceDefinition`.
 
+    `ability` is the source's `ability` list verbatim (`[{"cha": 1}]` or `[{"choose": {"from":
+    [...]}, "max": 30}]`) - the feat's ability score increase, which the source keeps out of
+    `entries`; the feat's page renders it as a fact.
+
     `category` is decoded from the source's short code (`O`/`G`/`FS`/`EB`/...) back to the full
     word at import time, so this field's shape/values are unchanged from before.
     """
@@ -37,6 +41,7 @@ class Feat(models.Model):
     self_translated_fields = models.JSONField(default=list, blank=True)
     category = models.CharField(max_length=30)
     prerequisite = models.JSONField(default=list, blank=True)
+    ability = models.JSONField(default=list, blank=True)
     additional_spells = models.JSONField(default=list, blank=True)
     grants = models.JSONField(default=dict, blank=True)
     entries = models.JSONField(default=list, blank=True)

@@ -828,6 +828,7 @@ class Command(BaseCommand):
                 srd=bool(it.get("srd52", False)),
                 category=_decode_code(it.get("category", ""), FEAT_CATEGORY_CODES),
                 prerequisite=it.get("prerequisite", []),
+                ability=it.get("ability", []),
                 additional_spells=it.get("additionalSpells", []),
                 grants={k: it[k] for k in FEAT_GRANT_KEYS if k in it},
                 entries=it.get("entries", []),
