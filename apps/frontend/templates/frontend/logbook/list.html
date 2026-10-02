@@ -146,7 +146,7 @@
         var pic = document.getElementById("pic-dialog");
         document.addEventListener("click", function (event) {
           var t = event.target;
-          var button = t.closest && t.closest(".log-avatar[data-full]");
+          var button = t.closest && t.closest("[data-full]");
           if (button) {
             pic.querySelector("img").src = button.dataset.full;
             pic.showModal();
