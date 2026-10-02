@@ -46,3 +46,11 @@ def matching_category(feats: QuerySet[Feat], category: str) -> QuerySet[Feat]:
     `list_categories()`.
     """
     return feats.filter(Q(category=category) | Q(category__startswith=f"{category} ("))
+
+
+def matching_categories(feats: QuerySet[Feat], categories) -> QuerySet[Feat]:
+    """`matching_category()` for several categories at once - feats in any of them."""
+    query = Q()
+    for category in categories:
+        query |= Q(category=category) | Q(category__startswith=f"{category} (")
+    return feats.filter(query)

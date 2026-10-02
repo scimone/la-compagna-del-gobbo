@@ -887,10 +887,13 @@
         // back to "no filter" the moment it's hidden so a value the user can no longer see or
         // change doesn't go on silently narrowing the results.
         function syncOnlyFilters() {
-          var typeRadio = form.querySelector('input[name="type"]:checked');
-          var mode = typeRadio ? typeRadio.value : "";
+          // `type` may be a radio group or a set of checkboxes (several types at once): the
+          // filter is relevant while any of the checked types is one of those it names.
+          var modes = Array.from(form.querySelectorAll('input[name="type"]:checked'))
+            .map(function (input) { return input.value; });
           Array.from(form.querySelectorAll("[data-only]")).forEach(function (el) {
-            var on = el.dataset.only.split(" ").indexOf(mode) !== -1;
+            var names = el.dataset.only.split(" ");
+            var on = modes.some(function (mode) { return names.indexOf(mode) !== -1; });
             el.hidden = !on;
             if (on) return;
             el.querySelectorAll('input[type=radio]').forEach(function (radio) {

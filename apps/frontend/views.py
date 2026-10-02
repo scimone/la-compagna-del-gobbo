@@ -693,10 +693,11 @@ def _select_filter(request, name, label, options, *, all_label=None, only=None, 
     }
 
 
-def _checklist_filter(request, name, label, options):
+def _checklist_filter(request, name, label, options, *, only=None):
     """Multi-select sibling of `_pill_filter()`: a filter button that opens a popover of
     checkboxes, `?<name>=` read with `getlist` so more than one value can be selected at once
-    (e.g. Spell level/school).
+    (e.g. Spell level/school). `only` is the same conditional-visibility mechanism
+    `_pill_filter()` documents.
     """
     return {
         "kind": "checkbox",
@@ -704,6 +705,7 @@ def _checklist_filter(request, name, label, options):
         "label": label,
         "values": set(request.GET.getlist(name)),
         "options": options,
+        "only": only,
     }
 
 
@@ -1298,7 +1300,7 @@ def world_class_detail(request, pk):
 
 def world_feats(request):
     q = _search_query(request)
-    type_filter = _pill_filter(
+    type_filter = _checklist_filter(
         request,
         "type",
         _("Type"),
@@ -1308,20 +1310,23 @@ def world_feats(request):
             ("subclass", _("Subclass Features")),
             ("species", _("Species Traits")),
         ],
-        all_label=_("All types"),
     )
-    selected_type = type_filter["value"]
+    # Several types can be ticked at once; none ticked means all of them.
+    selected_types = type_filter["values"]
+
+    def wants(*types):
+        return not selected_types or bool(selected_types & set(types))
+
     # Each of these is only relevant to (and only shown for) one specific `type` pill - see
     # `_pill_filter()`'s docstring on `only` and the `data-only` sync script in base.html. Built
     # unconditionally (not just while its own type is selected) so the page can still render
     # every filter's options up front - the base.html script reveals the right one with no
     # reload the moment `type` changes, instead of re-fetching this whole form.
-    category_filter = _pill_filter(
+    category_filter = _checklist_filter(
         request,
         "category",
         _("Category"),
         [(c, _format_feat_category(c)) for c in feat_service.list_categories()],
-        all_label=_("All categories"),
         only="feat",
     )
     level_filter = _select_filter(
@@ -1359,12 +1364,12 @@ def world_feats(request):
     )
     items = []
 
-    if selected_type in ("", "feat"):
+    if wants("feat"):
         feats = feat_service.list_feats()
         if q:
             feats = _by_name(feats, q)
-        if selected_type == "feat" and category_filter["value"]:
-            feats = feat_service.matching_category(feats, category_filter["value"])
+        if "feat" in selected_types and category_filter["values"]:
+            feats = feat_service.matching_categories(feats, category_filter["values"])
         items += [
             {
                 "pk": f.pk,
@@ -1379,7 +1384,7 @@ def world_feats(request):
             for f in feats
         ]
 
-    if selected_type in ("", "class"):
+    if wants("class"):
         # Every class repeats "Ability Score Improvement" at the same handful of levels - noise
         # in a list of things to look up, so it's left out (matched on the English name, whatever
         # the active language).
@@ -1390,7 +1395,7 @@ def world_feats(request):
         )
         if q:
             class_features = _by_name(class_features, q)
-        if selected_type == "class":
+        if "class" in selected_types:
             if level_filter["value"]:
                 class_features = class_features.filter(class_level__level=level_filter["value"])
             if class_filter["value"]:
@@ -1413,13 +1418,13 @@ def world_feats(request):
             for feature in class_features
         ]
 
-    if selected_type in ("", "subclass"):
+    if wants("subclass"):
         subclass_features = Feature.objects.filter(subclass_level__isnull=False).select_related(
             "subclass_level__subclass__klass"
         )
         if q:
             subclass_features = _by_name(subclass_features, q)
-        if selected_type == "subclass":
+        if "subclass" in selected_types:
             if level_filter["value"]:
                 subclass_features = subclass_features.filter(
                     subclass_level__level=level_filter["value"]
@@ -1450,11 +1455,11 @@ def world_feats(request):
                 }
             )
 
-    if selected_type in ("", "species"):
+    if wants("species"):
         species_traits = Feature.objects.filter(species__isnull=False).select_related("species")
         if q:
             species_traits = _by_name(species_traits, q)
-        if selected_type == "species" and species_filter["value"]:
+        if "species" in selected_types and species_filter["value"]:
             species_traits = species_traits.filter(species_id=species_filter["value"])
         items += [
             {
