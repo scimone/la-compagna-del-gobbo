@@ -134,7 +134,7 @@ def test_a_player_writes_a_personal_entry_as_their_only_character(
     assert "log-entry personal" in html and "Gobbo" in html and "log-avatar" in html
     assert "log-bubble" in html and "log-kind" not in html and "?kind=personal" in html
     assert "I did not like the duke." in html
-    assert f'href="/characters/{hero.pk}/?tab=biography"' in html and "full backstory" in html
+    assert "full backstory" not in html  # nothing is added to new messages by itself
 
 
 def test_a_player_with_several_characters_chooses_among_their_own(client, alice, bob):
@@ -221,3 +221,16 @@ def test_the_markdown_preview_renders_for_signed_in_users_only(client, alice):
     response = client.post("/logbook/preview/", {"text": "**x** <i>"})
     assert response.content.decode() == "<p><strong>x</strong> &lt;i&gt;</p>"
     assert client.get("/logbook/preview/").status_code == 405
+
+
+def test_links_in_the_text_become_links_but_only_safe_ones(client, alice):
+    _entry(
+        alice,
+        title="T",
+        text="[bio](/characters/1/?tab=biography). [x](javascript:alert(1)) [y](https://e.org)",
+    )
+
+    html = client.get("/logbook/").content.decode()
+    assert '<a href="/characters/1/?tab=biography">bio</a>.' in html
+    assert '<a href="javascript' not in html
+    assert '<a href="https://e.org" target="_blank" rel="noopener noreferrer">y</a>' in html

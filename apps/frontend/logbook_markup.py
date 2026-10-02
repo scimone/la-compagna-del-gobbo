@@ -1,8 +1,9 @@
 """The Logbook's text format: a small Markdown subset, stored as plain text.
 
-`**bold**`, `*italic*`, `## heading`, `- bullet` and `1. numbered` lines, `> quote` lines; a
-blank line separates paragraphs and a single line break stays a line break (so entries written
-before the editor existed still read the same). A backslash makes the next character literal.
+`**bold**`, `*italic*`, `[text](/page-or-https://address)`, `## heading`, `- bullet` and
+`1. numbered` lines, `> quote` lines; a blank line separates paragraphs and a single line
+break stays a line break (so entries written before the editor existed still read the same).
+A backslash makes the next character literal.
 
 The editor (`static/js/logbook_editor.js`) writes this format, but what is stored may come from
 anyone, so `render` never trusts it: everything is escaped, and the only tags it can produce are
@@ -16,7 +17,9 @@ from django.utils.safestring import SafeString, mark_safe
 
 from apps.frontend.handbook_search import highlight
 
-_INLINE = re.compile(r"\\(\S)|\*\*(.+?)\*\*|\*(.+?)\*", re.S)
+_INLINE = re.compile(r"\\(\S)|\[(.+?)\]\((\S+?)\)|\*\*(.+?)\*\*|\*(.+?)\*", re.S)
+#: A link goes to a page of this site (`/...`) or to a web address; nothing else (no `javascript:`).
+_SAFE_URL = re.compile(r"/(?!/)\S*|https?://\S+")
 _BULLET = re.compile(r"- (.*)")
 _NUMBER = re.compile(r"\d+\. (.*)")
 _HEADING = re.compile(r"##+ (.*)")
@@ -35,9 +38,18 @@ def _inline(text: str, pattern) -> str:
         if match.group(1):
             out.append(_plain(match.group(1), pattern))
         elif match.group(2) is not None:
-            out.append(f"<strong>{_inline(match.group(2), pattern)}</strong>")
+            url = match.group(3)
+            if _SAFE_URL.fullmatch(url):
+                external = ' target="_blank" rel="noopener noreferrer"' if url[0] != "/" else ""
+                out.append(
+                    f'<a href="{escape(url)}"{external}>{_inline(match.group(2), pattern)}</a>'
+                )
+            else:
+                out.append(_plain(match.group(0), pattern))
+        elif match.group(4) is not None:
+            out.append(f"<strong>{_inline(match.group(4), pattern)}</strong>")
         else:
-            out.append(f"<em>{_inline(match.group(3), pattern)}</em>")
+            out.append(f"<em>{_inline(match.group(5), pattern)}</em>")
         last = match.end()
     out.append(_plain(text[last:], pattern))
     return "".join(out)

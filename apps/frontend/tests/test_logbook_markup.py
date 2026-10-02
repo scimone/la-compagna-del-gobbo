@@ -35,3 +35,10 @@ def test_html_is_escaped_and_backslash_makes_literal():
 def test_search_matches_are_marked_inside_the_formatting():
     html = render("a **Dragon** b", query_pattern("dragon"))
     assert html == "<p>a <strong><mark>Dragon</mark></strong> b</p>"
+
+
+def test_links_only_to_this_site_or_the_web():
+    assert render("[a](/x/?t=1).") == '<p><a href="/x/?t=1">a</a>.</p>'
+    assert render("[a](//evil.test)") == "<p>[a](//evil.test)</p>"
+    assert render("[a](javascript:1)") == "<p>[a](javascript:1)</p>"
+    assert render("\\[a](/x)") == "<p>[a](/x)</p>"

@@ -18,7 +18,7 @@
   var BLOCKS = { P: 1, DIV: 1, H1: 1, H2: 1, H3: 1, H4: 1, UL: 1, OL: 1, LI: 1, BLOCKQUOTE: 1 };
 
   function escapeText(text) {
-    return text.replace(/[\\*]/g, "\\$&");
+    return text.replace(/[\\*\[]/g, "\\$&");
   }
 
   // `**bold**` needs its spaces outside the markers, or it does not render as bold.
@@ -37,7 +37,11 @@
         if (tag === "BR") out += "\n";
         else if (tag === "B" || tag === "STRONG") out += wrap("**", inline(child));
         else if (tag === "I" || tag === "EM") out += wrap("*", inline(child));
-        else if (!BLOCKS[tag]) out += inline(child);
+        else if (tag === "A") {
+          var href = child.getAttribute("href") || "";
+          var label = inline(child);
+          out += href && label.trim() ? "[" + label + "](" + href.replace(/\s/g, "%20") + ")" : label;
+        } else if (!BLOCKS[tag]) out += inline(child);
         else out += "\n" + inline(child);
       }
     });
@@ -116,7 +120,11 @@
   function command(name) {
     if (markdownMode) return;
     body.focus();
-    if (name === "heading" || name === "quote") {
+    if (name === "link") {
+      var url = window.prompt(box.dataset.linkPrompt || "Link", "https://");
+      // Only a page of this site or a web address, like the server accepts.
+      if (url && /^(\/(?!\/)\S*|https?:\/\/\S+)$/.test(url.trim())) document.execCommand("createLink", false, url.trim());
+    } else if (name === "heading" || name === "quote") {
       var tag = name === "heading" ? "h3" : "blockquote";
       var current = (document.queryCommandValue("formatBlock") || "").toLowerCase();
       document.execCommand("formatBlock", false, current === tag ? "p" : tag);
@@ -137,6 +145,7 @@
       try {
         on = name === "heading" ? block === "h3"
           : name === "quote" ? block === "blockquote"
+          : name === "link" ? false
           : document.queryCommandState(name);
       } catch (e) {}
       button.classList.toggle("on", !!on);
