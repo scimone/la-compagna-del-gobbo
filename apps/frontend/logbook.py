@@ -22,7 +22,7 @@ def list_entries() -> list[LogEntry]:
     return sorted(LogEntry.objects.select_related("author", "character"), key=_order)
 
 
-DM_AVATAR = "images/dm.webp"
+DM_AVATAR = "images/dm.jpeg"
 
 
 def avatar_url(entry: LogEntry) -> str:
