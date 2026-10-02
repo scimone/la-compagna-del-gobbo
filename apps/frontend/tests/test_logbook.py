@@ -130,6 +130,7 @@ def test_a_personal_entry_needs_a_character_and_shows_it_apart(client, alice, se
 
     html = client.get("/logbook/").content.decode()
     assert "log-entry personal" in html and "Gobbo" in html and "log-avatar" in html
+    assert "log-bubble" in html and "log-kind" not in html and "?kind=personal" in html
     assert "I did not like the duke." in html
 
 
@@ -160,7 +161,7 @@ def test_an_objective_entry_has_no_character_picture(client, alice):
     _entry(alice, title="Tale", text="Body")
 
     html = client.get("/logbook/").content.decode()
-    assert "log-avatar" not in html.split("<ol")[1] and "personal" not in html.split("<ol")[1]
+    assert "log-avatar" not in html.split("<ol")[1] and "log-entry personal" not in html
 
 
 def test_the_form_has_the_editor_and_the_list_renders_the_formatting(client, alice):
@@ -177,3 +178,11 @@ def test_the_form_has_the_editor_and_the_list_renders_the_formatting(client, ali
     entry = LogEntry.objects.get()
     edit = client.get(f"/logbook/{entry.pk}/edit/").content.decode()
     assert "<strong>bold</strong>" in edit  # the editor starts from the stored text, rendered
+
+
+def test_the_markdown_preview_renders_for_signed_in_users_only(client, alice):
+    assert client.post("/logbook/preview/", {"text": "**x**"}).status_code == 404
+    client.force_login(alice)
+    response = client.post("/logbook/preview/", {"text": "**x** <i>"})
+    assert response.content.decode() == "<p><strong>x</strong> &lt;i&gt;</p>"
+    assert client.get("/logbook/preview/").status_code == 405

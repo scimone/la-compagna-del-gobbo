@@ -1,6 +1,6 @@
 """The Logbook menu: the party's shared journal, a vertical timeline of session entries."""
 
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -157,3 +157,11 @@ def logbook_delete(request, pk):
         return _sign_in_redirect(request)
     _editable_entry(request, pk).delete()
     return redirect("logbook-list")
+
+
+@require_POST
+def logbook_preview(request):
+    """The editor's way from Markdown back to its visual box: the text, rendered."""
+    if not request.user.is_authenticated:
+        raise Http404
+    return HttpResponse(logbook_markup.render(request.POST.get("text", "")[:20000]))

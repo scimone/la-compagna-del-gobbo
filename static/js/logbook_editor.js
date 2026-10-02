@@ -4,8 +4,9 @@
  * A contenteditable box with a small toolbar (bold, italic, heading, bullet and numbered list,
  * quote). What is stored is the Markdown subset of `apps/frontend/logbook_markup.py`: this script
  * turns the box's HTML into it on every change and writes it into the form's plain <textarea>
- * (hidden while the editor runs, so without JS that textarea - Markdown - is still usable).
- * The server renders the stored text into the box and, for display, back into HTML.
+ * (hidden while the visual editor runs, so without JS that textarea - Markdown - is still usable).
+ * The "Md" button switches to writing that Markdown by hand; switching back asks the server to
+ * render it (`data-preview-url`). The toolbar floats above the phone's keyboard while editing.
  */
 (function () {
   var box = document.querySelector("[data-rte]");
@@ -109,9 +110,11 @@
     return out.join("\n\n");
   }
 
-  function sync() { textarea.value = toMarkdown(); }
+  var markdownMode = false;
+  function sync() { if (!markdownMode) textarea.value = toMarkdown(); }
 
   function command(name) {
+    if (markdownMode) return;
     body.focus();
     if (name === "heading" || name === "quote") {
       var tag = name === "heading" ? "h3" : "blockquote";
@@ -141,6 +144,86 @@
     });
   }
 
+  var bar = box.querySelector(".rte-bar");
+  var modeButton = box.querySelector("[data-mode]");
+  var form = body.closest("form");
+
+  function remember(value) {
+    try { localStorage.setItem("logbook-markdown", value ? "1" : "0"); } catch (e) {}
+  }
+
+  function setMode(markdown) {
+    markdownMode = markdown;
+    box.classList.toggle("md-mode", markdown);
+    body.hidden = markdown;
+    textarea.hidden = !markdown;
+    modeButton.classList.toggle("on", markdown);
+    modeButton.setAttribute("aria-pressed", markdown ? "true" : "false");
+    remember(markdown);
+  }
+
+  function csrfToken() {
+    var input = form.querySelector("input[name=csrfmiddlewaretoken]");
+    return input ? input.value : "";
+  }
+
+  function toMarkdownMode() {
+    textarea.value = toMarkdown();
+    setMode(true);
+    textarea.focus();
+  }
+
+  function toVisualMode() {
+    var data = new FormData();
+    data.append("text", textarea.value);
+    fetch(box.dataset.previewUrl, {
+      method: "POST",
+      body: data,
+      credentials: "same-origin",
+      headers: { "X-CSRFToken": csrfToken(), "X-Requested-With": "XMLHttpRequest" },
+    })
+      .then(function (response) {
+        if (!response.ok) throw new Error("preview");
+        return response.text();
+      })
+      .then(function (html) {
+        body.innerHTML = html; // rendered (and escaped) by the server
+        setMode(false);
+        sync();
+        body.focus();
+      })
+      .catch(function () { /* stay in Markdown: nothing is lost */ });
+  }
+
+  modeButton.addEventListener("mousedown", function (event) { event.preventDefault(); });
+  modeButton.addEventListener("click", function () {
+    if (markdownMode) toVisualMode(); else toMarkdownMode();
+  });
+
+  // The toolbar floats above the phone's keyboard while a field of the editor has focus: the
+  // visual viewport (what is left of the screen) tells how high the keyboard is.
+  var coarse = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+  var editing = false;
+  function place() {
+    var vv = window.visualViewport;
+    var keyboard = vv ? Math.max(0, window.innerHeight - vv.height - vv.offsetTop) : 0;
+    var floating = editing && (coarse || keyboard > 80);
+    bar.classList.toggle("floating", floating);
+    form.classList.toggle("kb", floating);
+    bar.style.bottom = floating ? keyboard + "px" : "";
+  }
+  [body, textarea].forEach(function (field) {
+    field.addEventListener("focus", function () { editing = true; place(); });
+    field.addEventListener("blur", function () {
+      editing = false;
+      setTimeout(function () { if (!editing) place(); }, 150);
+    });
+  });
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", place);
+    window.visualViewport.addEventListener("scroll", place);
+  }
+
   Array.prototype.forEach.call(buttons, function (button) {
     // mousedown, not click: keep the selection (and the keyboard) in the box.
     button.addEventListener("mousedown", function (event) { event.preventDefault(); });
@@ -157,13 +240,20 @@
     event.preventDefault();
     document.execCommand("insertText", false, text);
   });
-  body.closest("form").addEventListener("submit", sync);
+  form.addEventListener("submit", sync);
 
   try { document.execCommand("defaultParagraphSeparator", false, "p"); } catch (e) {}
-  textarea.hidden = true;
   box.hidden = false;
+  var saved = false;
+  try { saved = localStorage.getItem("logbook-markdown") === "1"; } catch (e) {}
+  setMode(saved);
   // The label's `for` points at the textarea: send a click on it to the editor instead.
   var label = box.parentNode.querySelector("label");
-  if (label) label.addEventListener("click", function (event) { event.preventDefault(); body.focus(); });
+  if (label) {
+    label.addEventListener("click", function (event) {
+      event.preventDefault();
+      (markdownMode ? textarea : body).focus();
+    });
+  }
   sync();
 })();

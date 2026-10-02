@@ -1,0 +1,11 @@
+{% load i18n %}
+{% if row.can_edit %}
+  <div class="log-actions">
+    <a href="{% url 'logbook-edit' e.pk %}" aria-label="{% translate 'Edit entry' %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>
+    </a>
+    <button type="button" class="del" data-delete-url="{% url 'logbook-delete' e.pk %}" aria-label="{% translate 'Delete entry' %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"></path><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path></svg>
+    </button>
+  </div>
+{% endif %}

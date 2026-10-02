@@ -27,31 +27,41 @@
   .log-field.log-text p, .log-field.log-text ul, .log-field.log-text ol, .log-field.log-text blockquote, .log-field.log-text h3 { margin: 0.1rem 0 0.5rem; overflow-wrap: anywhere; font-size: 0.95rem; line-height: 1.4; }
   .log-field.log-text > :last-child { margin-bottom: 0; }
   .log-field.log-text ul, .log-field.log-text ol { padding-left: 1.3rem; }
+  .log-field.log-text ul { list-style: disc; }
+  .log-field.log-text ol { list-style: decimal; }
   .log-field.log-text h3 { font-size: 1rem; text-transform: none; letter-spacing: 0; color: var(--text); }
   .log-field.log-text blockquote { padding-left: 0.7rem; border-left: 3px solid var(--border); color: var(--muted); }
   .log-field p { margin: 0.1rem 0 0; white-space: pre-line; overflow-wrap: anywhere; font-size: 0.95rem; line-height: 1.4; }
-  /* Personal entries (a character's own words): a tinted card with the character's round picture,
-     the text set as a quote - clearly not the objective record. */
-  .log-entry.personal .log-dot { background: var(--surface); box-shadow: 0 0 0 2px var(--accent); }
-  .log-entry.personal .log-card { background: color-mix(in srgb, var(--accent) 9%, var(--surface)); border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); border-left-width: 4px; }
-  .log-entry.personal .log-text p { font-style: italic; }
-  .log-avatar { flex-shrink: 0; width: 2.6rem; height: 2.6rem; border-radius: 50%; overflow: hidden; border: 2px solid var(--accent); background: var(--bg); }
+  /* Personal messages: the character's round picture sits on the timeline where an objective
+     entry has its dot, and what they wrote is a speech bubble pointing at it (name and date above).
+     Objective entries stay square-cornered cards, so the two are told apart at a glance. */
+  .log-entries { padding-left: 0.6rem; }
+  .log-entry.personal { padding-left: 2.5rem; }
+  .log-entry.personal::before { top: 1.6rem; bottom: -0.2rem; }
+  .log-avatar { position: absolute; left: -0.55rem; top: 0.1rem; width: 2rem; height: 2rem; border-radius: 50%; overflow: hidden; background: var(--bg); box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent); }
   .log-avatar img, .log-avatar svg { display: block; width: 100%; height: 100%; }
   .log-avatar img { object-fit: cover; }
   .log-avatar svg { fill: color-mix(in srgb, var(--muted) 55%, transparent); }
-  .log-kind { display: inline-block; margin-left: 0.4rem; padding: 0 0.45rem; border-radius: 1rem; background: var(--accent); color: var(--accent-text); font-size: 0.65rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; }
-  .log-char { font-weight: 600; overflow-wrap: anywhere; }
+  .log-entry.personal .log-head { margin-bottom: 0.25rem; align-items: center; }
+  .log-entry.personal .log-head .who { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 0.5rem; }
+  .log-entry.personal .log-actions { margin: -0.3rem -0.5rem -0.3rem 0; }
+  .log-char { font-weight: 700; overflow-wrap: anywhere; }
+  .log-entry.personal .log-date { color: var(--muted); font-weight: 400; }
+  .log-bubble { position: relative; padding: 0.6rem 0.9rem; background: color-mix(in srgb, var(--text) 7%, var(--surface)); border-radius: 0.3rem 1.1rem 1.1rem 1.1rem; }
+  .log-bubble::before { content: ""; position: absolute; top: 0; left: -0.55rem; border: 0.55rem solid transparent; border-top-color: color-mix(in srgb, var(--text) 7%, var(--surface)); border-right-color: color-mix(in srgb, var(--text) 7%, var(--surface)); border-left-width: 0; border-bottom-width: 0; }
   dialog.del-dialog { max-width: 22rem; width: calc(100% - 2rem); padding: 1rem; border: 1px solid var(--border); border-radius: 0.8rem; background: var(--surface); color: var(--text); }
   dialog.del-dialog::backdrop { background: rgba(0,0,0,.5); }
   dialog.del-dialog p { margin: 0 0 1rem; }
   dialog.del-dialog .row { display: flex; justify-content: flex-end; gap: 0.6rem; }
   dialog.del-dialog button { padding: 0.45rem 1rem; border-radius: 1rem; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 600; cursor: pointer; }
   dialog.del-dialog button.danger { background: #b3261e; border-color: #b3261e; color: #fff; }
-  /* Sticks to the bottom-right of the scrolling area, above the bottom nav. */
-  .fab { position: sticky; bottom: 0.5rem; align-self: flex-end; margin-top: auto; flex-shrink: 0; width: 3.4rem; height: 3.4rem; border-radius: 50%;
-    background: var(--accent); color: var(--accent-text); display: flex; align-items: center; justify-content: center;
-    font-size: 2rem; line-height: 1; text-decoration: none; box-shadow: 0 0.2rem 0.7rem rgba(0,0,0,.3); }
-  .fab:active { background: var(--accent-strong); }
+  /* Two round buttons stuck to the bottom-right of the scrolling area, above the bottom nav: a
+     speech bubble (a personal message) and a plus (a logbook entry). */
+  .fab-bar { position: sticky; bottom: 0.5rem; align-self: flex-end; margin-top: auto; flex-shrink: 0; display: flex; gap: 0.7rem; }
+  .fab { width: 3.4rem; height: 3.4rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 0.2rem 0.7rem rgba(0,0,0,.3); background: var(--accent); color: var(--accent-text); }
+  .fab.alt { background: var(--surface); color: var(--accent); border: 2px solid var(--accent); }
+  .fab svg { width: 1.6rem; height: 1.6rem; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .fab:active { filter: brightness(0.9); }
 {% endblock %}
 {% block content %}
   <div class="log">
@@ -60,37 +70,33 @@
       <ol class="log-entries">
         {% for row in entries %}
           {% with e=row.entry %}
-          <li class="log-entry{% if row.personal %} personal{% endif %}" id="entry-{{ e.pk }}">
+          {% if row.personal %}
+          {# A personal message: the character's picture sits on the timeline, the text is a speech bubble. #}
+          <li class="log-entry personal" id="entry-{{ e.pk }}">
+            <span class="log-avatar" aria-hidden="true">
+              {% if row.avatar %}<img src="{{ row.avatar }}" alt="" loading="lazy">{% else %}<svg viewBox="0 0 90 90" preserveAspectRatio="xMidYMax slice"><circle cx="45" cy="34" r="15"/><path d="M12 91c0-23 14-37 33-37s33 14 33 37z"/></svg>{% endif %}
+            </span>
+            <div class="log-head">
+              <div class="who"><span class="log-char">{{ e.character.name|default:"—" }}</span><span class="log-date">{{ e.date|date:"DATE_FORMAT" }}</span></div>
+              {% include "frontend/logbook/_actions.html" %}
+            </div>
+            <div class="log-bubble log-field log-text">{{ row.fields.text }}{% if row.badges.text %}<p>{{ row.badges.text }}</p>{% endif %}</div>
+          </li>
+          {% else %}
+          <li class="log-entry" id="entry-{{ e.pk }}">
             <span class="log-dot" aria-hidden="true"></span>
             <div class="log-card">
               <div class="log-head">
-                {% if row.personal %}
-                  <span class="log-avatar" aria-hidden="true">
-                    {% if row.avatar %}<img src="{{ row.avatar }}" alt="" loading="lazy">{% else %}<svg viewBox="0 0 90 90" preserveAspectRatio="xMidYMax slice"><circle cx="45" cy="34" r="15"/><path d="M12 91c0-23 14-37 33-37s33 14 33 37z"/></svg>{% endif %}
-                  </span>
-                {% endif %}
                 <div class="who">
-                  <div class="log-date">{{ e.date|date:"DATE_FORMAT" }}{% if row.personal %}<span class="log-kind">{% translate "Personal" %}</span>{% endif %}</div>
-                  {% if row.personal %}
-                    <div class="log-char">{{ e.character.name|default:"—" }}</div>
-                  {% elif row.fields.title %}
-                    <div class="log-title">{{ row.fields.title }}{{ row.badges.title }}</div>
-                  {% endif %}
+                  <div class="log-date">{{ e.date|date:"DATE_FORMAT" }}</div>
+                  {% if row.fields.title %}<div class="log-title">{{ row.fields.title }}{{ row.badges.title }}</div>{% endif %}
                 </div>
-                {% if row.can_edit %}
-                  <div class="log-actions">
-                    <a href="{% url 'logbook-edit' e.pk %}" aria-label="{% translate 'Edit entry' %}">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>
-                    </a>
-                    <button type="button" class="del" data-delete-url="{% url 'logbook-delete' e.pk %}" aria-label="{% translate 'Delete entry' %}">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"></path><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path></svg>
-                    </button>
-                  </div>
-                {% endif %}
+                {% include "frontend/logbook/_actions.html" %}
               </div>
               {% if row.fields.text %}<div class="log-field log-text">{{ row.fields.text }}{% if row.badges.text %}<p>{{ row.badges.text }}</p>{% endif %}</div>{% endif %}
             </div>
           </li>
+          {% endif %}
           {% endwith %}
         {% endfor %}
       </ol>
@@ -124,6 +130,13 @@
         document.getElementById("del-cancel").addEventListener("click", function () { dialog.close(); });
       })();
     </script>
-    <a class="fab" href="{% url 'logbook-new' %}" aria-label="{% translate 'New entry' %}">+</a>
+    <div class="fab-bar">
+      <a class="fab alt" href="{% url 'logbook-new' %}?kind=personal" aria-label="{% translate 'New personal message' %}" title="{% translate 'New personal message' %}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H11l-4.5 4v-4H4z"/></svg>
+      </a>
+      <a class="fab" href="{% url 'logbook-new' %}" aria-label="{% translate 'New logbook entry' %}" title="{% translate 'New logbook entry' %}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+      </a>
+    </div>
   </div>
 {% endblock %}

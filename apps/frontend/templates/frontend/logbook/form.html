@@ -15,8 +15,15 @@
   .logform .errorlist { margin: 0; padding: 0; list-style: none; color: #b3261e; font-size: 0.85rem; }
   /* The rich-text editor (`logbook_editor.js`); without JS the plain textarea (Markdown) stays. */
   .rte[hidden] { display: none; }
-  .rte-bar { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.4rem; }
+  .rte-bar { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.4rem; position: sticky; top: 0; z-index: 5; padding: 0.3rem 0; background: var(--bg); }
+  /* While typing on a phone the toolbar rides on top of the keyboard (`logbook_editor.js` sets `bottom`). */
+  .rte-bar.floating { position: fixed; top: auto; left: 0; right: 0; margin: 0; padding: 0.4rem 0.6rem calc(0.4rem + env(safe-area-inset-bottom, 0px)); background: var(--surface); border-top: 1px solid var(--border); box-shadow: 0 -2px 8px rgba(0,0,0,.12); z-index: 60; }
+  .logform form.kb { padding-bottom: 4.5rem; }
+  .rte.md-mode [data-cmd] { display: none; }
+  .rte.md-mode ~ textarea { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9rem; min-height: 12rem; }
+  .rte-body[hidden] { display: none; }
   .logform .rte-bar button { appearance: none; min-width: 2.4rem; height: 2.4rem; padding: 0 0.5rem; border: 1px solid var(--border); border-radius: 0.5rem; background: var(--surface); color: var(--text); font: inherit; font-weight: 700; cursor: pointer; touch-action: manipulation; }
+  .logform .rte-bar button.rte-mode { font-family: ui-monospace, monospace; }
   .logform .rte-bar button.on { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
   .rte-bar button svg { width: 1.1rem; height: 1.1rem; vertical-align: middle; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
   .rte-body { min-height: 12rem; padding: 0.6rem 0.8rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; overflow-wrap: anywhere; line-height: 1.4; }
@@ -38,8 +45,9 @@
         <div class="field">
           {{ field.label_tag }}
           {% if field.name == "text" %}
-            <div class="rte" data-rte hidden>
+            <div class="rte" data-rte data-preview-url="{% url 'logbook-preview' %}" hidden>
               <div class="rte-bar" role="toolbar" aria-label="{% translate 'Formatting' %}">
+                <button type="button" class="rte-mode" data-mode aria-pressed="false" aria-label="{% translate 'Write in Markdown' %}" title="{% translate 'Write in Markdown' %}">Md</button>
                 <button type="button" data-cmd="bold" aria-label="{% translate 'Bold' %}" title="{% translate 'Bold' %}"><b>B</b></button>
                 <button type="button" data-cmd="italic" aria-label="{% translate 'Italic' %}" title="{% translate 'Italic' %}"><i>I</i></button>
                 <button type="button" data-cmd="heading" aria-label="{% translate 'Heading' %}" title="{% translate 'Heading' %}">H</button>

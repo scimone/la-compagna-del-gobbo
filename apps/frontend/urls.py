@@ -97,6 +97,7 @@ urlpatterns = [
         name="handbook-section-detail",
     ),
     path("logbook/", logbook_views.logbook_list, name="logbook-list"),
+    path("logbook/preview/", logbook_views.logbook_preview, name="logbook-preview"),
     path("logbook/new/", logbook_views.logbook_new, name="logbook-new"),
     path("logbook/<int:pk>/edit/", logbook_views.logbook_edit, name="logbook-edit"),
     path("logbook/<int:pk>/delete/", logbook_views.logbook_delete, name="logbook-delete"),
