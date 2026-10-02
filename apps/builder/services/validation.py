@@ -11,7 +11,7 @@ from .store import STEPS, Draft, Issue
 
 #: Steps that can't be answered before others have been - shown "locked" until then.
 PREREQUISITES = {
-    "equipment": ("class", "background"),
+    "equipment": ("background", "class"),
     "abilities": ("background",),
 }
 

@@ -65,13 +65,13 @@ def test_signed_out_plus_goes_to_sign_in_and_back(client, db):
     assert response.url.startswith("/account/?next=/characters/new/")
 
 
-def test_starting_a_character_creates_an_owned_draft_at_the_class_step(signed_in, alice, settings):
+def test_starting_a_character_creates_an_owned_draft_at_the_background_step(signed_in, alice, settings):
     settings.ADMIN_ACCOUNTS = ["alice"]
     response = signed_in.post("/characters/new/", {"name": "Mira"})
 
     character = Character.objects.get(name="Mira")
     assert character.owner == alice and character.status == Character.STATUS_DRAFT
-    assert response.url == step(character.pk, "class")
+    assert response.url == step(character.pk, "background")
     assert signed_in.get(response.url).status_code == 200
     # The unfinished character is listed for its owner, as "in creation".
     assert "In creation" in signed_in.get("/characters/").content.decode()
@@ -110,7 +110,7 @@ def test_a_step_that_needs_an_earlier_one_redirects_to_it(signed_in, alice):
     response = signed_in.get(step(draft.pk, "abilities"))
 
     assert response.status_code == 302 and response.url == step(draft.pk, "background")
-    assert signed_in.get(step(draft.pk, "equipment")).url == step(draft.pk, "class")
+    assert signed_in.get(step(draft.pk, "equipment")).url == step(draft.pk, "background")
     assert signed_in.get(step(draft.pk, "nonsense")).status_code == 404
     # The class's own choices are part of the class step now, not a step of their own.
     assert signed_in.get(step(draft.pk, "choices")).status_code == 404
@@ -131,8 +131,8 @@ def test_a_fighter_created_entirely_through_the_forms(signed_in, alice, settings
 
     def _after(name):
         order = [
-            "class",
             "background",
+            "class",
             "species",
             "languages",
             "equipment",
@@ -143,6 +143,9 @@ def test_a_fighter_created_entirely_through_the_forms(signed_in, alice, settings
         ]
         return order[order.index(name) + 1]
 
+    # Choosing a background re-renders (its sub-choices depend on it) instead of moving on.
+    assert signed_in.post(step(pk, "background"), {"background": "soldier"}).status_code == 200
+    submit("background", {"background": "soldier", "background.tool": "dice-set"})
     # Picking the class saves it and opens its level 1 choices right there (no step of their own).
     picked = signed_in.post(step(pk, "class"), {"class": "fighter", "action": "select"})
     assert picked.status_code == 200
@@ -154,9 +157,6 @@ def test_a_fighter_created_entirely_through_the_forms(signed_in, alice, settings
         chosen = [c[0] for c in picker.candidates][: picker.count]
         picks[picker.key] = chosen[0] if picker.single else chosen
     submit("class", picks)
-    # Choosing a background re-renders (its sub-choices depend on it) instead of moving on.
-    assert signed_in.post(step(pk, "background"), {"background": "soldier"}).status_code == 200
-    submit("background", {"background": "soldier", "background.tool": "dice-set"})
     assert signed_in.post(step(pk, "species"), {"species": "dwarf"}).status_code == 200
     submit("species", {"species": "dwarf"})
     submit("languages", {"action": "save", "languages": ["elvish", "goblin"]})
@@ -204,7 +204,7 @@ def test_finish_is_refused_until_everything_is_done(signed_in, alice):
 
     response = signed_in.post(f"/characters/{draft.pk}/create/finish/")
 
-    assert response.status_code == 302 and response.url == step(draft.pk, "class")
+    assert response.status_code == 302 and response.url == step(draft.pk, "background")
     draft.refresh_from_db()
     assert draft.status == Character.STATUS_DRAFT
 

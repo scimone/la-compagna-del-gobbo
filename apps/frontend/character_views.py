@@ -180,7 +180,7 @@ def character_new(request):
         raise Http404
     if request.method == "POST":
         character = creation.start_draft(request.user, request.POST.get("name", ""))
-        return redirect(_step_url(character, "class"))
+        return redirect(_step_url(character, "background"))
     return render(
         request,
         "frontend/characters/new.html",

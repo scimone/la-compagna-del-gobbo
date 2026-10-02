@@ -29,8 +29,8 @@ from apps.characters.models import Character, CharacterChoice, CharacterClass
 #: The class's own level-1 choices (skills, weapon mastery, spells, ...) are part of the "class"
 #: step, shown right under the picked class - not a separate step later on.
 STEPS = (
-    "class",
     "background",
+    "class",
     "species",
     "languages",
     "equipment",

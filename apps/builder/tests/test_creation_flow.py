@@ -77,7 +77,7 @@ def test_finalize_refuses_an_incomplete_draft(owner):
     character.refresh_from_db()
     assert character.status == Character.STATUS_DRAFT
     state = creation.get_state(character)
-    assert state["current"] == "class" and not state["ready"]
+    assert state["current"] == "background" and not state["ready"]
     assert {s["key"]: s["status"] for s in state["steps"]}["abilities"] == "locked"
 
 

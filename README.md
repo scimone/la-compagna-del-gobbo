@@ -707,8 +707,8 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
 - **Characters** (`character_views.py` for the list and the wizard, `character_sheet.py` for the finished character's page; templates under `frontend/characters/`): `GET /characters/`
   lists every finished character of every account (with its owner) plus the viewer's own
   unfinished ones under "In creation"; the **`+`** button (`/characters/new/`, sign-in required)
-  asks for a name and starts the wizard at `/characters/<id>/create/<step>/` - steps `class →
-  background → species → languages → equipment → abilities → alignment → story → review`, each
+  asks for a name and starts the wizard at `/characters/<id>/create/<step>/` - steps `background →
+  class → species → languages → equipment → abilities → alignment → story → review`, each
   reachable from a progress bar once its prerequisites exist. Progress is saved on every step (the
   draft is a real `Character` row), so leaving and coming back resumes. Finish and Discard use
   `data-nav="root"` so the wizard leaves the Characters history and lands on the list.
