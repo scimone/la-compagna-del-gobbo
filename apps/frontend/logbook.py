@@ -1,5 +1,7 @@
 """The Logbook's rules: who may change an entry, and the list a page shows."""
 
+from django.contrib.staticfiles import finders
+from django.templatetags.static import static
 from django.urls import reverse
 
 from apps.characters.services import access
@@ -20,8 +22,14 @@ def list_entries() -> list[LogEntry]:
     return sorted(LogEntry.objects.select_related("author", "character"), key=_order)
 
 
+DM_AVATAR = "images/dm.webp"
+
+
 def avatar_url(entry: LogEntry) -> str:
-    """The round picture of a personal entry's character, or "" (a silhouette is shown then)."""
+    """The round picture of a personal entry's character, or "" (a silhouette is shown then).
+    The DM's is a fixed static picture (`static/images/dm.webp`), shown zoomed in by the page."""
+    if entry.as_dm:
+        return static(DM_AVATAR) if finders.find(DM_AVATAR) else ""
     character = entry.character
     if character is None or not character.portrait:
         return ""

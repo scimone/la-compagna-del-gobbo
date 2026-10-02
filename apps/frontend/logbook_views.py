@@ -34,6 +34,7 @@ def logbook_list(request):
             "entry": entry,
             "can_edit": logbook.can_edit(request.user, entry),
             "personal": entry.kind == LogEntry.PERSONAL,
+            "dm": entry.as_dm,
             "avatar": logbook.avatar_url(entry),
             "fields": {
                 name: logbook_markup.render(text, pattern) if name == "text" else mark(text)

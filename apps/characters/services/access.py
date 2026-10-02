@@ -20,6 +20,19 @@ def is_admin(user) -> bool:
     )
 
 
+def is_dm(user) -> bool:
+    """The Dungeon Master (`settings.DM_ACCOUNTS`, matched like `is_admin`)."""
+    return bool(
+        getattr(user, "is_authenticated", False)
+        and user.get_username().lower() in settings.DM_ACCOUNTS
+    )
+
+
+def can_speak_as_dm(user) -> bool:
+    """Who may post a logbook personal message as the DM: the DM and the administrators."""
+    return is_dm(user) or is_admin(user)
+
+
 def can_view(user, character: Character, section: str = "") -> bool:
     """`section` names a part of the character page (`"inventory"`, `"notes"`, ...). Everyone may
     see everything for now, except that another account's *unfinished* character is not shown."""

@@ -253,3 +253,31 @@ def test_messages_sit_under_the_entries_of_their_day_oldest_first(client, alice)
     assert order == sorted(order)
     assert "Adventure Log of Sept. 6, 2026" in html
     assert "machine-translated" not in html.lower()
+
+
+def test_only_the_dm_and_admins_can_post_as_dm(client, alice, bob, settings, tmp_path):
+    from apps.frontend.models import LogEntry
+
+    settings.MEDIA_ROOT = tmp_path
+    settings.ADMIN_ACCOUNTS = []
+    settings.DM_ACCOUNTS = ["alice"]
+    _hero(alice, "Gobbo")
+    _hero(bob, "Other")
+    data = {"date": "2026-09-02", "text": "The door creaks open.", "character": ""}
+
+    client.force_login(bob)  # a plain player: no DM option, and a forged empty choice is no DM
+    assert "DM</option>" not in client.get("/logbook/new/?kind=personal").content.decode()
+    client.post("/logbook/new/?kind=personal", data)
+    assert not LogEntry.objects.filter(as_dm=True).exists()
+
+    client.force_login(alice)  # the DM
+    assert "DM</option>" in client.get("/logbook/new/?kind=personal").content.decode()
+    assert client.post("/logbook/new/?kind=personal", data).status_code == 302
+    entry = LogEntry.objects.get(as_dm=True)
+    assert entry.character is None
+    page = client.get("/logbook/").content.decode()
+    assert "log-entry personal dm" in page
+
+    settings.DM_ACCOUNTS = []  # an administrator may too
+    settings.ADMIN_ACCOUNTS = ["alice"]
+    assert "DM</option>" in client.get("/logbook/new/?kind=personal").content.decode()

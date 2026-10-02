@@ -63,6 +63,9 @@ class LogEntry(models.Model):
         on_delete=models.SET_NULL,
         related_name="log_entries",
     )
+    #: A personal message spoken by the Dungeon Master rather than a character (`character` is
+    #: NULL then); only the DM and administrators may post one.
+    as_dm = models.BooleanField(default=False)
     date = models.DateField()
     title = models.CharField(max_length=150, blank=True)  # objective entries only
     text = models.TextField(blank=True)

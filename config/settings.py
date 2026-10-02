@@ -259,6 +259,10 @@ PWA_APP_LANG = "en-US"
 # see `apps.characters.services.access.is_admin`.
 ADMIN_ACCOUNTS = ["anna", "rikyfr95@gmail.com"]
 
+# Accounts (usernames, lower case) with the Dungeon Master role: they (and the administrators) may
+# post logbook personal messages as "DM" - see `apps.characters.services.access.is_dm`.
+DM_ACCOUNTS = ["rikyfr95@gmail.com"]
+
 # Cloudflare Access sits in front of the app (via the tunnel) and signs every request it lets
 # through with a JWT; `CloudflareAccessMiddleware` verifies it and signs the visitor in as the
 # `auth.User` with that Google e-mail (creating it on the first visit). Both values come from

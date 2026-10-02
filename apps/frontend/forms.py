@@ -77,7 +77,14 @@ class PersonalEntryForm(_LogEntryForm):
         field.empty_label = "---------"
         field.queryset = characters
         self.only = None
-        if not access.is_admin(self.user) and characters.count() <= 1:
+        self.dm_option = access.can_speak_as_dm(self.user)
+        if self.dm_option:
+            # The extra option "DM" is the empty choice: no character speaks, the DM does.
+            field.required = False
+            field.empty_label = _("DM")
+            if self.instance.pk and self.instance.as_dm:
+                self.initial["character"] = None
+        if not self.dm_option and not access.is_admin(self.user) and characters.count() <= 1:
             # Nothing to choose: the (only) character writes.
             self.only = self.instance.character or characters.first()
             del self.fields["character"]
@@ -86,6 +93,11 @@ class PersonalEntryForm(_LogEntryForm):
 
     def clean(self):
         cleaned = super().clean()
+        if self.dm_option and "character" in self.fields and not cleaned.get("character"):
+            if "character" not in self.errors:
+                self.instance.as_dm = True
+            return cleaned
+        self.instance.as_dm = False
         if "character" not in self.fields:
             if self.only is None:
                 raise forms.ValidationError(
