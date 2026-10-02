@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 
 from apps.characters.models import Character
+from apps.characters.services import access
 from apps.frontend.models import LogEntry
 
 
@@ -41,6 +42,10 @@ class _LogEntryForm(forms.ModelForm):
             "text": forms.Textarea(attrs={"rows": 8}),
         }
 
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+
 
 class ObjectiveEntryForm(_LogEntryForm):
     """What happened at a session: a date, a title and the text."""
@@ -50,7 +55,11 @@ class ObjectiveEntryForm(_LogEntryForm):
 
 
 class PersonalEntryForm(_LogEntryForm):
-    """A character's own, subjective words: a date, who writes, and the text."""
+    """A character's own, subjective words: a date, who writes, and the text.
+
+    A character writes from its own perspective, so only an administrator picks who writes (from
+    every finished character). A player writes as their own character: with one, there is nothing
+    to choose; with several, the choice is among theirs; with none, nothing can be saved."""
 
     class Meta(_LogEntryForm.Meta):
         fields = ["date", "character", "text"]
@@ -58,9 +67,29 @@ class PersonalEntryForm(_LogEntryForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        characters = Character.objects.filter(status=Character.STATUS_COMPLETE).order_by(
+            "name", "pk"
+        )
+        if not access.is_admin(self.user):
+            characters = characters.filter(owner=self.user)
         field = self.fields["character"]
         field.required = True
         field.empty_label = "---------"
-        field.queryset = Character.objects.filter(status=Character.STATUS_COMPLETE).order_by(
-            "name", "pk"
-        )
+        field.queryset = characters
+        self.only = None
+        if not access.is_admin(self.user) and characters.count() <= 1:
+            # Nothing to choose: the (only) character writes.
+            self.only = self.instance.character or characters.first()
+            del self.fields["character"]
+        elif not self.instance.pk and (own := characters.filter(owner=self.user).first()):
+            self.initial.setdefault("character", own.pk)
+
+    def clean(self):
+        cleaned = super().clean()
+        if "character" not in self.fields:
+            if self.only is None:
+                raise forms.ValidationError(
+                    _("You need a finished character to write a personal message.")
+                )
+            self.instance.character = self.only
+        return cleaned

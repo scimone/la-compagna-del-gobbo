@@ -2006,3 +2006,6 @@ msgstr "Nuovo messaggio personale"
 
 msgid "New logbook entry"
 msgstr "Nuova voce del diario"
+
+msgid "You need a finished character to write a personal message."
+msgstr "Serve un personaggio completo per scrivere un messaggio personale."

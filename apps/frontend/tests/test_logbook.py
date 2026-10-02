@@ -106,23 +106,25 @@ def _hero(owner, name="Hero", **fields):
     return Character.objects.create(name=name, owner=owner, **fields)
 
 
-def test_a_personal_entry_needs_a_character_and_shows_it_apart(client, alice, settings, tmp_path):
+def test_a_player_writes_a_personal_entry_as_their_only_character(
+    client, alice, bob, settings, tmp_path
+):
     settings.MEDIA_ROOT = tmp_path
     hero = _hero(alice, "Gobbo")
+    _hero(bob, "Other")
     client.force_login(alice)
 
     page = client.get("/logbook/new/?kind=personal").content.decode()
-    assert "Gobbo" in page and f'value="{hero.pk}" selected' in page  # own character preselected
+    assert "id_character" not in page and "kinds" not in page  # nothing to choose, no kind switch
 
-    assert (
-        client.post("/logbook/new/?kind=personal", {"date": "2026-09-02", "text": "x"}).status_code
-        == 200
-    )
-    assert LogEntry.objects.count() == 0
-
+    # Even a forged `character` cannot make someone else's character write.
     response = client.post(
         "/logbook/new/?kind=personal",
-        {"date": "2026-09-02", "character": hero.pk, "text": "I did not like the duke."},
+        {
+            "date": "2026-09-02",
+            "character": _hero(bob, "Third").pk,
+            "text": "I did not like the duke.",
+        },
     )
     entry = LogEntry.objects.get()
     assert response.status_code == 302
@@ -132,6 +134,38 @@ def test_a_personal_entry_needs_a_character_and_shows_it_apart(client, alice, se
     assert "log-entry personal" in html and "Gobbo" in html and "log-avatar" in html
     assert "log-bubble" in html and "log-kind" not in html and "?kind=personal" in html
     assert "I did not like the duke." in html
+
+
+def test_a_player_with_several_characters_chooses_among_their_own(client, alice, bob):
+    mine, also = _hero(alice, "Aa"), _hero(alice, "Bb")
+    theirs = _hero(bob, "Cc")
+    client.force_login(alice)
+
+    page = client.get("/logbook/new/?kind=personal").content.decode()
+    assert "id_character" in page and "Aa" in page and "Bb" in page and "Cc" not in page
+
+    bad = client.post("/logbook/new/?kind=personal", {"date": "2026-09-02", "character": theirs.pk})
+    assert bad.status_code == 200 and LogEntry.objects.count() == 0
+    client.post("/logbook/new/?kind=personal", {"date": "2026-09-02", "character": also.pk})
+    assert LogEntry.objects.get().character == also and mine
+
+
+def test_only_an_admin_picks_any_character_and_without_one_nothing_is_saved(
+    client, alice, bob, settings
+):
+    hero = _hero(alice, "Gobbo")
+    client.force_login(bob)
+    page = client.get("/logbook/new/?kind=personal").content.decode()
+    assert "id_character" not in page
+    response = client.post("/logbook/new/?kind=personal", {"date": "2026-09-02", "text": "x"})
+    assert response.status_code == 200 and LogEntry.objects.count() == 0
+    assert "need a finished character" in response.content.decode()
+
+    settings.ADMIN_ACCOUNTS = ["bob"]
+    page = client.get("/logbook/new/?kind=personal").content.decode()
+    assert "id_character" in page and "Gobbo" in page
+    client.post("/logbook/new/?kind=personal", {"date": "2026-09-02", "character": hero.pk})
+    assert LogEntry.objects.get().character == hero
 
 
 def test_a_personal_entry_shows_the_characters_round_picture(client, alice, settings, tmp_path):
