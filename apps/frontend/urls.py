@@ -18,6 +18,7 @@ urlpatterns = [
         levelup_views.character_levelup_done,
         name="character-levelup-done",
     ),
+    path("characters/<int:pk>/reopen/", character_views.character_reopen, name="character-reopen"),
     path("characters/<int:pk>/delete/", character_views.character_delete, name="character-delete"),
     path("characters/<int:pk>/act/", character_sheet.character_act, name="character-act"),
     path("characters/<int:pk>/items/", character_sheet.character_items, name="character-items"),

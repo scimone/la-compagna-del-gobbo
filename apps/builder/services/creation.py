@@ -7,7 +7,7 @@ from apps.characters.models import Character, CharacterCurrency
 
 from .. import tables
 from . import effects, validation
-from .store import STEPS, Draft, Issue, clear_choices, set_choice
+from .store import EDITING_KEY, STEPS, Draft, Issue, clear_choices, set_choice
 
 #: Steps that must be complete before Finish (`details` is optional, `review` is derived).
 REQUIRED_STEPS = tuple(s for s in STEPS if s not in ("story", "review"))
@@ -132,12 +132,41 @@ def finalize(character: Character) -> list[Issue]:
         ]
     effects.apply(character)  # one last recompute from the final choices
     character.status = Character.STATUS_COMPLETE
+    if is_editing(character):
+        clear_choices(character, EDITING_KEY)
+        character.save(update_fields=["status", "updated_at"])
+        return []
     character.experience_points = tables.xp_for_level(Draft(character).level)
     character.save(update_fields=["status", "experience_points", "updated_at"])
     return []
 
 
+def is_editing(character: Character) -> bool:
+    """A finished character reopened in the wizard (see `reopen()`)."""
+    return bool(Draft(character).get(EDITING_KEY))
+
+
+def can_reopen(character: Character) -> bool:
+    """Only a finished character that has not levelled up: the wizard recomputes a character from
+    its level-1 choices, whereas a level-up is written straight to the rows and would be lost."""
+    from .progression import total_level  # local: progression -> resolvers
+
+    return character.status == Character.STATUS_COMPLETE and total_level(character) == 1
+
+
+def reopen(character: Character) -> bool:
+    """Turn a finished level-1 character back into a draft so the wizard can change it. Its
+    inventory, coins and Experience Points are kept (see `effects.apply()`)."""
+    if not can_reopen(character):
+        return False
+    set_choice(character, EDITING_KEY, True)
+    character.status = Character.STATUS_DRAFT
+    character.save(update_fields=["status", "updated_at"])
+    return True
+
+
 def discard(character: Character) -> None:
-    """Delete a draft. A finished character is never deleted through the wizard."""
-    if character.status == Character.STATUS_DRAFT:
+    """Delete a draft. A finished character is never deleted through the wizard, nor is one that
+    is being edited."""
+    if character.status == Character.STATUS_DRAFT and not is_editing(character):
         character.delete()

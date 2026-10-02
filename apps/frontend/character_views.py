@@ -260,6 +260,7 @@ def wizard(request, pk, step):
             "state": state,
             "next_url": _step_url(character, _next_step(step)),
             "warnings": state["warnings"],
+            "editing": creation.is_editing(character),
             **result,
         },
     )
@@ -272,9 +273,12 @@ def wizard_finish(request, pk):
     character, response = _editable_draft(request, pk)
     if response:
         return response
+    editing = creation.is_editing(character)
     problems = creation.finalize(character)
     if problems:
         return redirect(_step_url(character, creation.get_state(character)["current"]))
+    if editing:
+        return redirect("character-detail", pk=character.pk)
     return redirect(f"{reverse('characters-overview')}?new={character.pk}")
 
 
@@ -285,6 +289,17 @@ def wizard_discard(request, pk):
         return response
     creation.discard(character)
     return redirect("characters-overview")
+
+
+@require_POST
+def character_reopen(request, pk):
+    """Admins only: turn a finished level-1 character back into a draft and open the wizard."""
+    character = get_object_or_404(Character, pk=pk)
+    if not access.is_admin(request.user):
+        return HttpResponseForbidden()
+    if not creation.reopen(character):
+        return redirect("character-detail", pk=pk)
+    return redirect(_step_url(character, creation.get_state(character)["current"]))
 
 
 @require_POST

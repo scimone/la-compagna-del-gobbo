@@ -521,3 +521,49 @@ def test_the_overview_row_separates_species_class_and_level_with_dots(signed_in,
 
     assert "Human · Wizard · Level 1" in html
     assert 'class="item-thumb pic-empty"' in html
+
+
+# --- admins reopen a finished level-1 character ---------------------------------------------------
+
+
+def test_admin_reopens_edits_and_finishes_keeping_inventory(client, alice, bob, settings):
+    settings.ADMIN_ACCOUNTS = ["alice"]
+    character = build_character(bob, "fighter")
+    creation.finalize(character)
+    character.refresh_from_db()
+    character.experience_points = 120
+    character.save()
+    items_before = list(character.inventory_items.values_list("pk", flat=True))
+    url = f"/characters/{character.pk}/reopen/"
+
+    client.force_login(bob)
+    assert client.post(url).status_code == 403
+
+    client.force_login(alice)
+    response = client.post(url)
+    assert response.status_code == 302 and "/create/" in response.url
+    character.refresh_from_db()
+    assert character.status == Character.STATUS_DRAFT and creation.is_editing(character)
+    # No way to throw the character away from the wizard while editing.
+    assert client.post(f"/characters/{character.pk}/create/discard/").status_code == 302
+    assert Character.objects.filter(pk=character.pk).exists()
+
+    response = client.post(f"/characters/{character.pk}/create/finish/")
+    assert response.url == f"/characters/{character.pk}/"
+    character.refresh_from_db()
+    assert character.status == Character.STATUS_COMPLETE and not creation.is_editing(character)
+    assert character.experience_points == 120
+    assert list(character.inventory_items.values_list("pk", flat=True)) == items_before
+
+
+def test_a_leveled_character_cannot_be_reopened(client, alice, settings):
+    settings.ADMIN_ACCOUNTS = ["alice"]
+    character = build_character(alice, "fighter")
+    creation.finalize(character)
+    character.classes.update(level=2)
+
+    client.force_login(alice)
+    client.post(f"/characters/{character.pk}/reopen/")
+
+    character.refresh_from_db()
+    assert character.status == Character.STATUS_COMPLETE

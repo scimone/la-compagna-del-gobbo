@@ -36,7 +36,7 @@ from ..resolvers.background import background_grants
 from ..resolvers.class_ import class_grants
 from ..resolvers.grants import Grants
 from ..resolvers.species import species_grants
-from .store import Draft
+from .store import EDITING_KEY, Draft
 
 _ARMOR_TYPE_CATEGORY = {"la": "light", "ma": "medium", "ha": "heavy", "s": "shield"}
 _GENERATED = (
@@ -95,12 +95,16 @@ def apply(character: Character) -> None:
 
     prune.run(character)
     draft = Draft(character)
+    # An admin re-editing a finished character (`creation.reopen()`): its inventory and coins are
+    # what play made of them, so they are left alone instead of rebuilt from the equipment step.
+    editing = bool(draft.get(EDITING_KEY))
     grants = compute_grants(draft)
-    items, gold, _problems = equipment_resolver.resolve(draft)
+    items, gold, _problems = ([], 0, []) if editing else equipment_resolver.resolve(draft)
 
     for model in _GENERATED:
         model.objects.filter(character=character).delete()
-    CharacterInventoryItem.objects.filter(character=character).delete()
+    if not editing:
+        CharacterInventoryItem.objects.filter(character=character).delete()
 
     skills = {s.id: s for s in Skill.objects.all()}
     CharacterProficiency.objects.bulk_create(
@@ -158,6 +162,11 @@ def apply(character: Character) -> None:
         )
         for name, maximum, reset in grants.resources
     )
+
+    if editing:
+        _write_abilities(character, draft)
+        _write_character(character, draft, keep_progress=True)
+        return
 
     worn = _equipped_armor(items, grants)
     rows: dict[int, CharacterInventoryItem] = {}
@@ -221,9 +230,11 @@ def _write_abilities(character: Character, draft: Draft) -> None:
     CharacterAbilityScoreIncrease.objects.bulk_create(rows)
 
 
-def _write_character(character: Character, draft: Draft) -> None:
+def _write_character(character: Character, draft: Draft, keep_progress: bool = False) -> None:
     character.size = species_resolver.size(draft)
-    character.experience_points = tables.xp_for_level(draft.level)
+    if not keep_progress:
+        character.experience_points = tables.xp_for_level(draft.level)
+    old_current, old_max = character.current_hit_points, character.max_hit_points
     if draft.klass:
         con = tables.ability_modifier(character.constitution)
         from .progression import hit_point_bonus_per_level  # local: progression -> resolvers
@@ -232,4 +243,6 @@ def _write_character(character: Character, draft: Draft) -> None:
         # Tough / Dwarven Toughness add to every level, the first included.
         character.max_hit_points = max(1, first) + hit_point_bonus_per_level(character)
         character.current_hit_points = character.max_hit_points
+        if keep_progress and old_current < old_max:
+            character.current_hit_points = min(old_current, character.max_hit_points)
     character.save()

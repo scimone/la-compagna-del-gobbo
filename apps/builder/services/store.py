@@ -41,6 +41,10 @@ STEPS = (
 )
 
 
+#: Set while an admin has reopened a finished character in the wizard (`creation.reopen()`).
+EDITING_KEY = "meta.editing"
+
+
 @dataclass(frozen=True)
 class Issue:
     """One thing wrong or missing, structured so a screen can place it (README: "the frontend

@@ -2037,3 +2037,15 @@ msgstr "Un punteggio di caratteristica a scelta"
 #: apps/frontend/views.py
 msgid "Ability Score Increase"
 msgstr "Aumento dei punteggi di caratteristica"
+
+#: apps/frontend/templates/frontend/characters/sheet/_stats.html
+msgid "Reopen the creation screens to change this character? Its inventory and gold are kept."
+msgstr "Riaprire le schermate di creazione per modificare questo personaggio? Inventario e oro vengono mantenuti."
+
+#: apps/frontend/templates/frontend/characters/sheet/_stats.html
+msgid "Edit character"
+msgstr "Modifica personaggio"
+
+#: apps/frontend/templates/frontend/characters/wizard_base.html
+msgid "Editing an existing character: its inventory, gold and experience are kept as they are. Press Finish on the last step to save."
+msgstr "Stai modificando un personaggio esistente: inventario, oro ed esperienza restano invariati. Premi Fine nell'ultimo passaggio per salvare."

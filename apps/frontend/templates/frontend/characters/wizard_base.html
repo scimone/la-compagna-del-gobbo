@@ -98,6 +98,9 @@
 
     <h2>{{ step_label }}</h2>
 
+    {% if editing %}
+      <p class="wiz-warnings">{% translate "Editing an existing character: its inventory, gold and experience are kept as they are. Press Finish on the last step to save." %}</p>
+    {% endif %}
     {% if issues %}
       <ul class="wiz-issues">{% for i in issues %}<li>{{ i.message }}</li>{% endfor %}</ul>
     {% endif %}
@@ -108,11 +111,13 @@
     {% block step %}{% endblock %}
 
     {% block footer %}
+      {% if not editing %}
       <form method="post" action="{% url 'character-discard' character.pk %}" class="discard" data-nav="root"
             data-app-confirm="{% translate 'Discard this character?' %}">
         {% csrf_token %}
         <button type="submit">{% translate "Discard this character" %}</button>
       </form>
+      {% endif %}
     {% endblock %}
   </div>
 
