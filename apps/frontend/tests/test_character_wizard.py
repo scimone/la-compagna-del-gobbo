@@ -65,7 +65,7 @@ def test_signed_out_plus_goes_to_sign_in_and_back(client, db):
     assert response.url.startswith("/account/?next=/characters/new/")
 
 
-def test_starting_a_character_creates_an_owned_draft_at_the_background_step(signed_in, alice, settings):
+def test_starting_a_character_creates_an_owned_draft_at_background(signed_in, alice, settings):
     settings.ADMIN_ACCOUNTS = ["alice"]
     response = signed_in.post("/characters/new/", {"name": "Mira"})
 
