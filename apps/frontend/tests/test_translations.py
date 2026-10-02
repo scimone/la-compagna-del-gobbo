@@ -291,3 +291,25 @@ def test_saving_an_unchanged_translated_form_keeps_the_original(client, alice):
     entry.refresh_from_db()
     assert entry.title == "Il drago"
     assert not TranslationJob.objects.filter(status=TranslationJob.PENDING).exists()
+
+
+def test_the_owner_edits_the_backstory_in_the_reading_language(client, alice):
+    from apps.characters.models import Character
+
+    character = Character.objects.create(
+        owner=alice, name="Mira", status=Character.STATUS_COMPLETE, backstory="Nata a Neverwinter"
+    )
+    _finish(
+        translations.enqueue("backstory", character.pk, {"backstory": character.backstory}, "it"),
+        {"backstory": "Born in Neverwinter"},
+    )
+    client.force_login(alice)
+
+    from apps.frontend import character_sheet
+
+    assert character_sheet._biography(character)["backstory"] == "Born in Neverwinter"
+
+    # Blurring the untouched textarea must not turn the translation into the original.
+    character_sheet._act_text(character, {"field": "backstory", "value": "Born in Neverwinter"})
+    character.refresh_from_db()
+    assert character.backstory == "Nata a Neverwinter"

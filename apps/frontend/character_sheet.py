@@ -947,12 +947,17 @@ def _identity(character: Character, classes) -> dict:
     }
 
 
-def _biography(character: Character) -> dict:
-    # Everyone but the owner (who edits the original in a textarea) reads the backstory in the
-    # active language: machine-translated if it was written in the other one.
-    story, translated = translations.translated_texts(
+def shown_backstory(character: Character) -> tuple[str, bool]:
+    """The backstory as the active language's reader sees it, and whether it is a translation."""
+    return translations.translated_texts(
         "backstory", {character.pk: {"backstory": character.backstory}}
     )[character.pk]["backstory"]
+
+
+def _biography(character: Character) -> dict:
+    # Everyone, the owner's textarea included, reads the backstory in the active language:
+    # machine-translated if it was written in the other one.
+    story, translated = shown_backstory(character)
     return {
         "pictures": [
             {"id": p.pk, "url": reverse("character-gallery-picture", args=[character.pk, p.pk])}
@@ -1120,6 +1125,8 @@ _ACTIONS = {
 def _act_text(character, post):
     field, value = post.get("field", ""), post.get("value", "")
     changed = field in play.TEXT_FIELDS and getattr(character, field) != value
+    if field == "backstory" and value == shown_backstory(character)[0]:
+        return  # the textarea shows the machine translation: untouched, so the original stays
     play.set_text(character, field, value)
     if changed and field == "backstory":
         translations.enqueue("backstory", character.pk, {"backstory": character.backstory})
