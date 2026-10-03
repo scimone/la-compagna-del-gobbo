@@ -53,6 +53,16 @@
     return { top: r.top, bottom: r.bottom };
   }
 
+  // The nearest ancestor that scrolls on its own (the character sheet scrolls inside `.cs-scroll`,
+  // not the window), or null for the page itself.
+  function scroller(el) {
+    for (var node = el.parentElement; node && node !== document.body; node = node.parentElement) {
+      var overflow = getComputedStyle(node).overflowY;
+      if ((overflow === "auto" || overflow === "scroll") && node.scrollHeight > node.clientHeight) return node;
+    }
+    return null;
+  }
+
   function reveal() {
     var el = editable(document.activeElement);
     if (!el || !vv) return;
@@ -62,11 +72,16 @@
     var margin = 16;
     var top = vv.offsetTop + margin;
     var bottom = vv.offsetTop + vv.height - (bar ? bar.offsetHeight : 0) - margin;
-    // layout viewport coordinates -> the visual viewport's, which is what `vv` measures in
+    var inner = scroller(el);
+    if (inner) { // also stay within the scrolling box, which may end above the keyboard
+      var rect = inner.getBoundingClientRect();
+      top = Math.max(top, rect.top + margin);
+      bottom = Math.min(bottom, rect.bottom - margin);
+    }
     var delta = 0;
     if (caret.bottom > bottom) delta = caret.bottom - bottom;
     else if (caret.top < top) delta = caret.top - top;
-    if (Math.abs(delta) > 1) window.scrollBy(0, delta);
+    if (Math.abs(delta) > 1) (inner || window).scrollBy(0, delta);
   }
 
   var timer = null;
