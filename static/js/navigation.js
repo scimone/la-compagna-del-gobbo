@@ -380,6 +380,34 @@
     },
   };
 
+  // The horizontally scrollable tab strips (`.world-tabs`) reload with the page, which would snap
+  // them back to the leftmost tab: remember each strip's scroll offset on click and restore it.
+  (function keepTabScroll() {
+    var KEY = "tabs-scroll";
+    function strips() {
+      return document.querySelectorAll(".world-tabs");
+    }
+    try {
+      var saved = JSON.parse(window.sessionStorage.getItem(KEY) || "null");
+      window.sessionStorage.removeItem(KEY);
+      if (saved) {
+        var nodes = strips();
+        for (var i = 0; i < nodes.length && i < saved.length; i++) nodes[i].scrollLeft = saved[i];
+      }
+    } catch (e) {}
+    document.addEventListener("click", function (ev) {
+      var link = ev.target.closest && ev.target.closest(".world-tabs a");
+      if (!link) return;
+      try {
+        var offsets = [];
+        strips().forEach(function (n) {
+          offsets.push(Math.round(n.scrollLeft));
+        });
+        window.sessionStorage.setItem(KEY, JSON.stringify(offsets));
+      } catch (e) {}
+    });
+  })();
+
   if ("scrollRestoration" in window.history) window.history.scrollRestoration = "manual";
 
   var navEntry = window.performance && performance.getEntriesByType
