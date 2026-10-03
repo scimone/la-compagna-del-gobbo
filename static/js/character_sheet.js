@@ -306,6 +306,34 @@
     });
   });
 
+  // ---- coins: tapping a coin's disc names it (the abbreviation alone is cryptic) -----------------
+
+  var coinTip = null;
+  function hideCoinTip() {
+    if (coinTip) { coinTip.remove(); coinTip = null; }
+  }
+  document.addEventListener("click", function (event) {
+    var disc = event.target.closest(".coin .disc");
+    var wasShown = coinTip && coinTip.dataset.for;
+    hideCoinTip();
+    if (!disc) return;
+    event.preventDefault(); // the disc sits in a <label>: don't focus the amount field
+    var coin = disc.closest(".coin");
+    if (wasShown === coin.className) return;
+    var label = coin.getAttribute("title") || (coin.querySelector(".sr") || {}).textContent;
+    if (!label) return;
+    coinTip = document.createElement("div");
+    coinTip.className = "coin-tip";
+    coinTip.dataset.for = coin.className;
+    coinTip.textContent = label;
+    document.body.appendChild(coinTip);
+    var r = disc.getBoundingClientRect();
+    var w = coinTip.offsetWidth;
+    coinTip.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, r.left + r.width / 2 - w / 2)) + "px";
+    coinTip.style.top = (r.bottom + 6) + "px";
+    setTimeout(hideCoinTip, 3000);
+  });
+
   // ---- descriptions -----------------------------------------------------------------------
 
   function describe(url) {
