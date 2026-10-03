@@ -163,3 +163,21 @@ def test_vignette_is_an_overlay_wrapper_not_a_box_shadow_on_the_image():
 
     assert '<span class="thumb-vignette">' in with_vignette
     assert "thumb-vignette" not in without and 'class="item-thumb"' in without
+
+
+def test_items_tab_lists_equipment_and_bookmarks_it(client, db):
+    from apps.rules.models import Equipment
+
+    Equipment.objects.create(id="rope", name="Rope", page=1)
+    html = client.get("/world/items/").content.decode()
+    assert "Rope" in html and "/world/items/rope/" in html
+    assert client.get("/world/items/?q=zzz").content.decode().count("/world/items/rope/") == 0
+    assert client.get("/world/items/rope/").status_code == 200
+    _toggle(client, "equipment", "rope", next="/world/items/")
+    assert Bookmark.objects.filter(kind="equipment", object_id="rope").exists()
+
+
+def test_bookmark_hint_shows_until_the_first_bookmark(client, feats):
+    assert 'id="bookmark-hint"' in client.get("/world/feats/").content.decode()
+    _toggle(client, "feat", "alert", next="/world/feats/")
+    assert 'id="bookmark-hint"' not in client.get("/world/feats/").content.decode()

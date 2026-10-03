@@ -773,6 +773,11 @@
         href="{% url 'world-spells' %}"
         class="{% if '/world/spells/' in request.path %}active{% endif %}"
       >{% translate "Spells" %}</a>
+      <a
+        data-nav="replace"
+        href="{% url 'world-items' %}"
+        class="{% if '/world/items/' in request.path %}active{% endif %}"
+      >{% translate "Items" %}</a>
     </nav>
     {% elif handbook_tabs %}
     <nav class="world-tabs">

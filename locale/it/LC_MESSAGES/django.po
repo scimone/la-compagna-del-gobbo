@@ -2024,7 +2024,7 @@ msgstr "Nessun personaggio per ora."
 
 #, python-format
 msgid "Adventure Log of %(day)s"
-msgstr "Diario d'avventura del %(day)s"
+msgstr "Diario del %(day)s"
 
 #: apps/frontend/views.py
 msgid "maximum"
@@ -2061,3 +2061,15 @@ msgstr "Menu del personaggio"
 #: apps/frontend/templates/frontend/characters/sheet/_top.html
 msgid "Export to PDF"
 msgstr "Esporta in PDF"
+
+#: apps/frontend/views.py
+msgid "Items"
+msgstr "Oggetti"
+
+#: apps/frontend/templates/frontend/list.html
+msgid "Tap the bookmark on an entry to pin it here, at the top of this list."
+msgstr "Tocca il segnalibro su una voce per fissarla qui, in cima all'elenco."
+
+#: apps/frontend/templates/frontend/list.html
+msgid "Dismiss"
+msgstr "Chiudi"

@@ -33,9 +33,10 @@ from apps.frontend.entries_render import (
 from apps.frontend.forms import NameForm, SignInForm
 from apps.frontend.handbook_search import find_hits, name_matches, query_pattern
 from apps.frontend.models import Bookmark
-from apps.rules.models import Ability, Class, Equipment, Feature, Subclass
+from apps.rules.models import Ability, Class, Equipment, EquipmentType, Feature, Subclass
 from apps.rules.services import background as background_service
 from apps.rules.services import class_ as class_service
+from apps.rules.services import equipment as equipment_service
 from apps.rules.services import feat as feat_service
 from apps.rules.services import feature as feature_service
 from apps.rules.services import handbook as handbook_service
@@ -602,6 +603,10 @@ def _list_page(
         "bookmarked_items": bookmarked_items,
         "groups": groups,
         "bookmark_kind": bookmark_kind,
+        # A first-timer's one-line explanation of the bookmark buttons: gone for good once they
+        # have bookmarked anything, anywhere (or dismissed it - see `list.html`).
+        "bookmark_hint": bool(bookmark_kind)
+        and not Bookmark.objects.filter(user=request.user).exists(),
         "world_tabs": world_tabs,
         "handbook_tabs": handbook_tabs,
         "searchable": searchable,
@@ -1904,6 +1909,60 @@ def world_spell_detail(request, pk):
         facts,
         plain_sections=plain_sections,
         bookmark=("spell", spell.pk),
+    )
+
+
+def world_items(request):
+    from apps.frontend.character_views import _card_line
+
+    q = _search_query(request)
+    type_filter = _checklist_filter(
+        request,
+        "type",
+        _("Type"),
+        [(t.pk, t.name) for t in EquipmentType.objects.order_by("name")],
+    )
+    items_qs = (
+        equipment_service.list_equipment().select_related("type").prefetch_related("masteries")
+    )
+    if q:
+        items_qs = _by_name(items_qs, q)
+    if type_filter["values"]:
+        items_qs = items_qs.filter(type_id__in=type_filter["values"])
+    items = [
+        {
+            "pk": e.pk,
+            "name": _badged_heading(e.name, _self_translated(e, "name")),
+            "detail": _card_line("equipment", e),
+            "url": reverse("world-item-detail", args=[e.pk]),
+        }
+        for e in items_qs
+    ]
+    return _list_page(
+        request,
+        "Items",
+        items,
+        world_tabs=True,
+        compact_thumbs=True,
+        search_query=q,
+        search_placeholder=_("Search items"),
+        filters=[type_filter],
+        bookmark_kind="equipment",
+    )
+
+
+def world_item_detail(request, pk):
+    from apps.frontend.character_views import _describe_equipment
+
+    item = equipment_service.get_equipment(pk)
+    facts, sections = _describe_equipment(item.pk)
+    return _detail_page(
+        request,
+        _badged_heading(item.name, _self_translated(item, "name")),
+        "world-items",
+        facts,
+        body=mark_safe("".join(sections)) if sections else None,
+        bookmark=("equipment", item.pk),
     )
 
 

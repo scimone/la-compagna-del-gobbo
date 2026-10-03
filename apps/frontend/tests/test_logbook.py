@@ -23,14 +23,14 @@ def _entry(author, **fields):
     return LogEntry.objects.create(author=author, **fields)
 
 
-def test_the_list_is_public_newest_first_with_one_dot_per_entry(client, alice):
+def test_the_list_is_public_newest_last_with_one_dot_per_entry(client, alice):
     _entry(alice, date=datetime.date(2026, 8, 1), title="Old tale", text="Goblin ambush")
     _entry(alice, date=datetime.date(2026, 9, 1), title="New tale", text="Waterdeep")
 
     html = client.get("/logbook/").content.decode()
 
     assert html.count('class="log-dot"') == 2
-    assert html.index("New tale") < html.index("Old tale")
+    assert html.index("Old tale") < html.index("New tale")
     assert "Waterdeep" in html and "Goblin ambush" in html
     assert "/logbook/new/" in html
 
@@ -236,7 +236,7 @@ def test_links_in_the_text_become_links_but_only_safe_ones(client, alice):
     assert '<a href="https://e.org" target="_blank" rel="noopener noreferrer">y</a>' in html
 
 
-def test_messages_sit_under_the_entries_of_their_day_oldest_first(client, alice):
+def test_messages_sit_under_the_entries_of_their_day_oldest_first_like_a_chat(client, alice):
     from apps.characters.models import Character
 
     hero = Character.objects.create(name="Gobbo", owner=alice)
@@ -248,10 +248,10 @@ def test_messages_sit_under_the_entries_of_their_day_oldest_first(client, alice)
     _entry(alice, date=day, title="entry-c", text="x")
 
     html = client.get("/logbook/").content.decode()
-    order = [html.index(x) for x in ("entry-c", "entry-b", "msg-one", "msg-two", "entry-old")]
+    order = [html.index(x) for x in ("entry-old", "entry-b", "entry-c", "msg-one", "msg-two")]
 
     assert order == sorted(order)
-    assert "Adventure Log of Sept. 6, 2026" in html
+    assert "Adventure Log of 6 Sep 2026" in html
     assert "machine-translated" not in html.lower()
 
 

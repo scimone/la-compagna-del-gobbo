@@ -4,6 +4,7 @@ from apps.frontend.models import Bookmark
 from apps.rules.models import (
     Background,
     Class,
+    Equipment,
     Feat,
     Feature,
     OptionalFeature,
@@ -15,6 +16,7 @@ from apps.rules.models import (
 BOOKMARK_MODELS = {
     "background": Background,
     "class": Class,
+    "equipment": Equipment,
     "feat": Feat,
     "feature": Feature,
     "option": OptionalFeature,

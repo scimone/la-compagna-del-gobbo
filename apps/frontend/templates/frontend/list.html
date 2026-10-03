@@ -187,6 +187,11 @@
     justify-content: center;
     text-align: center;
   }
+  .bookmark-hint { display: flex; align-items: center; gap: 0.5rem; margin: 0 0 0.5rem; padding: 0.3rem 0.4rem 0.3rem 0.7rem; border-radius: 0.6rem; background: var(--surface); border: 1px dashed var(--border); color: var(--muted); font-size: 0.8rem; line-height: 1.3; }
+  .bookmark-hint[hidden] { display: none; }
+  .bookmark-hint svg { flex-shrink: 0; width: 1rem; height: 1rem; }
+  .bookmark-hint span { flex: 1; }
+  .bookmark-hint button { appearance: none; flex-shrink: 0; width: 1.8rem; height: 1.8rem; border: 0; background: none; color: var(--muted); font-size: 1.2rem; line-height: 1; cursor: pointer; }
 {% endblock %}
 
 {% block content %}
@@ -202,6 +207,24 @@
         </form>
       {% endif %}
       <div class="list-scroll">
+        {% if bookmark_hint %}
+          <p class="bookmark-hint" id="bookmark-hint" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg>
+            <span>{% translate "Tap the bookmark on an entry to pin it here, at the top of this list." %}</span>
+            <button type="button" id="bookmark-hint-close" aria-label="{% translate 'Dismiss' %}">&times;</button>
+          </p>
+          <script>
+            (function () {
+              var hint = document.getElementById("bookmark-hint");
+              try { if (localStorage.getItem("bookmark-hint") === "off") return; } catch (error) {}
+              hint.hidden = false;
+              document.getElementById("bookmark-hint-close").addEventListener("click", function () {
+                hint.hidden = true;
+                try { localStorage.setItem("bookmark-hint", "off"); } catch (error) {}
+              });
+            })();
+          </script>
+        {% endif %}
         {% if bookmarked_items %}
           <ul class="item-list bookmark-list{% if compact_thumbs %} compact-thumbs{% endif %}" aria-label="{% translate 'Bookmarks' %}">
             {% for item in bookmarked_items %}

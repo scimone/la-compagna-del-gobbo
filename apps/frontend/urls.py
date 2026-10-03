@@ -143,5 +143,7 @@ urlpatterns = [
     path("world/species/<slug:pk>/", views.world_species_detail, name="world-species-detail"),
     path("world/spells/", views.world_spells, name="world-spells"),
     path("world/spells/<slug:pk>/", views.world_spell_detail, name="world-spell-detail"),
+    path("world/items/", views.world_items, name="world-items"),
+    path("world/items/<slug:pk>/", views.world_item_detail, name="world-item-detail"),
     path("world/rules/<slug:pk>/", views.world_rule_detail, name="world-rule-detail"),
 ]

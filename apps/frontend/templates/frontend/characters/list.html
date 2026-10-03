@@ -9,21 +9,21 @@
   {% include "frontend/_item_list_style.html" %}
   /* "Level up" pill beside a row (owner only, once the XP allow it). */
   .chars .item-list a.lvl-pill { flex: 0 0 auto; align-self: center; margin: 0 0.3rem; padding: 0.3rem 0.7rem; border: 1px solid var(--accent); border-radius: 1rem; background: var(--accent); color: var(--accent-text); font-weight: 600; font-size: 0.8rem; text-decoration: none; }
-  /* View switch: large round pictures (grid) or the compact rows (list). */
+  /* View switch: large square pictures (grid) or the compact rows (list). */
   .view-toggle { display: flex; align-self: flex-end; border: 1px solid var(--border); border-radius: 1rem; overflow: hidden; }
   .view-toggle a { padding: 0.25rem 0.8rem; font-size: 0.8rem; font-weight: 600; color: var(--muted); text-decoration: none; background: var(--surface); }
   .view-toggle a.on { background: var(--accent); color: var(--accent-text); }
-  /* The grid: two columns of cards; the picture is the round avatar. */
+  /* The grid: two columns of cards; the picture is a 1:1 square. */
   /* `.chars ul` above makes lists a column, so this needs the same weight to win. */
   .chars ul.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
   .cards li { position: relative; display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: 0.8rem; overflow: hidden; }
   .cards li.new { border-color: var(--accent); border-width: 2px; }
   .cards a.card-link { display: flex; flex-direction: column; color: var(--text); text-decoration: none; min-width: 0; }
   .cards a.card-link:active { background: var(--bg); }
-  .cards .card-pic { display: block; width: 70%; margin: 0.8rem auto 0; aspect-ratio: 1 / 1; border-radius: 50%; overflow: hidden; background: linear-gradient(170deg, color-mix(in srgb, var(--accent) 20%, var(--bg)), var(--bg)); }
-  .cards .card-pic img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .cards .card-pic { display: block; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: linear-gradient(170deg, color-mix(in srgb, var(--accent) 20%, var(--bg)), var(--bg)); }
+  .cards .card-pic img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 20%; }
   .cards .card-pic svg { display: block; width: 100%; height: 100%; fill: color-mix(in srgb, var(--muted) 55%, transparent); }
-  .cards .card-text { align-items: center; text-align: center; padding: 0.5rem 0.7rem 0.6rem; display: flex; flex-direction: column; min-width: 0; }
+  .cards .card-text { padding: 0.5rem 0.7rem 0.6rem; display: flex; flex-direction: column; min-width: 0; }
   .cards .card-name { font-weight: 700; overflow-wrap: anywhere; }
   .cards .card-detail { color: var(--muted); font-size: 0.8rem; overflow-wrap: anywhere; }
   .cards .card-tools { position: absolute; top: 0.4rem; right: 0.4rem; display: flex; gap: 0.3rem; }
@@ -92,7 +92,7 @@
       <ul class="item-list">
         {% for c in characters %}
           <li class="{% if new_id == c.character.pk|stringformat:"d" %}new{% endif %}">
-            <a href="{{ c.url }}" class="menu-thumb">{% if c.portrait %}<img class="item-thumb" src="{{ c.portrait }}" alt="" loading="lazy">{% else %}<span class="item-thumb pic-empty"><svg viewBox="0 0 90 120" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><circle cx="45" cy="44" r="17"/><path d="M11 121c0-27 14-43 34-43s34 16 34 43z"/></svg></span>{% endif %}<div class="item-text"><span class="item-name">{{ c.character.name }}</span>
+            <a href="{{ c.url }}" class="menu-thumb">{% if c.avatar %}<img class="item-thumb" src="{{ c.avatar }}" alt="" loading="lazy">{% else %}<span class="item-thumb pic-empty"><svg viewBox="0 0 90 120" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><circle cx="45" cy="44" r="17"/><path d="M11 121c0-27 14-43 34-43s34 16 34 43z"/></svg></span>{% endif %}<div class="item-text"><span class="item-name">{{ c.character.name }}</span>
               <div class="item-detail">{{ c.detail }}{% if c.owner %} · {{ c.owner }}{% endif %}</div></div></a>
             {% if c.level_up_url %}<a class="lvl-pill" href="{{ c.level_up_url }}">{% translate "Level up" %}</a>{% endif %}
             {% if c.can_delete %}

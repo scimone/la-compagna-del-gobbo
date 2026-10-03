@@ -100,7 +100,7 @@
             {% endif %}
             <div class="log-bubble">
               <div class="log-head">
-                <div class="who"><span class="log-char">{% if row.dm %}{% translate "DM" %}{% else %}{{ e.character.name|default:"—" }}{% endif %}</span><span class="log-date">{{ e.date|date:"DATE_FORMAT" }}</span></div>
+                <div class="who"><span class="log-char">{% if row.dm %}{% translate "DM" %}{% else %}{{ e.character.name|default:"—" }}{% endif %}</span><span class="log-date">{{ e.date|date:"j M Y" }}</span></div>
                 {% include "frontend/logbook/_actions.html" %}
               </div>
               <div class="log-field log-text">{{ row.fields.text }}</div>
@@ -112,7 +112,7 @@
             <div class="log-card">
               <div class="log-head">
                 <div class="who">
-                  <div class="log-date">{% blocktranslate with day=e.date|date:"DATE_FORMAT" %}Adventure Log of {{ day }}{% endblocktranslate %}</div>
+                  <div class="log-date">{% blocktranslate with day=e.date|date:"j M Y" %}Adventure Log of {{ day }}{% endblocktranslate %}</div>
                   {% if row.fields.title %}<div class="log-title">{{ row.fields.title }}</div>{% endif %}
                 </div>
                 {% include "frontend/logbook/_actions.html" %}
@@ -142,6 +142,15 @@
       </form>
     </dialog>
     <script>
+      (function () {
+        // Newest at the bottom, like a chat: open on the latest entry, also after a live search.
+        var main = document.querySelector("main");
+        var results = document.getElementById("search-results");
+        if (!main || !results) return;
+        var toEnd = function () { main.scrollTop = main.scrollHeight; };
+        toEnd();
+        new MutationObserver(toEnd).observe(results, { childList: true });
+      })();
       (function () {
         var pic = document.getElementById("pic-dialog");
         document.addEventListener("click", function (event) {

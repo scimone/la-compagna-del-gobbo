@@ -164,6 +164,11 @@ def _summary(character: Character, can_delete: bool = False) -> dict:
             else ""
         ),
         "portrait": (
+            f"{reverse('character-portrait', args=[character.pk])}?v={character.portrait.name}"
+            if character.portrait
+            else ""
+        ),
+        "avatar": (
             f"{reverse('character-avatar', args=[character.pk])}?v={character.portrait.name}-"
             f"{character.portrait_cx:.4f}-{character.portrait_cy:.4f}-{character.portrait_zoom:.3f}"
             if character.portrait
