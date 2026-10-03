@@ -276,7 +276,7 @@ PWA_APP_LANG = "en-US"
 
 # Accounts (usernames, lower case) that may see and change every character, other accounts' too -
 # see `apps.characters.services.access.is_admin`.
-ADMIN_ACCOUNTS = ["anna", "rikyfr95@gmail.com"]
+ADMIN_ACCOUNTS = ["anna", "scimone.mail@gmail.com", "rikyfr95@gmail.com"]
 
 # Accounts (usernames, lower case) with the Dungeon Master role: they (and the administrators) may
 # post logbook personal messages as "DM" - see `apps.characters.services.access.is_dm`.
