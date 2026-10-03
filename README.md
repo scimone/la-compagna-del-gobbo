@@ -15,7 +15,7 @@ exists today and what each placeholder is reserved for.
   directly from the ASGI app when running in the `dnd-web` container - there's no separate web
   server sharing a volume, and uvicorn doesn't serve static files on its own the way
   `manage.py runserver` does
-- **uvicorn** — ASGI server
+- **uvicorn** — ASGI server (3 worker processes in Docker)
 - **uv** — dependency management
 - **Docker** / **docker-compose** — containerized deployment (`Dockerfile`, `docker-compose.yml`)
 - **pytest** / **pytest-django** — tests
