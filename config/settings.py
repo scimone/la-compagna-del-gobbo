@@ -257,7 +257,7 @@ PWA_APP_NAME = "D&D"
 PWA_APP_DESCRIPTION = "D&D 5.5e (2024) player backend"
 PWA_APP_THEME_COLOR = "#ffffff"  # the status bar; = base.html's light --surface (like the tab bar)
 # The app's own dark background (`--bg` in base.html): the splash screen has one colour only.
-PWA_APP_BACKGROUND_COLOR = "#1a1513"
+PWA_APP_BACKGROUND_COLOR = "#141923"
 PWA_APP_DISPLAY = "standalone"
 PWA_APP_SCOPE = "/"
 PWA_APP_ORIENTATION = "any"
