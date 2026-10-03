@@ -31,7 +31,6 @@ from apps.builder.services import creation, derived_stats, progression
 from apps.characters.models import Character, CharacterChoice
 from apps.characters.services import access, play, portrait
 from apps.frontend import translations, units
-from apps.frontend.bookmarks import bookmarked_ids
 from apps.frontend.character_views import (
     _DESCRIBERS,
     _card_line,
@@ -52,7 +51,6 @@ from apps.frontend.views import (
     _menu_image_url,
     _option_class_id,
     _pick_translation,
-    _split_bookmarked,
 )
 from apps.rules.models import (
     Ability,
@@ -373,24 +371,12 @@ def _feature_type_filter(items: list[dict], always: bool = False) -> dict | None
 
 
 def _features_tab(request, character: Character, can_edit: bool = False) -> dict:
-    """`bookmark_kind` is "feat" (the same default `world_feats()` uses) - a Feature-derived row
-    overrides it with its own `"kind": "feature"` exactly the way `world_feats()`'s merged list
-    does, so `_split_bookmarked()` reads and writes the very same `Bookmark` rows either page
-    would: bookmarking a class feature here shows it bookmarked on the World Features list too,
-    and vice versa. An Option row (see `_feature_items()`) carries neither `pk` nor `kind`, so it
-    is never bookmarkable and always stays in the main list.
-    """
+    """The character's features list. Bookmarking lives on the World lists only."""
     items = _feature_items(character, can_edit)
     type_filter = _feature_type_filter(items)
-    bookmark_kind = "feat" if request.user.is_authenticated else None
-    bookmarked_items = []
-    if bookmark_kind:
-        items, bookmarked_items = _split_bookmarked(request, items, bookmark_kind)
     return {
-        "count": len(items) + len(bookmarked_items),
+        "count": len(items),
         "items": items,
-        "bookmarked_items": bookmarked_items,
-        "bookmark_kind": bookmark_kind,
         "filters": [type_filter] if type_filter else [],
     }
 
@@ -569,7 +555,13 @@ def _spellbook_rows(character: Character, can_edit: bool) -> list[dict]:
                 "free": cs.free_cast and not cs.free_cast_used and cs.spell.level > 0,
                 "concentration": cs.spell.concentration,
             }
-        rows.append(_spellbook_row(cs.spell, status, removable, cast))
+        row = _spellbook_row(cs.spell, status, removable, cast)
+        # Level 1+ spells are prepared (SRD "Preparing Spells"); always-prepared ones and cantrips
+        # are not the player's to switch. A caster's spell the class cannot prepare (a Wizard's
+        # spell outside the spellbook) is not offered either.
+        if can_edit and cs.spell.level > 0 and not cs.always_prepared:
+            row["prepare"] = {"spell": cs.spell.pk, "on": cs.prepared}
+        rows.append(row)
     return rows
 
 
@@ -609,6 +601,45 @@ def _spell_filters(rows: list[dict]) -> list[dict]:
     ]
 
 
+#: The SRD's "Spell Preparation by Class" table: when a class may change the list it prepares, and
+#: how many of its spells it may change then.
+_PREPARATION_RULES = {
+    "bard": (gettext_lazy("Gain a level"), gettext_lazy("One")),
+    "cleric": (gettext_lazy("Finish a Long Rest"), gettext_lazy("Any")),
+    "druid": (gettext_lazy("Finish a Long Rest"), gettext_lazy("Any")),
+    "paladin": (gettext_lazy("Finish a Long Rest"), gettext_lazy("One")),
+    "ranger": (gettext_lazy("Finish a Long Rest"), gettext_lazy("One")),
+    "sorcerer": (gettext_lazy("Gain a level"), gettext_lazy("One")),
+    "warlock": (gettext_lazy("Gain a level"), gettext_lazy("One")),
+    "wizard": (gettext_lazy("Finish a Long Rest"), gettext_lazy("Any")),
+}
+
+
+def _preparation(character: Character, stats, classes) -> list[dict]:
+    """Per class that prepares spells: how many it has prepared out of how many the class table
+    allows (always-prepared spells and cantrips do not count), and the SRD's rule for changing."""
+    names = {c.klass_id: c.klass.name for c in classes}
+    result = []
+    for entry in stats.spellcasting:
+        kind, _sep, class_id = entry["source"].partition(":")
+        if kind != "class" or not entry.get("prepared"):
+            continue
+        count = character.spells.filter(
+            klass_id=class_id, prepared=True, always_prepared=False, spell__level__gt=0
+        ).count()
+        when, number = _PREPARATION_RULES.get(class_id, ("", ""))
+        result.append(
+            {
+                "class": names.get(class_id, class_id),
+                "count": count,
+                "limit": entry["prepared"],
+                "when": when,
+                "number": number,
+            }
+        )
+    return result
+
+
 def _finish_cast(cast: dict, sources: list[dict], slots: list[dict]) -> None:
     """Fill in what the cast dialog shows for one spell: the casting numbers of the spell's own
     class (a spell from a species or feat: the first non-class source, else the first), and
@@ -631,11 +662,6 @@ def _finish_cast(cast: dict, sources: list[dict], slots: list[dict]) -> None:
 
 def _spellbook(request, character: Character, stats, classes, can_edit: bool) -> dict:
     rows = _spellbook_rows(character, can_edit)
-    bookmark_kind = "spell" if request.user.is_authenticated else None
-    if bookmark_kind:
-        bookmarked = bookmarked_ids(request.user, bookmark_kind)
-        for row in rows:
-            row["bookmarked"] = str(row["pk"]) in bookmarked
     slots = _slots(character, stats, classes)
     sources = _casting_sources(stats, classes)
     for row in rows:
@@ -658,9 +684,7 @@ def _spellbook(request, character: Character, stats, classes, can_edit: bool) ->
             "level": level,
             "label": _("Cantrips") if level == 0 else f"{_('Level')} {level}",
             "slots": slots_by_level.get(level, []),
-            # Bookmarked spells first, in their own pinned block, like every other bookmarks list.
-            "bookmarked_spells": [s for s in spells_by_level.get(level, []) if s.get("bookmarked")],
-            "spells": [s for s in spells_by_level.get(level, []) if not s.get("bookmarked")],
+            "spells": spells_by_level.get(level, []),
         }
         for level in sorted(set(spells_by_level) | set(slots_by_level))
     ]
@@ -672,7 +696,7 @@ def _spellbook(request, character: Character, stats, classes, can_edit: bool) ->
         "spell_groups": groups,
         "spells": rows,
         "spell_filters": filters,
-        "bookmark_kind": bookmark_kind,
+        "preparation": _preparation(character, stats, classes),
     }
 
 
@@ -1137,6 +1161,18 @@ def _act_spell_add(character, post):
     return {"refresh": True, "message": _("Added %(name)s") % {"name": spell.name}}
 
 
+def _act_spell_prepare(character, post):
+    spell_id = post.get("spell", "")
+    row = character.spells.get(spell_id=spell_id)
+    stats = derived_stats.compute(character)
+    limit = next(
+        (e["prepared"] for e in stats.spellcasting if e["source"] == f"class:{row.klass_id}"),
+        None,
+    )
+    play.set_spell_prepared(character, spell_id, post.get("prepared") == "1", limit=limit)
+    return {"refresh": True}
+
+
 def _act_spell_remove(character, post):
     play.remove_spell(character, post.get("spell", ""))
     return True
@@ -1248,6 +1284,7 @@ _ACTIONS["short_rest"] = _act_short_rest
 _ACTIONS["long_rest"] = _act_long_rest
 _ACTIONS["resource"] = _act_resource
 _ACTIONS["spell_add"] = _act_spell_add
+_ACTIONS["spell_prepare"] = _act_spell_prepare
 _ACTIONS["spell_remove"] = _act_spell_remove
 _ACTIONS["feature_add"] = _act_feature_add
 _ACTIONS["feature_remove"] = _act_feature_remove
@@ -1440,46 +1477,33 @@ def character_features(request, pk):
     )
 
 
-@require_GET
-def character_items(request, pk):
-    """The "add an item" sheet: every catalog item as a filterable list, plus the custom-item form.
-    A fragment the sheet's script loads into its overlay the first time it is opened."""
-    character = get_object_or_404(Character, pk=pk)
-    if character.status != Character.STATUS_COMPLETE or not access.can_edit(
-        request.user, character
-    ):
-        return HttpResponse(status=403)
-    catalog = Equipment.objects.select_related("type").prefetch_related("properties", "masteries")
-    section_of = {t: key for key, _label, types in _INVENTORY_SECTIONS for t in types}
-    rows = [
-        {
-            "id": e.pk,
-            "name": e.name,
-            "search": f"{e.name_en} {e.name_it}".lower(),
-            "detail": _card_line("equipment", e),
-            "url": reverse("character-catalog-item", args=[character.pk, e.pk]),
-            "section": section_of.get(e.type_id, "misc"),
-            "type": e.type_id or "",
-            "category": e.weapon_category,
-            "property": " ".join(p.pk for p in e.properties.all()),
-            "mastery": " ".join(m.pk for m in e.masteries.all()),
-            # In copper; the "Buy" button pays this out of the purse instead of adding it for free.
-            "cost": e.value or 0,
+def inventory_filters(request=None, used_types: dict | None = None) -> list[dict]:
+    """The item filters shared by the character's "add an item" sheet and the World > Items list.
+
+    The main type comes first, as a row of pills (`section`). The other filters only appear once
+    one is picked (`only`), and only the ones that mean something for it: a Mastery filter is no
+    use among the armor. Each section has its own Type filter, listing just its types. With a
+    `request` the current selection is read from its query string (the World list filters
+    server-side); without, nothing is selected (the sheet filters client-side).
+    """
+    if used_types is None:
+        section_of = {t: key for key, _label, types in _INVENTORY_SECTIONS for t in types}
+        used_types = {
+            (t or ""): section_of.get(t, "misc")
+            for t in Equipment.objects.values_list("type_id", flat=True).distinct()
         }
-        for e in catalog
-    ]
-    # The main type comes first, as a row of pills. The other filters only appear once one is
-    # picked (`only`), and only the ones that mean something for it: a Mastery filter is no use
-    # among the armor. Each section has its own Type filter, listing just its types.
-    used_types = {r["type"]: r["section"] for r in rows}
     type_names = {t.pk: t.name for t in EquipmentType.objects.order_by("name")}
+
+    def picked(name: str) -> set:
+        return {v for v in request.GET.getlist(name) if v} if request else set()
+
     filters = [
         {
             "kind": "radio",
             "name": "section",
             "label": _("Type"),
             "all_label": _("All"),
-            "value": "",
+            "value": request.GET.get("section", "").strip() if request else "",
             "options": [(key, label) for key, label, _types in _INVENTORY_SECTIONS],
         }
     ]
@@ -1489,7 +1513,7 @@ def character_items(request, pk):
             "kind": "checkbox",
             "name": name,
             "label": label,
-            "values": set(),
+            "values": picked(name),
             "options": options,
             "only": only,
         }
@@ -1534,6 +1558,40 @@ def character_items(request, pk):
                     key,
                 ),
             ]
+    return filters
+
+
+@require_GET
+def character_items(request, pk):
+    """The "add an item" sheet: every catalog item as a filterable list, plus the custom-item form.
+    A fragment the sheet's script loads into its overlay the first time it is opened."""
+    character = get_object_or_404(Character, pk=pk)
+    if character.status != Character.STATUS_COMPLETE or not access.can_edit(
+        request.user, character
+    ):
+        return HttpResponse(status=403)
+    catalog = Equipment.objects.select_related("type").prefetch_related("properties", "masteries")
+    section_of = {t: key for key, _label, types in _INVENTORY_SECTIONS for t in types}
+    rows = [
+        {
+            "id": e.pk,
+            "name": e.name,
+            "search": f"{e.name_en} {e.name_it}".lower(),
+            "detail": _card_line("equipment", e),
+            "url": reverse("character-catalog-item", args=[character.pk, e.pk]),
+            "section": section_of.get(e.type_id, "misc"),
+            "type": e.type_id or "",
+            "category": e.weapon_category,
+            "property": " ".join(p.pk for p in e.properties.all()),
+            "mastery": " ".join(m.pk for m in e.masteries.all()),
+            # In copper; the "Buy" button pays this out of the purse instead of adding it for free.
+            "cost": e.value or 0,
+        }
+        for e in catalog
+    ]
+    used_types = {r["type"]: r["section"] for r in rows}
+    type_names = {t.pk: t.name for t in EquipmentType.objects.order_by("name")}
+    filters = inventory_filters(used_types=used_types)
     return render(
         request,
         "frontend/characters/sheet/_add_item.html",

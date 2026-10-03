@@ -443,6 +443,39 @@ def cast_spell(
     return slot_key
 
 
+def set_spell_prepared(
+    character: Character, spell_id: str, prepared: bool, *, limit: int | None = None
+) -> CharacterSpell:
+    """Prepare or unprepare one of the character's spells (SRD "Preparing Spells").
+
+    - Only a level 1+ spell is prepared; cantrips are always ready.
+    - An always-prepared spell (a domain, oath or species spell...) cannot be unprepared, and does
+      not count against the class's limit.
+    - A class that keeps a spellbook (the Wizard) prepares only spells that are in it.
+    - `limit` is how many spells the spell's class lets its member have prepared (the class table's
+      "Prepared Spells" column - worked out by the caller, who has the derived stats): preparing
+      one more than that is refused. A spell without a class (added by hand) has no limit.
+    """
+    row = character.spells.select_related("spell").get(spell_id=spell_id)
+    if row.spell.level == 0:
+        raise ValueError(f"{row.spell.name} is a cantrip: it needs no preparing")
+    if row.always_prepared:
+        raise ValueError(f"{row.spell.name} is always prepared")
+    if prepared and not row.prepared and row.klass_id:
+        same_class = character.spells.filter(klass_id=row.klass_id)
+        if not row.in_spellbook and same_class.filter(in_spellbook=True).exists():
+            raise ValueError(f"{row.spell.name} is not in the spellbook")
+        if limit is not None:
+            count = same_class.filter(
+                prepared=True, always_prepared=False, spell__level__gt=0
+            ).count()
+            if count >= limit:
+                raise ValueError(f"already {limit} spells prepared")
+    row.prepared = prepared
+    row.save(update_fields=["prepared"])
+    return row
+
+
 def remove_spell(character: Character, spell_id: str) -> None:
     """Take away a spell added by hand (`add_spell`). One the character got from a class, species
     or feat is part of what it can do, and stays."""

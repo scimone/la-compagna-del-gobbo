@@ -12,7 +12,12 @@ from PIL import Image
 
 from apps.builder.services import creation
 from apps.builder.tests.conftest import build_character
-from apps.characters.models import Character, CharacterInventoryItem, CharacterOptionalFeature
+from apps.characters.models import (
+    Character,
+    CharacterInventoryItem,
+    CharacterOptionalFeature,
+    CharacterSpell,
+)
 from apps.characters.services import play
 from apps.rules.models import Feature, OptionalFeature, Spell
 
@@ -254,27 +259,15 @@ def test_features_lists_species_traits_class_features_and_feats_as_clickable_lin
     assert 'name="type"' in html  # the type pills, once this character has more than one kind
 
 
-def test_features_tab_bookmarks_are_the_same_ones_the_world_list_shows(signed_in, alice):
+def test_features_tab_has_no_bookmark_buttons(signed_in, alice):
     cleric = finished(alice, "cleric")
-    divine_order = cleric.features.get(feature__name="Divine Order").feature
 
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "features")
-    assert "item-list bookmark-list" not in html
-    assert 'aria-pressed="false"' in html
 
-    signed_in.post("/bookmarks/toggle/", {"kind": "feature", "object_id": str(divine_order.pk)})
-
-    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "features")
-    pinned = html.split("item-list bookmark-list")[1].split("</ul>")[0]
-    assert "Divine Order" in pinned
-
-    # The exact same `Bookmark` row - toggling it here shows up on the World list too.
-    world_html = signed_in.get("/world/feats/").content.decode()
-    world_pinned = world_html.split("item-list bookmark-list")[1].split("</ul>")[0]
-    assert "Divine Order" in world_pinned
+    assert "item-bookmark" not in html and "bookmark-list" not in html
 
 
-def test_options_are_mixed_into_features_with_their_own_page_icon_and_bookmark(signed_in, alice):
+def test_options_are_mixed_into_features_with_their_own_page_icon(signed_in, alice):
     warlock = finished(alice, "warlock", background="charlatan")
     invocation = OptionalFeature.objects.filter(feature_type="Eldritch Invocation").first()
     CharacterOptionalFeature.objects.create(character=warlock, optional_feature=invocation)
@@ -286,11 +279,6 @@ def test_options_are_mixed_into_features_with_their_own_page_icon_and_bookmark(s
     assert "Option" in row  # the property tag, like "Feat"/"Class"/... for the others
     assert "features_classes/warlock.jpeg" in row  # a Warlock invocation uses the Warlock icon
     assert "data-describe=" not in row
-
-    signed_in.post("/bookmarks/toggle/", {"kind": "option", "object_id": invocation.pk})
-    html = panel(signed_in.get(f"/characters/{warlock.pk}/").content.decode(), "features")
-    pinned = html.split("item-list bookmark-list")[1].split("</ul>")[0]
-    assert invocation.name in pinned
 
 
 def test_option_detail_page_shows_its_class_and_can_be_bookmarked(signed_in, alice):
@@ -328,9 +316,7 @@ def test_spellbook_shows_the_casting_numbers_the_slots_and_the_spells(signed_in,
     assert html.count("data-search=") == cleric.spells.count()
 
 
-def test_spellbook_rows_link_to_the_world_page_are_bookmarkable_and_drop_the_level_filter(
-    signed_in, alice
-):
+def test_spellbook_rows_link_to_the_world_page_and_drop_the_level_filter(signed_in, alice):
     cleric = finished(alice, "cleric")
     known = cleric.spells.first().spell
 
@@ -338,37 +324,12 @@ def test_spellbook_rows_link_to_the_world_page_are_bookmarkable_and_drop_the_lev
 
     assert f'href="/world/spells/{known.pk}/"' in html
     assert "data-describe=" not in html and 'class="chev"' not in html  # no toggle arrow
-    assert 'class="item-bookmark' in html
+    assert "item-bookmark" not in html  # bookmarking lives in the World lists only
     tools = html.split('class="cs-spell-tools"')[1].split("</form>")[0]
     assert "Level" not in tools  # the level groups already group by it - redundant as a filter
 
-    signed_in.post("/bookmarks/toggle/", {"kind": "spell", "object_id": known.pk})
-    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
-    row = next(chunk for chunk in html.split("<li") if known.name in chunk)
-    assert 'class="item-bookmark active"' in row
 
-
-def test_a_bookmarked_spell_is_pinned_at_the_top_of_its_own_level_group(signed_in, alice):
-    cleric = finished(alice, "cleric")
-    # the last spell of its level alphabetically, so it would otherwise sit at the bottom
-    level = cleric.spells.first().spell.level
-    same_level = sorted(
-        (cs.spell for cs in cleric.spells.all() if cs.spell.level == level), key=lambda s: s.name
-    )
-    assert len(same_level) > 1
-    last = same_level[-1]
-
-    signed_in.post("/bookmarks/toggle/", {"kind": "spell", "object_id": last.pk})
-    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
-
-    group = html.split(f'data-level-group="{level}"')[1].split("</section>")[0]
-    pinned = group.split("item-list bookmark-list")[1].split("</ul>")[0]
-    assert last.name in pinned and same_level[0].name not in pinned
-    assert group.index(last.name) < group.index(same_level[0].name)
-    assert group.count(last.name) == 1  # moved, not duplicated
-
-
-def test_a_hand_added_spell_has_its_remove_button_left_of_the_bookmark(signed_in, alice):
+def test_a_hand_added_spell_has_its_remove_button(signed_in, alice):
     cleric = finished(alice, "cleric")
     extra = Spell.objects.exclude(pk__in=cleric.spells.values_list("spell_id", flat=True)).first()
     act(signed_in, cleric, action="spell_add", spell=extra.pk)
@@ -376,7 +337,45 @@ def test_a_hand_added_spell_has_its_remove_button_left_of_the_bookmark(signed_in
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
 
     row = next(chunk for chunk in html.split("<li") if f"/world/spells/{extra.pk}/" in chunk)
-    assert row.index('class="item-remove"') < row.index('class="item-bookmark')
+    assert 'class="item-remove"' in row
+
+
+def test_spellbook_shows_the_prepared_count_and_toggles_preparation(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    prepared = cleric.spells.filter(prepared=True, always_prepared=False, spell__level__gt=0)
+    row = prepared.first()
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
+    assert f"{prepared.count()}/" in html.split('class="cs-prepared')[1].split("</p>")[0]
+    assert "Finish a Long Rest" in html
+
+    act(signed_in, cleric, action="spell_prepare", spell=row.spell_id, prepared="0")
+    row.refresh_from_db()
+    assert not row.prepared
+
+
+def test_cannot_prepare_more_spells_than_the_class_allows_nor_always_prepared_ones(
+    signed_in, alice
+):
+    cleric = finished(alice, "cleric")
+    always = cleric.spells.filter(always_prepared=True).first()
+    if always:
+        response = act(
+            signed_in, cleric, action="spell_prepare", spell=always.spell_id, prepared="0"
+        )
+        assert response.status_code == 400
+    klass = cleric.classes.first().klass
+    extras = Spell.objects.filter(level=1).exclude(
+        pk__in=cleric.spells.values_list("spell_id", flat=True)
+    )[:10]
+    for extra in extras:
+        CharacterSpell.objects.create(character=cleric, spell=extra, klass=klass)
+    statuses = [
+        act(signed_in, cleric, action="spell_prepare", spell=e.pk, prepared="1").status_code
+        for e in extras
+    ]
+    assert 200 in statuses and 400 in statuses  # prepared up to the class table's number, no more
+    assert statuses == sorted(statuses)
 
 
 def test_the_spellbooks_fixed_part_has_an_add_spell_button_even_without_spells(
@@ -1507,3 +1506,18 @@ def test_the_manifest_is_fetched_with_credentials(signed_in):
     html = signed_in.get("/characters/").content.decode()
 
     assert '<link rel="manifest" href="/manifest.json" crossorigin="use-credentials">' in html
+
+
+def test_world_items_has_the_same_filters_as_the_add_item_sheet(signed_in, alice):
+    world = signed_in.get("/world/items/").content.decode()
+    cleric = finished(alice, "cleric")
+    sheet = signed_in.get(f"/characters/{cleric.pk}/items/").content.decode()
+    for name in ("section", "type", "category", "property", "mastery"):
+        assert f'name="{name}"' in world and f'name="{name}"' in sheet
+
+    weapons = signed_in.get("/world/items/?section=weapons").content.decode()
+    armor = signed_in.get("/world/items/?section=armor").content.decode()
+    assert "Longsword" in weapons and "Longsword" not in armor
+    assert "Chain Mail" in armor and "Chain Mail" not in weapons
+    martial = signed_in.get("/world/items/?section=weapons&category=simple").content.decode()
+    assert "Longsword" not in martial and "Club" in martial

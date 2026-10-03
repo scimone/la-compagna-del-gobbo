@@ -33,7 +33,7 @@ from apps.frontend.entries_render import (
 from apps.frontend.forms import NameForm, SignInForm
 from apps.frontend.handbook_search import find_hits, name_matches, query_pattern
 from apps.frontend.models import Bookmark
-from apps.rules.models import Ability, Class, Equipment, EquipmentType, Feature, Subclass
+from apps.rules.models import Ability, Class, Equipment, Feature, Subclass
 from apps.rules.services import background as background_service
 from apps.rules.services import class_ as class_service
 from apps.rules.services import equipment as equipment_service
@@ -1913,22 +1913,36 @@ def world_spell_detail(request, pk):
 
 
 def world_items(request):
+    from apps.frontend.character_sheet import _INVENTORY_SECTIONS, inventory_filters
     from apps.frontend.character_views import _card_line
 
     q = _search_query(request)
-    type_filter = _checklist_filter(
-        request,
-        "type",
-        _("Type"),
-        [(t.pk, t.name) for t in EquipmentType.objects.order_by("name")],
-    )
+    filters = inventory_filters(request)
+    picked = {f["name"]: f["values"] for f in filters if f["kind"] == "checkbox"}
+    section = next(f["value"] for f in filters if f["name"] == "section")
     items_qs = (
         equipment_service.list_equipment().select_related("type").prefetch_related("masteries")
     )
     if q:
         items_qs = _by_name(items_qs, q)
-    if type_filter["values"]:
-        items_qs = items_qs.filter(type_id__in=type_filter["values"])
+    sections = {key: types for key, _label, types in _INVENTORY_SECTIONS}
+    if section in sections:
+        if sections[section]:
+            items_qs = items_qs.filter(type_id__in=sections[section])
+        else:  # "misc": every type no other section claims, and untyped items
+            claimed = [t for types in sections.values() for t in types]
+            items_qs = items_qs.exclude(type_id__in=claimed)
+    # The per-section filters only count under their own section (the page resets them otherwise).
+    if picked["type"]:
+        items_qs = items_qs.filter(type_id__in=picked["type"])
+    if section == "weapons":
+        if picked["category"]:
+            items_qs = items_qs.filter(weapon_category__in=picked["category"])
+        if picked["property"]:
+            items_qs = items_qs.filter(properties__in=picked["property"])
+        if picked["mastery"]:
+            items_qs = items_qs.filter(masteries__in=picked["mastery"])
+        items_qs = items_qs.distinct()
     items = [
         {
             "pk": e.pk,
@@ -1946,7 +1960,7 @@ def world_items(request):
         compact_thumbs=True,
         search_query=q,
         search_placeholder=_("Search items"),
-        filters=[type_filter],
+        filters=filters,
         bookmark_kind="equipment",
     )
 

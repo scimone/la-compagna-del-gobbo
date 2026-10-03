@@ -177,6 +177,29 @@
     color: var(--accent-text);
   }
 
+  /* Prepared / not prepared toggle of a spellbook row - an outlined pill that fills when on. */
+  .item-prepare {
+    appearance: none;
+    flex-shrink: 0;
+    align-self: center;
+    margin: 0 0.3rem;
+    padding: 0.3rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    background: none;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.75rem;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  .item-prepare.on {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--accent-text);
+  }
+
   .item-remove {
     appearance: none;
     flex-shrink: 0;

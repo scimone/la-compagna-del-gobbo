@@ -798,6 +798,12 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
       stays open, so several can be added) and a chevron for the description. An added spell is a
       `CharacterSpell` with `prepared=True` and `source="sheet"` (`play.add_spell`, which is also how
       `play.remove_spell` knows what may be removed).
+      Spellbook rows have a **Prepare / Prepared** pill (`play.set_spell_prepared`, per the SRD's
+      "Preparing Spells"): level 1+ only, always-prepared spells are fixed and don't count, a
+      Wizard prepares from the spellbook only, and a class can't exceed its table's prepared
+      number. A line per class shows `Prepared n/max` and the SRD's "Spell Preparation by Class"
+      rule (when/how many may change - shown, not enforced). Bookmarking exists in the World
+      lists only, not on the character sheet.
     - *Inventory*: a fixed top part with the coin pouch (copper/silver/gold/platinum, electrum only
       if owned; editable), the carried weight and an **Add item** button, then Weapons / Armor /
       Tools / Misc as one list in the Features/Spellbook row style: name, one detail line (damage

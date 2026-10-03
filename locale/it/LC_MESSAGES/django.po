@@ -2073,3 +2073,28 @@ msgstr "Tocca il segnalibro su una voce per fissarla qui, in cima all'elenco."
 #: apps/frontend/templates/frontend/list.html
 msgid "Dismiss"
 msgstr "Chiudi"
+
+#: apps/frontend/templates/frontend/_list_item.html
+msgid "Prepare"
+msgstr "Prepara"
+
+#: apps/frontend/character_sheet.py
+msgid "Gain a level"
+msgstr "Sali di livello"
+
+#: apps/frontend/character_sheet.py
+msgid "Finish a Long Rest"
+msgstr "Termini un Riposo lungo"
+
+#: apps/frontend/character_sheet.py
+msgid "One"
+msgstr "Uno"
+
+#: apps/frontend/character_sheet.py
+msgid "Any"
+msgstr "Qualsiasi"
+
+#: apps/frontend/templates/frontend/characters/sheet/_spellbook.html
+#, python-format
+msgid "Change when you: %(when)s (%(number)s)"
+msgstr "Cambi quando: %(when)s (%(number)s)"

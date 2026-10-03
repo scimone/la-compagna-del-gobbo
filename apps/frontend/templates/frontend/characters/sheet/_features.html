@@ -1,15 +1,12 @@
 {% load i18n %}
 {# Species traits, class/subclass features, feats and options (invocations, maneuvers, ...): the  #}
-{# exact same row look, bookmarking and "Bookmarks" pinned block as the World's own Features list  #}
+{# exact same row look as the World's own Features list
 {# (`_list_item.html`, sharing its CSS - see `_item_list_style.html`), but limited to what this    #}
 {# character has, linking straight to each entry's own World page, and filtered client-side as you #}
-{# type (`character_sheet.js`'s `filterRows()`) rather than a server round trip. A bookmark toggle #}
-{# here writes the very same `Bookmark` row the World list would (see `_features_tab()`), and its  #}
-{# own click handler (`character_sheet.js`) re-fetches and swaps just `#cs-feature-list`, the same #}
-{# way list.html's own bookmark script swaps `#search-results`. A feature the player added by hand #}
+{# type (`character_sheet.js`'s `filterRows()`) rather than a server round trip. A feature the player added by hand #}
 {# carries its own remove button (see `_feature_items()`), and the "Add feature" button opens the #}
 {# sheet in `_add_feature.html`, like the Spellbook's.                                             #}
-{% if features.items or features.bookmarked_items or can_edit %}
+{% if features.items or can_edit %}
   <div class="cs-sticky">
     {% if can_edit %}
       <div class="cs-invbar">
@@ -17,7 +14,7 @@
         <button type="button" class="cs-add-btn" data-add-open="cs-add-feature">+ {% translate "Add feature" %}</button>
       </div>
     {% endif %}
-    {% if features.items or features.bookmarked_items %}
+    {% if features.items %}
       {% translate "Search features" as search_placeholder %}
       <div class="cs-feature-tools" data-filter-list="cs-feature-list" data-filter-empty="cs-feature-empty">
         {% include "frontend/_search_form.html" with filters=features.filters search_query="" search_placeholder=search_placeholder %}
@@ -25,28 +22,12 @@
     {% endif %}
   </div>
   <div class="cs-scroll">
-    {% if features.items or features.bookmarked_items %}
-      {% if features.bookmark_kind %}
-        {# A distinct id, not the World list's own "bookmark-list-form": every character sheet tab #}
-        {# sits in the DOM at once (just `hidden`), so the Spellbook's own such form needs one too. #}
-        <form id="bookmark-list-form-features" method="post" action="{% url 'bookmark-toggle' %}">
-          {% csrf_token %}
-          <input type="hidden" name="kind" value="{{ features.bookmark_kind }}">
-          <input type="hidden" name="next" value="{{ request.get_full_path }}">
-        </form>
-      {% endif %}
+    {% if features.items %}
       <div id="cs-feature-list">
-        {% if features.bookmarked_items %}
-          <ul class="item-list bookmark-list compact-thumbs">
-            {% for item in features.bookmarked_items %}
-              {% include "frontend/_list_item.html" with bookmark_kind=features.bookmark_kind bookmark_form_id="bookmark-list-form-features" %}
-            {% endfor %}
-          </ul>
-        {% endif %}
         {% if features.items %}
           <ul class="item-list main-list compact-thumbs">
             {% for item in features.items %}
-              {% include "frontend/_list_item.html" with bookmark_kind=features.bookmark_kind bookmark_form_id="bookmark-list-form-features" %}
+              {% include "frontend/_list_item.html" %}
             {% endfor %}
           </ul>
         {% endif %}
