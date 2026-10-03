@@ -16,6 +16,14 @@
       </summary>
       <div class="cs-menu-list" role="menu">
         <a role="menuitem" href="{% url 'character-export-pdf' character.pk %}" download>{% translate "Export to PDF" %}</a>
+        {% if can_reopen %}
+          {# Admins only: reopen the creation screens (a level-1 character; see `creation.reopen()`). #}
+          <form method="post" action="{% url 'character-reopen' character.pk %}" data-nav="push"
+                data-app-confirm="{% translate 'Reopen the creation screens to change this character? Its inventory and gold are kept.' %}">
+            {% csrf_token %}
+            <button type="submit" role="menuitem">{% translate "Edit character" %}</button>
+          </form>
+        {% endif %}
       </div>
     </details>
   </div>

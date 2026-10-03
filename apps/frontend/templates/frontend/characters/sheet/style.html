@@ -217,8 +217,8 @@
   .cs-menu summary svg { width: 1.2rem; height: 1.2rem; fill: currentColor; }
   .cs-menu[open] summary { color: var(--accent); }
   .cs-menu-list { position: absolute; right: 0; top: 100%; z-index: 20; min-width: 11rem; padding: 0.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18); }
-  .cs-menu-list a { display: block; padding: 0.6rem 0.8rem; border-radius: 0.4rem; color: var(--text); text-decoration: none; font-size: 0.9rem; white-space: nowrap; }
-  .cs-menu-list a:active { background: var(--bg); }
+  .cs-menu-list a, .cs-menu-list button { display: block; width: 100%; text-align: left; background: none; border: 0; font-family: inherit; cursor: pointer; padding: 0.6rem 0.8rem; border-radius: 0.4rem; color: var(--text); text-decoration: none; font-size: 0.9rem; white-space: nowrap; }
+  .cs-menu-list a:active, .cs-menu-list button:active { background: var(--bg); }
 
   /* --- the panels ----------------------------------------------------------------------- */
   /* A panel is a fixed part (`.cs-sticky`: what must stay in view) on top of a scrolling part
