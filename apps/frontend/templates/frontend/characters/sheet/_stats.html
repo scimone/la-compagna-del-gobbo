@@ -74,7 +74,7 @@
     </div>
   </div>
 
-  {# Heroic Inspiration beside Passive Perception, then Hit Dice (one pip each, tap a full one to spend it) beside Death Saves. #}
+  {# Heroic Inspiration beside Passive Perception, Hit Dice (one pip each, tap a full one to spend it); Death Saves get one slim line below. #}
   <div class="st-pair st-wide">
   <button type="button" class="st-card st-insp cs-insp{% if strip.inspiration %} on{% endif %}" data-act="inspiration"
           data-value="{% if strip.inspiration %}0{% else %}1{% endif %}" aria-pressed="{% if strip.inspiration %}true{% else %}false{% endif %}"{% if not can_edit %} disabled{% endif %}>
@@ -85,9 +85,6 @@
       <b class="v">{{ header.passive_perception }}</b>
       <span class="k">{% translate "Passive Perception" %}</span>
     </div>
-  </div>
-
-  <div class="st-pair st-wide st-vitals">
   <div class="st-card st-dice">
     <span class="k">{% translate "Hit Dice" %}</span>
     {% for hd in strip.hit_dice %}
@@ -103,13 +100,15 @@
       </div>
     {% endfor %}
   </div>
+  </div>
 
+  <div class="st-wide st-vitals">
   <div class="st-card st-death">
     <span class="k">{% translate "Death Saves" %}</span>
     <div class="st-death-lines">
       {% for kind, label, symbol, count in strip.death_rows %}
         <div class="death-line" data-death="{{ kind }}">
-          <span class="lbl"><i aria-hidden="true">{{ symbol }}</i> {{ label }}</span>
+          <span class="lbl" title="{{ label }}"><i aria-hidden="true">{{ symbol }}</i></span>
           <span class="boxes">
             {% for i in "123" %}
               <button type="button" class="box{% if forloop.counter <= count %} on{% endif %} {{ kind }}" data-act="death_toggle" data-kind="{{ kind }}" data-index="{{ forloop.counter }}"
