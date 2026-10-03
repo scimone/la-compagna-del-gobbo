@@ -8,7 +8,9 @@
 
 
 <!-- Chrome for Android theme color -->
-<meta name="theme-color" content="{{ PWA_APP_THEME_COLOR }}">
+{# The status bar matches the bottom tab bar (`--surface` in base.html), light and dark. #}
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#241d1a" media="(prefers-color-scheme: dark)">
 
 <!-- Add to homescreen for Safari on iOS -->
 <meta name="apple-mobile-web-app-capable" content="yes">

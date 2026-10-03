@@ -620,9 +620,9 @@ def _spell_filters(rows: list[dict]) -> list[dict]:
 
 #: The SRD's "Spell Preparation by Class" table as a sentence, per (when, how many).
 _PREPARATION_RULES = {
-    ("rest", "any"): gettext_lazy("Change any prepared spells after a long rest"),
-    ("rest", 1): gettext_lazy("Change one prepared spell after a long rest"),
-    ("level", 1): gettext_lazy("Change one prepared spell after gaining a level"),
+    ("rest", "any"): gettext_lazy("You can change any prepared spells after a long rest"),
+    ("rest", 1): gettext_lazy("You can change one prepared spell after a long rest"),
+    ("level", 1): gettext_lazy("You can change one prepared spell after gaining a level"),
 }
 _PREPARATION_OPEN = {
     "any": gettext_lazy("You can change any prepared spells now"),

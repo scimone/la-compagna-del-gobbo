@@ -2079,16 +2079,16 @@ msgid "Prepare"
 msgstr "Prepara"
 
 #: apps/frontend/character_sheet.py
-msgid "Change any prepared spells after a long rest"
-msgstr "Cambi qualsiasi incantesimo preparato dopo un riposo lungo"
+msgid "You can change any prepared spells after a long rest"
+msgstr "Puoi cambiare qualsiasi incantesimo preparato dopo un riposo lungo"
 
 #: apps/frontend/character_sheet.py
-msgid "Change one prepared spell after a long rest"
-msgstr "Cambi un incantesimo preparato dopo un riposo lungo"
+msgid "You can change one prepared spell after a long rest"
+msgstr "Puoi cambiare un incantesimo preparato dopo un riposo lungo"
 
 #: apps/frontend/character_sheet.py
-msgid "Change one prepared spell after gaining a level"
-msgstr "Cambi un incantesimo preparato quando sali di livello"
+msgid "You can change one prepared spell after gaining a level"
+msgstr "Puoi cambiare un incantesimo preparato quando sali di livello"
 
 #: apps/frontend/character_sheet.py
 msgid "You can change any prepared spells now"

@@ -255,7 +255,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 PWA_SERVICE_WORKER_PATH = str(BASE_DIR / "static" / "js" / "serviceworker.js")
 PWA_APP_NAME = "La Compagna del Gobbo"
 PWA_APP_DESCRIPTION = "D&D 5.5e (2024) player backend"
-PWA_APP_THEME_COLOR = "#7a1f1f"
+PWA_APP_THEME_COLOR = "#ffffff"  # the status bar; = base.html's light --surface (like the tab bar)
 # The app's own dark background (`--bg` in base.html): the splash screen has one colour only.
 PWA_APP_BACKGROUND_COLOR = "#1a1513"
 PWA_APP_DISPLAY = "standalone"
