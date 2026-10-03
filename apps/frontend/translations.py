@@ -34,27 +34,33 @@ def enqueue(kind: str, object_id: int, fields: dict[str, str], source_lang: str 
     other language. A still-waiting job for the same object is replaced by this newer one."""
     source_lang = source_lang or current_language()
     languages = _site_languages()
-    others = [lang for lang in languages if lang != source_lang]
     fields = {
         name: text[:MAX_FIELD_CHARS]
         for name, text in fields.items()
         if isinstance(text, str) and text.strip()
     }
-    if source_lang not in languages or len(others) != 1 or not fields:
+    if source_lang not in languages or len(languages) != 2 or not fields:
         return None
     if sum(len(text) for text in fields.values()) > MAX_JOB_CHARS:
         return None
     pending = TranslationJob.objects.filter(status=TranslationJob.PENDING)
-    if pending.count() >= MAX_PENDING:
+    if pending.count() + 2 > MAX_PENDING:
         return None
     pending.filter(kind=kind, object_id=object_id).delete()
-    return TranslationJob.objects.create(
-        kind=kind,
-        object_id=object_id,
-        source_lang=source_lang,
-        target_lang=others[0],
-        source=fields,
-    )
+    # One job per language: the active language is where the text was most likely written, but
+    # not surely (an Italian text typed while reading English), so each job asks for its target
+    # language and the model hands back text already in it unchanged.
+    jobs = [
+        TranslationJob.objects.create(
+            kind=kind,
+            object_id=object_id,
+            source_lang=next(lang for lang in languages if lang != target),
+            target_lang=target,
+            source=fields,
+        )
+        for target in sorted(languages, key=lambda lang: lang == source_lang)  # main job first
+    ]
+    return jobs[0]
 
 
 def _latest_done(kind: str, object_ids, target_lang: str) -> dict[int, TranslationJob]:
@@ -90,7 +96,7 @@ def translated_texts(kind: str, objects: dict[int, dict[str, str]], lang: str | 
                 and job.source.get(name) == text[:MAX_FIELD_CHARS]
                 else None
             )
-            shown[object_id][name] = (done, True) if done else (text, False)
+            shown[object_id][name] = (done, True) if done and done != text else (text, False)
     return shown
 
 

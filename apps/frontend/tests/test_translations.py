@@ -38,8 +38,10 @@ def test_saving_in_italian_queues_an_english_translation(client, alice):
 
     client.post("/logbook/new/", {"date": "2026-09-01", "title": "Il drago", "text": ""})
 
-    job = TranslationJob.objects.get()
-    assert (job.source_lang, job.target_lang) == ("it", "en")
+    # One job per language: the writer's language is only a guess.
+    job = TranslationJob.objects.get(target_lang="en")
+    assert job.source_lang == "it"
+    assert TranslationJob.objects.filter(target_lang="it", source={"title": "Il drago"}).exists()
     assert job.source == {"title": "Il drago"}  # empty fields are not sent
 
 
@@ -76,7 +78,10 @@ def test_a_newer_job_replaces_one_still_waiting(alice):
     translations.enqueue("logentry", entry.pk, {"title": "uno"}, "it")
     translations.enqueue("logentry", entry.pk, {"title": "due"}, "it")
 
-    assert list(TranslationJob.objects.values_list("source", flat=True)) == [{"title": "due"}]
+    assert set(str(s) for s in TranslationJob.objects.values_list("source", flat=True)) == {
+        str({"title": "due"})
+    }
+    assert TranslationJob.objects.count() == 2
 
 
 def test_the_queue_and_job_size_are_bounded(alice, monkeypatch):
@@ -150,7 +155,7 @@ def test_the_worker_stops_at_its_hourly_budget(alice, monkeypatch):
 
     assert translate_worker.work_once() is True
     assert translate_worker.work_once() is False
-    assert TranslationJob.objects.filter(status=TranslationJob.PENDING).count() == 1
+    assert TranslationJob.objects.filter(status=TranslationJob.PENDING).count() == 3
 
 
 def test_worker_command_drains_the_queue_with_once(alice, monkeypatch):
@@ -159,7 +164,7 @@ def test_worker_command_drains_the_queue_with_once(alice, monkeypatch):
 
     call_command("translate_worker", "--once")
 
-    assert TranslationJob.objects.get().status == TranslationJob.DONE
+    assert set(TranslationJob.objects.values_list("status", flat=True)) == {TranslationJob.DONE}
 
 
 # --- llm.translate: configuration and what it accepts back ------------------------------------
@@ -273,8 +278,8 @@ def test_editing_the_translated_version_overwrites_the_original(client, alice):
 
     entry.refresh_from_db()
     assert entry.title == "The red dragon"  # the Italian original is gone
-    job = TranslationJob.objects.filter(status=TranslationJob.PENDING).get()
-    assert (job.source_lang, job.target_lang) == ("en", "it")
+    job = TranslationJob.objects.filter(status=TranslationJob.PENDING, target_lang="it").get()
+    assert job.source == {"title": "The red dragon", "text": "Waterdeep"}
     assert job.source["title"] == "The red dragon"
 
 
@@ -290,7 +295,9 @@ def test_saving_an_unchanged_translated_form_keeps_the_original(client, alice):
 
     entry.refresh_from_db()
     assert entry.title == "Il drago"
-    assert not TranslationJob.objects.filter(status=TranslationJob.PENDING).exists()
+    # nothing new queued: only the sibling job from the first enqueue is still waiting
+    pending = TranslationJob.objects.filter(status=TranslationJob.PENDING)
+    assert [j.source for j in pending] == [{"title": "Il drago"}]
 
 
 def test_the_owner_edits_the_backstory_in_the_reading_language(client, alice):
