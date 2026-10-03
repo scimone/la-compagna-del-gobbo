@@ -119,6 +119,7 @@ def save(
     character: Character, *, method: str, base: dict[str, int], bonus: dict[str, int]
 ) -> list[Issue]:
     """Store the assignment. Saved only if valid; returns the problems otherwise."""
+    before = ability_resolver.generated_scores(Draft(character))
     state = dict(Draft(character).get("abilities") or {})
     state |= {
         "method": method,
@@ -126,9 +127,21 @@ def save(
         "bonus": {a: int(v) for a, v in bonus.items() if int(v)},
     }
     set_choice(character, "abilities", state)
+    _drop_stale_overrides(character, before)
     problems = issues(Draft(character))
     effects.apply(character)
     return problems
+
+
+def _drop_stale_overrides(character: Character, before: dict[str, int]) -> None:
+    """A hand-set score (review step) wins over the allocation, so one whose generated score was
+    just changed here would hide the new distribution: forget it. Untouched scores keep theirs."""
+    draft = Draft(character)
+    manual = ability_resolver.manual_scores(draft)
+    after = ability_resolver.generated_scores(draft)
+    kept = {a: v for a, v in manual.items() if after[a] == before[a]}
+    if kept != manual:
+        set_choice(character, "manual.abilities", kept)
 
 
 def set_method(character: Character, method: str) -> None:

@@ -567,3 +567,52 @@ def test_a_leveled_character_cannot_be_reopened(client, alice, settings):
 
     character.refresh_from_db()
     assert character.status == Character.STATUS_COMPLETE
+
+
+def test_reopened_character_keeps_new_ability_distribution(client, alice, settings):
+    settings.ADMIN_ACCOUNTS = ["alice"]
+    character = build_character(alice, "fighter")
+    creation.finalize(character)
+    client.force_login(alice)
+    client.post(f"/characters/{character.pk}/reopen/")
+    state = Draft(character).get("abilities")
+    base = dict(state["base"])
+    a, b = list(base)[:2]
+    base[a], base[b] = base[b], base[a]
+    data = {f"base.{k}": v for k, v in base.items()}
+    data["method"] = state["method"]
+    data |= {f"bonus.{k}": v for k, v in (state.get("bonus") or {}).items()}
+    client.post(f"/characters/{character.pk}/create/abilities/", data)
+    client.post(f"/characters/{character.pk}/create/finish/")
+    character.refresh_from_db()
+    assert character.status == Character.STATUS_COMPLETE
+    from apps.builder.resolvers import abilities as r
+
+    final = r.final_scores(Draft(character))
+    from apps.builder import tables
+
+    for ability, field in tables.ABILITY_FIELDS.items():
+        assert getattr(character, field) == final[ability]
+    assert final[a] == state["base"][b] + (state.get("bonus") or {}).get(a, 0)
+
+
+def test_new_distribution_replaces_a_stale_manual_override(client, alice, settings):
+    settings.ADMIN_ACCOUNTS = ["alice"]
+    character = build_character(alice, "fighter")
+    state = Draft(character).get("abilities")
+    base = dict(state["base"])
+    a, b = list(base)[:2]
+    creation.set_manual_abilities(character, {a: 18})
+    creation.finalize(character)
+    client.force_login(alice)
+    client.post(f"/characters/{character.pk}/reopen/")
+    base[a], base[b] = base[b], base[a]
+    data = {f"base.{k}": v for k, v in base.items()} | {"method": state["method"]}
+    data |= {f"bonus.{k}": v for k, v in (state.get("bonus") or {}).items()}
+    client.post(f"/characters/{character.pk}/create/abilities/", data)
+    client.post(f"/characters/{character.pk}/create/finish/")
+    character.refresh_from_db()
+    from apps.builder import tables
+
+    expected = state["base"][b] + (state.get("bonus") or {}).get(a, 0)
+    assert getattr(character, tables.ABILITY_FIELDS[a]) == expected
