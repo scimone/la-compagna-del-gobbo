@@ -236,7 +236,7 @@ def test_links_in_the_text_become_links_but_only_safe_ones(client, alice):
     assert '<a href="https://e.org" target="_blank" rel="noopener noreferrer">y</a>' in html
 
 
-def test_messages_sit_under_the_entries_of_their_day_oldest_first_like_a_chat(client, alice):
+def test_messages_sit_above_the_entries_of_their_day_oldest_first(client, alice):
     from apps.characters.models import Character
 
     hero = Character.objects.create(name="Gobbo", owner=alice)
@@ -248,7 +248,7 @@ def test_messages_sit_under_the_entries_of_their_day_oldest_first_like_a_chat(cl
     _entry(alice, date=day, title="entry-c", text="x")
 
     html = client.get("/logbook/").content.decode()
-    order = [html.index(x) for x in ("entry-old", "entry-b", "entry-c", "msg-one", "msg-two")]
+    order = [html.index(x) for x in ("entry-old", "msg-one", "msg-two", "entry-b", "entry-c")]
 
     assert order == sorted(order)
     assert "Adventure Log of 6 Sep 2026" in html

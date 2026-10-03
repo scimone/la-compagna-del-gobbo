@@ -13,13 +13,13 @@ from apps.frontend.models import LogEntry
 def _order(entry: LogEntry) -> tuple:
     personal = entry.kind == LogEntry.PERSONAL
     written = entry.created_at.timestamp()
-    return (entry.date.toordinal(), personal, written, entry.pk)
+    return (entry.date.toordinal(), not personal, written, entry.pk)
 
 
 def list_entries() -> list[LogEntry]:
-    """Oldest first, so the newest is at the bottom like in a chat. Within a day the objective
-    entries come first and the personal messages follow under them, each in the order they were
-    written - a conversation."""
+    """Oldest first, so the newest is at the bottom like in a chat. Within a day the personal
+    messages come first and the objective entries follow under them, each in the order they were
+    written."""
     return sorted(LogEntry.objects.select_related("author", "character"), key=_order)
 
 
