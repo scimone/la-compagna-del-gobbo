@@ -549,3 +549,20 @@ def test_a_resource_is_spent_and_regained_between_zero_and_its_maximum(fighter):
     assert fighter.resources.get(name="Second Wind").current_uses == 2
     play.adjust_resource(fighter, wind.pk, -5)
     assert fighter.resources.get(name="Second Wind").current_uses == 0
+
+
+def test_level_gain_opens_one_change_for_a_bard_and_each_change_uses_it_up(hero):
+    CharacterClass.objects.filter(character=hero).delete()
+    CharacterClass.objects.create(character=hero, klass=Class.objects.get(pk="bard"), level=3)
+    for sid in ("bless", "shield"):
+        CharacterSpell.objects.create(character=hero, spell_id=sid, klass_id="bard", prepared=True)
+    with pytest.raises(ValueError):  # locked
+        play.set_spell_prepared(hero, "bless", False, limit=4)
+
+    play.grant_spell_changes(hero, "level", {"bard"})
+    play.long_rest(hero)  # a Bard's window is a level, not a rest: untouched
+    assert hero.spell_changes == {"bard": 1}
+    play.set_spell_prepared(hero, "bless", False, limit=4)
+    with pytest.raises(ValueError):  # the one change is spent
+        play.set_spell_prepared(hero, "shield", False, limit=4)
+    play.set_spell_prepared(hero, "bless", True, limit=4)  # filling a free slot costs nothing

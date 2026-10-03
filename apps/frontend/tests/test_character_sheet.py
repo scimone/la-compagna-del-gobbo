@@ -346,12 +346,35 @@ def test_spellbook_shows_the_prepared_count_and_toggles_preparation(signed_in, a
     row = prepared.first()
 
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
-    assert f"{prepared.count()}/" in html.split('class="cs-prepared')[1].split("</p>")[0]
-    assert "Finish a Long Rest" in html
+    header = html.split('class="cs-invbar"')[1].split("</div>")[0]
+    assert f"Prepared <b>{prepared.count()}/" in header
+    assert "after a long rest" in html
 
+    # Locked until a long rest opens the window (SRD "Preparing Spells")...
+    locked = act(signed_in, cleric, action="spell_prepare", spell=row.spell_id, prepared="0")
+    assert locked.status_code == 400
+    act(signed_in, cleric, action="long_rest")
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
+    assert "You can change any prepared spells now" in html
+    # ...and a Cleric may then change any number of them.
     act(signed_in, cleric, action="spell_prepare", spell=row.spell_id, prepared="0")
     row.refresh_from_db()
     assert not row.prepared
+
+
+def test_a_hand_added_spell_of_a_preparing_class_follows_its_preparation(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    cleric_spell = Spell.objects.filter(level=1, classes__contains=["Cleric"]).exclude(
+        pk__in=list(cleric.spells.values_list("spell_id", flat=True))
+    )
+    cleric_spell = [cleric_spell.first()]
+    free = Spell.objects.filter(level=1).exclude(classes__contains=["Cleric"]).first()
+    act(signed_in, cleric, action="spell_add", spell=cleric_spell[0].pk)
+    act(signed_in, cleric, action="spell_add", spell=free.pk)
+
+    assert cleric.spells.get(spell=cleric_spell[0]).klass_id == "cleric"
+    assert cleric.spells.get(spell=free).klass_id is None  # not on its list: just prepared
+    assert cleric.spells.get(spell=free).prepared
 
 
 def test_cannot_prepare_more_spells_than_the_class_allows_nor_always_prepared_ones(

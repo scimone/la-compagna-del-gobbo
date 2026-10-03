@@ -40,6 +40,7 @@ from apps.characters.models import (
     CharacterSense,
     CharacterSpell,
 )
+from apps.characters.services import play
 from apps.rules.models import (
     Ability,
     ChoiceDefinition,
@@ -1510,6 +1511,7 @@ def commit(character: Character, class_id: str, values: Values) -> Plan:
     threshold = tables.xp_for_level(total)
     character.experience_points = max(character.experience_points, threshold)
     character.save()
+    play.grant_spell_changes(character, "level", {klass.id})  # SRD: change prepared spells
     mods = {
         a: tables.ability_modifier(getattr(character, _ABILITY_FIELD[a])) for a in tables.ABILITIES
     }

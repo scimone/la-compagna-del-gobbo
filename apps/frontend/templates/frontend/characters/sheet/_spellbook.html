@@ -2,19 +2,14 @@
 {# The casting numbers, the toolbar, the search box and the filter buttons stay put while the rest scrolls. #}
 {% if spellbook.spells or can_edit %}
 <div class="cs-sticky">
-  {% if can_edit %}
-    <div class="cs-invbar">
-      <span class="cs-weight">{% translate "Spells" %} <b>{{ spellbook.spells|length }}</b></span>
-      <button type="button" class="cs-add-btn" data-add-open="cs-add-spell">+ {% translate "Add spell" %}</button>
-    </div>
-  {% endif %}
+  {# SRD "Preparing Spells": how many the class has prepared of what its table allows (always- #}
+  {# prepared spells and cantrips don't count), and below it when it may change that list. #}
+  <div class="cs-invbar">
+      <span class="cs-weight">{% translate "Spells" %} <b>{{ spellbook.spells|length }}</b>{% for p in spellbook.preparation %} · {% if spellbook.preparation|length > 1 %}{{ p.class }} {% endif %}{% translate "Prepared" %} <b>{{ p.count }}/{{ p.limit }}</b>{% endfor %}</span>
+      {% if can_edit %}<button type="button" class="cs-add-btn" data-add-open="cs-add-spell">+ {% translate "Add spell" %}</button>{% endif %}
+  </div>
   {% for p in spellbook.preparation %}
-    {# SRD "Preparing Spells": how many the class has prepared of what its table allows (always- #}
-    {# prepared spells and cantrips don't count), and when it may change that list. #}
-    <p class="cs-prepared{% if p.count > p.limit %} over{% endif %}">
-      {{ p.class }}: {% translate "Prepared" %} <b>{{ p.count }}/{{ p.limit }}</b>
-      {% if p.when %}<span class="rule">· {% blocktranslate with when=p.when number=p.number %}Change when you: {{ when }} ({{ number }}){% endblocktranslate %}</span>{% endif %}
-    </p>
+    <p class="cs-prepared{% if p.can_change %} open{% endif %}">{% if spellbook.preparation|length > 1 %}{{ p.class }}: {% endif %}{{ p.text }}</p>
   {% endfor %}
   {% if spellbook.spells %}
     {# The World's own search box and filter buttons (same partial, same look), but over this #}

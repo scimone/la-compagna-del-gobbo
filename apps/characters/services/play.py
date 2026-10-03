@@ -377,14 +377,37 @@ def sell_item(character: Character, kind: str, item_id: int, quantity: int = 1) 
 # --- spells ------------------------------------------------------------------------------------
 
 
-def add_spell(character: Character, spell_id: str) -> CharacterSpell:
-    """Add a spell to the character's list, prepared. `Spell.DoesNotExist` for an unknown id,
-    `ValueError` when the character already has it."""
+def add_spell(character: Character, spell_id: str, limits: dict | None = None) -> CharacterSpell:
+    """Add a spell to the character's list. `Spell.DoesNotExist` for an unknown id, `ValueError`
+    when the character already has it.
+
+    `limits` is `{class id: how many spells it prepares}` for the character's classes that
+    prepare spells (the caller has the derived stats). A spell on one of those classes' lists
+    then follows that class's preparation: it is tied to the class (a Wizard's goes into the
+    spellbook) and prepared only while the class has room for it. Any other spell is simply
+    prepared.
+    """
     spell = Spell.objects.get(pk=spell_id)
+    klass_id, prepared, in_spellbook = None, True, False
+    for class_id, limit in (limits or {}).items():
+        row = character.classes.select_related("klass").filter(klass_id=class_id).first()
+        if row and row.klass.name in (spell.classes or []):
+            klass_id = class_id
+            in_spellbook = class_id == "wizard"
+            used = character.spells.filter(
+                klass_id=class_id, prepared=True, always_prepared=False, spell__level__gt=0
+            ).count()
+            prepared = spell.level == 0 or used < limit
+            break
     row, created = CharacterSpell.objects.get_or_create(
         character=character,
         spell=spell,
-        defaults={"prepared": True, "source": SPELL_SOURCE},
+        defaults={
+            "prepared": prepared,
+            "klass_id": klass_id,
+            "in_spellbook": in_spellbook,
+            "source": SPELL_SOURCE,
+        },
     )
     if not created:
         raise ValueError(f"{spell.name} is already on the list")
@@ -443,6 +466,35 @@ def cast_spell(
     return slot_key
 
 
+#: The SRD's "Spell Preparation by Class" table: `class id -> (when the list can be changed,
+#: how many spells)`. `when` is "rest" (finishing a Long Rest) or "level" (gaining a level); the
+#: number is 1 or "any".
+PREPARATION_CHANGES = {
+    "bard": ("level", 1),
+    "cleric": ("rest", "any"),
+    "druid": ("rest", "any"),
+    "paladin": ("rest", 1),
+    "ranger": ("rest", 1),
+    "sorcerer": ("level", 1),
+    "warlock": ("level", 1),
+    "wizard": ("rest", "any"),
+}
+
+
+def grant_spell_changes(character: Character, when: str, class_ids=None) -> None:
+    """Open the window to change prepared spells: every class (or just `class_ids`) whose SRD rule
+    is `when` ("rest" or "level") may now swap its allowed number of spells."""
+    changes = dict(character.spell_changes)
+    for class_id, (class_when, number) in PREPARATION_CHANGES.items():
+        if class_when != when or (class_ids is not None and class_id not in class_ids):
+            continue
+        if character.classes.filter(klass_id=class_id).exists():
+            changes[class_id] = number
+    if changes != character.spell_changes:
+        character.spell_changes = changes
+        character.save(update_fields=["spell_changes"])
+
+
 def set_spell_prepared(
     character: Character, spell_id: str, prepared: bool, *, limit: int | None = None
 ) -> CharacterSpell:
@@ -454,7 +506,9 @@ def set_spell_prepared(
     - A class that keeps a spellbook (the Wizard) prepares only spells that are in it.
     - `limit` is how many spells the spell's class lets its member have prepared (the class table's
       "Prepared Spells" column - worked out by the caller, who has the derived stats): preparing
-      one more than that is refused. A spell without a class (added by hand) has no limit.
+      one more than that is refused. A spell without a class has no limit.
+    - Taking a spell off the list is a *change*: only while the class has some left (a long rest
+      or a level opens them, see `grant_spell_changes`); each one used up is one fewer.
     """
     row = character.spells.select_related("spell").get(spell_id=spell_id)
     if row.spell.level == 0:
@@ -471,6 +525,16 @@ def set_spell_prepared(
             ).count()
             if count >= limit:
                 raise ValueError(f"already {limit} spells prepared")
+    if not prepared and row.prepared and row.klass_id and limit is not None:
+        left = character.spell_changes.get(row.klass_id)
+        if not left:
+            raise ValueError("prepared spells can only be changed after a rest or a level")
+        if left != "any":
+            if left <= 1:
+                del character.spell_changes[row.klass_id]
+            else:
+                character.spell_changes[row.klass_id] = left - 1
+            character.save(update_fields=["spell_changes"])
     row.prepared = prepared
     row.save(update_fields=["prepared"])
     return row
@@ -622,4 +686,5 @@ def long_rest(character: Character) -> None:
     character.save()
     character.classes.update(hit_dice_spent=0)
     character.spells.filter(free_cast_used=True).update(free_cast_used=False)
+    grant_spell_changes(character, "rest")
     CharacterResource.objects.filter(character=character).update(current_uses=models.F("max_uses"))

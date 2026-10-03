@@ -525,8 +525,18 @@ def _spellbook_row(spell, status: str, removable: bool, cast: dict | None = None
     return row
 
 
-def _spellbook_rows(character: Character, can_edit: bool) -> list[dict]:
+def _prepared_limits(stats) -> dict[str, int]:
+    """`{class id: how many spells it prepares}` for the classes that prepare spells."""
+    return {
+        e["source"].removeprefix("class:"): e["prepared"]
+        for e in stats.spellcasting
+        if e["source"].startswith("class:") and e.get("prepared")
+    }
+
+
+def _spellbook_rows(character: Character, can_edit: bool, limits: dict | None = None) -> list[dict]:
     rows = []
+    limits = limits or {}
     for cs in (
         character.spells.select_related("spell", "klass")
         .prefetch_related("spell__saving_throw_abilities")
@@ -560,7 +570,14 @@ def _spellbook_rows(character: Character, can_edit: bool) -> list[dict]:
         # are not the player's to switch. A caster's spell the class cannot prepare (a Wizard's
         # spell outside the spellbook) is not offered either.
         if can_edit and cs.spell.level > 0 and not cs.always_prepared:
-            row["prepare"] = {"spell": cs.spell.pk, "on": cs.prepared}
+            # Taking a class's spell off needs one of its changes (a long rest or a level opens
+            # them) - until then the pill is shown but cannot be pressed.
+            locked = (
+                cs.prepared
+                and cs.klass_id in limits
+                and not character.spell_changes.get(cs.klass_id)
+            )
+            row["prepare"] = {"spell": cs.spell.pk, "on": cs.prepared, "locked": locked}
         rows.append(row)
     return rows
 
@@ -601,23 +618,22 @@ def _spell_filters(rows: list[dict]) -> list[dict]:
     ]
 
 
-#: The SRD's "Spell Preparation by Class" table: when a class may change the list it prepares, and
-#: how many of its spells it may change then.
+#: The SRD's "Spell Preparation by Class" table as a sentence, per (when, how many).
 _PREPARATION_RULES = {
-    "bard": (gettext_lazy("Gain a level"), gettext_lazy("One")),
-    "cleric": (gettext_lazy("Finish a Long Rest"), gettext_lazy("Any")),
-    "druid": (gettext_lazy("Finish a Long Rest"), gettext_lazy("Any")),
-    "paladin": (gettext_lazy("Finish a Long Rest"), gettext_lazy("One")),
-    "ranger": (gettext_lazy("Finish a Long Rest"), gettext_lazy("One")),
-    "sorcerer": (gettext_lazy("Gain a level"), gettext_lazy("One")),
-    "warlock": (gettext_lazy("Gain a level"), gettext_lazy("One")),
-    "wizard": (gettext_lazy("Finish a Long Rest"), gettext_lazy("Any")),
+    ("rest", "any"): gettext_lazy("Change any prepared spells after a long rest"),
+    ("rest", 1): gettext_lazy("Change one prepared spell after a long rest"),
+    ("level", 1): gettext_lazy("Change one prepared spell after gaining a level"),
+}
+_PREPARATION_OPEN = {
+    "any": gettext_lazy("You can change any prepared spells now"),
+    1: gettext_lazy("You can change one prepared spell now"),
 }
 
 
 def _preparation(character: Character, stats, classes) -> list[dict]:
     """Per class that prepares spells: how many it has prepared out of how many the class table
-    allows (always-prepared spells and cantrips do not count), and the SRD's rule for changing."""
+    allows (always-prepared spells and cantrips do not count), and the SRD's rule for changing -
+    or, while the class has changes left (after a long rest or a level), that it can change now."""
     names = {c.klass_id: c.klass.name for c in classes}
     result = []
     for entry in stats.spellcasting:
@@ -627,14 +643,15 @@ def _preparation(character: Character, stats, classes) -> list[dict]:
         count = character.spells.filter(
             klass_id=class_id, prepared=True, always_prepared=False, spell__level__gt=0
         ).count()
-        when, number = _PREPARATION_RULES.get(class_id, ("", ""))
+        left = character.spell_changes.get(class_id)
+        rule = play.PREPARATION_CHANGES.get(class_id)
         result.append(
             {
                 "class": names.get(class_id, class_id),
                 "count": count,
                 "limit": entry["prepared"],
-                "when": when,
-                "number": number,
+                "can_change": bool(left),
+                "text": (_PREPARATION_OPEN[left] if left else _PREPARATION_RULES.get(rule, "")),
             }
         )
     return result
@@ -661,7 +678,7 @@ def _finish_cast(cast: dict, sources: list[dict], slots: list[dict]) -> None:
 
 
 def _spellbook(request, character: Character, stats, classes, can_edit: bool) -> dict:
-    rows = _spellbook_rows(character, can_edit)
+    rows = _spellbook_rows(character, can_edit, _prepared_limits(stats))
     slots = _slots(character, stats, classes)
     sources = _casting_sources(stats, classes)
     for row in rows:
@@ -1157,7 +1174,8 @@ def _act_text(character, post):
 
 
 def _act_spell_add(character, post):
-    spell = play.add_spell(character, post.get("spell", "")).spell
+    limits = _prepared_limits(derived_stats.compute(character))
+    spell = play.add_spell(character, post.get("spell", ""), limits).spell
     return {"refresh": True, "message": _("Added %(name)s") % {"name": spell.name}}
 
 

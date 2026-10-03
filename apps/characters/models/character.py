@@ -83,6 +83,10 @@ class Character(models.Model):
     #: Spell slots used since the last long rest, `{"<slot level>": n, "pact": n}`. Only what is
     #: *spent* is stored: the maximum is derived from the class levels, so it can never go stale.
     spell_slots_spent = models.JSONField(default=dict, blank=True)
+    #: How many prepared spells each class may still swap out, `{"<class id>": n | "any"}` - set by
+    #: a long rest or a level (whichever the SRD's "Spell Preparation by Class" table names for
+    #: the class) and used up as spells are unprepared. No entry: the list is locked until then.
+    spell_changes = models.JSONField(default=dict, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
