@@ -1,4 +1,4 @@
-var staticCacheName = "dnd-pwa-v3";
+var staticCacheName = "dnd-pwa-v4";
 
 self.addEventListener("install", function (event) {
   // Take over immediately on next load instead of waiting for every open tab running the
@@ -47,10 +47,14 @@ self.addEventListener("fetch", function (event) {
     event.respondWith(
       fetch(event.request)
         .then(function (response) {
-          var responseCopy = response.clone();
-          caches.open(staticCacheName).then(function (cache) {
-            cache.put(event.request, responseCopy);
-          });
+          // Only pages (for offline use) - copying every picture, script and 600 KB list into
+          // the cache on each request made navigation slower and the cache grow without bound.
+          if (event.request.mode === "navigate" && response.ok) {
+            var responseCopy = response.clone();
+            caches.open(staticCacheName).then(function (cache) {
+              cache.put(event.request, responseCopy);
+            });
+          }
           return response;
         })
         .catch(function () {

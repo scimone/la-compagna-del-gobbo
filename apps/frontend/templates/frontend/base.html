@@ -3,7 +3,7 @@
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>La Compagna del Gobbo</title>
   {% progressive_web_app_meta %}
   <link rel="icon" type="image/png" sizes="48x48" href="{% static 'images/icons/favicon-48x48.png' %}">
@@ -22,6 +22,9 @@
       document.documentElement.style.setProperty("--app-height", Math.round(height) + "px");
     }
     setAppHeight();
+    ["gesturestart", "gesturechange", "gestureend"].forEach(function (name) {
+      document.addEventListener(name, function (e) { e.preventDefault(); });
+    });
     window.addEventListener("resize", setAppHeight);
     if (window.visualViewport) window.visualViewport.addEventListener("resize", setAppHeight);
   </script>
@@ -55,6 +58,8 @@
     html, body {
       height: 100%;
       overflow: hidden;
+      /* Scrolling only: no pinch- or double-tap zoom (iOS Safari ignores `user-scalable=no`). */
+      touch-action: pan-x pan-y;
     }
 
     body {

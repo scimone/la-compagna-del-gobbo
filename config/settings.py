@@ -141,6 +141,8 @@ MIDDLEWARE = [
     # own the way `runserver` does under DEBUG=True. Placed right after SecurityMiddleware per
     # WhiteNoise's own setup docs.
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    # The World lists are 250-650 KB of repetitive HTML; gzip shrinks them ~15x on the wire.
+    "django.middleware.gzip.GZipMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -186,6 +188,10 @@ DATABASES = {
         "PASSWORD": os.environ["POSTGRES_PASSWORD"],
         "HOST": os.environ["POSTGRES_HOST"],
         "PORT": os.environ["POSTGRES_PORT"],
+        # Reuse the connection between requests instead of opening a new one for each (pages
+        # here run a dozen-plus queries plus the Interaction write); re-checked before reuse.
+        "CONN_MAX_AGE": 60,
+        "CONN_HEALTH_CHECKS": True,
     }
 }
 
@@ -221,6 +227,16 @@ MEDIA_ROOT = Path(os.environ.get("DJANGO_MEDIA_ROOT", BASE_DIR / "media"))
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
+def _static_cache_headers(headers, path, url):
+    """Pictures never change in place (new art gets a new file), but WhiteNoise only caches
+    unversioned files for 60 s, so every list re-downloaded its (up to 1 MB) thumbnails."""
+    if url.startswith("/static/images/"):
+        headers["Cache-Control"] = "public, max-age=86400"
+
+
+WHITENOISE_ADD_HEADERS_FUNCTION = _static_cache_headers
 
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},

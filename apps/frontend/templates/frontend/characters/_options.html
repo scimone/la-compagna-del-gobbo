@@ -8,7 +8,7 @@
         <input type="radio" name="{{ field }}" value="{{ o.id }}" data-select{% if o.selected %} checked{% endif %}>
         {% if o.image %}
           {% if o.vignette %}<span class="thumb-vignette">{% endif %}
-          <img class="item-thumb" src="{{ o.image }}" alt="">
+          <img class="item-thumb" src="{{ o.image }}" alt="" loading="lazy" decoding="async">
           {% if o.vignette %}</span>{% endif %}
         {% endif %}
         <div class="item-text">

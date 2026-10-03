@@ -32,7 +32,7 @@
           <li class="{% if o.selected %}selected{% endif %}{% if not o.allowed %} disabled{% endif %}">
             <label class="pick menu-thumb">
               <input type="radio" name="klass" value="{{ o.id }}" data-select{% if o.selected %} checked{% endif %}{% if not o.allowed %} disabled{% endif %}>
-              {% if o.image %}<img class="item-thumb" src="{{ o.image }}" alt="">{% endif %}
+              {% if o.image %}<img class="item-thumb" src="{{ o.image }}" alt="" loading="lazy" decoding="async">{% endif %}
               <div class="item-text">
                 <span class="item-name">{{ o.name }}</span>
                 {% if o.level %}<div class="lvl">{% blocktranslate with a=o.level b=o.level|add:1 %}Level {{ a }} → {{ b }}{% endblocktranslate %}</div>
