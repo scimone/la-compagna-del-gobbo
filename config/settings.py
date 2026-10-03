@@ -264,11 +264,11 @@ PWA_APP_ORIENTATION = "any"
 PWA_APP_START_URL = "/characters/"
 PWA_APP_STATUS_BAR_COLOR = "default"
 PWA_APP_ICONS = [
-    {"src": "/static/images/icons/icon-192x192.png", "sizes": "192x192", "type": "image/png"},
-    {"src": "/static/images/icons/icon-512x512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "/static/images/icons/icon-192x192.png?v=2", "sizes": "192x192", "type": "image/png"},
+    {"src": "/static/images/icons/icon-512x512.png?v=2", "sizes": "512x512", "type": "image/png"},
 ]
 PWA_APP_ICONS_APPLE = [
-    {"src": "/static/images/icons/icon-180x180.png", "sizes": "180x180", "type": "image/png"},
+    {"src": "/static/images/icons/icon-180x180.png?v=2", "sizes": "180x180", "type": "image/png"},
 ]
 PWA_APP_SPLASH_SCREEN = []
 PWA_APP_DIR = "ltr"

@@ -1,4 +1,4 @@
-var staticCacheName = "dnd-pwa-v4";
+var staticCacheName = "dnd-pwa-v5";
 
 self.addEventListener("install", function (event) {
   // Take over immediately on next load instead of waiting for every open tab running the
