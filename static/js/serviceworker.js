@@ -35,6 +35,9 @@ self.addEventListener("activate", function (event) {
 self.addEventListener("fetch", function (event) {
   var requestUrl = new URL(event.request.url);
 
+  // A character's PDF export is a large one-off download: straight to the network, never cached.
+  if (requestUrl.pathname.endsWith("/export-pdf/")) return;
+
   if (requestUrl.origin === location.origin) {
     // Network-first: every page here can depend on the language cookie/session, so a cached
     // response would silently ignore a language switch (this is exactly what happened when

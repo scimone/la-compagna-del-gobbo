@@ -203,13 +203,22 @@
   .cs-cast-field input[type="number"] { padding: 0.3rem; }
 
   /* Tabs: the same underline strip as the World's, but buttons - they switch panels in place. */
-  .cs-tabbar { padding: 0 var(--cs-pad); background: var(--surface); }
-  .cs-tabs { display: flex; overflow-x: auto; scrollbar-width: none; }
+  .cs-tabbar { display: flex; align-items: stretch; padding: 0 var(--cs-pad); background: var(--surface); }
+  .cs-tabs { flex: 1; min-width: 0; display: flex; overflow-x: auto; scrollbar-width: none; }
   .cs-tabs::-webkit-scrollbar { display: none; }
   .cs-tabs button { flex-shrink: 0; padding: 0.65rem 0.95rem 0.55rem; background: none; border: 0; border-bottom: 2px solid transparent; color: var(--muted); font-weight: 600; font-size: 0.9rem; white-space: nowrap; cursor: pointer; }
   .cs-tabs button:first-child { padding-left: 0; }
   .cs-tabs button.active { color: var(--accent); border-bottom-color: var(--accent); }
   .cs-tabs button:active { background: var(--bg); }
+  /* The 3-dot menu, at the end of the tab strip (outside .cs-tabs, whose scrolling would clip the list). */
+  .cs-menu { position: relative; flex-shrink: 0; }
+  .cs-menu summary { display: grid; place-items: center; height: 100%; padding: 0 0.6rem; list-style: none; cursor: pointer; color: var(--muted); -webkit-tap-highlight-color: transparent; }
+  .cs-menu summary::-webkit-details-marker { display: none; }
+  .cs-menu summary svg { width: 1.2rem; height: 1.2rem; fill: currentColor; }
+  .cs-menu[open] summary { color: var(--accent); }
+  .cs-menu-list { position: absolute; right: 0; top: 100%; z-index: 20; min-width: 11rem; padding: 0.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18); }
+  .cs-menu-list a { display: block; padding: 0.6rem 0.8rem; border-radius: 0.4rem; color: var(--text); text-decoration: none; font-size: 0.9rem; white-space: nowrap; }
+  .cs-menu-list a:active { background: var(--bg); }
 
   /* --- the panels ----------------------------------------------------------------------- */
   /* A panel is a fixed part (`.cs-sticky`: what must stay in view) on top of a scrolling part

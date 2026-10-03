@@ -1,5 +1,5 @@
 {% load i18n %}
-{# The part of the sheet that never scrolls away: just the tab strip. Who the character is       #}
+{# The part of the sheet that never scrolls away: the tab strip and the 3-dot menu. Who the character is       #}
 {# (portrait, name, level, class, species, background, size) lives in the Biography tab now.     #}
 <div class="cs-top">
   <div class="cs-tabbar">
@@ -9,5 +9,14 @@
                 aria-selected="{% if key == sheet_tab %}true{% else %}false{% endif %}">{{ label }}</button>
       {% endfor %}
     </nav>
+    {# `download` keeps navigation.js from turning the link into a page change. #}
+    <details class="cs-menu">
+      <summary aria-label="{% translate 'Character menu' %}" title="{% translate 'Character menu' %}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+      </summary>
+      <div class="cs-menu-list" role="menu">
+        <a role="menuitem" href="{% url 'character-export-pdf' character.pk %}" download>{% translate "Export to PDF" %}</a>
+      </div>
+    </details>
   </div>
 </div>

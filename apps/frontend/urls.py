@@ -1,6 +1,13 @@
 from django.urls import path
 
-from apps.frontend import character_sheet, character_views, levelup_views, logbook_views, views
+from apps.frontend import (
+    character_pdf,
+    character_sheet,
+    character_views,
+    levelup_views,
+    logbook_views,
+    views,
+)
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -17,6 +24,11 @@ urlpatterns = [
         "characters/<int:pk>/levelup/done/",
         levelup_views.character_levelup_done,
         name="character-levelup-done",
+    ),
+    path(
+        "characters/<int:pk>/export-pdf/",
+        character_pdf.character_export_pdf,
+        name="character-export-pdf",
     ),
     path("characters/<int:pk>/reopen/", character_views.character_reopen, name="character-reopen"),
     path("characters/<int:pk>/delete/", character_views.character_delete, name="character-delete"),

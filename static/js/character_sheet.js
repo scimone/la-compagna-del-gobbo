@@ -298,6 +298,14 @@
     if (tab) showTab(tab.dataset.tab, true);
   });
 
+  // ---- the 3-dot menu: closes on a tap anywhere else, and once an item is picked --------------
+
+  document.addEventListener("click", function (event) {
+    document.querySelectorAll(".cs-menu[open]").forEach(function (menu) {
+      if (!menu.contains(event.target) || event.target.closest(".cs-menu-list a")) menu.open = false;
+    });
+  });
+
   // ---- descriptions -----------------------------------------------------------------------
 
   function describe(url) {

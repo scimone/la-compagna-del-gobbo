@@ -2053,3 +2053,11 @@ msgstr "Stai modificando un personaggio esistente: inventario, oro ed esperienza
 #: apps/frontend/forms.py apps/frontend/templates/frontend/logbook/list.html
 msgid "DM"
 msgstr "GM"
+
+#: apps/frontend/templates/frontend/characters/sheet/_top.html
+msgid "Character menu"
+msgstr "Menu del personaggio"
+
+#: apps/frontend/templates/frontend/characters/sheet/_top.html
+msgid "Export to PDF"
+msgstr "Esporta in PDF"
