@@ -157,10 +157,6 @@
   var modeButton = box.querySelector("[data-mode]");
   var form = body.closest("form");
 
-  function remember(value) {
-    try { localStorage.setItem("logbook-markdown", value ? "1" : "0"); } catch (e) {}
-  }
-
   function setMode(markdown) {
     markdownMode = markdown;
     box.classList.toggle("md-mode", markdown);
@@ -168,7 +164,6 @@
     textarea.hidden = !markdown;
     modeButton.classList.toggle("on", markdown);
     modeButton.setAttribute("aria-pressed", markdown ? "true" : "false");
-    remember(markdown);
   }
 
   function csrfToken() {
@@ -253,9 +248,7 @@
 
   try { document.execCommand("defaultParagraphSeparator", false, "p"); } catch (e) {}
   box.hidden = false;
-  var saved = false;
-  try { saved = localStorage.getItem("logbook-markdown") === "1"; } catch (e) {}
-  setMode(saved);
+  setMode(false);
   // The label's `for` points at the textarea: send a click on it to the editor instead.
   var label = box.parentNode.querySelector("label");
   if (label) {
