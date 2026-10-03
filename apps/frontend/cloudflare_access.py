@@ -47,7 +47,9 @@ def logout_url() -> str:
 
 @lru_cache(maxsize=4)
 def _jwks_client(certs_url: str) -> jwt.PyJWKClient:
-    return jwt.PyJWKClient(certs_url)  # caches the key set itself
+    # Cloudflare's keys rotate rarely, and an unknown `kid` forces a refresh anyway: a long
+    # lifespan keeps the network fetch (and the key parsing) out of nearly every request.
+    return jwt.PyJWKClient(certs_url, cache_keys=True, lifespan=6 * 3600)
 
 
 def verified_email(token: str) -> str | None:

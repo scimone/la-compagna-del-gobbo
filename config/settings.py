@@ -234,6 +234,9 @@ def _static_cache_headers(headers, path, url):
     unversioned files for 60 s, so every list re-downloaded its (up to 1 MB) thumbnails."""
     if url.startswith("/static/images/"):
         headers["Cache-Control"] = "public, max-age=86400"
+    elif url.startswith("/static/js/"):
+        # Always referenced as `{% static_v %}` (`?v=<mtime>`), so a changed script is a new URL.
+        headers["Cache-Control"] = "public, max-age=31536000, immutable"
 
 
 WHITENOISE_ADD_HEADERS_FUNCTION = _static_cache_headers

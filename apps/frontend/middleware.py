@@ -31,7 +31,9 @@ class TrackLastSectionUrlMiddleware:
         if request.method == "GET" and response.status_code == 200:
             for prefix, session_key in _TRACKED_SECTIONS.items():
                 if request.path.startswith(prefix):
-                    request.session[session_key] = request.path
+                    # Writing an unchanged value still saves the session (a DB write per page).
+                    if request.session.get(session_key) != request.path:
+                        request.session[session_key] = request.path
                     break
         return response
 
