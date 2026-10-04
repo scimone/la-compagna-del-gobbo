@@ -1118,7 +1118,9 @@
   function stickHeads() {
     root.querySelectorAll(".cs-sec").forEach(function (block) {
       var head = block.querySelector(".cs-sec-head");
-      if (head) block.style.setProperty("--cs-sec-h", head.offsetHeight + "px");
+      // The exact (fractional) height, less a pixel tucked under the heading, so no sliver of the
+      // scrolling list shows between the two - `offsetHeight` rounds, and that rounding was a gap.
+      if (head) block.style.setProperty("--cs-sec-h", head.getBoundingClientRect().height - 1 + "px");
     });
   }
   window.addEventListener("resize", stickHeads);
