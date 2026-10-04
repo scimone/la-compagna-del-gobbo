@@ -673,6 +673,14 @@
   // dialog shows the hit points as they would stand, and only "Finish" posts the rolls (cancelling
   // is an interrupted rest). The server re-checks every roll.
   function shortRestReset(dialog) {
+    // Read what the sheet shows right now (the HP field and the Hit Dice pips on the Stats tab), so
+    // the dialog never works from numbers older than the player's last edit.
+    var hpField = root.querySelector('[data-bind="hp"]');
+    if (hpField) dialog.dataset.hp = Number(hpField.matches("input") ? hpField.value : hpField.textContent) || 0;
+    dialog.querySelectorAll("[data-rest-pool]").forEach(function (pool) {
+      var row = root.querySelector('[data-hd="' + pool.dataset.restPool + '"]');
+      if (row) pool.dataset.left = row.querySelectorAll(".pip-btn.on").length;
+    });
     dialog._rolls = [];
     dialog._hp = Number(dialog.dataset.hp);
     dialog._anyDice = Array.prototype.some.call(dialog.querySelectorAll("[data-rest-pool]"), function (pool) {
