@@ -605,6 +605,11 @@ map of the code.
   (weapon-mastery count, expertise, spellbook size, Divine/Primal Order effects, always-prepared
   spells, level-1 resources, unarmored defense). `tests/test_class_spec.py` fails if the imported
   data stops agreeing with it.
+- **`services/feature_resources.py`** - the limited-use species/feat/subclass features that are not
+  class-table resources (Breath Weapon, Luck Points, Warding Flare, ...): `FEATURE_RESOURCES` names
+  them once, `refresh()` gives a character a `CharacterResource` for each it has (called after
+  creation, every level-up and a feat taken on the sheet). `services/land.py` is Circle of the
+  Land's land, chosen anew after every Long Rest (`Character.rest_choices`, opened by `play.long_rest`).
 - **`resolvers/`** - pure "what does this grant" logic (`class_`, `species`, `background`, `feat`,
   `equipment`, `spell`, `proficiency`, `held`, `abilities`) feeding a `Grants` object.
 - **Services** ✅ `store` (`Draft`, `Issue`, `Picker`), `origins` (class/background/species/languages/

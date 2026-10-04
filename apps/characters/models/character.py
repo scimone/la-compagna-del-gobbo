@@ -93,6 +93,9 @@ class Character(models.Model):
 
     # `{class id: 1}`: the classes whose Weapon Mastery weapons may be changed now (after a rest).
     weapon_mastery_changes = models.JSONField(default=dict, blank=True)
+    # Choices a Long Rest opens until they are made, `{"land": True}` (Circle of the Land's new
+    # land - see `apps/builder/services/land.py`).
+    rest_choices = models.JSONField(default=dict, blank=True)
     # The once-per-Long-Rest spell slot recoveries used (`["Arcane Recovery"]`, Natural Recovery).
     spell_recoveries_used = models.JSONField(default=list, blank=True)
     # Reductions that last until a Long Rest (a monster's drain): taken off the maximum hit points

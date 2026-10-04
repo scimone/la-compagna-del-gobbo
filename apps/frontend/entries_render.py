@@ -72,6 +72,9 @@ _LINKABLE_TAGS = {
     "spell": ("rules.Spell", "world-spell-detail"),
     "feat": ("rules.Feat", "world-feat-detail"),
     "optfeature": ("rules.OptionalFeature", "world-option-detail"),
+    # Only the alternatives of a choice (`Feature.choice_option`, e.g. each land of Circle of the
+    # Land): they have unique names, unlike the many "Spellcasting"/"Rage" features.
+    "feature": ("rules.Feature", "world-feature-detail"),
 }
 
 
@@ -95,8 +98,11 @@ class _ReferenceLinker:
             # Tags carry the *English* catalog name (the Italian wording is only their display
             # text), so look rows up by their `name_en` where the model is translated.
             name_field = "name_en" if hasattr(model, "name_en") else "name"
+            rows = model.objects.all()
+            if tag == "feature":
+                rows = rows.filter(choice_option=True)
             pk_by_name = {
-                name.lower(): pk for pk, name in model.objects.values_list("pk", name_field) if name
+                name.lower(): pk for pk, name in rows.values_list("pk", name_field) if name
             }
             self._lookups[tag] = (pk_by_name, url_name)
         # Only `render_handbook_section()` sets this - a plain `<h3>` heading is still right for

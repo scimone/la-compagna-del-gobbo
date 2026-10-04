@@ -36,6 +36,7 @@ from ..resolvers.background import background_grants
 from ..resolvers.class_ import class_grants
 from ..resolvers.grants import Grants
 from ..resolvers.species import species_grants
+from . import feature_resources
 from .store import EDITING_KEY, Draft
 
 _ARMOR_TYPE_CATEGORY = {"la": "light", "ma": "medium", "ha": "heavy", "s": "shield"}
@@ -166,6 +167,7 @@ def apply(character: Character) -> None:
     if editing:
         _write_abilities(character, draft)
         _write_character(character, draft, keep_progress=True)
+        feature_resources.refresh(character)
         return
 
     worn = _equipped_armor(items, grants)
@@ -186,6 +188,7 @@ def apply(character: Character) -> None:
     )
     _write_abilities(character, draft)
     _write_character(character, draft)
+    feature_resources.refresh(character)
 
 
 def _write_abilities(character: Character, draft: Draft) -> None:

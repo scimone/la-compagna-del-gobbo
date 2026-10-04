@@ -9,7 +9,7 @@ from django.utils import translation
 from django.utils.text import slugify
 
 from apps.rules.handbook_source import TranslationDataError, load_handbook
-from apps.rules.lineage_features import land_features, lineage_feature
+from apps.rules.lineage_features import land_features, lineage_feature, link_lands
 from apps.rules.models import (
     Ability,
     Background,
@@ -1033,15 +1033,24 @@ class Command(BaseCommand):
                 )
                 level_by_number = {sl.level: sl for sl in subclass_levels}
                 for level, raw in entries_by_level:
+                    lands = land_features(raw["name"], raw.get("entries", []), None)
+                    generic_entries = raw.get("entries", [])
+                    if lands:
+                        captions = [
+                            e["caption"]
+                            for e in generic_entries
+                            if isinstance(e, dict) and e.get("type") == "table"
+                        ]
+                        generic_entries = link_lands(generic_entries, raw["name"], captions)
                     subclass_features.append(
                         Feature(
                             subclass_level=level_by_number[level],
                             name=raw["name"],
-                            entries=raw.get("entries", []),
+                            entries=generic_entries,
                             consumes_resource_name=(raw.get("consumes") or {}).get("name", ""),
                         )
                     )
-                    for land in land_features(raw["name"], raw.get("entries", []), None):
+                    for land in lands:
                         subclass_features.append(
                             Feature(
                                 subclass_level=level_by_number[level],

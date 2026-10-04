@@ -818,6 +818,14 @@
     }
   });
 
+  // Circle of the Land after a Long Rest: take a land (the server checks the choice).
+  root.addEventListener("click", function (event) {
+    var button = event.target.closest("[data-land-confirm]");
+    if (!button) return;
+    var select = root.querySelector("[data-land-select]");
+    if (select) send({ action: "land_change", land: select.value });
+  });
+
   // A filter popover closes when you tap anywhere else.
   document.addEventListener("click", function (event) {
     if (event.target.closest(".filter-popover")) return;

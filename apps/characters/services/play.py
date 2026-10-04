@@ -555,6 +555,25 @@ def grant_weapon_mastery_changes(character: Character) -> None:
         character.save(update_fields=["weapon_mastery_changes"])
 
 
+LAND_CHOICE_PREFIX, LAND_CHOICE_SUFFIX = "subclass.", ".land"
+
+
+def grant_rest_choices(character: Character) -> None:
+    """A Long Rest opens the choices that are made anew after it: today only Circle of the
+    Land's land, for a character that has picked one."""
+    has_land = CharacterChoice.objects.filter(
+        character=character,
+        key__startswith=LAND_CHOICE_PREFIX,
+        key__endswith=LAND_CHOICE_SUFFIX,
+    ).exists()
+    choices = dict(character.rest_choices)
+    if has_land:
+        choices["land"] = True
+    if choices != character.rest_choices:
+        character.rest_choices = choices
+        character.save(update_fields=["rest_choices"])
+
+
 def mastery_weapons(character: Character, class_id: str) -> list[Equipment]:
     """The weapons `class_id` could choose Weapon Mastery for (its melee-only / proficient-only
     rule), by name."""
@@ -885,4 +904,5 @@ def long_rest(character: Character) -> None:
     character.spells.filter(free_cast_used=True).update(free_cast_used=False)
     grant_spell_changes(character, "rest")
     grant_weapon_mastery_changes(character)
+    grant_rest_choices(character)
     CharacterResource.objects.filter(character=character).update(current_uses=models.F("max_uses"))

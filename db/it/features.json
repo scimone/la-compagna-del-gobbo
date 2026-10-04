@@ -7835,7 +7835,7 @@
  },
  "subclass:druid:circle-of-the-land:3:circle-of-the-land-spells-arid-land": {
   "entries": [
-   "Whenever you finish a {@variantrule Long Rest|XPHB}, choose one type of land: arid, polar, temperate, or tropical. Consult the table below that corresponds to the chosen type; you have the spells listed for your Druid level and lower prepared.",
+   "Whenever you finish a {@variantrule Long Rest|XPHB}, choose one type of land: {@feature Circle of the Land Spells (Arid Land)|XPHB|arid}, {@feature Circle of the Land Spells (Polar Land)|XPHB|polar}, {@feature Circle of the Land Spells (Temperate Land)|XPHB|temperate}, or {@feature Circle of the Land Spells (Tropical Land)|XPHB|tropical}. Consult the table below that corresponds to the chosen type; you have the spells listed for your Druid level and lower prepared.",
    {
     "rows": [
      [
@@ -7871,7 +7871,7 @@
  },
  "subclass:druid:circle-of-the-land:3:circle-of-the-land-spells-polar-land": {
   "entries": [
-   "Whenever you finish a {@variantrule Long Rest|XPHB}, choose one type of land: arid, polar, temperate, or tropical. Consult the table below that corresponds to the chosen type; you have the spells listed for your Druid level and lower prepared.",
+   "Whenever you finish a {@variantrule Long Rest|XPHB}, choose one type of land: {@feature Circle of the Land Spells (Arid Land)|XPHB|arid}, {@feature Circle of the Land Spells (Polar Land)|XPHB|polar}, {@feature Circle of the Land Spells (Temperate Land)|XPHB|temperate}, or {@feature Circle of the Land Spells (Tropical Land)|XPHB|tropical}. Consult the table below that corresponds to the chosen type; you have the spells listed for your Druid level and lower prepared.",
    {
     "rows": [
      [
@@ -7907,7 +7907,7 @@
  },
  "subclass:druid:circle-of-the-land:3:circle-of-the-land-spells-temperate-land": {
   "entries": [
-   "Whenever you finish a {@variantrule Long Rest|XPHB}, choose one type of land: arid, polar, temperate, or tropical. Consult the table below that corresponds to the chosen type; you have the spells listed for your Druid level and lower prepared.",
+   "Whenever you finish a {@variantrule Long Rest|XPHB}, choose one type of land: {@feature Circle of the Land Spells (Arid Land)|XPHB|arid}, {@feature Circle of the Land Spells (Polar Land)|XPHB|polar}, {@feature Circle of the Land Spells (Temperate Land)|XPHB|temperate}, or {@feature Circle of the Land Spells (Tropical Land)|XPHB|tropical}. Consult the table below that corresponds to the chosen type; you have the spells listed for your Druid level and lower prepared.",
    {
     "rows": [
      [
@@ -7943,7 +7943,7 @@
  },
  "subclass:druid:circle-of-the-land:3:circle-of-the-land-spells-tropical-land": {
   "entries": [
-   "Whenever you finish a {@variantrule Long Rest|XPHB}, choose one type of land: arid, polar, temperate, or tropical. Consult the table below that corresponds to the chosen type; you have the spells listed for your Druid level and lower prepared.",
+   "Whenever you finish a {@variantrule Long Rest|XPHB}, choose one type of land: {@feature Circle of the Land Spells (Arid Land)|XPHB|arid}, {@feature Circle of the Land Spells (Polar Land)|XPHB|polar}, {@feature Circle of the Land Spells (Temperate Land)|XPHB|temperate}, or {@feature Circle of the Land Spells (Tropical Land)|XPHB|tropical}. Consult the table below that corresponds to the chosen type; you have the spells listed for your Druid level and lower prepared.",
    {
     "rows": [
      [

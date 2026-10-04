@@ -2646,3 +2646,15 @@ msgstr "livelli recuperati"
 
 msgid "Option type"
 msgstr "Tipo di opzione"
+
+msgid "New land (Circle of the Land)"
+msgstr "Nuova terra (Circolo della Terra)"
+
+msgid "Choose land"
+msgstr "Scegli la terra"
+
+msgid "Land changed"
+msgstr "Terra cambiata"
+
+msgid "You can choose a new land for Circle of the Land now. Do it?"
+msgstr "Ora puoi scegliere una nuova terra per il Circolo della Terra. Vuoi farlo?"

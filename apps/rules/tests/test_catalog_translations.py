@@ -194,3 +194,12 @@ def test_a_standalone_classfeature_choice_is_inlined_not_dropped(catalogs):
     html = render_entries(order.entries)
     assert "<h3>Protector</h3>" in html
     assert "<h3>Thaumaturge</h3>" in html
+
+
+def test_the_land_types_in_circle_of_the_land_link_to_their_own_features(catalogs):
+    polar = Feature.objects.get(name_en="Circle of the Land Spells (Polar Land)")
+    arid = Feature.objects.get(name_en="Circle of the Land Spells (Arid Land)")
+    html = render_entries(polar.entries)
+    assert f'<a href="/world/feats/feature/{arid.pk}/">arid</a>' in html
+    generic = Feature.objects.get(name_en="Circle of the Land Spells")
+    assert ">polar</a>" in render_entries(generic.entries)

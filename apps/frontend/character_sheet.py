@@ -29,7 +29,7 @@ from django.views.decorators.http import require_GET, require_POST
 from apps.builder import tables
 from apps.builder.class_spec import CLASS_SPEC
 from apps.builder.resolvers.proficiency import WeaponProficiency
-from apps.builder.services import creation, derived_stats, progression
+from apps.builder.services import creation, derived_stats, land, progression
 from apps.characters.models import Character, CharacterChoice
 from apps.characters.services import access, play, portrait
 from apps.frontend import translations, units
@@ -405,6 +405,7 @@ def _features_tab(request, character: Character, can_edit: bool = False) -> dict
         "count": len(items),
         "items": items,
         "filters": [type_filter] if type_filter else [],
+        "land_change": land.land_options(character) if can_edit else None,
     }
 
 
@@ -1264,7 +1265,15 @@ def _act_long_rest(character, post):
             "You can change one of your Weapon Mastery weapons now. Do you want to do it?"
         )
         result["prompt_tab"] = "proficiencies"
+    elif character.rest_choices.get("land"):
+        result["prompt"] = _("You can choose a new land for Circle of the Land now. Do it?")
+        result["prompt_tab"] = "features"
     return result
+
+
+def _act_land_change(character, post):
+    land.change_land(character, post.get("land", ""))
+    return {"refresh": True, "message": _("Land changed")}
 
 
 def _act_mastery_swap(character, post):
@@ -1489,6 +1498,7 @@ _ACTIONS["cast"] = _act_cast
 _ACTIONS["short_rest"] = _act_short_rest
 _ACTIONS["long_rest"] = _act_long_rest
 _ACTIONS["weapon_mastery_swap"] = _act_mastery_swap
+_ACTIONS["land_change"] = _act_land_change
 _ACTIONS["resource"] = _act_resource
 _ACTIONS["spell_add"] = _act_spell_add
 _ACTIONS["spell_prepare"] = _act_spell_prepare

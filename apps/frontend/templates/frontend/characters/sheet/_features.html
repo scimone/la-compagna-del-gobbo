@@ -7,6 +7,14 @@
 {# carries its own remove button (see `_feature_items()`), and the "Add feature" button opens the #}
 {# sheet in `_add_feature.html`, like the Spellbook's.                                             #}
 {% if features.items or can_edit %}
+  {% if can_edit and features.land_change %}
+    <div class="cs-invbar">
+      <label class="cs-cast-field"><span class="k">{% translate "New land (Circle of the Land)" %}</span>
+        <select data-land-select>{% for name in features.land_change.lands %}<option value="{{ name }}"{% if name == features.land_change.current %} selected{% endif %}>{{ name }}</option>{% endfor %}</select>
+      </label>
+      <button type="button" class="cs-add-btn" data-land-confirm>{% translate "Choose land" %}</button>
+    </div>
+  {% endif %}
   <div class="cs-sticky">
     {% if can_edit %}
       <div class="cs-invbar">

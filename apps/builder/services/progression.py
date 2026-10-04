@@ -24,6 +24,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 
 from django.db import transaction
+from django.db.models import Q
 from django.utils.translation import gettext as _
 
 from apps.characters.models import (
@@ -63,6 +64,7 @@ from ..class_spec import spec_for
 from ..resolvers import feat as feat_resolver
 from ..resolvers.proficiency import WeaponProficiency, tool_options
 from ..resolvers.spell import class_spell_list, max_spell_level, spell_id
+from . import feature_resources
 from .store import Issue, Picker, picker_issues
 
 Values = Mapping[str, list[str]]
@@ -1225,17 +1227,18 @@ def plan(character: Character, class_id: str, values: Values | None = None) -> P
 
 def _grant_land_feature(character: Character, subclass: Subclass, land: str, level: int) -> None:
     """The chosen land's own feature ("Circle of the Land Spells (Arid Land)") replaces the
-    generic one listing every land's table on the character."""
+    generic one listing every land's table - and the previous land's, when it changes."""
     own = Feature.objects.filter(
         subclass_level__subclass=subclass, choice_option=True, name_en__endswith=f"({land})"
     ).first()
     if own is None:
         return
+    base = own.name_en.rsplit(" (", 1)[0]
     CharacterFeature.objects.filter(
+        Q(feature__name_en=base) | Q(feature__name_en__startswith=f"{base} ("),
         character=character,
         feature__subclass_level__subclass=subclass,
-        feature__name_en=own.name_en.rsplit(" (", 1)[0],
-    ).delete()
+    ).exclude(feature=own).delete()
     CharacterFeature.objects.get_or_create(
         character=character, feature=own, defaults={"granted_at_level": level}
     )
@@ -1463,6 +1466,7 @@ def add_feat_from_sheet(character: Character, feat: Feat, values: Values) -> Non
     character.save()
     _add_feat(character, feat, total, play.FEATURE_SOURCE)
     _apply_feat_picks(ctx, feat, _SHEET_PREFIX, total)
+    feature_resources.refresh(character)
 
 
 def _resource_maximum(ctx: _Ctx, res: spec.LevelResource, level: int, mods: dict[str, int]) -> int:
@@ -1778,4 +1782,5 @@ def commit(character: Character, class_id: str, values: Values) -> Plan:
     # resources (after the class row exists, and with the new scores)
     ctx.rows[klass.id] = row
     _update_resources(ctx, new, subclass, mods)
+    feature_resources.refresh(character)
     return plan_
