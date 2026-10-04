@@ -768,6 +768,13 @@ def _spellbook(request, character: Character, stats, classes, can_edit: bool) ->
         }
         for level in sorted(set(spells_by_level) | set(slots_by_level))
     ]
+    # With unprepared spells below, the level 1+ groups form the "Prepared" block (its own heading,
+    # which every spell level from 1 up falls under - cantrips are not prepared).
+    if unprepared_by_level:
+        leveled = [g for g in groups if g["level"] >= 1]
+        if leveled:
+            leveled[0]["block_start"] = True
+            leveled[-1]["block_end"] = True
     # What the class could prepare but has not: the same level headings, no slots, below the rest.
     unprepared = [
         {

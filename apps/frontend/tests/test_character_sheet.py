@@ -313,7 +313,7 @@ def test_spellbook_shows_the_casting_numbers_the_slots_and_the_spells(signed_in,
     assert 'name="q"' in sticky and "filter-popover" in sticky  # metrics, search and filters stick
     assert 'data-slot="1"' in html and html.count('class="pip-btn on"') == 2  # two 1st-level slots
     assert 'name="q"' in html and "filter-popover" in html  # the World's search and filters
-    own = html.split('class="cs-unprepared"')[0]
+    own = html.split('class="cs-sec cs-unprepared"')[0]
     assert (
         own.count("data-search=")
         == cleric.spells.filter(prepared=True).count()
@@ -376,8 +376,8 @@ def test_spellbook_lists_the_rest_of_the_class_list_greyed_out_below_and_prepare
 
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
 
-    above, below = html.split('class="cs-unprepared"')
-    assert "Not prepared" in below and ">Prepared</h3>" in above
+    above, below = html.split('class="cs-sec cs-unprepared"')
+    assert "Not prepared" in below and "<h3>Prepared</h3>" in above
     offered = Spell.objects.filter(level=1, classes__contains=["Cleric"]).exclude(pk__in=known)
     extra = offered.first()
     assert f"/world/spells/{extra.pk}/" in below and f"/world/spells/{extra.pk}/" not in above

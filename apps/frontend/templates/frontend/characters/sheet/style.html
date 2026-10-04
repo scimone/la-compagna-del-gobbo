@@ -363,8 +363,13 @@
   .cs-prepared { margin: 0.2rem 0; font-size: 0.8rem; color: var(--muted); }
   .cs-prepared b { color: var(--text); }
   /* Spells the class could prepare but has not: the row greyed out, under the prepared ones. */
-  .cs-unprepared { margin-top: 1.4rem; }
-  #cs .cs-unprepared-head { margin: 0 0 0.2rem; font-size: 1rem; color: var(--muted); }
+  /* The "Prepared" / "Not prepared" blocks: their heading (and the sentence about changing) sticks
+     to the top, and the level headings stick right under it (`--cs-sec-h`, its height, is set by
+     `character_sheet.js`). */
+  .cs-sec-head { position: sticky; top: 0; z-index: 3; padding: 1.1rem 0 0.1rem; background: var(--bg); }
+  #cs .cs-sec-head h3 { margin: 0; font-size: 1rem; color: var(--muted); }
+  .cs-sec-head .cs-prepared { margin: 0.1rem 0 0.2rem; }
+  .cs-sec .cs-level-head { top: var(--cs-sec-h, 0px); }
   .cs-unprepared .item-list > li > a { opacity: 0.5; }
   .cs-prepared.open { color: var(--accent); font-weight: 600; }
   .cs-warnings { margin: 0.3rem 0 0.2rem; padding: 0.4rem 0.9rem 0.4rem 1.6rem; border: 1px dashed var(--border); border-radius: 0.6rem; color: var(--muted); font-size: 0.85rem; }

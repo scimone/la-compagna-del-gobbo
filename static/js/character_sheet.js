@@ -55,6 +55,7 @@
       button.setAttribute("aria-selected", on ? "true" : "false");
       if (on) centreTab(button);
     });
+    stickHeads(); // a hidden panel measures 0, so measure again once this one shows
     var area = scroller();
     if (area) area.scrollTop = 0;
     if (updateUrl) {
@@ -466,7 +467,7 @@
       var items = group.querySelectorAll("li");
       group.hidden = items.length > 0 && !Array.prototype.some.call(items, function (li) { return !li.hidden; });
     });
-    list.querySelectorAll(".cs-unprepared").forEach(function (block) {
+    list.querySelectorAll(".cs-sec").forEach(function (block) {
       block.hidden = !Array.prototype.some.call(block.querySelectorAll("li"), function (li) { return !li.hidden; });
     });
     var empty = document.getElementById(scope.dataset.filterEmpty);
@@ -1109,7 +1110,18 @@
   function setup() {
     var current = root.querySelector(".cs-tabs button.active");
     if (current) centreTab(current);
+    stickHeads();
   }
+
+  // The level headings of a "Prepared"/"Not prepared" block stick right under its own heading, so
+  // they need to know how tall that is (a sentence under it may wrap).
+  function stickHeads() {
+    root.querySelectorAll(".cs-sec").forEach(function (block) {
+      var head = block.querySelector(".cs-sec-head");
+      if (head) block.style.setProperty("--cs-sec-h", head.offsetHeight + "px");
+    });
+  }
+  window.addEventListener("resize", stickHeads);
 
   setup();
 
