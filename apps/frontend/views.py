@@ -153,6 +153,19 @@ def _option_class_id(option) -> str | None:
     return _OPTION_CLASS_ID.get(option.feature_type)
 
 
+# The same three `feature_type` values as a filter: (stored value, English, Italian). Fighter's
+# maneuvers are the Battle Master subclass's, hence the longer label.
+_OPTION_TYPE_LABELS = {
+    "Eldritch Invocation": ("Eldritch Invocation", "Suppliche occulte"),
+    "Metamagic": ("Metamagic", "Metamagia"),
+    "Maneuver, Battle Master": ("Battle Master Maneuver", "Manovra del Maestro di battaglia"),
+}
+
+
+def _option_type_label(feature_type: str) -> str:
+    return _pick_translation(_OPTION_TYPE_LABELS, feature_type)
+
+
 # `Spell.school`/`Spell.casting_time` are raw structured data (not `entries` prose), so they're
 # never touched by the translation pipeline at all - these are the fixed vocabularies that need
 # translating for display, same treatment as the other closed-vocabulary dicts above. Note the
@@ -1345,6 +1358,7 @@ def world_feats(request):
             ("class", _("Class Features")),
             ("subclass", _("Subclass Features")),
             ("species", _("Species Traits")),
+            ("option", _("Options")),
         ],
         multiple=True,
     )
@@ -1367,6 +1381,14 @@ def world_feats(request):
         only="feat",
         multiple=True,
     )
+    option_type_filter = _pill_filter(
+        request,
+        "option_type",
+        _("Option type"),
+        [(t, _option_type_label(t)) for t in optional_feature_service.list_feature_types()],
+        only="option",
+        multiple=True,
+    )
     level_filter = _select_filter(
         request,
         "level",
@@ -1381,7 +1403,7 @@ def world_feats(request):
         _("Class"),
         [(c.pk, c.name) for c in class_service.list_classes()],
         all_label=_("All classes"),
-        only="class subclass",
+        only="class subclass option",
     )
     subclass_filter = _select_filter(
         request,
@@ -1514,6 +1536,38 @@ def world_feats(request):
             for trait in species_traits
         ]
 
+    if wants("option"):
+        options = optional_feature_service.list_optional_features()
+        if q:
+            options = _by_name(options, q)
+        if "option" in selected_types:
+            if option_type_filter["values"]:
+                options = options.filter(feature_type__in=option_type_filter["values"])
+            if class_filter["value"]:
+                options = options.filter(
+                    feature_type__in=[
+                        t for t, c in _OPTION_CLASS_ID.items() if c == class_filter["value"]
+                    ]
+                )
+        class_names = {c.pk: c.name for c in class_service.list_classes()}
+        for option in options:
+            klass_id = _option_class_id(option)
+            items.append(
+                {
+                    "pk": option.pk,
+                    "kind": "option",
+                    "name": _badged_heading(option.name, _self_translated(option, "name")),
+                    "properties": [
+                        _option_type_label(option.feature_type),
+                        class_names.get(klass_id, ""),
+                    ],
+                    "url": reverse("world-option-detail", args=[option.pk]),
+                    "image": _menu_image_url("features_classes", f"{klass_id}.jpeg")
+                    if klass_id
+                    else None,
+                }
+            )
+
     # One flat alphabetical list rather than grouped by type - `name` may be a `_badged_heading()`
     # result (safe HTML, an escaped name plus a trailing badge), but comparing its string form
     # still sorts correctly since the name itself is always the leading text.
@@ -1530,6 +1584,7 @@ def world_feats(request):
         filters=[
             type_filter,
             category_filter,
+            option_type_filter,
             level_filter,
             class_filter,
             subclass_filter,

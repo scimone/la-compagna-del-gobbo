@@ -7,12 +7,12 @@ guessed: entries/section/inset (a heading + nested entries), list/item (list als
 `style: "list-decimal"`/`"list-no-bullets"` and a `columns` hint - only db/handbook.json and a
 few db/rules.json entries use these), table (colLabels, or db/handbook.json's one table using
 `colLabelRows` instead), options (a "choose N" group), and refFeat/refOptionalfeature (a bare
-cross-reference to another catalog entry, rendered as a plain mention - not a hyperlink, since
-resolving *those* links would need a `CharacterFeat`/`CharacterOptionalFeature`-style *choice*
-context this renderer doesn't have, not just a name lookup). `image` and `statblock` (both only
-in db/handbook.json) render as nothing - see the comment where they fall through, in
-`_render_dict`. `{@variantrule ...}`, `{@spell ...}` and `{@feat ...}` references *do* become
-real links, since those three catalogs (`rules.Rule`/`Spell`/`Feat`) each already have a detail
+cross-reference to another catalog entry: a feat is a plain mention, an optional feature - the
+"Eldritch Invocation/Metamagic/Maneuver Options" lists - a link to its own page). `image` and
+`statblock` (both only in db/handbook.json) render as nothing - see the comment where they fall
+through, in `_render_dict`. `{@variantrule ...}`, `{@spell ...}`, `{@feat ...}` and
+`{@optfeature ...}` references *do* become real links, since those catalogs (`rules.Rule`/`Spell`/
+`Feat`/`OptionalFeature`) each already have a detail
 page and a name to match against - see `_ReferenceLinker` below. Verified against every
 occurrence of all three tags in db/ before relying on the name match: 50/51 variantrule
 references, 102/102 spell references, and 19/19 feat references resolve. Every other `{@tag ...}`
@@ -71,6 +71,7 @@ _LINKABLE_TAGS = {
     "variantrule": ("rules.Rule", "world-rule-detail"),
     "spell": ("rules.Spell", "world-spell-detail"),
     "feat": ("rules.Feat", "world-feat-detail"),
+    "optfeature": ("rules.OptionalFeature", "world-option-detail"),
 }
 
 
@@ -102,6 +103,24 @@ class _ReferenceLinker:
         # every other model's nested `entries` blocks (e.g. a Wizard's Spellcasting feature card
         # has "Cantrips"/"Spellbook" sub-headings that shouldn't suddenly become togglable).
         self.toggle_entries = toggle_entries
+        self._options = None
+
+    def option_link(self, english_name: str) -> tuple[str, str] | None:
+        """`(url, localized name)` of the `OptionalFeature` a `refOptionalfeature` node names -
+        looked up lazily, since only the "...Options" class features ever carry such nodes.
+        """
+        if self._options is None:
+            from apps.rules.models import OptionalFeature
+
+            self._options = {
+                en.lower(): (pk, name)
+                for pk, en, name in OptionalFeature.objects.values_list("pk", "name_en", "name")
+            }
+        found = self._options.get(english_name.strip().lower())
+        if not found:
+            return None
+        pk, name = found
+        return reverse("world-option-detail", args=[pk]), name
 
     def url_for(self, tag: str, ref_name: str) -> str | None:
         lookup = self._lookups.get(tag)
@@ -306,6 +325,23 @@ def _render_level_feature_links(by_level: dict[int, list], linker: _ReferenceLin
     return "".join(groups)
 
 
+def _render_option_links(nodes: list[dict], linker: _ReferenceLinker) -> str:
+    """One link row per `refOptionalfeature` node (`{"optionalfeature": "Careful Spell|XPHB"}`)
+    to that `OptionalFeature`'s page, under its localized name - the English name from the
+    reference when there is no such row.
+    """
+    items = []
+    for node in nodes:
+        reference = node.get("optionalfeature", "")
+        found = linker.option_link(reference.split("|")[0])
+        if found:
+            url, name = found
+            items.append(f'<li><a href="{escape(url)}">{escape(name)}</a></li>')
+        else:
+            items.append(f"<li>{escape(_tag_display_text('refOptionalfeature', reference))}</li>")
+    return f'<ul class="feature-link-list">{"".join(items)}</ul>'
+
+
 def render_class_features(features) -> SafeString:
     """Render a Class's `Feature` rows (each with `class_level` set - fetch with e.g.
     `Feature.objects.filter(class_level__klass=klass).order_by("pk")`, the `.order_by("pk")`
@@ -405,15 +441,22 @@ def _render_dict(node: dict, linker: _ReferenceLinker) -> str:
     if node_type == "options":
         count = node.get("count")
         note = f"<p><em>{escape(_choose_note(count))}</em></p>" if count else ""
-        return note + _render_node(node.get("entries", []), linker)
+        entries = node.get("entries", [])
+        # The "Eldritch Invocation/Metamagic/Maneuver Options" class features are nothing but a
+        # list of `refOptionalfeature` pointers: shown as the same tappable link rows the Levels
+        # tab uses, each opening that option's own page.
+        if entries and all(
+            isinstance(e, dict) and e.get("type") == "refOptionalfeature" for e in entries
+        ):
+            return note + _render_option_links(entries, linker)
+        return note + _render_node(entries, linker)
 
     if node_type == "refFeat":
         name = _tag_display_text("refFeat", node.get("feat", ""))
         return f"<p>&rarr; {escape(name)}</p>"
 
     if node_type == "refOptionalfeature":
-        name = _tag_display_text("refOptionalfeature", node.get("optionalfeature", ""))
-        return f"<p>&rarr; {escape(name)}</p>"
+        return _render_option_links([node], linker)
 
     # Unknown shape - if it has nested entries, render those rather than dropping the content
     # silently; otherwise there's nothing safe to do with it. This is also what happens to

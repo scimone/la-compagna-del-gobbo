@@ -988,6 +988,12 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     expanded). Only a card's own title is styled as the card heading - a named sub-block nested
     inside a feature's own text (e.g. Wizard's Spellcasting feature has "Cantrips"/"Spellbook"
     sub-sections) falls back to a plainer heading style, so the two are never confused.
+  - **Options** (`OptionalFeature`: Eldritch Invocations, Metamagic, Battle Master Maneuvers) are
+    part of the World Features list: an **Options** Type pill, an **Option type** pill row and the
+    Class dropdown (which also narrows options), each row using its class's icon
+    (`features_classes/<class>.jpeg`) and opening `world-option-detail`. The class features that
+    just list them ("Eldritch Invocation Options", "Metamagic Options", "Maneuver Options") render
+    their `refOptionalfeature` pointers as tappable link rows, and `{@optfeature}` tags link too.
   - There's no standalone browsing list for `rules.Rule` - `world/rules/<slug>/` exists purely
     as the landing page for `{@variantrule ...}` links found in other pages' text, so its back
     button returns to the World hub rather than to any specific list.

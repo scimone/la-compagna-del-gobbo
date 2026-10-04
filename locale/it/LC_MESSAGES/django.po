@@ -2643,3 +2643,6 @@ msgstr "%(name)s: recupera slot incantesimo spesi con un livello combinato fino 
 
 msgid "levels recovered"
 msgstr "livelli recuperati"
+
+msgid "Option type"
+msgstr "Tipo di opzione"

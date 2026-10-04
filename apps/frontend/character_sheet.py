@@ -52,6 +52,7 @@ from apps.frontend.views import (
     _format_feat_category,
     _menu_image_url,
     _option_class_id,
+    _option_type_label,
     _pick_translation,
 )
 from apps.rules.models import (
@@ -334,7 +335,7 @@ def _option_row(option) -> dict:
         "pk": option.pk,
         "kind": "option",
         "name": option.name,
-        "properties": [_("Option"), option.feature_type],
+        "properties": [_("Option"), _option_type_label(option.feature_type)],
         "url": reverse("world-option-detail", args=[option.pk]),
         "image": _menu_image_url("features_classes", f"{klass_id}.jpeg") if klass_id else None,
         "type": "option",
