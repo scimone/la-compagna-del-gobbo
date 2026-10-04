@@ -1433,6 +1433,7 @@ def _state(character: Character) -> dict:
         "xp": character.experience_points,
         "hp": character.current_hit_points,
         "max_hp": character.max_hit_points,
+        "con_modifier": stats.abilities["con"]["modifier"],
         "temp_hp": character.temporary_hit_points,
         "death_successes": character.death_save_successes,
         "death_failures": character.death_save_failures,

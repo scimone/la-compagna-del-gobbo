@@ -135,6 +135,7 @@
   .st-rests { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
   .st-rest { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.7rem 0.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); font-weight: 700; font-size: 0.9rem; cursor: pointer; }
   .st-rest svg { width: 1.3rem; height: 1.3rem; fill: none; stroke: var(--accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .st-rest:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(1); }
   .st-rest:active { background: var(--bg); }
 
   /* The numbers of a fight: three tiles in a row. */

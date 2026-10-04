@@ -188,6 +188,15 @@
         el.textContent = value;
       }
     });
+    // The short rest reads the numbers it was opened with: keep them (and the tile) in step.
+    var restDialog = document.getElementById("cs-short-rest-dialog");
+    if (restDialog) {
+      restDialog.dataset.hp = state.hp;
+      restDialog.dataset.maxHp = state.max_hp;
+      restDialog.dataset.con = state.con_modifier;
+    }
+    var restTile = root.querySelector('[data-rest="short"]');
+    if (restTile) restTile.disabled = state.hp < 1;
     var title = document.querySelector("header .brand");
     if (title && state.name) title.textContent = state.name;
 
