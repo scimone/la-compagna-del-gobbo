@@ -27,6 +27,9 @@ class Character(models.Model):
     per-level historical choice (roll-or-average hit dice + Con modifier at each level) that
     isn't a pure function of current state - there's nothing to recompute it from once the
     level-up moment has passed.
+
+    Use `hit_point_maximum` (not `max_hit_points`) wherever the limit in play matters: it is the
+    stored maximum minus the reduction a Long Rest removes.
     """
 
     STATUS_DRAFT = "draft"
@@ -88,6 +91,11 @@ class Character(models.Model):
     #: the class) and used up as spells are unprepared. No entry: the list is locked until then.
     spell_changes = models.JSONField(default=dict, blank=True)
 
+    # Reductions that last until a Long Rest (a monster's drain): taken off the maximum hit points
+    # and off the ability scores (`{"str": 2}`). The stored values stay the full ones.
+    max_hit_points_reduction = models.PositiveSmallIntegerField(default=0)
+    ability_reductions = models.JSONField(default=dict, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -96,3 +104,7 @@ class Character(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    @property
+    def hit_point_maximum(self) -> int:
+        return max(0, self.max_hit_points - self.max_hit_points_reduction)

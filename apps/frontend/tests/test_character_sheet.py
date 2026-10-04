@@ -199,6 +199,31 @@ def test_only_the_dm_or_an_admin_edits_hit_dice_by_hand(signed_in, alice, settin
     assert " disabled" in row  # the pips are there to look at only
 
 
+def test_reducing_the_maximum_and_a_score_works_and_a_long_rest_restores_them(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    full = cleric.max_hit_points
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "stats")
+    assert 'data-act="hp_max_reduction"' in html and 'data-ability="wis"' in html
+
+    state = act(signed_in, cleric, action="hp_max_reduction", value="2").json()["state"]
+    assert state["max_hp"] == full - 2
+    assert (
+        act(signed_in, cleric, action="ability_reduction", ability="wis", value="2").status_code
+        == 200
+    )
+    assert (
+        act(signed_in, cleric, action="ability_reduction", ability="xyz", value="2").status_code
+        == 400
+    )
+    cleric.refresh_from_db()
+    assert cleric.ability_reductions == {"wis": 2}
+
+    act(signed_in, cleric, action="long_rest")
+    cleric.refresh_from_db()
+    assert cleric.ability_reductions == {} and cleric.max_hit_points_reduction == 0
+
+
 def test_changing_the_xp_asks_for_a_redraw_so_the_progress_bar_follows(signed_in, alice):
     cleric = finished(alice, "cleric")
 

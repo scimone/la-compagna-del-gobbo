@@ -47,6 +47,19 @@
     <div class="cs-bar hp" data-hp-bar style="--pct: {{ strip.hp_percent }}%"><i></i></div>
   </div>
 
+  {# What a monster drained, until the next Long Rest. #}
+  <details class="st-card st-wide st-drain"{% if strip.hp_reduction or strip.drained %} open{% endif %}>
+    <summary class="k">{% translate "Reduced until a long rest" %}</summary>
+    <label class="cs-cast-field"><span class="k">{% translate "Hit point maximum reduced by" %}</span>
+      <input type="number" min="0" inputmode="numeric" value="{{ strip.hp_reduction }}"{% if can_edit %} data-act="hp_max_reduction"{% else %} disabled{% endif %}>
+    </label>
+    {% for key, label, lost in strip.ability_reductions %}
+      <label class="cs-cast-field"><span class="k">{{ label }} {% translate "reduced by" %}</span>
+        <input type="number" min="0" inputmode="numeric" value="{{ lost }}"{% if can_edit %} data-act="ability_reduction" data-ability="{{ key }}"{% else %} disabled{% endif %}>
+      </label>
+    {% endfor %}
+  </details>
+
   {# Armor Class, Initiative, Speed: the numbers of a fight. #}
   <div class="st-tiles st-wide">
     <div class="st-tile st-ac">

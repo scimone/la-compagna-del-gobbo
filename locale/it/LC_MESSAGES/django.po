@@ -2607,3 +2607,12 @@ msgstr "È stato interrotto"
 
 msgid "Did you rest for at least 1 hour before the interruption? If so, you gain the benefits of a short rest."
 msgstr "Hai riposato per almeno 1 ora prima dell'interruzione? In tal caso ottieni i benefici di un riposo breve."
+
+msgid "Reduced until a long rest"
+msgstr "Ridotto fino a un riposo lungo"
+
+msgid "Hit point maximum reduced by"
+msgstr "Massimo di Punti Ferita ridotto di"
+
+msgid "reduced by"
+msgstr "ridotto di"

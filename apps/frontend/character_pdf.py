@@ -326,7 +326,7 @@ def _page_one(character: Character, stats, classes) -> tuple[dict[str, str], set
         ticks.add("Option Button 1")
     text["Current HP"] = str(character.current_hit_points)
     text["Temp HP"] = str(character.temporary_hit_points)
-    text["Max HP"] = str(character.max_hit_points)
+    text["Max HP"] = str(character.hit_point_maximum)
     dice = stats.hit_dice
     text["Hit Dice Spent"] = str(sum(d["spent"] for d in dice.values()))
     text["Hit Dice Max"] = "+".join(f"{d['total']}{die}" for die, d in dice.items())

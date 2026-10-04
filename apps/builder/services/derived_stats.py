@@ -127,6 +127,10 @@ def compute(character: Character) -> Derived:
         "wis": character.wisdom,
         "cha": character.charisma,
     }
+    # Drained scores (until a Long Rest) count as lowered everywhere they are used.
+    for ability, lost in (character.ability_reductions or {}).items():
+        if ability in scores:
+            scores[ability] = max(0, scores[ability] - int(lost))
     mods = {a: tables.ability_modifier(s) for a, s in scores.items()}
     prof_rows = list(character.proficiencies.all())
     held = {(p.category, p.name): p.level for p in prof_rows}

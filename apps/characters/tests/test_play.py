@@ -2,6 +2,7 @@
 
 import pytest
 
+from apps.builder.services import derived_stats
 from apps.characters.models import (
     Character,
     CharacterClass,
@@ -568,3 +569,24 @@ def test_level_gain_opens_one_change_for_a_bard_and_each_change_uses_it_up(hero)
     with pytest.raises(ValueError):  # the one change is spent
         play.set_spell_prepared(hero, "shield", False, limit=4)
     play.set_spell_prepared(hero, "bless", True, limit=4)  # filling a free slot costs nothing
+
+
+def test_reductions_lower_the_maximum_and_the_scores_until_a_long_rest(fighter):
+    fighter.current_hit_points = fighter.max_hit_points
+    fighter.save()
+    full = fighter.max_hit_points
+    con = derived_stats.compute(fighter).abilities["str"]["score"]
+
+    play.set_hit_point_reduction(fighter, 4)
+    play.set_ability_reduction(fighter, "str", 3)
+    fighter.refresh_from_db()
+    assert fighter.hit_point_maximum == full - 4 and fighter.current_hit_points == full - 4
+    play.adjust_hit_points(fighter, 99)
+    assert fighter.current_hit_points == full - 4  # healing stops at the lowered maximum
+    assert derived_stats.compute(fighter).abilities["str"]["score"] == con - 3
+
+    play.long_rest(fighter)
+    fighter.refresh_from_db()
+    assert fighter.hit_point_maximum == full and fighter.current_hit_points == full
+    assert fighter.ability_reductions == {}
+    assert derived_stats.compute(fighter).abilities["str"]["score"] == con

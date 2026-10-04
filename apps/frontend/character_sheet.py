@@ -166,6 +166,7 @@ def _percent(part: int, whole: int) -> int:
 
 def _strip(character: Character, stats, items) -> dict:
     shield = next((i for i in items if i.equipment.type_id == play.SHIELD_TYPE), None)
+    names = dict(Ability.objects.values_list("pk", "name"))
     return {
         "armor_class": stats.armor_class["value"],
         "shield_item": shield.pk if shield else None,
@@ -173,8 +174,14 @@ def _strip(character: Character, stats, items) -> dict:
         "initiative": stats.initiative,
         "con_modifier": stats.abilities["con"]["modifier"],
         "hp": character.current_hit_points,
-        "max_hp": character.max_hit_points,
-        "hp_percent": _percent(character.current_hit_points, character.max_hit_points),
+        "max_hp": character.hit_point_maximum,
+        "hp_reduction": character.max_hit_points_reduction,
+        "drained": bool(character.ability_reductions),
+        "ability_reductions": [
+            (key, names.get(key, key), int((character.ability_reductions or {}).get(key, 0)))
+            for key in tables.ABILITIES
+        ],
+        "hp_percent": _percent(character.current_hit_points, character.hit_point_maximum),
         "temp_hp": character.temporary_hit_points,
         "hit_dice": [
             {
@@ -1252,6 +1259,11 @@ _ACTIONS = {
     "xp": _act_xp,
     "hp_delta": lambda c, p: play.adjust_hit_points(c, _int(p, "delta")),
     "hp_set": lambda c, p: play.set_hit_points(c, _int(p, "value")),
+    # The sheet is redrawn: the lowered numbers show on the abilities, saves, skills and so on.
+    "hp_max_reduction": lambda c, p: play.set_hit_point_reduction(c, _int(p, "value")) or True,
+    "ability_reduction": lambda c, p: (
+        play.set_ability_reduction(c, p.get("ability", ""), _int(p, "value")) or True
+    ),
     "temp_hp": lambda c, p: play.set_temporary_hit_points(c, _int(p, "value")),
     "death_toggle": lambda c, p: play.toggle_death_save(c, p.get("kind", ""), _int(p, "index")),
     "inspiration": lambda c, p: play.set_inspiration(c, p.get("value") == "1"),
@@ -1434,7 +1446,7 @@ def _state(character: Character) -> dict:
         "name": character.name,
         "xp": character.experience_points,
         "hp": character.current_hit_points,
-        "max_hp": character.max_hit_points,
+        "max_hp": character.hit_point_maximum,
         "con_modifier": stats.abilities["con"]["modifier"],
         "temp_hp": character.temporary_hit_points,
         "death_successes": character.death_save_successes,

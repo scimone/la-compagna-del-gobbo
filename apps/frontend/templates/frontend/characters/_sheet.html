@@ -2,7 +2,7 @@
 {# The computed numbers (SRD step 5). Read-only; the Review step's adjust form is separate.   #}
 <div class="sheet">
   <div class="stat"><span class="k">{% translate "Armor Class" %}</span><span class="v">{{ stats.armor_class.value }}</span><span class="s">{{ ac_label }}</span></div>
-  <div class="stat"><span class="k">{% translate "Hit Points" %}</span><span class="v">{{ character.max_hit_points }}</span>
+  <div class="stat"><span class="k">{% translate "Hit Points" %}</span><span class="v">{{ character.hit_point_maximum }}</span>
     <span class="s">{% for die, hd in stats.hit_dice.items %}{{ hd.total }}{{ die }} {% endfor %}</span></div>
   <div class="stat"><span class="k">{% translate "Initiative" %}</span><span class="v">{{ stats.initiative|stringformat:"+d" }}</span></div>
   <div class="stat"><span class="k">{% translate "Speed" %}</span><span class="v">{{ speed_label }}</span></div>

@@ -88,17 +88,47 @@ def adjust_hit_points(character: Character, delta: int) -> None:
         character.temporary_hit_points -= absorbed
         delta += absorbed
     character.current_hit_points = _clamp(
-        character.current_hit_points + delta, 0, character.max_hit_points
+        character.current_hit_points + delta, 0, character.hit_point_maximum
     )
     if was_down and character.current_hit_points > 0:
         character.death_save_successes = character.death_save_failures = 0
     character.save()
 
 
+def set_hit_point_reduction(character: Character, value: int) -> None:
+    """Lower the maximum hit points by `value` until the next Long Rest (the current ones follow
+    the maximum down)."""
+    character.max_hit_points_reduction = _clamp(value, 0, character.max_hit_points)
+    character.current_hit_points = min(character.current_hit_points, character.hit_point_maximum)
+    character.save()
+
+
+def set_ability_reduction(character: Character, ability: str, value: int) -> None:
+    """Lower an ability score (`"str"`...) by `value` until the next Long Rest."""
+    fields = {
+        "str": "strength",
+        "dex": "dexterity",
+        "con": "constitution",
+        "int": "intelligence",
+        "wis": "wisdom",
+        "cha": "charisma",
+    }
+    if ability not in fields:
+        raise ValueError(f"no ability {ability}")
+    reductions = dict(character.ability_reductions or {})
+    lost = _clamp(value, 0, getattr(character, fields[ability]))
+    if lost:
+        reductions[ability] = lost
+    else:
+        reductions.pop(ability, None)
+    character.ability_reductions = reductions
+    character.save()
+
+
 def set_hit_points(character: Character, value: int) -> None:
     """Set the current hit points outright (typed into the field): no temporary-HP absorption."""
     was_down = character.current_hit_points == 0
-    character.current_hit_points = _clamp(value, 0, character.max_hit_points)
+    character.current_hit_points = _clamp(value, 0, character.hit_point_maximum)
     if was_down and character.current_hit_points > 0:
         character.death_save_successes = character.death_save_failures = 0
     character.save()
@@ -686,7 +716,7 @@ def short_rest(
             raise ValueError(f"not enough {die} hit dice")
         if not 1 <= result <= sides:
             raise ValueError(f"a {die} rolls 1 to {sides}")
-        room = character.max_hit_points - character.current_hit_points
+        room = character.hit_point_maximum - character.current_hit_points
         gained = min(max(1, result + con_modifier), room)
         character.current_hit_points += gained
         healed += gained
@@ -716,7 +746,9 @@ def long_rest(character: Character) -> None:
     free cast (Magic Initiate's) and every limited-use resource restored.
     Heroic Inspiration is not touched."""
     _require_standing(character)
-    character.current_hit_points = character.max_hit_points
+    character.max_hit_points_reduction = 0
+    character.ability_reductions = {}
+    character.current_hit_points = character.hit_point_maximum
     character.temporary_hit_points = 0
     character.death_save_successes = character.death_save_failures = 0
     character.spell_slots_spent = {}
