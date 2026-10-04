@@ -94,8 +94,9 @@ class Feature(models.Model):
     consumes_resource_name = models.CharField(max_length=100, blank=True, default="")
     #: One alternative of a choice made inside a parent feature (Divine Order's Protector/
     #: Thaumaturge, a species lineage, Circle of the Land's land type). It is granted to the
-    #: characters that chose it and has its own page, but never shows in the catalog lists - next
-    #: to its siblings it would read as if every character got all of them.
+    #: characters that chose it and stays in the World features list, but the class/subclass
+    #: pages' level views leave it out - next to its siblings it would read as if every character
+    #: got all of them.
     choice_option = models.BooleanField(default=False)
     entries = models.JSONField(default=list)
     #: Which of this row's own translated field names (`"name"`, `"entries"`) were hand-translated

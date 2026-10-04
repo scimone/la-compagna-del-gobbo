@@ -1195,9 +1195,9 @@ def world_classes(request):
                 "url": reverse("world-feature-detail", args=[feature.pk]),
             }
             for feature, hits in _text_matches(
-                Feature.objects.filter(
-                    class_level__isnull=False, choice_option=False
-                ).select_related("class_level__klass"),
+                Feature.objects.filter(class_level__isnull=False).select_related(
+                    "class_level__klass"
+                ),
                 q,
                 ("entries",),
             )
@@ -1212,9 +1212,9 @@ def world_classes(request):
                 "url": reverse("world-feature-detail", args=[feature.pk]),
             }
             for feature, hits in _text_matches(
-                Feature.objects.filter(
-                    subclass_level__isnull=False, choice_option=False
-                ).select_related("subclass_level__subclass"),
+                Feature.objects.filter(subclass_level__isnull=False).select_related(
+                    "subclass_level__subclass"
+                ),
                 q,
                 ("entries",),
             )
@@ -1486,7 +1486,7 @@ def world_feats(request):
         # in a list of things to look up, so it's left out (matched on the English name, whatever
         # the active language).
         class_features = (
-            Feature.objects.filter(class_level__isnull=False, choice_option=False)
+            Feature.objects.filter(class_level__isnull=False)
             .exclude(name_en="Ability Score Improvement")
             .exclude(name_en__in=_OPTION_LIST_FEATURES.values())
             .select_related("class_level__klass")
@@ -1518,7 +1518,7 @@ def world_feats(request):
 
     if wants("subclass"):
         subclass_features = (
-            Feature.objects.filter(subclass_level__isnull=False, choice_option=False)
+            Feature.objects.filter(subclass_level__isnull=False)
             .exclude(name_en__in=_OPTION_LIST_FEATURES.values())
             .select_related("subclass_level__subclass__klass")
         )
@@ -1556,9 +1556,7 @@ def world_feats(request):
             )
 
     if wants("species"):
-        species_traits = Feature.objects.filter(
-            species__isnull=False, choice_option=False
-        ).select_related("species")
+        species_traits = Feature.objects.filter(species__isnull=False).select_related("species")
         if q:
             species_traits = _by_name(species_traits, q)
         if "species" in selected_types and species_filter["value"]:
@@ -1805,9 +1803,7 @@ def world_species(request):
                 "url": f"{reverse('world-species-detail', args=[trait.species_id])}?tab=traits",
             }
             for trait, hits in _text_matches(
-                Feature.objects.filter(species__isnull=False, choice_option=False).select_related(
-                    "species"
-                ),
+                Feature.objects.filter(species__isnull=False).select_related("species"),
                 q,
                 ("entries",),
             )
