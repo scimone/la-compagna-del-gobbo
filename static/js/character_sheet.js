@@ -201,6 +201,8 @@
     }
     var restTile = root.querySelector('[data-rest="short"]');
     if (restTile) restTile.disabled = state.hp < 1;
+    var longTile = root.querySelector('[data-rest="long"]');
+    if (longTile) longTile.disabled = state.hp < 1 || !!state.long_rest_ready_at;
     var title = document.querySelector("header .brand");
     if (title && state.name) title.textContent = state.name;
 
@@ -659,6 +661,15 @@
     if (!dialog) return;
     if (event.target.closest("[data-rest-cancel]")) {
       dialog.close();
+    } else if (event.target.closest("[data-rest-interrupted]")) {
+      // An interrupted long rest gives nothing, unless an hour was rested: then it is a short rest.
+      dialog.close();
+      var shortDialog = document.getElementById("cs-short-rest-dialog");
+      window.appConfirm(dialog.dataset.askHour).then(function (yes) {
+        if (!yes || !shortDialog) return;
+        shortRestReset(shortDialog);
+        shortDialog.showModal();
+      });
     } else if (event.target.closest("[data-rest-spend]")) {
       shortRestSpend(dialog);
     } else if (event.target.closest("[data-rest-confirm]")) {

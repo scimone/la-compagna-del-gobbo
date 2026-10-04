@@ -9,7 +9,10 @@ An item row is one of two kinds, named `kind` in the functions that take a row i
 `CharacterInventoryItem`) or `"custom"` (a `CharacterCustomItem`).
 """
 
+import datetime
+
 from django.db import models, transaction
+from django.utils import timezone
 
 from apps.characters.models import (
     Character,
@@ -632,9 +635,10 @@ def adjust_resource(character: Character, resource_id: int, delta: int) -> None:
 # --- rests -------------------------------------------------------------------------------------
 #
 # SRD "Riposo breve" / "Riposo lungo" (Rules Glossary). What is *not* tracked, so not handled here:
-# the 16 hours between long rests, an interrupted rest (initiative, a spell that is not a cantrip,
-# damage, an hour of exertion - the player decides whether the rest was completed), exhaustion and
-# reduced ability scores (the sheet has neither), and the class features that let you choose
+# an interrupted rest (initiative, a spell that is not a cantrip, damage, an hour of exertion - the
+# player decides whether the rest was completed; the sheet offers "interrupted" on the long rest,
+# which grants the short rest's benefits when an hour had passed), exhaustion and reduced ability
+# scores (the sheet has neither), and the class features that let you choose
 # something at a rest (Arcane Recovery, Natural Recovery, swapping prepared spells or weapon
 # mastery).
 
@@ -653,6 +657,18 @@ def _spent_hit_dice(character: Character, die: str) -> int:
         for c in character.classes.select_related("klass")
         if c.klass.hit_die == die
     )
+
+
+LONG_REST_GAP = datetime.timedelta(hours=16)
+
+
+def next_long_rest_at(character: Character) -> datetime.datetime | None:
+    """When the next Long Rest may begin (16 hours after the last), or None if it may now."""
+    last = character.last_long_rest_at
+    if last is None:
+        return None
+    ready = last + LONG_REST_GAP
+    return ready if ready > timezone.now() else None
 
 
 def _require_standing(character: Character) -> None:
@@ -710,10 +726,13 @@ def short_rest(
 
 @transaction.atomic
 def long_rest(character: Character) -> None:
-    """Take a long rest (8 hours): every hit point and every spent Hit Die back, temporary hit
-    points gone, the death saves cleared, every spell slot and free cast (Magic Initiate's) and
+    """Take a long rest (8 hours, at least 16 hours after the last one): every hit point and every
+    spent Hit Die back, temporary hit points gone, the death saves cleared, every spell slot and free cast (Magic Initiate's) and
     every limited-use resource restored. Heroic Inspiration is not touched."""
     _require_standing(character)
+    if next_long_rest_at(character):
+        raise ValueError("a long rest needs 16 hours since the last one")
+    character.last_long_rest_at = timezone.now()
     character.current_hit_points = character.max_hit_points
     character.temporary_hit_points = 0
     character.death_save_successes = character.death_save_failures = 0

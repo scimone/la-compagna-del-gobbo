@@ -88,6 +88,9 @@ class Character(models.Model):
     #: the class) and used up as spells are unprepared. No entry: the list is locked until then.
     spell_changes = models.JSONField(default=dict, blank=True)
 
+    # When the last Long Rest was finished: the next one needs 16 hours after it.
+    last_long_rest_at = models.DateTimeField(null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

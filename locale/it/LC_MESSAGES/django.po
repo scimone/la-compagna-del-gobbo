@@ -2591,3 +2591,21 @@ msgstr "Un'ora di attività leggera."
 
 msgid "You can spend Hit Dice to regain hit points: roll the die yourself, type the result here and your Constitution modifier is added."
 msgstr "Puoi spendere Dadi Ferita per recuperare Punti Ferita: tira tu il dado, scrivi qui il risultato e verrà aggiunto il tuo modificatore di Costituzione."
+
+msgid "A long rest needs at least 1 hit point"
+msgstr "Un riposo lungo richiede almeno 1 Punto Ferita"
+
+msgid "You can take another long rest from %(when)s"
+msgstr "Potrai fare un altro riposo lungo da %(when)s"
+
+msgid "At least 8 hours: you sleep for at least 6 and do no more than 2 hours of light activity. You regain all hit points and all spent Hit Dice, temporary hit points end, and spell slots, free casts and resources are restored. You must wait 16 hours before another long rest."
+msgstr "Almeno 8 ore: dormi per almeno 6 e svolgi non più di 2 ore di attività leggera. Recuperi tutti i Punti Ferita e tutti i Dadi Ferita spesi, i Punti Ferita temporanei finiscono e gli slot incantesimo, i lanci gratuiti e le risorse vengono ripristinati. Devi attendere 16 ore prima di un altro riposo lungo."
+
+msgid "The rest is interrupted by rolling initiative, casting a spell other than a cantrip, taking damage, or an hour of walking or other exertion. If you rested at least 1 hour first, you gain the benefits of a short rest; you can start again right away, and the rest then takes 1 extra hour per interruption."
+msgstr "Il riposo è interrotto dal tirare l'iniziativa, dal lanciare un incantesimo che non sia un trucchetto, dal subire danni o da un'ora di cammino o altro sforzo fisico. Se avevi riposato almeno 1 ora, ottieni i benefici di un riposo breve; puoi ricominciare subito, e il riposo richiede 1 ora in più per ogni interruzione."
+
+msgid "It was interrupted"
+msgstr "È stato interrotto"
+
+msgid "Did you rest for at least 1 hour before the interruption? If so, you gain the benefits of a short rest."
+msgstr "Hai riposato per almeno 1 ora prima dell'interruzione? In tal caso ottieni i benefici di un riposo breve."

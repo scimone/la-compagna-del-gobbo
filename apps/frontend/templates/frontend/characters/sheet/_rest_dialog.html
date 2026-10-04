@@ -30,11 +30,13 @@
     <button type="button" class="ok" data-rest-confirm="short">{% translate "Finish the rest" %}</button>
   </div>
 </dialog>
-<dialog class="cs-cast" id="cs-long-rest-dialog">
+<dialog class="cs-cast" id="cs-long-rest-dialog" data-ask-hour="{% translate "Did you rest for at least 1 hour before the interruption? If so, you gain the benefits of a short rest." %}">
   <h3>{% translate "Long Rest" %}</h3>
-  <p class="cs-cast-ask">{% translate "At least 8 hours (6 asleep). You regain all hit points and all spent Hit Dice, temporary hit points end, and spell slots, free casts and resources are restored." %}</p>
+  <p class="cs-cast-ask">{% translate "At least 8 hours: you sleep for at least 6 and do no more than 2 hours of light activity. You regain all hit points and all spent Hit Dice, temporary hit points end, and spell slots, free casts and resources are restored. You must wait 16 hours before another long rest." %}</p>
+  <p class="cs-cast-note">{% translate "The rest is interrupted by rolling initiative, casting a spell other than a cantrip, taking damage, or an hour of walking or other exertion. If you rested at least 1 hour first, you gain the benefits of a short rest; you can start again right away, and the rest then takes 1 extra hour per interruption." %}</p>
   <div class="cs-cast-buttons">
     <button type="button" data-rest-cancel>{% translate "Cancel" %}</button>
+    <button type="button" data-rest-interrupted>{% translate "It was interrupted" %}</button>
     <button type="button" class="ok" data-rest-confirm="long">{% translate "Take a long rest" %}</button>
   </div>
 </dialog>
