@@ -1,6 +1,6 @@
 """What the chosen species (and its lineage/legacy/ancestry) gives a level-1 character."""
 
-from apps.rules.models import Feat
+from apps.rules.models import Feat, Feature
 
 from ..services.store import Draft
 from . import feat as feat_resolver
@@ -67,11 +67,27 @@ def size(draft: Draft) -> str:
     return sizes[0] if len(sizes) == 1 else draft.get("species.size", "")
 
 
+def species_features(draft: Draft) -> list[Feature]:
+    """The species' traits, with the generic lineage trait ("Elven Lineage", listing every
+    lineage in a table) swapped for the chosen lineage's own ("Elven Lineage (Wood Elf)")."""
+    rows = list(draft.species.feature_rows.order_by("pk"))
+    lineage = chosen_lineage(draft)
+    if lineage is None:
+        return rows
+    chosen = f"{lineage['replaces']} ({lineage['label']})"
+    own = next((f for f in rows if f.name_en == chosen), None)
+    if own is None:
+        return rows
+    generic = lineage["replaces"]
+    others = [f for f in rows if f.name_en != generic and not f.name_en.startswith(f"{generic} (")]
+    return [*others, own]
+
+
 def species_grants(draft: Draft, grants: Grants) -> None:
     species = draft.species
     if species is None:
         return
-    grants.features.extend(species.feature_rows.order_by("pk"))
+    grants.features.extend(species_features(draft))
     if (feet := darkvision(draft)) > 0:
         grants.senses.append(("darkvision", feet, "species"))
 

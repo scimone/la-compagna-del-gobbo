@@ -112,7 +112,7 @@ def test_rows_without_an_official_source_are_hand_translated_and_flagged(catalog
     assert Species.objects.count() == 11
     assert Background.objects.count() == 16
     assert Equipment.objects.count() == 217
-    assert Feature.objects.count() == 695
+    assert Feature.objects.count() == 719
 
 
 def test_a_classfeature_subheading_is_nested_not_a_sibling_feature(catalogs):

@@ -7402,5 +7402,435 @@
    "Il mago ha sempre preparati gli incantesimi {@spell Summon Beast|XPHB|richiama bestia} e {@spell Summon Fey|XPHB|richiama folletto}. Ogni volta che lancia uno dei due incantesimi, può cambiarne la scuola in Illusione, il che fa apparire spettrale la creatura evocata. Il mago può lanciare la versione da Illusione di ciascun incantesimo senza consumare uno slot incantesimo, ma lanciarlo senza uno slot dimezza i {@variantrule Hit Points|XPHB|punti ferita} della creatura. Una volta lanciato uno dei due incantesimi senza uno slot incantesimo, il mago deve completare un {@variantrule Long Rest|XPHB|riposo lungo} prima di poterlo lanciare di nuovo in questo modo."
   ],
   "name": "Creature allucinatorie"
+ },
+ "species:dragonborn:draconic-ancestry-black": {
+  "entries": [
+   {
+    "colLabels": [
+     "Drago",
+     "Tipo di danni"
+    ],
+    "rows": [
+     [
+      "Nero",
+      "Acido"
+     ]
+    ]
+   }
+  ],
+  "name": "Discendenza draconica (Nero)"
+ },
+ "species:dragonborn:draconic-ancestry-blue": {
+  "entries": [
+   {
+    "colLabels": [
+     "Drago",
+     "Tipo di danni"
+    ],
+    "rows": [
+     [
+      "Blu",
+      "Fulmine"
+     ]
+    ]
+   }
+  ],
+  "name": "Discendenza draconica (Blu)"
+ },
+ "species:dragonborn:draconic-ancestry-brass": {
+  "entries": [
+   {
+    "colLabels": [
+     "Drago",
+     "Tipo di danni"
+    ],
+    "rows": [
+     [
+      "Ottone",
+      "Fuoco"
+     ]
+    ]
+   }
+  ],
+  "name": "Discendenza draconica (Ottone)"
+ },
+ "species:dragonborn:draconic-ancestry-bronze": {
+  "entries": [
+   {
+    "colLabels": [
+     "Drago",
+     "Tipo di danni"
+    ],
+    "rows": [
+     [
+      "Bronzo",
+      "Fulmine"
+     ]
+    ]
+   }
+  ],
+  "name": "Discendenza draconica (Bronzo)"
+ },
+ "species:dragonborn:draconic-ancestry-copper": {
+  "entries": [
+   {
+    "colLabels": [
+     "Drago",
+     "Tipo di danni"
+    ],
+    "rows": [
+     [
+      "Rame",
+      "Acido"
+     ]
+    ]
+   }
+  ],
+  "name": "Discendenza draconica (Rame)"
+ },
+ "species:dragonborn:draconic-ancestry-gold": {
+  "entries": [
+   {
+    "colLabels": [
+     "Drago",
+     "Tipo di danni"
+    ],
+    "rows": [
+     [
+      "Oro",
+      "Fuoco"
+     ]
+    ]
+   }
+  ],
+  "name": "Discendenza draconica (Oro)"
+ },
+ "species:dragonborn:draconic-ancestry-green": {
+  "entries": [
+   {
+    "colLabels": [
+     "Drago",
+     "Tipo di danni"
+    ],
+    "rows": [
+     [
+      "Verde",
+      "Veleno"
+     ]
+    ]
+   }
+  ],
+  "name": "Discendenza draconica (Verde)"
+ },
+ "species:dragonborn:draconic-ancestry-red": {
+  "entries": [
+   {
+    "colLabels": [
+     "Drago",
+     "Tipo di danni"
+    ],
+    "rows": [
+     [
+      "Rosso",
+      "Fuoco"
+     ]
+    ]
+   }
+  ],
+  "name": "Discendenza draconica (Rosso)"
+ },
+ "species:dragonborn:draconic-ancestry-silver": {
+  "entries": [
+   {
+    "colLabels": [
+     "Drago",
+     "Tipo di danni"
+    ],
+    "rows": [
+     [
+      "Argento",
+      "Freddo"
+     ]
+    ]
+   }
+  ],
+  "name": "Discendenza draconica (Argento)"
+ },
+ "species:dragonborn:draconic-ancestry-white": {
+  "entries": [
+   {
+    "colLabels": [
+     "Drago",
+     "Tipo di danni"
+    ],
+    "rows": [
+     [
+      "Bianco",
+      "Freddo"
+     ]
+    ]
+   }
+  ],
+  "name": "Discendenza draconica (Bianco)"
+ },
+ "species:elf:elven-lineage-drow": {
+  "entries": [
+   "Quando raggiunge i livelli 3 e 5, apprenderà un incantesimo di livello superiore, come mostrato nella tabella. Tale incantesimo è sempre considerato come preparato. Può lanciarlo una volta senza consumare uno slot incantesimo e ne recupera l'utilizzo in questo modo dopo aver completato un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciarlo usando gli slot incantesimo a sua disposizione del livello appropriato.",
+   {
+    "colLabels": [
+     "Lignaggio",
+     "Livello 1",
+     "Livello 3",
+     "Livello 5"
+    ],
+    "rows": [
+     [
+      "Drow",
+      "La portata di {@sense Darkvision|XPHB|scurovisione} aumenta fino a 36 metri. Inoltre, il personaggio conosce il trucchetto luci danzanti.",
+      "Luminescenza",
+      "Oscurità"
+     ]
+    ]
+   }
+  ],
+  "name": "Lignaggio elfico (Drow)"
+ },
+ "species:elf:elven-lineage-high-elf": {
+  "entries": [
+   "Quando raggiunge i livelli 3 e 5, apprenderà un incantesimo di livello superiore, come mostrato nella tabella. Tale incantesimo è sempre considerato come preparato. Può lanciarlo una volta senza consumare uno slot incantesimo e ne recupera l'utilizzo in questo modo dopo aver completato un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciarlo usando gli slot incantesimo a sua disposizione del livello appropriato.",
+   {
+    "colLabels": [
+     "Lignaggio",
+     "Livello 1",
+     "Livello 3",
+     "Livello 5"
+    ],
+    "rows": [
+     [
+      "Elfo alto",
+      "Il personaggio impara il trucchetto prestidigitazione. Ogni volta che completa un {@variantrule Long Rest|XPHB|riposo lungo}, può sostituirlo con un altro trucchetto dalla lista degli incantesimi del mago.",
+      "Individuazione del magico",
+      "Passo velato"
+     ]
+    ]
+   }
+  ],
+  "name": "Lignaggio elfico (Elfo alto)"
+ },
+ "species:elf:elven-lineage-wood-elf": {
+  "entries": [
+   "Quando raggiunge i livelli 3 e 5, apprenderà un incantesimo di livello superiore, come mostrato nella tabella. Tale incantesimo è sempre considerato come preparato. Può lanciarlo una volta senza consumare uno slot incantesimo e ne recupera l'utilizzo in questo modo dopo aver completato un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciarlo usando gli slot incantesimo a sua disposizione del livello appropriato.",
+   {
+    "colLabels": [
+     "Lignaggio",
+     "Livello 1",
+     "Livello 3",
+     "Livello 5"
+    ],
+    "rows": [
+     [
+      "Elfo dei boschi",
+      "La {@variantrule Speed|XPHB|velocità} del personaggio aumenta a 10,5 metri. Inoltre, conosce il trucchetto artificio druidico.",
+      "Passo veloce",
+      "Passare senza tracce"
+     ]
+    ]
+   }
+  ],
+  "name": "Lignaggio elfico (Elfo dei boschi)"
+ },
+ "species:gnome:gnomish-lineage-forest-gnome": {
+  "entries": [
+   {
+    "items": [
+     {
+      "name": "Gnomo delle foreste",
+      "type": "item",
+      "entries": [
+       "Il personaggio conosce il trucchetto illusione minore. Inoltre, l'incantesimo parlare con gli animali è sempre considerato come preparato. Può lanciarlo senza consumare uno slot incantesimo un numero di volte pari al suo bonus di {@variantrule Proficiency|XPHB|competenza} e riacquista tutti gli usi spesi al termine di un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciare l'incantesimo usando uno qualsiasi degli slot incantesimo a sua disposizione."
+      ]
+     }
+    ]
+   }
+  ],
+  "name": "Lignaggio gnomesco (Gnomo delle foreste)"
+ },
+ "species:gnome:gnomish-lineage-rock-gnome": {
+  "entries": [
+   {
+    "items": [
+     {
+      "name": "Gnomo delle rocce",
+      "type": "item",
+      "entries": [
+       "Conosce i trucchetti riparare e prestidigitazione. Inoltre, può impiegare 10 minuti di lancio di prestidigitazione per creare un piccolo dispositivo meccanico (CA 5, 1 PF), come un giocattolo, un accendifuoco o un carillon. Una volta creato, puoi determinare il"
+      ]
+     }
+    ]
+   }
+  ],
+  "name": "Lignaggio gnomesco (Gnomo delle rocce)"
+ },
+ "species:goliath:giant-ancestry-cloud": {
+  "entries": [
+   {
+    "items": [
+     {
+      "name": "Cloud's Jaunt (Cloud Giant)",
+      "type": "item",
+      "entries": [
+       "As a {@variantrule Bonus Action|XPHB}, you magically teleport up to 30 feet to an unoccupied space you can see."
+      ]
+     }
+    ]
+   }
+  ],
+  "name": "Giant Ancestry (Cloud Giant)"
+ },
+ "species:goliath:giant-ancestry-fire": {
+  "entries": [
+   {
+    "items": [
+     {
+      "name": "Fire's Burn (Fire Giant)",
+      "type": "item",
+      "entries": [
+       "When you hit a target with an attack roll and deal damage to it, you can also deal {@damage 1d10} Fire damage to that target."
+      ]
+     }
+    ]
+   }
+  ],
+  "name": "Giant Ancestry (Fire Giant)"
+ },
+ "species:goliath:giant-ancestry-frost": {
+  "entries": [
+   {
+    "items": [
+     {
+      "name": "Frost's Chill (Frost Giant)",
+      "type": "item",
+      "entries": [
+       "When you hit a target with an attack roll and deal damage to it, you can also deal {@damage 1d6} Cold damage to that target and reduce its {@variantrule Speed|XPHB} by 10 feet until the start of your next turn."
+      ]
+     }
+    ]
+   }
+  ],
+  "name": "Giant Ancestry (Frost Giant)"
+ },
+ "species:goliath:giant-ancestry-hill": {
+  "entries": [
+   {
+    "items": [
+     {
+      "name": "Hill's Tumble (Hill Giant)",
+      "type": "item",
+      "entries": [
+       "When you hit a Large or smaller creature with an attack roll and deal damage to it, you can give that target the {@condition Prone|XPHB} condition."
+      ]
+     }
+    ]
+   }
+  ],
+  "name": "Giant Ancestry (Hill Giant)"
+ },
+ "species:goliath:giant-ancestry-stone": {
+  "entries": [
+   {
+    "items": [
+     {
+      "name": "Stone's Endurance (Stone Giant)",
+      "type": "item",
+      "entries": [
+       "When you take damage, you can take a {@variantrule Reaction|XPHB} to roll {@dice 1d12}. Add your Constitution modifier to the number rolled and reduce the damage by that total."
+      ]
+     }
+    ]
+   }
+  ],
+  "name": "Giant Ancestry (Stone Giant)"
+ },
+ "species:goliath:giant-ancestry-storm": {
+  "entries": [
+   {
+    "items": [
+     {
+      "name": "Storm's Thunder (Storm Giant)",
+      "type": "item",
+      "entries": [
+       "When you take damage from a creature within 60 feet of you, you can take a {@variantrule Reaction|XPHB} to deal {@damage 1d8} Thunder damage to that creature."
+      ]
+     }
+    ]
+   }
+  ],
+  "name": "Giant Ancestry (Storm Giant)"
+ },
+ "species:tiefling:fiendish-legacy-abyssal": {
+  "entries": [
+   "Quando raggiunge i livelli 3 e 5, apprenderà un incantesimo di livello superiore, come mostrato nella tabella. Tale incantesimo è sempre considerato come preparato. Può lanciarlo una volta senza consumare uno slot incantesimo e ne recupera l'utilizzo in questo modo dopo aver completato un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciarlo usando gli slot incantesimo a sua disposizione del livello appropriato. La caratteristica da incantatore del personaggio può essere Intelligenza, Saggezza o Carisma per gli incantesimi lanciati con questo tratto (decidi l'abilità quando scegli il retaggio).",
+   {
+    "colLabels": [
+     "Retaggio",
+     "Livello 1",
+     "Livello 3",
+     "Livello 5"
+    ],
+    "rows": [
+     [
+      "Abissale",
+      "Possiede {@variantrule Resistance|XPHB|resistenza} ai danni da veleno. Inoltre, conosce il trucchetto spruzzo velenoso.",
+      "Raggio di infermità",
+      "Blocca persone"
+     ]
+    ]
+   }
+  ],
+  "name": "Retaggio immondo (Abissale)"
+ },
+ "species:tiefling:fiendish-legacy-chthonic": {
+  "entries": [
+   "Quando raggiunge i livelli 3 e 5, apprenderà un incantesimo di livello superiore, come mostrato nella tabella. Tale incantesimo è sempre considerato come preparato. Può lanciarlo una volta senza consumare uno slot incantesimo e ne recupera l'utilizzo in questo modo dopo aver completato un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciarlo usando gli slot incantesimo a sua disposizione del livello appropriato. La caratteristica da incantatore del personaggio può essere Intelligenza, Saggezza o Carisma per gli incantesimi lanciati con questo tratto (decidi l'abilità quando scegli il retaggio).",
+   {
+    "colLabels": [
+     "Retaggio",
+     "Livello 1",
+     "Livello 3",
+     "Livello 5"
+    ],
+    "rows": [
+     [
+      "Ctonio",
+      "Possiede {@variantrule Resistance|XPHB|resistenza} ai danni necrotici. Inoltre, conosce il trucchetto tocco gelido.",
+      "Vita falsata",
+      "Raggio di affaticamento"
+     ]
+    ]
+   }
+  ],
+  "name": "Retaggio immondo (Ctonio)"
+ },
+ "species:tiefling:fiendish-legacy-infernal": {
+  "entries": [
+   "Quando raggiunge i livelli 3 e 5, apprenderà un incantesimo di livello superiore, come mostrato nella tabella. Tale incantesimo è sempre considerato come preparato. Può lanciarlo una volta senza consumare uno slot incantesimo e ne recupera l'utilizzo in questo modo dopo aver completato un {@variantrule Long Rest|XPHB|riposo lungo}. Può anche lanciarlo usando gli slot incantesimo a sua disposizione del livello appropriato. La caratteristica da incantatore del personaggio può essere Intelligenza, Saggezza o Carisma per gli incantesimi lanciati con questo tratto (decidi l'abilità quando scegli il retaggio).",
+   {
+    "colLabels": [
+     "Retaggio",
+     "Livello 1",
+     "Livello 3",
+     "Livello 5"
+    ],
+    "rows": [
+     [
+      "Infernale",
+      "Possiede {@variantrule Resistance|XPHB|resistenza} ai danni da fuoco. Inoltre, conosce il trucchetto dardo di fuoco.",
+      "Intimorire infernale",
+      "Oscurità"
+     ]
+    ]
+   }
+  ],
+  "name": "Retaggio immondo (Infernale)"
  }
 }

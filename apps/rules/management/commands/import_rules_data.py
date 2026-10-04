@@ -9,6 +9,7 @@ from django.utils import translation
 from django.utils.text import slugify
 
 from apps.rules.handbook_source import TranslationDataError, load_handbook
+from apps.rules.lineage_features import lineage_feature
 from apps.rules.models import (
     Ability,
     Background,
@@ -1328,6 +1329,10 @@ class Command(BaseCommand):
         for species in Species.objects.all():
             for d in _named_dicts(species.entries):
                 rows.append(Feature(species=species, name=d["name"], entries=d.get("entries", [])))
+            for lineage in species.lineages:
+                cut = lineage_feature(species.entries, None, lineage)
+                if cut:
+                    rows.append(Feature(species=species, name=cut[0], entries=cut[1]))
         for feat in Feat.objects.all():
             for d in _named_dicts(feat.entries):
                 rows.append(Feature(feat=feat, name=d["name"], entries=d.get("entries", [])))

@@ -180,6 +180,10 @@ def test_lineages_change_speed_darkvision_and_spells(owner):
 
     assert species_resolver.speed(Draft(drow)) == 35
     assert drow.senses.get(sense_id="darkvision").range_feet == 60
+    # The chosen lineage is its own feature, replacing the generic trait that lists them all.
+    names = set(drow.features.values_list("feature__name_en", flat=True))
+    assert "Elven Lineage (Wood Elf)" in names
+    assert "Elven Lineage" not in names and "Elven Lineage (Drow)" not in names
 
 
 def test_species_with_two_sizes_must_pick_one(owner):
