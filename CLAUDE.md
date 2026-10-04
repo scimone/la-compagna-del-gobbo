@@ -97,6 +97,59 @@ interrupted rest (the player says whether it was interrupted). Handled in `play.
 ability scores (restored by a long rest), Arcane / Natural Recovery (slots back at a short rest, once per
 long rest) and Natural Recovery's free Circle spell, and the long rest's one Weapon Mastery swap.
 
+## Long-rest / rest logic not implemented yet
+
+Done: slots, Hit Dice, class-table resources and `FEATURE_RESOURCES` (`apps/builder/services/
+feature_resources.py`), free casts, prepared-spell changes, the Weapon Mastery swap, Natural/Arcane
+Recovery, and Circle of the Land's land (`services/land.py`). A long rest opens a *window* on the
+character (`spell_changes`, `weapon_mastery_changes`, `rest_choices`) that a sheet control closes by
+making the choice - copy that pattern for anything below: `play.long_rest()` opens it, a builder
+service validates and applies it (builder, not `play`, if it needs `progression` helpers), a
+`_act_*` in `character_sheet.py` exposes it, `_act_long_rest` prompts for it, and
+`Character.rest_choices` (`{"key": True}`) is the generic flag. Not done:
+
+- **Cantrip swap (Wizard, High Elf).** After a long rest a Wizard may replace one cantrip with
+  another Wizard cantrip; a High Elf may replace the lineage's Prestidigitation with any Wizard
+  cantrip. Plan: `rest_choices["cantrip"] = ["class:wizard", "species:elf"]` opened in
+  `grant_rest_choices()` when the character has that class / the `high-elf` lineage; one swap per
+  source. `change_cantrip(character, source, old, new)` deletes the `CharacterSpell` with that
+  `source`/`spell` (level 0) and adds the new one with the same source via `update_or_create`
+  (candidates: `class_spell_list`, level 0, not already known). A control in the Spellbook tab like
+  the Weapon Mastery dialog.
+- **Hunter's Prey (Hunter Ranger).** After a short *or* long rest the chosen option (Colossus
+  Slayer / Horde Breaker) may be replaced. The choice is not stored yet, so first make it a
+  `CharacterChoice` picked at level 3 (`lu.hunters_prey`, in `progression.plan`), then add
+  `rest_choices["hunters_prey"]` from both `short_rest()` and `long_rest()`, and swap it like the land
+  (a "Hunter's Prey (X)" feature per option, cut with the `lineage_features` helpers,
+  `choice_option=True`).
+- **Wild Shape known forms (Druid).** A long rest lets the Druid replace one known form. Not tracked
+  (there is no bestiary); needs a free-text list on the sheet (`CharacterChoice` `class.wild_shape_forms`,
+  list of strings) and a "replace one form" control opened by `rest_choices["wild_shape"]`.
+- **Portent (Diviner) and Cosmic Omen (Circle of the Stars).** Rolled anew after every long rest:
+  Portent is two d20s (three from level 14) the player spends to replace rolls; Cosmic Omen is one die,
+  even = Weal, odd = Woe. Plan: `CharacterChoice` `rest.portent` = list of rolled values, rolled
+  server-side in `grant_rest_choices()` (the old ones lost), shown on the Features tab with a
+  "use" button that pops a value; Cosmic Omen stores the parity and shows which reaction applies.
+- **Fast Crafting (Crafter feat).** After a long rest one piece of gear from the Fast Crafting table
+  can be made; it falls apart after the next long rest. Plan: `rest_choices["fast_crafting"]`,
+  picker over the table's items (the table is in the feat's `entries`, so it needs a small parsed
+  list in `class_spec`-style data), and the item added to the inventory with `notes="fast crafting"`
+  and removed by `long_rest()` before the new one.
+- **Mystic Arcanum (Warlock 11/13/15/17).** One spell of level 6/7/8/9 each, cast once per long
+  rest each. Plan: pick the spell at the level (`lu.arcanum`), store it as a `CharacterSpell`
+  (`source="class:warlock:arcanum"`, level-keyed) and use the existing `free_cast_used` flag that
+  `long_rest()` already clears, so casting it without a slot works like Magic Initiate's free cast.
+- **Proficiency-bonus free casts (Forest Gnome's Speak with Animals, Fey Wanderer, ...).** The
+  innate spell blocks with `"daily": {"pb": [...]}` get a single `free_cast_used` flag, but they may
+  be cast PB times. Plan: give `CharacterSpell` a `free_casts_used` counter (migration) next to the
+  flag, maximum from `tables.proficiency_bonus`, reset by `long_rest()`; `cast_spell()` increments it
+  and `spell_row` in the sheet shows "n/PB".
+- **Exhaustion.** Not tracked at all. Plan: `Character.exhaustion` (0-6), a stepper on the Stats tab,
+  -2 x level on d20 Tests and -5 ft x level of Speed in `derived_stats`, death at 6, and
+  `long_rest()` lowering it by 1 (a short rest never does; Tireless lowers it on a short rest).
+- **The 16 hours between long rests / an interrupted rest.** Game time, not tracked; the player says
+  whether a rest was interrupted. Leave it that way unless a clock is added to the sheet.
+
 ## Environment gotchas
 
 Some sandboxes have no GitHub credentials wired up for network `git` operations - `git
