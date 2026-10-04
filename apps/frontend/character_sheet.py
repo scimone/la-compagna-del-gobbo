@@ -171,6 +171,7 @@ def _strip(character: Character, stats, items) -> dict:
         "shield_item": shield.pk if shield else None,
         "shield_worn": stats.armor_class["shield"],
         "initiative": stats.initiative,
+        "con_modifier": stats.abilities["con"]["modifier"],
         "hp": character.current_hit_points,
         "max_hp": character.max_hit_points,
         "hp_percent": _percent(character.current_hit_points, character.max_hit_points),
@@ -1179,14 +1180,14 @@ def _act_hit_dice(character, post):
 
 
 def _act_short_rest(character, post):
-    """`hd_<die>=<count>` for each kind of Hit Die to spend (see `play.short_rest`)."""
-    spend = {
-        key.removeprefix("hd_"): _int(post, key)
-        for key in post
-        if key.startswith("hd_") and post.get(key)
-    }
+    """`rolls=d10:6,d8:3`: the die and the result the player rolled for each Hit Die spent."""
+    rolls = []
+    for part in post.get("rolls", "").split(","):
+        if part:
+            die, _sep, result = part.partition(":")
+            rolls.append((die, int(result)))
     con = derived_stats.compute(character).abilities["con"]["modifier"]
-    healed = play.short_rest(character, spend, con)
+    healed = play.short_rest(character, rolls, con)
     message = _("Short rest taken")
     if healed:
         message += " - " + _("%(hp)d hit points regained") % {"hp": healed}

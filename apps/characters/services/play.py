@@ -9,8 +9,6 @@ An item row is one of two kinds, named `kind` in the functions that take a row i
 `CharacterInventoryItem`) or `"custom"` (a `CharacterCustomItem`).
 """
 
-import random
-
 from django.db import models, transaction
 
 from apps.characters.models import (
@@ -665,31 +663,34 @@ def _require_standing(character: Character) -> None:
 @transaction.atomic
 def short_rest(
     character: Character,
-    spend: dict[str, int],
+    rolls: list[tuple[str, int]],
     con_modifier: int,
-    roll=random.randint,
 ) -> int:
     """Take a short rest (1 hour). Returns the hit points regained.
 
-    `spend` is how many Hit Dice of each size (`{"d8": 2}`) to spend: each one rolls its die,
-    adds the Constitution modifier (at least 1 hit point) and heals, up to the maximum. Then the
-    abilities that recharge on a short rest do: a resource marked `short_rest` in full, one marked
-    `other` (Rage, Second Wind: "regain one use") by one use, and Pact Magic slots in full.
+    `rolls` is one `(die, result)` per Hit Die spent (`[("d8", 5), ("d8", 3)]`), the result being
+    what the player rolled at the table: each heals that plus the Constitution modifier (at least
+    1 hit point), up to the maximum. Then the abilities that recharge on a short rest do: a
+    resource marked `short_rest` in full, one marked `other` (Rage, Second Wind: "regain one
+    use") by one use, and Pact Magic slots in full.
     """
     _require_standing(character)
     left = hit_dice_left(character)
+    spent: dict[str, int] = {}
     healed = 0
-    for die, count in spend.items():
-        if count < 0 or count > left.get(die, 0):
-            raise ValueError(f"not enough {die} hit dice")
+    for die, result in rolls:
         sides = int(die.removeprefix("d"))
-        for _ in range(count):
-            room = character.max_hit_points - character.current_hit_points
-            gained = min(max(1, roll(1, sides) + con_modifier), room)
-            character.current_hit_points += gained
-            healed += gained
-        if count:
-            set_hit_dice_spent(character, die, _spent_hit_dice(character, die) + count)
+        spent[die] = spent.get(die, 0) + 1
+        if spent[die] > left.get(die, 0):
+            raise ValueError(f"not enough {die} hit dice")
+        if not 1 <= result <= sides:
+            raise ValueError(f"a {die} rolls 1 to {sides}")
+        room = character.max_hit_points - character.current_hit_points
+        gained = min(max(1, result + con_modifier), room)
+        character.current_hit_points += gained
+        healed += gained
+    for die, count in spent.items():
+        set_hit_dice_spent(character, die, _spent_hit_dice(character, die) + count)
     if healed:
         character.death_save_successes = character.death_save_failures = 0
     slots = dict(character.spell_slots_spent)

@@ -9,7 +9,7 @@
   {# Rests: what they restore is in `play.short_rest`/`play.long_rest`; the dialogs are in _rest_dialog.html. #}
   {% if can_edit %}
   <div class="st-rests st-wide">
-    <button type="button" class="st-rest" data-rest="short">
+    <button type="button" class="st-rest" data-rest="short"{% if strip.hp < 1 %} disabled title="{% translate 'A short rest needs at least 1 hit point' %}"{% endif %}>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
       <span>{% translate "Short Rest" %}</span>
     </button>

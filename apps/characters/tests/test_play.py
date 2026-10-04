@@ -485,7 +485,7 @@ def test_a_short_rest_spends_hit_dice_to_heal_and_recharges_short_rest_abilities
     fighter.spell_slots_spent = {"pact": 1, "1": 2}
     fighter.save()
 
-    healed = play.short_rest(fighter, {"d10": 2}, con_modifier=2, roll=lambda low, high: 6)
+    healed = play.short_rest(fighter, [("d10", 6), ("d10", 6)], con_modifier=2)
 
     fighter.refresh_from_db()
     assert healed == 15 and fighter.current_hit_points == 20  # 2 x (6 + 2) capped at the max
@@ -499,18 +499,20 @@ def test_a_short_rest_die_heals_at_least_one_and_cannot_overspend(fighter):
     fighter.current_hit_points = 1
     fighter.save()
 
-    assert play.short_rest(fighter, {"d10": 1}, con_modifier=-3, roll=lambda low, high: 1) == 1
+    assert play.short_rest(fighter, [("d10", 1)], con_modifier=-3) == 1
     with pytest.raises(ValueError):
-        play.short_rest(fighter, {"d10": 3}, con_modifier=0)  # only 2 left
+        play.short_rest(fighter, [("d10", 4)] * 3, con_modifier=0)  # only 2 left
     with pytest.raises(ValueError):
-        play.short_rest(fighter, {"d8": 1}, con_modifier=0)
+        play.short_rest(fighter, [("d8", 1)], con_modifier=0)
+    with pytest.raises(ValueError):
+        play.short_rest(fighter, [("d10", 11)], con_modifier=0)  # a d10 rolls 1 to 10
 
 
 def test_a_rest_needs_at_least_one_hit_point(fighter):
     fighter.current_hit_points = 0
     fighter.save()
 
-    for rest in (lambda: play.short_rest(fighter, {}, 0), lambda: play.long_rest(fighter)):
+    for rest in (lambda: play.short_rest(fighter, [], 0), lambda: play.long_rest(fighter)):
         with pytest.raises(ValueError):
             rest()
 

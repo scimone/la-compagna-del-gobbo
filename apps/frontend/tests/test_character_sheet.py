@@ -1548,11 +1548,11 @@ def test_the_rest_buttons_and_the_resources_show_and_the_actions_work(signed_in,
     assert 'data-rest="short"' in stats and 'data-rest="long"' in stats
     assert "Second Wind" in stats
 
-    response = act(signed_in, fighter, action="short_rest", hd_d10="1")
+    response = act(signed_in, fighter, action="short_rest", rolls="d10:6")
     assert response.status_code == 200
     fighter.refresh_from_db()
     assert fighter.current_hit_points > 3 and play.hit_dice_left(fighter) == {"d10": 0}
-    assert act(signed_in, fighter, action="short_rest", hd_d10="1").status_code == 400
+    assert act(signed_in, fighter, action="short_rest", rolls="d10:6").status_code == 400
 
     assert act(signed_in, fighter, action="long_rest").status_code == 200
     fighter.refresh_from_db()

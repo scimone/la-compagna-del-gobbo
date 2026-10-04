@@ -2555,3 +2555,33 @@ msgstr "Preparati"
 #: apps/frontend/character_sheet.py
 msgid "Unprepare a spell above to make room for another"
 msgstr "Rimuovi prima un incantesimo preparato qui sopra per fare posto a un altro"
+
+msgid "One hour of light activity. You can spend Hit Dice to regain hit points: roll the die yourself, type the result here and your Constitution modifier is added."
+msgstr "Un'ora di attività leggera. Puoi spendere Dadi Ferita per recuperare Punti Ferita: tira tu il dado, scrivi qui il risultato e verrà aggiunto il tuo modificatore di Costituzione."
+
+msgid "Constitution modifier"
+msgstr "Modificatore di Costituzione"
+
+msgid "Hit Dice left"
+msgstr "Dadi Ferita rimasti"
+
+msgid "Hit Die to spend"
+msgstr "Dado Ferita da spendere"
+
+msgid "Result of the roll"
+msgstr "Risultato del tiro"
+
+msgid "Spend the die"
+msgstr "Spendi il dado"
+
+msgid "No Hit Dice left to spend."
+msgstr "Nessun Dado Ferita da spendere."
+
+msgid "Cancelling counts as an interrupted rest: nothing is gained."
+msgstr "Annullare equivale a un riposo interrotto: non si ottiene nulla."
+
+msgid "Finish the rest"
+msgstr "Termina il riposo"
+
+msgid "A short rest needs at least 1 hit point"
+msgstr "Un riposo breve richiede almeno 1 Punto Ferita"

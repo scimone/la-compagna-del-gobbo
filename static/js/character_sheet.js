@@ -638,6 +638,7 @@
     var tile = event.target.closest("[data-rest]");
     if (tile) {
       var opener = document.getElementById("cs-" + tile.dataset.rest + "-rest-dialog");
+      if (opener && tile.dataset.rest === "short") shortRestReset(opener);
       if (opener && opener.showModal) opener.showModal();
       return;
     }
@@ -645,15 +646,74 @@
     if (!dialog) return;
     if (event.target.closest("[data-rest-cancel]")) {
       dialog.close();
+    } else if (event.target.closest("[data-rest-spend]")) {
+      shortRestSpend(dialog);
     } else if (event.target.closest("[data-rest-confirm]")) {
       var params = { action: event.target.closest("[data-rest-confirm]").dataset.restConfirm + "_rest" };
-      dialog.querySelectorAll("[data-rest-die]").forEach(function (input) {
-        if (Number(input.value) > 0) params["hd_" + input.dataset.restDie] = input.value;
-      });
+      if (dialog.id === "cs-short-rest-dialog") params.rolls = (dialog._rolls || []).join(",");
       dialog.close();
       send(params);
     }
   });
+
+  // The short rest is spent die by die: the player rolls at the table and types the result; the
+  // dialog shows the hit points as they would stand, and only "Finish" posts the rolls (cancelling
+  // is an interrupted rest). The server re-checks every roll.
+  function shortRestReset(dialog) {
+    dialog._rolls = [];
+    dialog._hp = Number(dialog.dataset.hp);
+    dialog.querySelector("[data-rest-log]").innerHTML = "";
+    dialog.querySelector("[data-rest-roll]").value = "";
+    dialog.querySelectorAll("[data-rest-pool]").forEach(function (pool) {
+      pool.querySelector("[data-rest-left]").textContent = pool.dataset.left;
+    });
+    shortRestSync(dialog);
+  }
+
+  function shortRestPoolLeft(dialog, die) {
+    var pool = dialog.querySelector('[data-rest-pool="' + die + '"] [data-rest-left]');
+    return pool ? Number(pool.textContent) : 0;
+  }
+
+  function shortRestSync(dialog) {
+    var select = dialog.querySelector("[data-rest-die]");
+    var any = false;
+    Array.prototype.forEach.call(select.options, function (option) {
+      option.disabled = shortRestPoolLeft(dialog, option.value) < 1;
+      if (!option.disabled) any = true;
+    });
+    if (select.selectedOptions[0] && select.selectedOptions[0].disabled) {
+      var free = Array.prototype.find.call(select.options, function (o) { return !o.disabled; });
+      if (free) select.value = free.value;
+    }
+    var full = dialog._hp >= Number(dialog.dataset.maxHp);
+    dialog.querySelector("[data-rest-spender]").hidden = !any || full;
+    dialog.querySelector("[data-rest-none]").hidden = any;
+    dialog.querySelector("[data-rest-hp]").textContent = dialog._hp;
+  }
+
+  function shortRestSpend(dialog) {
+    var die = dialog.querySelector("[data-rest-die]").value;
+    var input = dialog.querySelector("[data-rest-roll]");
+    var sides = Number(die.replace("d", ""));
+    var roll = parseInt(input.value, 10);
+    if (!(roll >= 1 && roll <= sides) || shortRestPoolLeft(dialog, die) < 1) {
+      input.focus();
+      return;
+    }
+    var con = Number(dialog.dataset.con);
+    var max = Number(dialog.dataset.maxHp);
+    var gained = Math.min(Math.max(1, roll + con), max - dialog._hp);
+    dialog._hp += gained;
+    dialog._rolls.push(die + ":" + roll);
+    var pool = dialog.querySelector('[data-rest-pool="' + die + '"] [data-rest-left]');
+    pool.textContent = Number(pool.textContent) - 1;
+    var item = document.createElement("li");
+    item.textContent = die + ": " + roll + (con >= 0 ? " + " : " - ") + Math.abs(con) + " = +" + gained + " HP";
+    dialog.querySelector("[data-rest-log]").appendChild(item);
+    input.value = "";
+    shortRestSync(dialog);
+  }
 
   // A filter popover closes when you tap anywhere else.
   document.addEventListener("click", function (event) {
