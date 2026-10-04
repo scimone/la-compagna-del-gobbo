@@ -85,7 +85,7 @@
 
   function paramsOf(el) {
     var params = { action: el.dataset.act };
-    var skip = ["act", "bind", "describe", "label", "toggle", "tab", "confirm", "done", "again", "buy", "cost"];
+    var skip = ["act", "bind", "describe", "label", "toggle", "tab", "confirm", "done", "again", "buy", "cost", "picksUrl"];
     Object.keys(el.dataset).forEach(function (key) {
       if (skip.indexOf(key) === -1) params[key] = el.dataset[key];
     });
@@ -255,6 +255,11 @@
 
   root.addEventListener("click", function (event) {
     var button = event.target.closest("button[data-act]");
+    if (button && !button.disabled && button.dataset.picksUrl) {
+      event.preventDefault();
+      openPicks(button);
+      return;
+    }
     if (button && !button.disabled) {
       event.preventDefault();
       var ask = "";
@@ -655,6 +660,66 @@
     if (event.target.closest(".filter-popover")) return;
     root.querySelectorAll(".filter-popover[open]").forEach(function (popover) { popover.open = false; });
   });
+
+  // ---- a feat with choices (Magic Initiate's spells...): its Add button opens a dialog with them ----
+  // ---- first (`character_feature_picks`); confirming posts the feat and the choices together. -------
+
+  function openPicks(button) {
+    var labels = window.APP_CONFIRM_LABELS || {};
+    var dialog = document.createElement("dialog");
+    dialog.className = "app-dialog cs-picks";
+    dialog.innerHTML =
+      '<div class="cs-picks-body"></div><div class="app-dialog-buttons">' +
+      '<button type="button" data-no></button><button type="button" class="ok" data-yes></button></div>';
+    dialog.querySelector("[data-no]").textContent = labels.cancel || "Cancel";
+    dialog.querySelector("[data-yes]").textContent = button.textContent;
+    document.body.appendChild(dialog);
+    var body = dialog.querySelector(".cs-picks-body");
+
+    // What is chosen so far, as `{pick.<key>: "a,b"}`.
+    function values() {
+      var found = {};
+      body.querySelectorAll("select[name], input[name]:checked").forEach(function (field) {
+        if (!field.value) return;
+        found[field.name] = found[field.name] ? found[field.name] + "," + field.value : field.value;
+      });
+      return found;
+    }
+    function limit() {
+      body.querySelectorAll("fieldset[data-count]").forEach(function (group) {
+        var boxes = group.querySelectorAll('input[type="checkbox"]');
+        var full = group.querySelectorAll("input:checked").length >= Number(group.dataset.count);
+        boxes.forEach(function (box) { box.disabled = full && !box.checked; });
+      });
+    }
+    function load() {
+      var query = new URLSearchParams(values());
+      query.set("feature", button.dataset.feature);
+      return fetch(button.dataset.picksUrl + "?" + query, { credentials: "same-origin" })
+        .then(function (response) { return response.text(); })
+        .then(function (html) { body.innerHTML = html; limit(); })
+        .catch(function () { showError(); });
+    }
+    function close() { dialog.close(); dialog.remove(); }
+
+    dialog.addEventListener("change", function (event) {
+      if (event.target.closest("fieldset[data-refresh]")) load();
+      else limit();
+    });
+    dialog.addEventListener("click", function (event) {
+      if (event.target.closest("[data-no]")) return close();
+      if (!event.target.closest("[data-yes]")) return;
+      var params = Object.assign({ action: "feature_add", feature: button.dataset.feature }, values());
+      send(params).then(function (accepted) {
+        if (!accepted) return;
+        if (button.dataset.done) button.textContent = button.dataset.done;
+        button.disabled = true;
+        close();
+      });
+    });
+    dialog.addEventListener("cancel", function (event) { event.preventDefault(); close(); });
+    load().then(function () { dialog.showModal(); });
+  }
 
   // ---- adding items and spells: the overlays -----------------------------------------------
 

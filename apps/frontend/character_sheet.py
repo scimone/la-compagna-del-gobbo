@@ -1295,8 +1295,22 @@ def _act_spell_remove(character, post):
     return True
 
 
+def _pick_values(data) -> dict[str, list[str]]:
+    """The choices posted/queried as `pick.<key>=a,b` (see the feat dialog) as `{key: [a, b]}`."""
+    return {
+        key.removeprefix("pick."): [v for v in value.split(",") if v]
+        for key, value in data.items()
+        if key.startswith("pick.")
+    }
+
+
 def _act_feature_add(character, post):
     kind, _sep, ref = post.get("feature", "").partition(":")
+    if kind == "feat":
+        # A feat brings its grants and asks for its choices (Magic Initiate's spells...).
+        feat = Feat.objects.get(pk=ref)
+        progression.add_feat_from_sheet(character, feat, _pick_values(post))
+        return {"refresh": True, "message": _("Added %(name)s") % {"name": feat.name}}
     entry = play.add_feature(character, kind, ref)
     return {"refresh": True, "message": _("Added %(name)s") % {"name": entry.name}}
 
@@ -1539,11 +1553,13 @@ def _feature_catalog(character: Character) -> list[dict]:
             )
         )
     for feat in Feat.objects.all():
-        rows.append(
-            _feature_catalog_row(
-                _feat_row(feat), f"feat:{feat.pk}", _describe_url("feat", feat.pk), known
-            )
+        row = _feature_catalog_row(
+            _feat_row(feat), f"feat:{feat.pk}", _describe_url("feat", feat.pk), known
         )
+        # A feat with choices (Magic Initiate's spells...) asks for them in a dialog first.
+        if progression.sheet_feat_pickers(character, feat, {}):
+            row["picks_url"] = reverse("character-feature-picks", args=[character.pk])
+        rows.append(row)
     for option in OptionalFeature.objects.all():
         rows.append(
             _feature_catalog_row(
@@ -1556,6 +1572,30 @@ def _feature_catalog(character: Character) -> list[dict]:
         )
     rows.sort(key=lambda row: row["name"].casefold())
     return rows
+
+
+@require_GET
+def character_feature_picks(request, pk):
+    """The choices a feat asks for when it is added (`?feature=feat:<id>`, the ones made so far as
+    `pick.<key>=a,b`): a fragment for the sheet's dialog, re-read when a choice decides what the
+    others offer (Magic Initiate's spell list)."""
+    character = get_object_or_404(Character, pk=pk)
+    if character.status != Character.STATUS_COMPLETE or not access.can_edit(
+        request.user, character
+    ):
+        return HttpResponse(status=403)
+    kind, _sep, ref = request.GET.get("feature", "").partition(":")
+    feat = get_object_or_404(Feat, pk=ref) if kind == "feat" else None
+    if feat is None:
+        raise Http404
+    pickers = progression.sheet_feat_pickers(character, feat, _pick_values(request.GET))
+    for picker in pickers:
+        picker.name = f"pick.{picker.key}"
+    return render(
+        request,
+        "frontend/characters/sheet/_feat_picks.html",
+        {"feat": feat, "pickers": pickers, "feature": request.GET.get("feature", "")},
+    )
 
 
 @require_GET

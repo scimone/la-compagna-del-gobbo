@@ -404,7 +404,24 @@ def _feat_pickers(ctx: _Ctx, feat: Feat, prefix: str) -> list[Picker]:
                 kind="skill",
             )
         )
-    for pick in feat_resolver.picks(feat, ""):
+    # Magic Initiate: which spell list the spells come from decides which spells are offered.
+    variant = ""
+    if feat_resolver.variants(feat):
+        found.insert(
+            0,
+            ctx.picker(
+                f"{prefix}.variant",
+                _("Spell list"),
+                1,
+                [(v, v.title()) for v in feat_resolver.variants(feat)],
+                single=True,
+                refresh=True,
+            ),
+        )
+        variant = ctx.one(f"{prefix}.variant")
+    for pick in feat_resolver.picks(feat, variant):
+        if pick.kind == "variant":
+            continue
         if pick.kind == "ability":
             found.append(
                 ctx.picker(
@@ -1344,12 +1361,15 @@ def _apply_feat_picks(ctx: _Ctx, feat: Feat, prefix: str, level: int) -> None:
         _set_proficiency(character, "saving_throw", ctx.one(f"{prefix}.ability"))
     spell_ability = ctx.one(f"{prefix}.spell_ability")
     if spell_ability:
+        # One entry per time the feat was taken (Magic Initiate can be taken again).
+        key = f"levelup.feat.{feat.id}"
+        taken = CharacterChoice.objects.filter(character=character, key__startswith=key).count()
         CharacterChoice.objects.update_or_create(
             character=character,
-            key=f"levelup.feat.{feat.id}",
+            key=key if not taken else f"{key}.{taken + 1}",
             defaults={"value": {"spell_ability": spell_ability}},
         )
-    grant = feat_resolver.spell_grant_for(feat, "")
+    grant = feat_resolver.spell_grant_for(feat, ctx.one(f"{prefix}.variant"))
     source = f"feat:{feat.id}"
     if grant:
         for fixed in grant.fixed:
@@ -1366,6 +1386,64 @@ def _apply_feat_picks(ctx: _Ctx, feat: Feat, prefix: str, level: int) -> None:
                 always_prepared=True,
                 free_cast=True,
             )
+
+
+# ---- a feat added from the character sheet ---------------------------------------------------
+
+_SHEET_PREFIX = "lu.feat"
+
+
+def _sheet_ctx(character: Character, values: Values) -> _Ctx:
+    klass = character.classes.select_related("klass").first().klass
+    return _Ctx(character, klass, values)
+
+
+def sheet_feat_pickers(character: Character, feat: Feat, values: Values) -> list[Picker]:
+    """What adding `feat` by hand asks the player to choose (Magic Initiate's list and spells, a
+    skill, an ability...), given what they have chosen so far in `values`. Empty for a feat that
+    just is."""
+    return _feat_pickers(_sheet_ctx(character, values), feat, _SHEET_PREFIX)
+
+
+@transaction.atomic
+def add_feat_from_sheet(character: Character, feat: Feat, values: Values) -> None:
+    """Give the character `feat` with the choices it asks for (see `sheet_feat_pickers`), as the
+    level-up would: its fixed grants, the spells, skills, tools and ability increase chosen.
+    `ValueError` when it is already taken (and cannot be taken again) or a choice is missing or not
+    one of the offered."""
+    if character.feats.filter(feat=feat).exists() and not feat_resolver.is_repeatable(feat):
+        raise ValueError(f"{feat.name} is already on the sheet")
+    ctx = _sheet_ctx(character, values)
+    problems = []
+    for picker in _feat_pickers(ctx, feat, _SHEET_PREFIX):
+        chosen = ctx.get(picker.key)
+        needed = min(1 if picker.single else picker.count, len(picker.candidates))
+        if (
+            len(chosen) != needed
+            or len(set(chosen)) != len(chosen)
+            or not set(chosen) <= picker.candidate_ids
+        ):
+            problems.append(picker.label)
+    if problems:
+        raise ValueError("choose: " + ", ".join(problems))
+    total = total_level(character)
+    cap = _cap(feat)
+    for ability, amount in _asi_deltas(ctx, feat).items():
+        field_name = _ABILITY_FIELD[ability]
+        current = getattr(character, field_name)
+        applied = min(cap, current + amount) - current
+        if applied:
+            setattr(character, field_name, current + applied)
+            CharacterAbilityScoreIncrease.objects.create(
+                character=character,
+                ability=field_name,
+                amount=applied,
+                source="feat",
+                granted_at_level=total,
+            )
+    character.save()
+    _add_feat(character, feat, total, play.FEATURE_SOURCE)
+    _apply_feat_picks(ctx, feat, _SHEET_PREFIX, total)
 
 
 def _resource_maximum(ctx: _Ctx, res: spec.LevelResource, level: int, mods: dict[str, int]) -> int:

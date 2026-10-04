@@ -611,6 +611,8 @@ def remove_feature(character: Character, kind: str, ref: str) -> None:
     if not rows.filter(source=FEATURE_SOURCE).exists():
         raise ValueError("only a feature you added yourself can be removed")
     rows.filter(source=FEATURE_SOURCE).delete()
+    if kind == "feat":  # the spells it granted go with it (skills and tools it gave stay)
+        character.spells.filter(source=f"feat:{ref}").delete()
 
 
 # --- resources ---------------------------------------------------------------------------------

@@ -10,7 +10,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils.html import escape
 from PIL import Image
 
-from apps.builder.services import creation, derived_stats
+from apps.builder.services import creation, derived_stats, progression
 from apps.builder.tests.conftest import build_character
 from apps.characters.models import (
     Character,
@@ -19,7 +19,7 @@ from apps.characters.models import (
     CharacterSpell,
 )
 from apps.characters.services import play
-from apps.rules.models import Feature, OptionalFeature, Spell
+from apps.rules.models import Feat, Feature, OptionalFeature, Spell
 
 pytestmark = pytest.mark.usefixtures("imported_rules")
 
@@ -1392,7 +1392,11 @@ def test_adding_and_removing_a_feat_and_an_option_over_http(signed_in, alice):
     from apps.rules.models import Feat, OptionalFeature
 
     cleric = finished(alice, "cleric")
-    feat = Feat.objects.exclude(pk__in=cleric.feats.values_list("feat_id", flat=True)).first()
+    feat = next(  # one without choices of its own (those ask for them first)
+        f
+        for f in Feat.objects.exclude(pk__in=cleric.feats.values_list("feat_id", flat=True))
+        if not progression.sheet_feat_pickers(cleric, f, {})
+    )
     option = OptionalFeature.objects.first()
 
     assert (
@@ -1604,3 +1608,40 @@ def test_world_items_has_the_same_filters_as_the_add_item_sheet(signed_in, alice
     assert "Chain Mail" in armor and "Chain Mail" not in weapons
     martial = signed_in.get("/world/items/?section=weapons&category=simple").content.decode()
     assert "Longsword" not in martial and "Club" in martial
+
+
+def test_adding_magic_initiate_by_hand_asks_for_its_list_and_spells(signed_in, alice):
+    fighter = finished(alice, "fighter", background="soldier")
+    feature = "feat:magic-initiate"
+
+    row = signed_in.get(f"/characters/{fighter.pk}/features/").content.decode()
+    assert f'data-picks-url="/characters/{fighter.pk}/feature-picks/"' in row
+
+    first = signed_in.get(f"/characters/{fighter.pk}/feature-picks/", {"feature": feature})
+    assert 'name="pick.lu.feat.variant"' in first.content.decode()
+    assert "cantrips" not in first.content.decode()  # the list is chosen first
+    assert act(signed_in, fighter, action="feature_add", feature=feature).status_code == 400
+
+    variant = {"pick.lu.feat.variant": "cleric"}
+    second = signed_in.get(
+        f"/characters/{fighter.pk}/feature-picks/", {"feature": feature, **variant}
+    )
+    assert 'name="pick.lu.feat.cantrips"' in second.content.decode()
+    pickers = progression.sheet_feat_pickers(
+        fighter, Feat.objects.get(pk="magic-initiate"), {"lu.feat.variant": ["cleric"]}
+    )
+    chosen = {
+        f"pick.{p.key}": ",".join([c[0] for c in p.candidates][: 1 if p.single else p.count])
+        for p in pickers
+        if p.key != "lu.feat.variant"
+    }
+    response = act(signed_in, fighter, action="feature_add", feature=feature, **variant, **chosen)
+
+    assert response.status_code == 200
+    assert fighter.feats.filter(feat_id="magic-initiate").exists()
+    granted = fighter.spells.filter(source="feat:magic-initiate")
+    assert granted.filter(spell__level=0).count() == 2
+    assert granted.filter(spell__level=1, free_cast=True).count() == 1
+
+    act(signed_in, fighter, action="feature_remove", feature=feature)
+    assert not fighter.spells.filter(source="feat:magic-initiate").exists()

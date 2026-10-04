@@ -38,6 +38,11 @@ urlpatterns = [
     path("characters/<int:pk>/items/", character_sheet.character_items, name="character-items"),
     path("characters/<int:pk>/spells/", character_sheet.character_spells, name="character-spells"),
     path(
+        "characters/<int:pk>/feature-picks/",
+        character_sheet.character_feature_picks,
+        name="character-feature-picks",
+    ),
+    path(
         "characters/<int:pk>/features/",
         character_sheet.character_features,
         name="character-features",

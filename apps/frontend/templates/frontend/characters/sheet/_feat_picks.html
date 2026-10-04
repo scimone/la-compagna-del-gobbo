@@ -1,0 +1,27 @@
+{% load i18n %}
+{# The choices a feat asks for when added from the sheet, inside the sheet's own dialog: one #}
+{# fieldset per `Picker`, named `pick.<key>`; `character_sheet.js` reads them and posts `feature_add`. #}
+<h3 class="cs-picks-title">{{ feat.name }}</h3>
+<form class="cs-picks-form" data-feature="{{ feature }}" onsubmit="return false">
+  {% for p in pickers %}
+    <fieldset class="cs-pick"{% if not p.single %} data-count="{{ p.count }}"{% endif %}{% if p.refresh %} data-refresh{% endif %}>
+      <legend>{{ p.label }}
+        <span class="count">{% if p.single %}{% translate "choose 1" %}{% else %}{% blocktranslate with n=p.count %}choose {{ n }}{% endblocktranslate %}{% endif %}</span>
+      </legend>
+      {% if p.single %}
+        <select name="{{ p.name }}">
+          <option value="">—</option>
+          {% for id, name in p.candidates %}
+            <option value="{{ id }}"{% if id in p.selected %} selected{% endif %}>{{ name }}</option>
+          {% endfor %}
+        </select>
+      {% else %}
+        <div class="checks">
+          {% for id, name in p.candidates %}
+            <label><input type="checkbox" name="{{ p.name }}" value="{{ id }}"{% if id in p.selected %} checked{% endif %}> {{ name }}</label>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </fieldset>
+  {% endfor %}
+</form>
