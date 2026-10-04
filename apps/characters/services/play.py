@@ -728,7 +728,8 @@ def short_rest(
 def long_rest(character: Character) -> None:
     """Take a long rest (8 hours, at least 16 hours after the last one): every hit point and every
     spent Hit Die back, temporary hit points gone, the death saves cleared, every spell slot and
-    free cast (Magic Initiate's) and every limited-use resource restored. Heroic Inspiration is not touched."""
+    free cast (Magic Initiate's) and every limited-use resource restored.
+    Heroic Inspiration is not touched."""
     _require_standing(character)
     if next_long_rest_at(character):
         raise ValueError("a long rest needs 16 hours since the last one")
