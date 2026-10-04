@@ -787,8 +787,9 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
       casting source) with Mod/DC/Atk, a toolbar (the spell count and, for the owner, an **Add spell**
       button - shown even for a character with no spells), **and the World's own search box and filter buttons**
       (`_search_form.html`, same look) over the character's spells, filtered in the browser with the
-      filters limited to what those spells use. Below it scroll the slot pips (tap a filled pip to
-      spend, an empty one to recover; Pact Magic separately; a multiclass caster gets the SRD's
+      filters limited to what those spells use. Below it scroll the slot pips (read-only for players:
+      casting a spell spends a slot and a rest recovers them; only the DM or an admin taps a pip
+      by hand, as with Hit Dice - the `slots` action answers 403 to anyone else; Pact Magic separately; a multiclass caster gets the SRD's
       combined table) and the spells; a row unfolds the spell. A spell the player added by hand has a
       **Remove** button in its unfolded row (spells a class, species or feat gave cannot be removed).
     - *Add spell* (`GET /characters/<id>/spells/`, owner only, a second full-screen overlay loaded on
@@ -994,6 +995,10 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     (`features_classes/<class>.jpeg`) and opening `world-option-detail`. The class features that
     just list them ("Eldritch Invocation Options", "Metamagic Options", "Maneuver Options") render
     their `refOptionalfeature` pointers as tappable link rows, and `{@optfeature}` tags link too.
+    Those three features are hidden from the Levels/Subclasses tabs and the Features list: the
+    class page (Warlock, Sorcerer, Fighter) has an **Options** tab named after them instead, listing
+    the options as link rows, and the `{@filter ...optionalfeatures...}` links in "Eldritch
+    Invocations"/"Metamagic"/"Combat Superiority" lead to it.
   - There's no standalone browsing list for `rules.Rule` - `world/rules/<slug>/` exists purely
     as the landing page for `{@variantrule ...}` links found in other pages' text, so its back
     button returns to the World hub rather than to any specific list.

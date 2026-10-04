@@ -25,6 +25,7 @@ from apps.frontend.entries_render import (
     render_entries,
     render_handbook_section,
     render_key_value_table,
+    render_option_links,
     render_starting_equipment,
     render_subclasses,
     render_text,
@@ -159,6 +160,15 @@ _OPTION_TYPE_LABELS = {
     "Eldritch Invocation": ("Eldritch Invocation", "Suppliche occulte"),
     "Metamagic": ("Metamagic", "Metamagia"),
     "Maneuver, Battle Master": ("Battle Master Maneuver", "Manovra del Maestro di battaglia"),
+}
+
+
+# The class features that only list a class's options (see `world_class_detail()`'s Options tab,
+# which replaces them): `Feature.name_en` of each, keyed by the class whose tab lists the options.
+_OPTION_LIST_FEATURES = {
+    "warlock": "Eldritch Invocation Options",
+    "sorcerer": "Metamagic Options",
+    "fighter": "Maneuver Options",
 }
 
 
@@ -1220,10 +1230,27 @@ def world_classes(request):
     )
 
 
+def _class_features(klass):
+    """A class's own `Feature` rows in the source's order, minus the one that only lists its
+    options (that list is the class's Options tab)."""
+    return (
+        Feature.objects.filter(class_level__klass=klass)
+        .exclude(name_en__in=_OPTION_LIST_FEATURES.values())
+        .order_by("pk")
+    )
+
+
 def world_class_detail(request, pk):
     klass = class_service.get_class(pk)
 
     tabs = [("about", _("About")), ("levels", _("Levels")), ("subclasses", _("Subclasses"))]
+    options_title = _OPTION_LIST_FEATURES.get(klass.pk)
+    if options_title:
+        # Named like the class feature it replaces ("Eldritch Invocation Options"), in its
+        # translation when the feature has one.
+        feature = Feature.objects.filter(name_en=options_title).first()
+        options_title = feature.name if feature else options_title
+        tabs.append(("options", options_title))
     active_tab = _active_tab(request, tabs, default="about")
 
     facts = []
@@ -1278,7 +1305,7 @@ def world_class_detail(request, pk):
             # class/character, not something the source stores per class) - the PHB's class
             # tables print it anyway, so this table would look broken next to the official ones
             # without it.
-            class_features = Feature.objects.filter(class_level__klass=klass).order_by("pk")
+            class_features = _class_features(klass)
             features_by_level: dict[int, list[Feature]] = {}
             for feature in class_features:
                 features_by_level.setdefault(feature.class_level.level, []).append(feature)
@@ -1319,17 +1346,27 @@ def world_class_detail(request, pk):
             plain_sections.append((_("Level Progression"), render_key_value_table(rows, headers)))
 
     elif active_tab == "levels":
-        class_features = list(Feature.objects.filter(class_level__klass=klass).order_by("pk"))
-        body = render_class_features(class_features)
+        body = render_class_features(list(_class_features(klass)))
 
     elif active_tab == "subclasses":
         subclasses = list(
             klass.subclasses.order_by("name").prefetch_related(
-                Prefetch("levels__feature_rows", queryset=Feature.objects.order_by("pk"))
+                Prefetch(
+                    "levels__feature_rows",
+                    queryset=Feature.objects.exclude(
+                        name_en__in=_OPTION_LIST_FEATURES.values()
+                    ).order_by("pk"),
+                )
             )
         )
         if subclasses:
             body = render_subclasses(subclasses)
+
+    elif active_tab == "options" and klass.pk in _OPTION_LIST_FEATURES:
+        types = [t for t, c in _OPTION_CLASS_ID.items() if c == klass.pk]
+        body = render_option_links(
+            optional_feature_service.list_optional_features().filter(feature_type__in=types)
+        )
 
     return _detail_page(
         request,
@@ -1451,6 +1488,7 @@ def world_feats(request):
         class_features = (
             Feature.objects.filter(class_level__isnull=False)
             .exclude(name_en="Ability Score Improvement")
+            .exclude(name_en__in=_OPTION_LIST_FEATURES.values())
             .select_related("class_level__klass")
         )
         if q:
@@ -1479,8 +1517,10 @@ def world_feats(request):
         ]
 
     if wants("subclass"):
-        subclass_features = Feature.objects.filter(subclass_level__isnull=False).select_related(
-            "subclass_level__subclass__klass"
+        subclass_features = (
+            Feature.objects.filter(subclass_level__isnull=False)
+            .exclude(name_en__in=_OPTION_LIST_FEATURES.values())
+            .select_related("subclass_level__subclass__klass")
         )
         if q:
             subclass_features = _by_name(subclass_features, q)

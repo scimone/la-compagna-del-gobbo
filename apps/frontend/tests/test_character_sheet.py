@@ -771,7 +771,8 @@ def test_hit_dice_are_spent_and_recovered_within_the_pool(signed_in, alice, sett
     assert act(signed_in, fighter, action="hit_dice", die="d20", delta="1").status_code == 400
 
 
-def test_spell_slots_are_spent_and_recovered(signed_in, alice):
+def test_spell_slots_are_spent_and_recovered(signed_in, alice, settings):
+    settings.DM_ACCOUNTS = ["alice"]  # only the DM (or an admin) moves slots by hand
     wizard = finished(alice, "wizard", background="sage", species="elf")
 
     state = act(signed_in, wizard, action="slots", key="1", delta="1").json()["state"]
@@ -795,6 +796,17 @@ def test_spell_slots_are_spent_and_recovered(signed_in, alice):
     )  # no 7th-level slots: nothing stored
     html = panel(signed_in.get(f"/characters/{wizard.pk}/").content.decode(), "spellbook")
     assert html.count('class="pip-btn on"') == 1  # the page draws the saved state
+
+
+def test_only_the_dm_or_an_admin_edits_spell_slots_by_hand(signed_in, alice, settings):
+    wizard = finished(alice, "wizard", background="sage", species="elf")
+    settings.DM_ACCOUNTS = []
+    settings.ADMIN_ACCOUNTS = []
+
+    assert act(signed_in, wizard, action="slots", key="1", delta="1").status_code == 403
+    html = panel(signed_in.get(f"/characters/{wizard.pk}/").content.decode(), "spellbook")
+    row = html.split('data-slot="1"')[1].split("</div>")[0]
+    assert "pip-btn" in row and " disabled" in row  # the pips are there to look at only
 
 
 def test_the_shield_toggle_changes_ac_and_asks_for_a_redraw(signed_in, alice):

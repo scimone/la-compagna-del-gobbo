@@ -46,7 +46,7 @@
                   <span class="cs-pips">
                     {% for on in p.pips %}
                       <button type="button" class="pip-btn{% if on %} on{% endif %}" data-act="slots" data-key="{{ p.key }}" data-delta="{% if on %}1{% else %}-1{% endif %}"
-                              aria-label="{{ p.label }}"{% if not can_edit %} disabled{% endif %}></button>
+                              aria-label="{{ p.label }}"{% if not can_edit_slots %} disabled{% endif %}></button>
                     {% endfor %}
                   </span>
                   <span class="cnt"><b class="left">{{ p.left }}</b>/{{ p.max }}</span>

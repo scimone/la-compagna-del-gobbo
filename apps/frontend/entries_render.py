@@ -151,8 +151,30 @@ def _render_text(text: str, linker: _ReferenceLinker) -> str:
     return "".join(pieces)
 
 
+#: The `feature type=` code of an `{@filter ...|optionalfeatures|...}` tag -> the class whose
+#: "Options" tab lists those options (see `world_class_detail()`).
+OPTION_FILTER_CLASS = {"EI": "warlock", "MM": "sorcerer", "MV:B": "fighter"}
+
+
+def _option_filter_url(body: str) -> str | None:
+    """`{@filter Metamagic Options|optionalfeatures|feature type=MM|source=XPHB}`: the class
+    page's Options tab for that kind of option, or None for any other filter tag."""
+    segments = body.split("|")
+    if len(segments) < 3 or segments[1] != "optionalfeatures":
+        return None
+    code = segments[2].partition("feature type=")[2]
+    klass_id = OPTION_FILTER_CLASS.get(code)
+    if not klass_id:
+        return None
+    return f"{reverse('world-class-detail', args=[klass_id])}?tab=options"
+
+
 def _render_tag(tag: str, body: str, linker: _ReferenceLinker) -> str:
     display = _tag_display_text(tag, body)
+    if tag == "filter":
+        option_url = _option_filter_url(body)
+        if option_url:
+            return f'<a href="{escape(option_url)}">{escape(display)}</a>'
     # The link target is always the tag's *first* segment (the catalog row actually being
     # referenced), even when a later segment overrides what's displayed - e.g.
     # `{@variantrule Cover|XPHB|Total Cover}` links to the "Cover" rule while reading
@@ -340,6 +362,16 @@ def _render_option_links(nodes: list[dict], linker: _ReferenceLinker) -> str:
         else:
             items.append(f"<li>{escape(_tag_display_text('refOptionalfeature', reference))}</li>")
     return f'<ul class="feature-link-list">{"".join(items)}</ul>'
+
+
+def render_option_links(options) -> SafeString:
+    """The link rows of a class's Options tab: one per `OptionalFeature`, to its own page."""
+    items = "".join(
+        f'<li><a href="{escape(reverse("world-option-detail", args=[o.pk]))}">'
+        f"{escape(o.name)}{self_translated_badge(bool(o.self_translated_fields))}</a></li>"
+        for o in options
+    )
+    return mark_safe(f'<ul class="feature-link-list">{items}</ul>')
 
 
 def render_class_features(features) -> SafeString:
