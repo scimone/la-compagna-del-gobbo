@@ -10,7 +10,7 @@
     {# The character sheet's Spellbook only: prepares/unprepares the spell (SRD "Preparing Spells"). #}
     <button type="button" class="item-prepare{% if item.prepare.on %} on{% endif %}"{% if item.prepare.locked %} disabled{% endif %} data-act="spell_prepare"
             data-spell="{{ item.prepare.spell }}" data-prepared="{{ item.prepare.on|yesno:'0,1' }}"
-            aria-pressed="{{ item.prepare.on|yesno:'true,false' }}">{% if item.prepare.on %}{% translate "Prepared" %}{% else %}{% translate "Prepare" %}{% endif %}</button>
+            aria-pressed="{{ item.prepare.on|yesno:'true,false' }}">{% if item.prepare.on %}{% if item.prepare.locked %}{% translate "Prepared" %}{% else %}{% translate "Unprepare" %}{% endif %}{% else %}{% translate "Prepare" %}{% endif %}</button>
   {% endif %}
   {% if item.cast %}
     {# The character sheet's Spellbook only: `character_sheet.js` opens its cast dialog. #}

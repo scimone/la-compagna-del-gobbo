@@ -361,6 +361,7 @@ def test_spellbook_shows_the_prepared_count_and_toggles_preparation(signed_in, a
     act(signed_in, cleric, action="long_rest")
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
     assert "You can change any prepared spells now" in html
+    assert "Unprepare</button>" in html  # the prepared spells' buttons now offer to unprepare
     # ...and a Cleric may then change any number of them.
     act(signed_in, cleric, action="spell_prepare", spell=row.spell_id, prepared="0")
     row.refresh_from_db()

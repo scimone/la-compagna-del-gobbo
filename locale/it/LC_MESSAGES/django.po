@@ -2542,3 +2542,7 @@ msgstr "Sì, apri gli Incantesimi"
 #: apps/frontend/templates/frontend/characters/levelup_done.html
 msgid "Not now"
 msgstr "Non adesso"
+
+#: apps/frontend/templates/frontend/_list_item.html
+msgid "Unprepare"
+msgstr "Rimuovi"
