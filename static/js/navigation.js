@@ -35,7 +35,7 @@
   var MENUS = ["characters", "handbook", "logbook", "world"];
   // Pages that are a detour from wherever they were opened, not a place of their own: leaving
   // the menu for another one must not park the account form on top of that menu's stack.
-  var TRANSIENT_PATHS = ["/account/"];
+  var TRANSIENT_PATHS = ["/account/", "/privacy/", "/admin-panel/", "/welcome/"];
   var MAX_DEPTH = 50;
   var PENDING_TTL_MS = 15000;
 
@@ -80,8 +80,9 @@
   }
 
   function isTransient(url) {
-    return TRANSIENT_PATHS.some(function (path) {
-      return url.split("?")[0] === path;
+    var path = url.split("?")[0];
+    return TRANSIENT_PATHS.some(function (prefix) {
+      return path.indexOf(prefix) === 0;
     });
   }
 
@@ -89,7 +90,7 @@
     return stack.length ? stack[stack.length - 1] : null;
   }
 
-  // Transient pages (the account form) never stay in a menu's stack, wherever in it they are.
+  // Transient pages (the account form, privacy policy, admin panel) never stay in a menu's stack, wherever in it they are.
   function dropTransients(stack) {
     for (var i = stack.length - 1; i >= 0; i--) {
       if (isTransient(stack[i].u)) stack.splice(i, 1);
@@ -304,7 +305,7 @@
         var menu = link.dataset.menu;
         event.preventDefault();
         if (state.active === menu && isTransient(currentUrl())) {
-          // On a detour page (the account form) opened from this menu: go back to where it was.
+          // On a detour page (the account form, privacy policy, admin panel) opened from this menu: go back to where it was.
           var kept = state.stacks[menu].slice();
           dropTransients(kept);
           setPending("switch", { menu: menu });
