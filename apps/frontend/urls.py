@@ -1,6 +1,7 @@
 from django.urls import path
 
 from apps.frontend import (
+    admin_views,
     character_pdf,
     character_sheet,
     character_views,
@@ -31,6 +32,7 @@ urlpatterns = [
         name="character-export-pdf",
     ),
     path("characters/<int:pk>/reopen/", character_views.character_reopen, name="character-reopen"),
+    path("characters/<int:pk>/assign/", character_views.character_assign, name="character-assign"),
     path("characters/<int:pk>/delete/", character_views.character_delete, name="character-delete"),
     path("characters/<int:pk>/act/", character_sheet.character_act, name="character-act"),
     path("characters/<int:pk>/items/", character_sheet.character_items, name="character-items"),
@@ -114,6 +116,8 @@ urlpatterns = [
     path("logbook/new/", logbook_views.logbook_new, name="logbook-new"),
     path("logbook/<int:pk>/edit/", logbook_views.logbook_edit, name="logbook-edit"),
     path("logbook/<int:pk>/delete/", logbook_views.logbook_delete, name="logbook-delete"),
+    path("admin-panel/", admin_views.panel_home, name="admin-panel"),
+    path("admin-panel/activity/", admin_views.panel_activity, name="admin-activity"),
     path("account/", views.account, name="account"),
     path("welcome/", views.welcome, name="welcome"),
     path("account/logout/", views.account_logout, name="account-logout"),

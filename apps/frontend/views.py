@@ -16,6 +16,7 @@ from django.utils.translation import get_language
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
+from apps.characters.services import access
 from apps.frontend import accounts, cloudflare_access, units
 from apps.frontend.bookmarks import BOOKMARK_MODELS, bookmarked_ids, is_bookmarked
 from apps.frontend.entries_render import (
@@ -852,6 +853,7 @@ def account(request):
             "back_url": next_url,
             "form": form,
             "next_url": next_url,
+            "is_admin": access.is_admin(request.user),
             "access_logout_url": cloudflare_access.logout_url()
             if cloudflare_access.is_enabled()
             else "",
@@ -1137,7 +1139,7 @@ def world_classes(request):
             "name": _badged_heading(c.name, _self_translated(c, "name")),
             "detail": _hit_detail(c.short_description, hits),
             "url": reverse("world-class-detail", args=[c.pk]),
-            "image": _menu_image_url("classes", f"{c.id}-grey.png"),
+            "image": _menu_image_url("classes", f"{c.id}-grey.webp"),
         }
         for c, hits in classes
     ]
@@ -1690,7 +1692,9 @@ def world_species(request):
             "name": _species_heading(s),
             "detail": _hit_detail(s.short_description, hits),
             "url": reverse("world-species-detail", args=[s.pk]),
-            "image": _menu_image_url("species", f"{_SPECIES_IMAGE_SLUGS.get(s.id, s.id)}-grey.png"),
+            "image": _menu_image_url(
+                "species", f"{_SPECIES_IMAGE_SLUGS.get(s.id, s.id)}-grey.webp"
+            ),
         }
         for s, hits in species_qs
     ]

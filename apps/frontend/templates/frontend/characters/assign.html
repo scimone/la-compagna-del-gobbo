@@ -1,0 +1,26 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+
+{% block extra_style %}
+  .assign { max-width: 26rem; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 0.8rem; }
+  .assign p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+  .assign label {
+    display: flex; gap: 0.7rem; align-items: center; padding: 0.7rem 0.9rem; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 0.6rem; cursor: pointer;
+  }
+  .assign button {
+    appearance: none; border: 0; background: var(--accent); color: var(--accent-text); font: inherit;
+    font-weight: 600; padding: 0.65rem 1rem; border-radius: 0.6rem; cursor: pointer;
+  }
+{% endblock %}
+
+{% block content %}
+  <form method="post" class="assign" data-nav="pop">
+    {% csrf_token %}
+    <p>{% blocktranslate with name=character.name %}Who should {{ name }} belong to?{% endblocktranslate %}</p>
+    {% for o in owners %}
+      <label><input type="radio" name="owner" value="{{ o.id }}"{% if o.current %} checked{% endif %}> {{ o.name }}</label>
+    {% endfor %}
+    <button type="submit">{% translate "Assign" %}</button>
+  </form>
+{% endblock %}

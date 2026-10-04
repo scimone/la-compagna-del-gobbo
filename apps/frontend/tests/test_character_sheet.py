@@ -1414,9 +1414,9 @@ def test_the_owner_can_delete_a_character_and_only_the_owner(client, alice, bob)
     assert not Character.objects.filter(pk=hero.pk).exists()
 
 
-def test_the_anna_account_is_an_admin_who_can_delete_and_edit_anyones_character(client, alice):
+def test_an_admin_account_is_an_admin_who_can_delete_and_edit_anyones_character(client, alice):
     hero = finished(alice, "cleric")
-    anna = get_user_model().objects.create_user("Anna")
+    anna = get_user_model().objects.create_user("Scimone.Mail@gmail.com")
     client.force_login(anna)
 
     assert (

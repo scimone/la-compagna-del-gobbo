@@ -24,6 +24,10 @@
             <button type="submit" role="menuitem">{% translate "Edit character" %}</button>
           </form>
         {% endif %}
+        {% if can_assign %}
+          {# Admins only: change which account owns the character. #}
+          <a role="menuitem" href="{% url 'character-assign' character.pk %}">{% translate "Assign to another user" %}</a>
+        {% endif %}
       </div>
     </details>
   </div>

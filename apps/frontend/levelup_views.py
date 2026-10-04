@@ -93,7 +93,7 @@ def character_levelup(request, pk):
                     "allowed": o["allowed"],
                     "reason": o["reason"],
                     "detail": o["klass"].short_description,
-                    "image": _menu_image_url("classes", f"{o['klass'].id}-grey.png"),
+                    "image": _menu_image_url("classes", f"{o['klass'].id}-grey.webp"),
                     "url": reverse("world-class-detail", args=[o["klass"].id]),
                     "selected": o["klass"].id == class_id,
                 }

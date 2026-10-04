@@ -8,6 +8,7 @@ its POST, then returns the context for its template (or a redirect). See
 `docs/character_creation_plan.md` section 5.
 """
 
+from django.contrib.auth import get_user_model
 from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -318,6 +319,36 @@ def character_delete(request, pk):
     return redirect("characters-overview")
 
 
+def character_assign(request, pk):
+    """Admins only: choose which account a character belongs to."""
+    if not access.is_admin(request.user):
+        raise Http404
+    character = get_object_or_404(Character, pk=pk)
+    users = list(get_user_model().objects.order_by("username"))
+    if request.method == "POST":
+        new_owner = next((u for u in users if str(u.pk) == request.POST.get("owner")), None)
+        if new_owner is not None:
+            character_service.assign_owner(character, new_owner)
+            return redirect("character-detail", pk=character.pk)
+    return render(
+        request,
+        "frontend/characters/assign.html",
+        {
+            "page_title": _("Assign character"),
+            "back_url": reverse("character-detail", args=[character.pk]),
+            "character": character,
+            "owners": [
+                {
+                    "id": u.pk,
+                    "name": accounts.display_name(u),
+                    "current": u.pk == character.owner_id,
+                }
+                for u in users
+            ],
+        },
+    )
+
+
 # --- step handlers -----------------------------------------------------------------------------
 
 
@@ -364,7 +395,7 @@ def _class_options(current):
             "name": c.name,
             "detail": c.short_description,
             "facts": c.primary_ability_display,
-            "image": _menu_image_url("classes", f"{c.id}-grey.png"),
+            "image": _menu_image_url("classes", f"{c.id}-grey.webp"),
             "vignette": False,
             "url": reverse("world-class-detail", args=[c.id]),
             "selected": bool(current and current.id == c.id),
@@ -398,7 +429,9 @@ def _species_options(current):
             "name": s.name,
             "detail": s.short_description,
             "facts": "",
-            "image": _menu_image_url("species", f"{_SPECIES_IMAGE_SLUGS.get(s.id, s.id)}-grey.png"),
+            "image": _menu_image_url(
+                "species", f"{_SPECIES_IMAGE_SLUGS.get(s.id, s.id)}-grey.webp"
+            ),
             "vignette": False,
             "url": reverse("world-species-detail", args=[s.id]),
             "selected": bool(current and current.id == s.id),

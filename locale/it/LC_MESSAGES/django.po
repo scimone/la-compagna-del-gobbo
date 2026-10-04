@@ -2097,3 +2097,67 @@ msgstr "Puoi cambiare qualsiasi incantesimo preparato ora"
 #: apps/frontend/character_sheet.py
 msgid "You can change one prepared spell now"
 msgstr "Puoi cambiare un incantesimo preparato ora"
+
+#: apps/frontend/templates/frontend/characters/sheet/_top.html
+msgid "Assign to another user"
+msgstr "Assegna a un altro utente"
+
+#: apps/frontend/character_views.py
+msgid "Assign character"
+msgstr "Assegna personaggio"
+
+#: apps/frontend/templates/frontend/characters/assign.html
+msgid "Who should %(name)s belong to?"
+msgstr "A chi deve appartenere %(name)s?"
+
+#: apps/frontend/templates/frontend/characters/assign.html
+msgid "Assign"
+msgstr "Assegna"
+
+#: apps/frontend/templates/frontend/account.html
+msgid "Admin panel"
+msgstr "Pannello di amministrazione"
+
+#: apps/frontend/templates/frontend/admin/home.html
+msgid "Activity"
+msgstr "Attività"
+
+#: apps/frontend/templates/frontend/admin/home.html
+msgid "Every page opened and change made in the app, filterable by user."
+msgstr "Ogni pagina aperta e modifica fatta nell'app, filtrabile per utente."
+
+#: apps/frontend/templates/frontend/admin/activity.html
+msgid "User"
+msgstr "Utente"
+
+#: apps/frontend/templates/frontend/admin/activity.html
+msgid "Everyone"
+msgstr "Tutti"
+
+#: apps/frontend/templates/frontend/admin/activity.html
+msgid "Not signed in"
+msgstr "Non connesso"
+
+#: apps/frontend/templates/frontend/admin/activity.html
+msgid "Filter"
+msgstr "Filtra"
+
+#: apps/frontend/templates/frontend/admin/activity.html
+msgid "changed"
+msgstr "ha modificato"
+
+#: apps/frontend/templates/frontend/admin/activity.html
+msgid "opened"
+msgstr "ha aperto"
+
+#: apps/frontend/templates/frontend/admin/activity.html
+msgid "Nothing recorded yet."
+msgstr "Ancora nulla di registrato."
+
+#: apps/frontend/templates/frontend/admin/activity.html
+msgid "Newer"
+msgstr "Più recenti"
+
+#: apps/frontend/templates/frontend/admin/activity.html
+msgid "Older"
+msgstr "Meno recenti"

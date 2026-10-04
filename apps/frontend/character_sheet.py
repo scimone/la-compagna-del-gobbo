@@ -1036,6 +1036,7 @@ def character_detail(request, pk):
             "back_url": reverse("characters-overview"),
             "character": character,
             "can_edit": can_edit,
+            "can_assign": access.is_admin(request.user),
             "can_reopen": access.is_admin(request.user) and creation.can_reopen(character),
             # Not `tabs`/`active_tab`: base.html draws its own `?tab=` strip for those names.
             "sheet_tabs": TABS,

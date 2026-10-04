@@ -1,0 +1,59 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+
+{% block extra_style %}
+  .activity { max-width: 48rem; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 0.8rem; }
+  .activity select {
+    appearance: none; width: 100%; padding: 0.6rem 0.8rem; font: inherit; color: var(--text);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem;
+  }
+  .activity ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+  .activity li {
+    padding: 0.55rem 0.75rem; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 0.6rem; font-size: 0.85rem; overflow-wrap: anywhere;
+  }
+  .activity .when, .activity .meta { color: var(--muted); font-size: 0.78rem; }
+  .activity .who { font-weight: 600; }
+  .activity .bad { color: var(--accent); }
+  .activity .pager { display: flex; justify-content: space-between; font-size: 0.9rem; }
+  .activity .pager a { color: var(--accent); }
+{% endblock %}
+
+{% block content %}
+  <div class="activity">
+    <form method="get" data-nav="replace">
+      <select name="user" aria-label="{% translate 'User' %}" onchange="this.form.submit()">
+        <option value="">{% translate "Everyone" %}</option>
+        {% for v in visitors %}
+          <option value="{% if v.username %}{{ v.username }}{% else %}{{ anonymous }}{% endif %}"
+                  {% if selected == v.username and v.username or selected == anonymous and not v.username %}selected{% endif %}>
+            {% if v.username %}{{ v.username }}{% else %}{% translate "Not signed in" %}{% endif %} ({{ v.count }})
+          </option>
+        {% endfor %}
+      </select>
+      <noscript><button type="submit">{% translate "Filter" %}</button></noscript>
+    </form>
+
+    <ul>
+      {% for row in page %}
+        <li>
+          <div><span class="who">{% if row.username %}{{ row.username }}{% else %}{% translate "Not signed in" %}{% endif %}</span>
+            · {% if row.kind == "action" %}{% translate "changed" %}{% else %}{% translate "opened" %}{% endif %}
+            <code>{{ row.path }}</code>{% if row.action %} <em>({{ row.action }})</em>{% endif %}{% if row.query %} “{{ row.query }}”{% endif %}</div>
+          <div class="when">{{ row.created_at|date:"Y-m-d H:i:s" }}
+            · <span{% if row.status >= 400 %} class="bad"{% endif %}>{{ row.method }} {{ row.status }}</span></div>
+        </li>
+      {% empty %}
+        <li>{% translate "Nothing recorded yet." %}</li>
+      {% endfor %}
+    </ul>
+
+    {% if page.has_other_pages %}
+      <div class="pager">
+        {% if page.has_previous %}<a href="?user={{ selected|urlencode }}&page={{ page.previous_page_number }}">&larr; {% translate "Newer" %}</a>{% else %}<span></span>{% endif %}
+        <span class="meta">{{ page.number }} / {{ page.paginator.num_pages }}</span>
+        {% if page.has_next %}<a href="?user={{ selected|urlencode }}&page={{ page.next_page_number }}">{% translate "Older" %} &rarr;</a>{% else %}<span></span>{% endif %}
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

@@ -45,6 +45,12 @@ def delete_character(character_id: int) -> None:
     get_character(character_id).delete()
 
 
+def assign_owner(character: Character, user) -> None:
+    """Hand `character` over to the account `user` (the new owner edits and deletes it)."""
+    character.owner = user
+    character.save(update_fields=["owner"])
+
+
 def get_character_sheet(character_id: int) -> dict:
     character = get_character(character_id)
     return {
