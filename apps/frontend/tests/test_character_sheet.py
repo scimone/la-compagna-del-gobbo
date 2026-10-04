@@ -361,6 +361,9 @@ def test_spellbook_shows_the_prepared_count_and_toggles_preparation(signed_in, a
     act(signed_in, cleric, action="long_rest")
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
     assert "You can change any prepared spells now" in html
+    # Told to unprepare first only when the class has no room for another prepared spell.
+    full = prepared.count() >= derived_stats.compute(cleric).spellcasting[0]["prepared"]
+    assert ("Unprepare a spell above to make room for another." in html) == full
     assert "Unprepare</button>" in html  # the prepared spells' buttons now offer to unprepare
     # ...and a Cleric may then change any number of them.
     act(signed_in, cleric, action="spell_prepare", spell=row.spell_id, prepared="0")

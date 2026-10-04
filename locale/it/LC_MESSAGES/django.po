@@ -2551,3 +2551,7 @@ msgstr "Rimuovi"
 msgctxt "heading"
 msgid "Prepared"
 msgstr "Preparati"
+
+#: apps/frontend/character_sheet.py
+msgid "Unprepare a spell above to make room for another"
+msgstr "Rimuovi prima un incantesimo preparato qui sopra per fare posto a un altro"

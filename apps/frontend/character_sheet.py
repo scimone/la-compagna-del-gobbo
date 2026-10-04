@@ -689,6 +689,9 @@ _PREPARATION_OPEN = {
 }
 
 
+_PREPARATION_HINT = gettext_lazy("Unprepare a spell above to make room for another")
+
+
 def _preparation(character: Character, stats, classes) -> list[dict]:
     """Per class that prepares spells: how many it has prepared out of how many the class table
     allows (always-prepared spells and cantrips do not count), and the SRD's rule for changing -
@@ -711,6 +714,8 @@ def _preparation(character: Character, stats, classes) -> list[dict]:
                 "limit": entry["prepared"],
                 "can_change": bool(left),
                 "text": (_PREPARATION_OPEN[left] if left else _PREPARATION_RULES.get(rule, "")),
+                # A class at its limit has to unprepare something before it can prepare another.
+                "hint": _PREPARATION_HINT if left and count >= entry["prepared"] else "",
             }
         )
     return result

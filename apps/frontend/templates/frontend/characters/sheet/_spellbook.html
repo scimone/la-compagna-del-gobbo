@@ -10,7 +10,7 @@
   </div>
   {% if not spellbook.unprepared_groups %}
   {% for p in spellbook.preparation %}
-    {% if p.text %}<p class="cs-prepared{% if p.can_change %} open{% endif %}">{% if spellbook.preparation|length > 1 %}{{ p.class }}: {% endif %}{{ p.text }}.</p>{% endif %}
+    {% if p.text %}<p class="cs-prepared{% if p.can_change %} open{% endif %}">{% if spellbook.preparation|length > 1 %}{{ p.class }}: {% endif %}{{ p.text }}.{% if p.hint %} {{ p.hint }}.{% endif %}</p>{% endif %}
   {% endfor %}
   {% endif %}
   {% if spellbook.spells %}
@@ -72,7 +72,7 @@
       <div class="cs-sec-head">
         <h3>{% translate "Not prepared" %}</h3>
         {% for p in spellbook.preparation %}
-          {% if p.text %}<p class="cs-prepared{% if p.can_change %} open{% endif %}">{% if spellbook.preparation|length > 1 %}{{ p.class }}: {% endif %}{{ p.text }}.</p>{% endif %}
+          {% if p.text %}<p class="cs-prepared{% if p.can_change %} open{% endif %}">{% if spellbook.preparation|length > 1 %}{{ p.class }}: {% endif %}{{ p.text }}.{% if p.hint %} {{ p.hint }}.{% endif %}</p>{% endif %}
         {% endfor %}
       </div>
       {% for g in spellbook.unprepared_groups %}
