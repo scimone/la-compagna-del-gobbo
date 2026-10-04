@@ -818,6 +818,25 @@
     }
   });
 
+  // Spell / Pact Magic slots for someone who cannot tick them by hand: tapping a row shows or hides
+  // what the slots are (the panels are only rendered for them - see `_spellbook.html`).
+  function toggleSlotHelp(row) {
+    var group = row.closest(".cs-level-group");
+    var panel = group && group.querySelector('[data-slot-help="' + row.dataset.slotInfo + '"]');
+    if (!panel) return;
+    panel.hidden = !panel.hidden;
+    row.setAttribute("aria-expanded", panel.hidden ? "false" : "true");
+  }
+  root.addEventListener("click", function (event) {
+    var row = event.target.closest(".cs-slot-row[data-slot-info]");
+    if (row) toggleSlotHelp(row);
+  });
+  root.addEventListener("keydown", function (event) {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    var row = event.target.closest(".cs-slot-row[data-slot-info]");
+    if (row) { event.preventDefault(); toggleSlotHelp(row); }
+  });
+
   // Circle of the Land after a Long Rest: take a land (the server checks the choice).
   root.addEventListener("click", function (event) {
     var button = event.target.closest("[data-land-confirm]");

@@ -93,6 +93,10 @@ class Character(models.Model):
 
     # `{class id: 1}`: the classes whose Weapon Mastery weapons may be changed now (after a rest).
     weapon_mastery_changes = models.JSONField(default=dict, blank=True)
+    # The conditions on the character (`["blinded", ...]`, see `characters/conditions.py`) and its
+    # Exhaustion level (0-6): the one condition whose effects stack.
+    conditions = models.JSONField(default=list, blank=True)
+    exhaustion = models.PositiveSmallIntegerField(default=0)
     # Choices a Long Rest opens until they are made, `{"land": True}` (Circle of the Land's new
     # land - see `apps/builder/services/land.py`).
     rest_choices = models.JSONField(default=dict, blank=True)

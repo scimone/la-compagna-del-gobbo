@@ -8,6 +8,7 @@ character sheet both read this. All formulas are the SRD's: see
 
 from dataclasses import dataclass, field
 
+from apps.characters import conditions
 from apps.characters.models import Character, CharacterChoice
 from apps.rules.models import ClassLevel, Skill
 
@@ -262,6 +263,22 @@ def compute(character: Character) -> Derived:
     elif "Jack of All Trades" in feature_names:
         initiative_bonus = pb // 2
 
+    # Conditions: Exhaustion lowers every D20 Test (not a spell's save DC) and the Speed; some
+    # conditions hold the Speed at 0. Ability checks are rolled from the plain modifiers, so the
+    # Exhaustion penalty only shows where a total is displayed (saves, skills, attacks, initiative).
+    fx = conditions.effects(character)
+    if fx.d20_penalty:
+        for entry in (*saves.values(), *skills.values()):
+            entry["modifier"] -= fx.d20_penalty
+        for attack in attacks:
+            attack["attack_bonus"] -= fx.d20_penalty
+    speed = 0 if fx.speed_zero else max(0, speed - fx.speed_penalty)
+    spellcasting = _spellcasting(classes, choices, mods, pb)
+    if fx.d20_penalty:
+        for entry in spellcasting:
+            if "attack_bonus" in entry:
+                entry["attack_bonus"] -= fx.d20_penalty
+
     return Derived(
         level=level,
         proficiency_bonus=pb,
@@ -269,12 +286,12 @@ def compute(character: Character) -> Derived:
         saving_throws=saves,
         skills=skills,
         passive_perception=10 + skills["perception"]["modifier"],
-        initiative=mods["dex"] + initiative_bonus,
+        initiative=mods["dex"] + initiative_bonus - fx.d20_penalty,
         speed=speed,
         armor_class=ac,
         hit_dice=hit_dice,
         attacks=attacks,
-        spellcasting=_spellcasting(classes, choices, mods, pb),
+        spellcasting=spellcasting,
         warnings=warnings,
         item_warnings=item_warnings,
     )

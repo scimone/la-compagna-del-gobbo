@@ -13,6 +13,7 @@ from django.db import models, transaction
 
 from apps.builder.class_spec import CLASS_SPEC
 from apps.builder.services import derived_stats
+from apps.characters import conditions
 from apps.characters.models import (
     Character,
     CharacterChoice,
@@ -151,6 +152,23 @@ def toggle_death_save(character: Character, kind: str, index: int) -> None:
     current = getattr(character, field)
     setattr(character, field, _clamp(index - 1 if current == index else index, 0, DEATH_SAVES_MAX))
     character.save(update_fields=[field, "updated_at"])
+
+
+def set_condition(character: Character, condition_id: str, on: bool) -> None:
+    """Put a condition on the character or take it off (conditions don't stack: it is there or it
+    isn't). Exhaustion has its own level, see `set_exhaustion()`."""
+    if condition_id not in conditions.BY_ID:
+        raise ValueError("unknown condition")
+    current = [c for c in character.conditions if c != condition_id]
+    if on:
+        current.append(condition_id)
+    character.conditions = current
+    character.save(update_fields=["conditions"])
+
+
+def set_exhaustion(character: Character, level: int) -> None:
+    character.exhaustion = _clamp(level, 0, conditions.EXHAUSTION_MAX)
+    character.save(update_fields=["exhaustion"])
 
 
 def set_inspiration(character: Character, value: bool) -> None:
@@ -873,6 +891,9 @@ def short_rest(
         if total:
             character.spell_recoveries_used = [*character.spell_recoveries_used, feature["name"]]
     character.spell_slots_spent = slots
+    # Tireless (Ranger 10): each Short Rest lowers the Exhaustion level by 1.
+    if character.exhaustion and character.features.filter(feature__name_en="Tireless").exists():
+        character.exhaustion -= 1
     character.save()
     for row in character.resources.all():
         if row.reset_on == "short_rest":
@@ -895,6 +916,7 @@ def long_rest(character: Character) -> None:
     character.max_hit_points_reduction = 0
     character.ability_reductions = {}
     character.spell_recoveries_used = []
+    character.exhaustion = max(0, character.exhaustion - 1)
     character.current_hit_points = character.hit_point_maximum
     character.temporary_hit_points = 0
     character.death_save_successes = character.death_save_failures = 0

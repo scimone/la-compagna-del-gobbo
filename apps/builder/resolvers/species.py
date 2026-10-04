@@ -1,5 +1,7 @@
 """What the chosen species (and its lineage/legacy/ancestry) gives a level-1 character."""
 
+import re
+
 from apps.rules.models import Feat, Feature
 
 from ..services.store import Draft
@@ -67,10 +69,23 @@ def size(draft: Draft) -> str:
     return sizes[0] if len(sizes) == 1 else draft.get("species.size", "")
 
 
+_START_LEVEL = re.compile(r"^(?:When you reach|Starting at) character level (\d+)", re.IGNORECASE)
+
+
+def start_level(feature: Feature) -> int:
+    """The character level a species trait starts at: 1, unless its first paragraph says "When you
+    reach character level 5" / "Starting at character level 5" (Draconic Flight, Large Form,
+    Celestial Revelation). A level mentioned further down (a lineage's level 3/5 spells) is not
+    the trait's."""
+    first = next((e for e in feature.entries_en if isinstance(e, str)), "")
+    match = _START_LEVEL.search(first)
+    return int(match.group(1)) if match else 1
+
+
 def species_features(draft: Draft) -> list[Feature]:
     """The species' traits, with the generic lineage trait ("Elven Lineage", listing every
     lineage in a table) swapped for the chosen lineage's own ("Elven Lineage (Wood Elf)")."""
-    rows = list(draft.species.feature_rows.order_by("pk"))
+    rows = [f for f in draft.species.feature_rows.order_by("pk") if start_level(f) <= draft.level]
     lineage = chosen_lineage(draft)
     if lineage is None:
         return [f for f in rows if not f.choice_option]

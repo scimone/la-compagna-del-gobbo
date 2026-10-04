@@ -99,7 +99,8 @@ long rest) and Natural Recovery's free Circle spell, and the long rest's one Wea
 
 ## Long-rest / rest logic not implemented yet
 
-Done: slots, Hit Dice, class-table resources and `FEATURE_RESOURCES` (`apps/builder/services/
+Done: Conditions and Exhaustion (`characters/conditions.py`: `Character.conditions`/`exhaustion`, a card on the Stats tab,
+Exhaustion applied in `derived_stats`, a long rest -1, Tireless on a short rest), slots, Hit Dice, class-table resources and `FEATURE_RESOURCES` (`apps/builder/services/
 feature_resources.py`), free casts, prepared-spell changes, the Weapon Mastery swap, Natural/Arcane
 Recovery, and Circle of the Land's land (`services/land.py`). A long rest opens a *window* on the
 character (`spell_changes`, `weapon_mastery_changes`, `rest_choices`) that a sheet control closes by
@@ -144,9 +145,6 @@ service validates and applies it (builder, not `play`, if it needs `progression`
   be cast PB times. Plan: give `CharacterSpell` a `free_casts_used` counter (migration) next to the
   flag, maximum from `tables.proficiency_bonus`, reset by `long_rest()`; `cast_spell()` increments it
   and `spell_row` in the sheet shows "n/PB".
-- **Exhaustion.** Not tracked at all. Plan: `Character.exhaustion` (0-6), a stepper on the Stats tab,
-  -2 x level on d20 Tests and -5 ft x level of Speed in `derived_stats`, death at 6, and
-  `long_rest()` lowering it by 1 (a short rest never does; Tireless lowers it on a short rest).
 - **The 16 hours between long rests / an interrupted rest.** Game time, not tracked; the player says
   whether a rest was interrupted. Leave it that way unless a clock is added to the sheet.
 

@@ -30,6 +30,7 @@ from apps.builder import tables
 from apps.builder.class_spec import CLASS_SPEC
 from apps.builder.resolvers.proficiency import WeaponProficiency
 from apps.builder.services import creation, derived_stats, land, progression
+from apps.characters import conditions
 from apps.characters.models import Character, CharacterChoice
 from apps.characters.services import access, play, portrait
 from apps.frontend import translations, units
@@ -217,10 +218,38 @@ def _strip(character: Character, stats, items) -> dict:
             ("failures", _("Failures"), "✕", character.death_save_failures),
         ],
         "inspiration": character.inspiration,
+        "conditions": _conditions(character),
         "resources": [
             {"pk": r.pk, "name": r.name, "current": r.current_uses, "max": r.max_uses}
             for r in character.resources.all()
         ],
+    }
+
+
+def _conditions(character: Character) -> dict:
+    """The Stats tab's Conditions card: every condition (on or off, for the toggles), the rules of
+    the ones in effect - including those another one applies and Unconscious at 0 hit points - and
+    what they add up to. The Exhaustion level has its own stepper."""
+    in_effect = conditions.active(character)
+    stored = set(character.conditions)
+    rows = [
+        {
+            "id": c.id,
+            "name": c.name,
+            "stored": c.id in stored,
+            "on": c.id in in_effect,
+            "rules": c.rules,
+        }
+        for c in conditions.CONDITIONS
+    ]
+    return {
+        "rows": rows,
+        "active": [r for r in rows if r["on"]],
+        "exhaustion": character.exhaustion,
+        "exhaustion_name": conditions.EXHAUSTION_NAME,
+        "exhaustion_rules": conditions.EXHAUSTION_RULES,
+        "summary": conditions.summary(character),
+        "any": bool(in_effect or character.exhaustion),
     }
 
 
@@ -1335,6 +1364,9 @@ _ACTIONS = {
     "temp_hp": lambda c, p: play.set_temporary_hit_points(c, _int(p, "value")),
     "death_toggle": lambda c, p: play.toggle_death_save(c, p.get("kind", ""), _int(p, "index")),
     "inspiration": lambda c, p: play.set_inspiration(c, p.get("value") == "1"),
+    # Conditions change the speed, saves, skills and so on: the sheet is redrawn.
+    "condition": lambda c, p: play.set_condition(c, p.get("id", ""), p.get("value") == "1") or True,
+    "exhaustion": lambda c, p: play.set_exhaustion(c, _int(p, "value")) or True,
     "hit_dice": _act_hit_dice,
     "slots": _act_slots,
     "coin": lambda c, p: play.set_coin(c, p.get("coin", ""), _int(p, "value")),

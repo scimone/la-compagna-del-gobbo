@@ -2658,3 +2658,219 @@ msgstr "Terra cambiata"
 
 msgid "You can choose a new land for Circle of the Land now. Do it?"
 msgstr "Ora puoi scegliere una nuova terra per il Circolo della Terra. Vuoi farlo?"
+
+msgid "Pact Magic Slots"
+msgstr "Slot Magia del patto"
+
+msgid "Spell slots are used to cast leveled spells. They are grouped by spell level. Casting a spell uses one slot of that spell’s level or higher. All slots reset after a Long Rest."
+msgstr "Gli slot incantesimo servono a lanciare gli incantesimi di livello 1 o superiore. Sono raggruppati per livello dell’incantesimo. Lanciare un incantesimo consuma uno slot del livello dell’incantesimo o superiore. Tutti gli slot si ripristinano dopo un riposo lungo."
+
+msgid "Warlocks have Pact Magic slots, all at the same spell level. Spells are cast at that level. All slots reset after a Short or Long Rest."
+msgstr "I warlock hanno slot Magia del patto, tutti dello stesso livello di incantesimo. Gli incantesimi vengono lanciati a quel livello. Tutti gli slot si ripristinano dopo un riposo breve o lungo."
+
+msgid "Conditions"
+msgstr "Condizioni"
+
+msgid "applied"
+msgstr "applicata"
+
+msgid "Lower the Exhaustion level"
+msgstr "Abbassa il livello di Indebolimento"
+
+msgid "Raise the Exhaustion level"
+msgstr "Alza il livello di Indebolimento"
+
+msgid "Blinded"
+msgstr "Accecato"
+
+msgid "Charmed"
+msgstr "Affascinato"
+
+msgid "Deafened"
+msgstr "Assordato"
+
+msgid "Frightened"
+msgstr "Spaventato"
+
+msgid "Grappled"
+msgstr "Afferrato"
+
+msgid "Incapacitated"
+msgstr "Incapacitato"
+
+msgid "Invisible"
+msgstr "Invisibile"
+
+msgid "Paralyzed"
+msgstr "Paralizzato"
+
+msgid "Petrified"
+msgstr "Pietrificato"
+
+msgid "Poisoned"
+msgstr "Avvelenato"
+
+msgid "Prone"
+msgstr "Prono"
+
+msgid "Restrained"
+msgstr "Trattenuto"
+
+msgid "Stunned"
+msgstr "Stordito"
+
+msgid "Unconscious"
+msgstr "Privo di sensi"
+
+msgid "Exhaustion"
+msgstr "Indebolimento"
+
+msgid "You can't see and automatically fail any ability check that requires sight."
+msgstr "Il personaggio non può vedere e fallisce automaticamente qualsiasi prova di caratteristica che richieda la vista."
+
+msgid "Attack rolls against you have Advantage, and your attack rolls have Disadvantage."
+msgstr "I tiri per colpire contro il personaggio hanno vantaggio, mentre i suoi tiri per colpire hanno svantaggio."
+
+msgid "You can't attack the charmer or target the charmer with damaging abilities or magical effects."
+msgstr "Il personaggio non può attaccare l’incantatore né prenderlo come bersaglio di capacità o effetti magici dannosi."
+
+msgid "The charmer has Advantage on any ability check to interact with you socially."
+msgstr "L’incantatore ha vantaggio a qualsiasi prova di caratteristica per interagire socialmente con il personaggio."
+
+msgid "You can't hear and automatically fail any ability check that requires hearing."
+msgstr "Il personaggio non può sentire e fallisce automaticamente qualsiasi prova di caratteristica che richieda l’udito."
+
+msgid "You have Disadvantage on ability checks and attack rolls while the source of your fear is within line of sight."
+msgstr "Il personaggio ha svantaggio alle prove di caratteristica e ai tiri per colpire finché la fonte della sua paura è in linea di vista."
+
+msgid "You can't willingly move closer to the source of your fear."
+msgstr "Il personaggio non può avvicinarsi volontariamente alla fonte della sua paura."
+
+msgid "Your Speed is 0 and can't increase."
+msgstr "La velocità del personaggio è 0 e non può aumentare."
+
+msgid "You have Disadvantage on attack rolls against any target other than the grappler."
+msgstr "Il personaggio ha svantaggio ai tiri per colpire contro qualsiasi bersaglio diverso da chi lo sta afferrando."
+
+msgid "The grappler can drag or carry you when it moves, but every foot of movement costs it 1 extra foot unless you are Tiny or two or more sizes smaller than it."
+msgstr "Chi afferra può trascinare o trasportare il personaggio quando si muove, ma ogni 30 cm di movimento gli costano 30 cm in più, a meno che il personaggio sia Minuscolo o di due o più categorie di taglia più piccolo."
+
+msgid "You can't take any actions, Bonus Actions, or Reactions."
+msgstr "Il personaggio non può compiere azioni, azioni bonus né reazioni."
+
+msgid "Your Concentration is broken."
+msgstr "La sua concentrazione si interrompe."
+
+msgid "You can't speak."
+msgstr "Non può parlare."
+
+msgid "If you are Incapacitated when you roll Initiative, you have Disadvantage on the roll."
+msgstr "Se è incapacitato quando tira l’iniziativa, ha svantaggio al tiro."
+
+msgid "You aren't affected by any effect that requires its target to be seen unless the effect's creator can somehow see you. Any equipment you are wearing or carrying is also concealed."
+msgstr "Il personaggio non è influenzato da alcun effetto che richieda di vedere il bersaglio, a meno che chi lo genera possa in qualche modo vederlo. Anche l’equipaggiamento che indossa o trasporta è nascosto."
+
+msgid "Attack rolls against you have Disadvantage, and your attack rolls have Advantage. If a creature can somehow see you, you don't gain this benefit against that creature."
+msgstr "I tiri per colpire contro il personaggio hanno svantaggio, mentre i suoi tiri per colpire hanno vantaggio. Se una creatura può in qualche modo vederlo, il personaggio non ottiene questo beneficio contro di essa."
+
+msgid "You have the Incapacitated condition."
+msgstr "Il personaggio ha la condizione Incapacitato."
+
+msgid "You automatically fail Strength and Dexterity saving throws."
+msgstr "Il personaggio fallisce automaticamente i tiri salvezza su Forza e Destrezza."
+
+msgid "Attack rolls against you have Advantage."
+msgstr "I tiri per colpire contro il personaggio hanno vantaggio."
+
+msgid "Any attack roll that hits you is a Critical Hit if the attacker is within 5 feet of you."
+msgstr "Qualsiasi tiro per colpire che lo colpisca è un colpo critico se l’attaccante si trova entro 1,5 metri dal personaggio."
+
+msgid "You are transformed, along with any nonmagical object you are wearing or carrying, into a solid inanimate substance (usually stone). Your weight increases by a factor of ten, and you cease aging."
+msgstr "Il personaggio viene trasformato, insieme a qualsiasi oggetto non magico che indossa o trasporta, in una sostanza solida e inanimata (di solito pietra). Il suo peso aumenta di dieci volte e smette di invecchiare."
+
+msgid "You have Resistance to all damage."
+msgstr "Il personaggio ha resistenza a tutti i danni."
+
+msgid "You are immune to the Poisoned condition."
+msgstr "Il personaggio è immune alla condizione Avvelenato."
+
+msgid "You have Disadvantage on attack rolls and ability checks."
+msgstr "Il personaggio ha svantaggio ai tiri per colpire e alle prove di caratteristica."
+
+msgid "Your only movement options are to crawl or to spend an amount of movement equal to half your Speed (round down) to right yourself and thereby end the condition. If your Speed is 0, you can't right yourself."
+msgstr "Le uniche opzioni di movimento del personaggio sono strisciare oppure spendere una quantità di movimento pari alla metà della sua velocità (per difetto) per rialzarsi e porre fine alla condizione. Se la sua velocità è 0, non può rialzarsi."
+
+msgid "You have Disadvantage on attack rolls."
+msgstr "Il personaggio ha svantaggio ai tiri per colpire."
+
+msgid "An attack roll against you has Advantage if the attacker is within 5 feet of you. Otherwise, that attack roll has Disadvantage."
+msgstr "Un tiro per colpire contro il personaggio ha vantaggio se l’attaccante si trova entro 1,5 metri da lui; altrimenti ha svantaggio."
+
+msgid "You have Disadvantage on Dexterity saving throws."
+msgstr "Il personaggio ha svantaggio ai tiri salvezza su Destrezza."
+
+msgid "You have the Prone and Incapacitated conditions, and you drop whatever you're holding. When this condition ends, you remain Prone."
+msgstr "Il personaggio ha le condizioni Prono e Incapacitato e lascia cadere ciò che sta tenendo. Quando la condizione termina, resta Prono."
+
+msgid "You are unaware of your surroundings."
+msgstr "Il personaggio non è consapevole di ciò che lo circonda."
+
+msgid "Exhaustion is cumulative: each time you receive it, you gain 1 level, up to 6."
+msgstr "L’Indebolimento è cumulativo: ogni volta che lo si riceve si ottiene 1 livello, fino a 6."
+
+msgid "When you make a D20 Test, the roll is reduced by 2 times your Exhaustion level."
+msgstr "Quando il personaggio effettua un Tiro d20, il tiro è ridotto di 2 volte il suo livello di Indebolimento."
+
+msgid "Your Speed is reduced by 5 feet times your Exhaustion level."
+msgstr "La velocità del personaggio è ridotta di 1,5 metri per il suo livello di Indebolimento."
+
+msgid "You die if your Exhaustion level reaches 6."
+msgstr "Il personaggio muore se il suo livello di Indebolimento raggiunge 6."
+
+msgid "Finishing a Long Rest removes 1 of your Exhaustion levels."
+msgstr "Completare un riposo lungo rimuove 1 livello di Indebolimento."
+
+msgid "Exhaustion %(level)s: D20 Tests -%(penalty)s, Speed -%(speed)s ft"
+msgstr "Indebolimento %(level)s: Tiri d20 -%(penalty)s, velocità -%(speed)s ft"
+
+msgid "You can't take actions, Bonus Actions or Reactions"
+msgstr "Non può compiere azioni, azioni bonus né reazioni"
+
+msgid "Speed 0"
+msgstr "Velocità 0"
+
+msgid "Your attack rolls: Advantage and Disadvantage cancel out"
+msgstr "Tiri per colpire del personaggio: vantaggio e svantaggio si annullano"
+
+msgid "Disadvantage on your attack rolls"
+msgstr "Svantaggio ai tiri per colpire del personaggio"
+
+msgid "Advantage on your attack rolls"
+msgstr "Vantaggio ai tiri per colpire del personaggio"
+
+msgid "Attack rolls against you: Advantage and Disadvantage may cancel out"
+msgstr "Tiri per colpire contro il personaggio: vantaggio e svantaggio possono annullarsi"
+
+msgid "Attack rolls against you: Advantage within 5 ft, Disadvantage farther"
+msgstr "Tiri per colpire contro il personaggio: vantaggio entro 1,5 m, svantaggio da più lontano"
+
+msgid "Attack rolls against you: Advantage and Disadvantage cancel out"
+msgstr "Tiri per colpire contro il personaggio: vantaggio e svantaggio si annullano"
+
+msgid "Attack rolls against you have Disadvantage"
+msgstr "I tiri per colpire contro il personaggio hanno svantaggio"
+
+msgid "Attack rolls against you have Advantage"
+msgstr "I tiri per colpire contro il personaggio hanno vantaggio"
+
+msgid "Disadvantage on ability checks"
+msgstr "Svantaggio alle prove di caratteristica"
+
+msgid "You automatically fail Strength and Dexterity saving throws"
+msgstr "Fallisce automaticamente i tiri salvezza su Forza e Destrezza"
+
+msgid "Disadvantage on Dexterity saving throws"
+msgstr "Svantaggio ai tiri salvezza su Destrezza"
+
+msgid "Hits from within 5 feet are Critical Hits"
+msgstr "I colpi da entro 1,5 metri sono colpi critici"

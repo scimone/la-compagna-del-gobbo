@@ -75,5 +75,21 @@ def test_a_species_trait_that_starts_at_level_5_gets_its_resource_then(owner):
     character = build_character(owner, "fighter", "soldier", "dragonborn")
     assert not character.resources.filter(name="Draconic Flight").exists()
     character.classes.update(level=5)
+    from apps.builder.services import progression
+
+    progression._grant_species_traits(character, 5)
     feature_resources.refresh(character)
     assert character.resources.filter(name="Draconic Flight").exists()
+
+
+def test_a_species_trait_that_starts_at_level_5_is_granted_at_that_level(owner):
+    character = build_character(owner, "fighter", "soldier", "dragonborn")
+    names = set(character.features.values_list("feature__name_en", flat=True))
+    assert "Breath Weapon" in names and "Draconic Flight" not in names
+
+    from apps.builder.services import progression
+
+    progression._grant_species_traits(character, 4)
+    assert not character.features.filter(feature__name_en="Draconic Flight").exists()
+    progression._grant_species_traits(character, 5)
+    assert character.features.filter(feature__name_en="Draconic Flight").exists()

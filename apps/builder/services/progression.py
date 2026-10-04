@@ -62,6 +62,7 @@ from .. import progression_spec as spec
 from .. import tables
 from ..class_spec import spec_for
 from ..resolvers import feat as feat_resolver
+from ..resolvers import species as species_resolver
 from ..resolvers.proficiency import WeaponProficiency, tool_options
 from ..resolvers.spell import class_spell_list, max_spell_level, spell_id
 from . import feature_resources
@@ -1225,6 +1226,18 @@ def plan(character: Character, class_id: str, values: Values | None = None) -> P
     return plan_
 
 
+def _grant_species_traits(character: Character, total: int) -> None:
+    """Species traits that start at a higher character level (Draconic Flight at 5) arrive when
+    that level is reached; creation leaves them out (see `species.start_level()`)."""
+    if not character.species_id:
+        return
+    for feature in character.species.feature_rows.filter(choice_option=False):
+        if 1 < species_resolver.start_level(feature) <= total:
+            CharacterFeature.objects.get_or_create(
+                character=character, feature=feature, defaults={"granted_at_level": total}
+            )
+
+
 def _grant_land_feature(character: Character, subclass: Subclass, land: str, level: int) -> None:
     """The chosen land's own feature ("Circle of the Land Spells (Arid Land)") replaces the
     generic one listing every land's table - and the previous land's, when it changes."""
@@ -1627,6 +1640,7 @@ def commit(character: Character, class_id: str, values: Values) -> Plan:
         CharacterFeature.objects.get_or_create(
             character=character, feature=feature, defaults={"granted_at_level": new}
         )
+    _grant_species_traits(character, total)
     if subclass:
         land_key = f"subclass.{klass.id}.land"
         if ctx.new_subclass and ctx.one("lu.land"):

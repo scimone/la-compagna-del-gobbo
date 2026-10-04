@@ -41,7 +41,8 @@
           {% if g.slots %}
             <div class="cs-slots">
               {% for p in g.slots %}
-                <div class="cs-slot-row" data-slot="{{ p.key }}" data-max="{{ p.max }}" title="{{ p.label }}">
+                <div class="cs-slot-row{% if not can_edit_slots %} info{% endif %}" data-slot="{{ p.key }}" data-max="{{ p.max }}" title="{{ p.label }}"
+                     {% if not can_edit_slots %}data-slot-info="{% if p.key == 'pact' %}pact{% else %}spell{% endif %}" role="button" tabindex="0" aria-expanded="false"{% endif %}>
                   <span class="lbl">{{ p.short_label }}</span>
                   <span class="cs-pips">
                     {% for on in p.pips %}
@@ -55,6 +56,20 @@
             </div>
           {% endif %}
         </div>
+        {% if g.slots and not can_edit_slots %}
+          {# What the slots are, for whoever cannot tick them by hand: tapping a row opens its text. #}
+          {% for p in g.slots %}{% if p.key == 'pact' %}
+            <div class="cs-slot-help" data-slot-help="pact" hidden>
+              <h4>{% translate "Pact Magic Slots" %}</h4>
+              <p>{% translate "Warlocks have Pact Magic slots, all at the same spell level. Spells are cast at that level. All slots reset after a Short or Long Rest." %}</p>
+            </div>
+          {% else %}
+            <div class="cs-slot-help" data-slot-help="spell" hidden>
+              <h4>{% translate "Spell Slots" %}</h4>
+              <p>{% translate "Spell slots are used to cast leveled spells. They are grouped by spell level. Casting a spell uses one slot of that spell’s level or higher. All slots reset after a Long Rest." %}</p>
+            </div>
+          {% endif %}{% endfor %}
+        {% endif %}
         {# The exact same row (look, click-through, bookmark) as the World's own Spells list -   #}
         {# see `_spellbook_row()`. A spell added by hand also carries its own `remove` action.    #}
         {% if g.spells %}

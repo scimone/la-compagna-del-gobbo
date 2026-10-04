@@ -121,18 +121,48 @@
   </div>
   </div>
 
-  {# What a monster drained, until the next Long Rest. #}
-  <details class="st-card st-wide st-drain"{% if strip.hp_reduction or strip.drained %} open{% endif %}>
-    <summary class="k">{% translate "Reduced until a long rest" %}</summary>
-    <label class="cs-cast-field"><span class="k">{% translate "Hit point maximum reduced by" %}</span>
-      <input type="number" min="0" inputmode="numeric" value="{{ strip.hp_reduction }}"{% if can_edit %} data-act="hp_max_reduction"{% else %} disabled{% endif %}>
-    </label>
-    {% for key, label, lost in strip.ability_reductions %}
-      <label class="cs-cast-field"><span class="k">{{ label }} {% translate "reduced by" %}</span>
-        <input type="number" min="0" inputmode="numeric" value="{{ lost }}"{% if can_edit %} data-act="ability_reduction" data-ability="{{ key }}"{% else %} disabled{% endif %}>
-      </label>
+  {# Conditions (see `characters/conditions.py`): the ones in effect with their rules, what they add up #}
+  {# to, and - for whoever may edit - a toggle for each condition and the Exhaustion level.          #}
+  {% if strip.conditions.any or can_edit %}
+  <div class="st-card st-wide st-conds">
+    <span class="k">{% translate "Conditions" %}</span>
+    {% if strip.conditions.exhaustion %}
+      <details class="cond">
+        <summary>{{ strip.conditions.exhaustion_name }} {{ strip.conditions.exhaustion }}</summary>
+        <ul>{% for line in strip.conditions.exhaustion_rules %}<li>{{ line }}</li>{% endfor %}</ul>
+      </details>
+    {% endif %}
+    {% for c in strip.conditions.active %}
+      <details class="cond">
+        <summary>{{ c.name }}{% if not c.stored %} <small>({% translate "applied" %})</small>{% endif %}</summary>
+        <ul>{% for line in c.rules %}<li>{{ line }}</li>{% endfor %}</ul>
+      </details>
     {% endfor %}
-  </details>
+    {% if strip.conditions.summary %}
+      <ul class="cond-summary">{% for line in strip.conditions.summary %}<li>{{ line }}</li>{% endfor %}</ul>
+    {% elif not strip.conditions.any %}
+      <p class="cs-empty">{% translate "None" %}</p>
+    {% endif %}
+    {% if can_edit %}
+      <div class="cond-edit">
+        <div class="cs-chips">
+          {% for c in strip.conditions.rows %}
+            <button type="button" class="chip{% if c.stored %} on{% endif %}" data-act="condition" data-id="{{ c.id }}"
+                    data-value="{% if c.stored %}0{% else %}1{% endif %}" aria-pressed="{% if c.stored %}true{% else %}false{% endif %}">{{ c.name }}</button>
+          {% endfor %}
+        </div>
+        <div class="cs-res-row">
+          <span class="lbl">{{ strip.conditions.exhaustion_name }}</span>
+          <span class="ctl">
+            <button type="button" class="step small" data-act="exhaustion" data-value="{{ strip.conditions.exhaustion|add:'-1' }}" aria-label="{% translate 'Lower the Exhaustion level' %}">−</button>
+            <span class="cnt"><b>{{ strip.conditions.exhaustion }}</b>/6</span>
+            <button type="button" class="step small" data-act="exhaustion" data-value="{{ strip.conditions.exhaustion|add:'1' }}" aria-label="{% translate 'Raise the Exhaustion level' %}">+</button>
+          </span>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+  {% endif %}
 
   {# Limited-use resources (Rage, Bardic Inspiration, ...): spent with the buttons, restored by rests. #}
   {% if strip.resources %}
@@ -150,6 +180,19 @@
     {% endfor %}
   </div>
   {% endif %}
+
+  {# What a monster drained, until the next Long Rest. #}
+  <details class="st-card st-wide st-drain"{% if strip.hp_reduction or strip.drained %} open{% endif %}>
+    <summary class="k">{% translate "Reduced until a long rest" %}</summary>
+    <label class="cs-cast-field"><span class="k">{% translate "Hit point maximum reduced by" %}</span>
+      <input type="number" min="0" inputmode="numeric" value="{{ strip.hp_reduction }}"{% if can_edit %} data-act="hp_max_reduction"{% else %} disabled{% endif %}>
+    </label>
+    {% for key, label, lost in strip.ability_reductions %}
+      <label class="cs-cast-field"><span class="k">{{ label }} {% translate "reduced by" %}</span>
+        <input type="number" min="0" inputmode="numeric" value="{{ lost }}"{% if can_edit %} data-act="ability_reduction" data-ability="{{ key }}"{% else %} disabled{% endif %}>
+      </label>
+    {% endfor %}
+  </details>
 
   {# Experience: the level, the number, how far it is to the next level, and the way up. #}
   <div class="st-card st-xp st-wide">
