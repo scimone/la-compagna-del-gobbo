@@ -98,3 +98,32 @@ def lineage_feature(species_entries_en: list, species_entries_it: list | None, l
         match = _TRAILING_PAREN.search(item_it.get("name", ""))
         name_it = f"{generic_it['name']} ({match.group(1) if match else item_it['name']})"
     return name_en, out_en, name_it, out_it
+
+
+def land_features(
+    name_en: str, entries_en: list, entries_it: list | None, name_it: str | None = None
+) -> list[tuple]:
+    """The same cut for Circle of the Land's spell tables: one `(name_en, entries_en, name_it,
+    entries_it)` per table captioned "<kind> Land" inside the feature, e.g.
+    "Circle of the Land Spells (Arid Land)" - the introduction paragraph plus that one table.
+    Empty for any feature without such tables."""
+    tables = [
+        (i, e)
+        for i, e in enumerate(entries_en)
+        if isinstance(e, dict)
+        and e.get("type") == "table"
+        and str(e.get("caption", "")).endswith(" Land")
+    ]
+    paragraph = next((i for i, e in enumerate(entries_en) if isinstance(e, str)), None)
+    out = []
+    for index, table in tables:
+        entries = ([entries_en[paragraph]] if paragraph is not None else []) + [table]
+        entries_it_cut = name_it_cut = None
+        table_it = entries_it[index] if entries_it and index < len(entries_it) else None
+        if isinstance(table_it, dict) and table_it.get("caption"):
+            para_it = entries_it[paragraph] if paragraph is not None else None
+            entries_it_cut = ([para_it] if paragraph is not None else []) + [table_it]
+            if name_it:
+                name_it_cut = f"{name_it} ({table_it['caption']})"
+        out.append((f"{name_en} ({table['caption']})", entries, name_it_cut, entries_it_cut))
+    return out

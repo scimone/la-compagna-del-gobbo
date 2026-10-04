@@ -73,7 +73,7 @@ def species_features(draft: Draft) -> list[Feature]:
     rows = list(draft.species.feature_rows.order_by("pk"))
     lineage = chosen_lineage(draft)
     if lineage is None:
-        return rows
+        return [f for f in rows if not f.choice_option]
     chosen = f"{lineage['replaces']} ({lineage['label']})"
     own = next((f for f in rows if f.name_en == chosen), None)
     if own is None:

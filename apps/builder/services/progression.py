@@ -1223,6 +1223,24 @@ def plan(character: Character, class_id: str, values: Values | None = None) -> P
     return plan_
 
 
+def _grant_land_feature(character: Character, subclass: Subclass, land: str, level: int) -> None:
+    """The chosen land's own feature ("Circle of the Land Spells (Arid Land)") replaces the
+    generic one listing every land's table on the character."""
+    own = Feature.objects.filter(
+        subclass_level__subclass=subclass, choice_option=True, name_en__endswith=f"({land})"
+    ).first()
+    if own is None:
+        return
+    CharacterFeature.objects.filter(
+        character=character,
+        feature__subclass_level__subclass=subclass,
+        feature__name_en=own.name_en.rsplit(" (", 1)[0],
+    ).delete()
+    CharacterFeature.objects.get_or_create(
+        character=character, feature=own, defaults={"granted_at_level": level}
+    )
+
+
 def _features_gained(ctx: _Ctx, subclass: Subclass | None) -> list[Feature]:
     klass = ctx.klass
     rows = [f for f in _class_feature_rows(klass, ctx.new_level) if not _is_placeholder(f, klass)]
@@ -1240,7 +1258,8 @@ def _features_gained(ctx: _Ctx, subclass: Subclass | None) -> list[Feature]:
         else:
             sub_levels = SubclassLevel.objects.filter(subclass=subclass, level=ctx.new_level)
     for level in sub_levels:
-        rows += list(level.feature_rows.order_by("pk"))
+        # a choice's alternatives (each land of Circle of the Land) are granted when chosen
+        rows += list(level.feature_rows.filter(choice_option=False).order_by("pk"))
     return rows
 
 
@@ -1610,6 +1629,7 @@ def commit(character: Character, class_id: str, values: Values) -> Plan:
             CharacterChoice.objects.update_or_create(
                 character=character, key=land_key, defaults={"value": ctx.one("lu.land")}
             )
+            _grant_land_feature(character, subclass, ctx.one("lu.land"), new)
         for index in range(len(_subclass_picks(ctx, subclass))):
             for spell_key in ctx.get(f"lu.savant.{index}"):
                 _add_spell(

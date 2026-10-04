@@ -76,6 +76,24 @@ def test_a_subclass_is_asked_for_at_level_3_and_its_features_arrive(owner):
     assert character.spells.filter(always_prepared=True, source__startswith="subclass:").exists()
 
 
+def test_circle_of_the_land_choice_becomes_its_own_feature(owner):
+    from apps.rules.models import Subclass
+
+    character = finished(owner, "druid")
+    level_up(character, "druid")
+    land = Subclass.objects.get(klass_id="druid", name_en="Circle of the Land")
+    values = autofill(
+        character,
+        "druid",
+        prefer={"lu.subclass": [str(land.pk)], "lu.land": ["Polar Land"]},
+    )
+    progression.commit(character, "druid", values)
+    names = set(character.features.values_list("feature__name_en", flat=True))
+    assert "Circle of the Land Spells (Polar Land)" in names
+    assert "Circle of the Land Spells" not in names
+    assert not any("Arid" in n or "Tropical" in n or "Temperate" in n for n in names)
+
+
 def test_hit_points_average_or_roll_with_constitution(owner):
     character = finished(owner, "fighter")  # d10, Con 13 (+1)
     before = character.max_hit_points

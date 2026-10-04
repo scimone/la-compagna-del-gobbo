@@ -9,7 +9,7 @@ from django.utils import translation
 from django.utils.text import slugify
 
 from apps.rules.handbook_source import TranslationDataError, load_handbook
-from apps.rules.lineage_features import lineage_feature
+from apps.rules.lineage_features import land_features, lineage_feature
 from apps.rules.models import (
     Ability,
     Background,
@@ -441,6 +441,20 @@ def _walk_feature_pointers(node, pointer_type: str, key_field: str):
     elif isinstance(node, list):
         for item in node:
             yield from _walk_feature_pointers(item, pointer_type, key_field)
+
+
+def _option_pointer_refs(node, inside: bool = False):
+    """Every `refClassFeature` ref found inside an `options` node ("choose one of these") - the
+    alternatives of a choice, as opposed to sub-features that all apply."""
+    if isinstance(node, dict):
+        inside = inside or node.get("type") == "options"
+        if inside and node.get("type") == "refClassFeature" and "classFeature" in node:
+            yield node["classFeature"]
+        for value in node.values():
+            yield from _option_pointer_refs(value, inside)
+    elif isinstance(node, list):
+        for item in node:
+            yield from _option_pointer_refs(item, inside)
 
 
 def _parse_class_feature_ref(ref: str) -> tuple[str, str, str, int]:
@@ -890,6 +904,11 @@ class Command(BaseCommand):
         ability_by_id = {a.id: a for a in Ability.objects.all()}
         class_features = []
         subclass_features = []
+        choice_option_keys = {
+            _parse_class_feature_ref(ref)
+            for cf in class_feature_lookup.values()
+            for ref in _option_pointer_refs(cf.get("entries", []))
+        }
         skipped_refs = []
 
         for it in data["class"]:
@@ -965,6 +984,7 @@ class Command(BaseCommand):
                             raw.get("entries", []), class_feature_lookup
                         ),
                         consumes_resource_name=(raw.get("consumes") or {}).get("name", ""),
+                        choice_option=key in choice_option_keys,
                     )
                 )
 
@@ -1021,6 +1041,15 @@ class Command(BaseCommand):
                             consumes_resource_name=(raw.get("consumes") or {}).get("name", ""),
                         )
                     )
+                    for land in land_features(raw["name"], raw.get("entries", []), None):
+                        subclass_features.append(
+                            Feature(
+                                subclass_level=level_by_number[level],
+                                name=land[0],
+                                entries=land[1],
+                                choice_option=True,
+                            )
+                        )
 
         Feature.objects.bulk_create(class_features + subclass_features)
 
@@ -1332,7 +1361,9 @@ class Command(BaseCommand):
             for lineage in species.lineages:
                 cut = lineage_feature(species.entries, None, lineage)
                 if cut:
-                    rows.append(Feature(species=species, name=cut[0], entries=cut[1]))
+                    rows.append(
+                        Feature(species=species, name=cut[0], entries=cut[1], choice_option=True)
+                    )
         for feat in Feat.objects.all():
             for d in _named_dicts(feat.entries):
                 rows.append(Feature(feat=feat, name=d["name"], entries=d.get("entries", [])))

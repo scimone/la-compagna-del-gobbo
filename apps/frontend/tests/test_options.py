@@ -81,3 +81,17 @@ def test_option_filter_tags_link_to_the_class_options_tab(options):
         ['See "{@filter Metamagic Options|optionalfeatures|feature type=MM|source=XPHB}".']
     )
     assert '<a href="/world/classes/sorcerer/?tab=options">Metamagic Options</a>' in html
+
+
+def test_the_alternatives_of_a_choice_are_left_out_of_the_catalog_lists(client, options):
+    from apps.rules.models import ClassLevel, Feature
+
+    level = ClassLevel.objects.create(klass_id="warlock", level=1)
+    Feature.objects.create(class_level=level, name="Divine Order")
+    option = Feature.objects.create(class_level=level, name="Protector", choice_option=True)
+    url = reverse("world-class-detail", args=["warlock"])
+
+    assert "Protector" not in client.get(url, {"tab": "levels"}).content.decode()
+    assert "Protector" not in _names(client.get(reverse("world-feats"), {"type": "class"}))
+    # ... but its own page still exists, which is where a character's Features list links to
+    assert client.get(reverse("world-feature-detail", args=[option.pk])).status_code == 200

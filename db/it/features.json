@@ -7832,5 +7832,149 @@
    }
   ],
   "name": "Retaggio immondo (Infernale)"
+ },
+ "subclass:druid:circle-of-the-land:3:circle-of-the-land-spells-arid-land": {
+  "entries": [
+   "Whenever you finish a {@variantrule Long Rest|XPHB}, choose one type of land: arid, polar, temperate, or tropical. Consult the table below that corresponds to the chosen type; you have the spells listed for your Druid level and lower prepared.",
+   {
+    "rows": [
+     [
+      "3",
+      "{@spell Fire Bolt|XPHB|Dardo di fuoco}, {@spell Burning Hands|XPHB|mani brucianti}, {@spell Blur|XPHB|sfocatura}"
+     ],
+     [
+      "5",
+      "{@spell Fireball|XPHB|Palla di fuoco}"
+     ],
+     [
+      "7",
+      "{@spell Blight|XPHB|Inaridire}"
+     ],
+     [
+      "9",
+      "{@spell Wall of Stone|XPHB|Muro di pietra}"
+     ]
+    ],
+    "type": "table",
+    "caption": "Terra arida",
+    "colLabels": [
+     "Livello da druido",
+     "Incantesimi del Circolo"
+    ],
+    "colStyles": [
+     "col-1 text-center",
+     "col-11"
+    ]
+   }
+  ],
+  "name": "Incantesimi del Circolo della Terra (Terra arida)"
+ },
+ "subclass:druid:circle-of-the-land:3:circle-of-the-land-spells-polar-land": {
+  "entries": [
+   "Whenever you finish a {@variantrule Long Rest|XPHB}, choose one type of land: arid, polar, temperate, or tropical. Consult the table below that corresponds to the chosen type; you have the spells listed for your Druid level and lower prepared.",
+   {
+    "rows": [
+     [
+      "3",
+      "{@spell Hold Person|XPHB|Blocca persone}, {@spell Fog Cloud|XPHB|nube di nebbia}, raggio"
+     ],
+     [
+      "5",
+      "{@spell Sleet Storm|XPHB|Tempesta di nevischio}"
+     ],
+     [
+      "7",
+      "{@spell Ice Storm|XPHB|Tempesta di ghiaccio}"
+     ],
+     [
+      "9",
+      "{@spell Cone of Cold|XPHB|Cono di freddo}"
+     ]
+    ],
+    "type": "table",
+    "caption": "Terra polare",
+    "colLabels": [
+     "Livello da druido",
+     "Incantesimi del Circolo"
+    ],
+    "colStyles": [
+     "col-1 text-center",
+     "col-11"
+    ]
+   }
+  ],
+  "name": "Incantesimi del Circolo della Terra (Terra polare)"
+ },
+ "subclass:druid:circle-of-the-land:3:circle-of-the-land-spells-temperate-land": {
+  "entries": [
+   "Whenever you finish a {@variantrule Long Rest|XPHB}, choose one type of land: arid, polar, temperate, or tropical. Consult the table below that corresponds to the chosen type; you have the spells listed for your Druid level and lower prepared.",
+   {
+    "rows": [
+     [
+      "3",
+      "{@spell Misty Step|XPHB|Passo velato}, {@spell Sleep|XPHB|sonno} e {@spell Shocking Grasp|XPHB|stretta folgorante}"
+     ],
+     [
+      "5",
+      "{@spell Lightning Bolt|XPHB|Fulmine}"
+     ],
+     [
+      "7",
+      "{@spell Freedom of Movement|XPHB|Libertà di movimento}"
+     ],
+     [
+      "9",
+      "{@spell Tree Stride|XPHB|Traslazione arborea}"
+     ]
+    ],
+    "type": "table",
+    "caption": "Terra temperata",
+    "colLabels": [
+     "Livello da druido",
+     "Incantesimi del Circolo"
+    ],
+    "colStyles": [
+     "col-1 text-center",
+     "col-11"
+    ]
+   }
+  ],
+  "name": "Incantesimi del Circolo della Terra (Terra temperata)"
+ },
+ "subclass:druid:circle-of-the-land:3:circle-of-the-land-spells-tropical-land": {
+  "entries": [
+   "Whenever you finish a {@variantrule Long Rest|XPHB}, choose one type of land: arid, polar, temperate, or tropical. Consult the table below that corresponds to the chosen type; you have the spells listed for your Druid level and lower prepared.",
+   {
+    "rows": [
+     [
+      "3",
+      "{@spell Acid Splash|XPHB|Fiotto acido}, {@spell Ray of Sickness|XPHB|raggio di infermità},"
+     ],
+     [
+      "5",
+      "{@spell Stinking Cloud|XPHB|Nube maleodorante}"
+     ],
+     [
+      "7",
+      "{@spell Polymorph|XPHB|Metamorfosi}"
+     ],
+     [
+      "9",
+      "{@spell Insect Plague|XPHB|Piaga degli insetti}"
+     ]
+    ],
+    "type": "table",
+    "caption": "Terra tropicale",
+    "colLabels": [
+     "Livello da druido",
+     "Incantesimi del Circolo"
+    ],
+    "colStyles": [
+     "col-1 text-center",
+     "col-11"
+    ]
+   }
+  ],
+  "name": "Incantesimi del Circolo della Terra (Terra tropicale)"
  }
 }
