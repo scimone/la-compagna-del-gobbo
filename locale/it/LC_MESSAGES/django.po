@@ -2161,3 +2161,367 @@ msgstr "Più recenti"
 #: apps/frontend/templates/frontend/admin/activity.html
 msgid "Older"
 msgstr "Meno recenti"
+
+#: apps/frontend/admin_panel.py
+msgid "Added a custom item"
+msgstr "Ha aggiunto un oggetto personalizzato"
+
+#: apps/frontend/admin_panel.py
+msgid "Added a feature"
+msgstr "Ha aggiunto un privilegio"
+
+#: apps/frontend/admin_panel.py
+msgid "Added a spell"
+msgstr "Ha aggiunto un incantesimo"
+
+#: apps/frontend/admin_panel.py
+msgid "Added an item"
+msgstr "Ha aggiunto un oggetto"
+
+#: apps/frontend/admin_panel.py
+msgid "Added or removed a bookmark"
+msgstr "Ha aggiunto o tolto un segnalibro"
+
+#: apps/frontend/admin_panel.py
+msgid "Admin"
+msgstr "Admin"
+
+#: apps/frontend/admin_panel.py
+msgid "App"
+msgstr "App"
+
+#: apps/frontend/admin_panel.py
+msgid "Bought an item"
+msgstr "Ha comprato un oggetto"
+
+#: apps/frontend/admin_panel.py
+msgid "Browsed the backgrounds"
+msgstr "Ha sfogliato i background"
+
+#: apps/frontend/admin_panel.py
+msgid "Browsed the character list"
+msgstr "Ha sfogliato l'elenco dei personaggi"
+
+#: apps/frontend/admin_panel.py
+msgid "Browsed the classes"
+msgstr "Ha sfogliato le classi"
+
+#: apps/frontend/admin_panel.py
+msgid "Browsed the equipment"
+msgstr "Ha sfogliato l'equipaggiamento"
+
+#: apps/frontend/admin_panel.py
+msgid "Browsed the features"
+msgstr "Ha sfogliato i privilegi"
+
+#: apps/frontend/admin_panel.py
+msgid "Browsed the features of %(name)s"
+msgstr "Ha sfogliato i privilegi di %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Browsed the handbook chapters"
+msgstr "Ha sfogliato i capitoli del manuale"
+
+#: apps/frontend/admin_panel.py
+msgid "Browsed the items of %(name)s"
+msgstr "Ha sfogliato gli oggetti di %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Browsed the rules glossary"
+msgstr "Ha sfogliato il glossario delle regole"
+
+#: apps/frontend/admin_panel.py
+msgid "Browsed the species"
+msgstr "Ha sfogliato le specie"
+
+#: apps/frontend/admin_panel.py
+msgid "Browsed the spells"
+msgstr "Ha sfogliato gli incantesimi"
+
+#: apps/frontend/admin_panel.py
+msgid "Browsed the spells of %(name)s"
+msgstr "Ha sfogliato gli incantesimi di %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Cast a spell"
+msgstr "Ha lanciato un incantesimo"
+
+#: apps/frontend/admin_panel.py
+msgid "Changed an item's quantity"
+msgstr "Ha cambiato la quantità di un oggetto"
+
+#: apps/frontend/admin_panel.py
+msgid "Changed coins"
+msgstr "Ha cambiato le monete"
+
+#: apps/frontend/admin_panel.py
+msgid "Changed experience points"
+msgstr "Ha cambiato i punti esperienza"
+
+#: apps/frontend/admin_panel.py
+msgid "Changed hit points"
+msgstr "Ha cambiato i punti ferita"
+
+#: apps/frontend/admin_panel.py
+msgid "Changed spell slots"
+msgstr "Ha cambiato gli slot incantesimo"
+
+#: apps/frontend/admin_panel.py
+msgid "Changed the avatar of %(name)s"
+msgstr "Ha cambiato l'avatar di %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Changed the portrait of %(name)s"
+msgstr "Ha cambiato il ritratto di %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Deleted the character %(name)s"
+msgstr "Ha eliminato il personaggio %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Deleted the logbook entry %(name)s"
+msgstr "Ha eliminato la voce del diario %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Discarded the draft %(name)s"
+msgstr "Ha scartato la bozza %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Edited a text field (notes, backstory...)"
+msgstr "Ha modificato un campo di testo (note, storia...)"
+
+#: apps/frontend/admin_panel.py
+msgid "Edited the logbook entry %(name)s"
+msgstr "Ha modificato la voce del diario %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Equipped or unequipped an item"
+msgstr "Ha equipaggiato o tolto un oggetto"
+
+#: apps/frontend/admin_panel.py
+msgid "Exported %(name)s to PDF"
+msgstr "Ha esportato %(name)s in PDF"
+
+#: apps/frontend/admin_panel.py
+msgid "Finished creating %(name)s"
+msgstr "Ha finito di creare %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Finished levelling up %(name)s"
+msgstr "Ha finito di far salire di livello %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Gave a name to a new account"
+msgstr "Ha dato un nome a un nuovo account"
+
+#: apps/frontend/admin_panel.py
+msgid "Levelled up %(name)s"
+msgstr "Ha fatto salire di livello %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Marked a death saving throw"
+msgstr "Ha segnato un tiro salvezza contro morte"
+
+#: apps/frontend/admin_panel.py
+msgid "Opened %(path)s"
+msgstr "Ha aperto %(path)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Opened a catalog item for %(name)s"
+msgstr "Ha aperto un oggetto del catalogo per %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Opened a custom item of %(name)s"
+msgstr "Ha aperto un oggetto personalizzato di %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Opened a picture of %(name)s"
+msgstr "Ha aperto un'immagine di %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Opened an item of %(name)s"
+msgstr "Ha aperto un oggetto di %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Opened the World"
+msgstr "Ha aperto il Mondo"
+
+#: apps/frontend/admin_panel.py
+msgid "Opened the account page"
+msgstr "Ha aperto la pagina account"
+
+#: apps/frontend/admin_panel.py
+msgid "Opened the activity log"
+msgstr "Ha aperto il registro attività"
+
+#: apps/frontend/admin_panel.py
+msgid "Opened the admin panel"
+msgstr "Ha aperto il pannello di amministrazione"
+
+#: apps/frontend/admin_panel.py
+msgid "Opened the gallery of %(name)s"
+msgstr "Ha aperto la galleria di %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Opened the home page"
+msgstr "Ha aperto la pagina iniziale"
+
+#: apps/frontend/admin_panel.py
+msgid "Opened the logbook"
+msgstr "Ha aperto il diario"
+
+#: apps/frontend/admin_panel.py
+msgid "Opened the sheet of %(name)s"
+msgstr "Ha aperto la scheda di %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Played %(name)s"
+msgstr "Ha giocato %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Prepared or unprepared a spell"
+msgstr "Ha preparato o tolto la preparazione di un incantesimo"
+
+#: apps/frontend/admin_panel.py
+msgid "Previewed a logbook entry"
+msgstr "Ha visto l'anteprima di una voce del diario"
+
+#: apps/frontend/admin_panel.py
+msgid "Read about a creation choice"
+msgstr "Ha letto di una scelta della creazione"
+
+#: apps/frontend/admin_panel.py
+msgid "Read the background %(name)s"
+msgstr "Ha letto il background %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Read the class %(name)s"
+msgstr "Ha letto la classe %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Read the class feature %(name)s"
+msgstr "Ha letto il privilegio di classe %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Read the feat %(name)s"
+msgstr "Ha letto il talento %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Read the handbook section %(name)s"
+msgstr "Ha letto la sezione del manuale %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Read the item %(name)s"
+msgstr "Ha letto l'oggetto %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Read the option %(name)s"
+msgstr "Ha letto l'opzione %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Read the rule %(name)s"
+msgstr "Ha letto la regola %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Read the species %(name)s"
+msgstr "Ha letto la specie %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Read the spell %(name)s"
+msgstr "Ha letto l'incantesimo %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Reassigned %(name)s to a user"
+msgstr "Ha assegnato %(name)s a un utente"
+
+#: apps/frontend/admin_panel.py
+msgid "Removed a feature"
+msgstr "Ha rimosso un privilegio"
+
+#: apps/frontend/admin_panel.py
+msgid "Removed a spell"
+msgstr "Ha rimosso un incantesimo"
+
+#: apps/frontend/admin_panel.py
+msgid "Removed an item"
+msgstr "Ha rimosso un oggetto"
+
+#: apps/frontend/admin_panel.py
+msgid "Renamed the character"
+msgstr "Ha rinominato il personaggio"
+
+#: apps/frontend/admin_panel.py
+msgid "Reopened creation of %(name)s"
+msgstr "Ha riaperto la creazione di %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Set hit points"
+msgstr "Ha impostato i punti ferita"
+
+#: apps/frontend/admin_panel.py
+msgid "Set temporary hit points"
+msgstr "Ha impostato i punti ferita temporanei"
+
+#: apps/frontend/admin_panel.py
+msgid "Signed out"
+msgstr "Si è disconnesso"
+
+#: apps/frontend/admin_panel.py
+msgid "Sold an item"
+msgstr "Ha venduto un oggetto"
+
+#: apps/frontend/admin_panel.py
+msgid "Spent or regained Hit Dice"
+msgstr "Ha speso o recuperato Dadi Vita"
+
+#: apps/frontend/admin_panel.py
+msgid "Started creating a character"
+msgstr "Ha iniziato a creare un personaggio"
+
+#: apps/frontend/admin_panel.py
+msgid "Today"
+msgstr "Oggi"
+
+#: apps/frontend/admin_panel.py
+msgid "Toggled Inspiration"
+msgstr "Ha attivato o disattivato l'Ispirazione"
+
+#: apps/frontend/admin_panel.py
+msgid "Took a long rest"
+msgstr "Ha fatto un riposo lungo"
+
+#: apps/frontend/admin_panel.py
+msgid "Took a short rest"
+msgstr "Ha fatto un riposo breve"
+
+#: apps/frontend/admin_panel.py
+msgid "Used a class resource"
+msgstr "Ha usato una risorsa di classe"
+
+#: apps/frontend/admin_panel.py
+msgid "Worked on creating %(name)s"
+msgstr "Ha lavorato alla creazione di %(name)s"
+
+#: apps/frontend/admin_panel.py
+msgid "Wrote a new logbook entry"
+msgstr "Ha scritto una nuova voce del diario"
+
+#: apps/frontend/admin_panel.py
+msgid "Yesterday"
+msgstr "Ieri"
+
+#: apps/frontend/admin_panel.py
+msgid "failed (%(status)s)"
+msgstr "non riuscito (%(status)s)"
+
+#: apps/frontend/admin_panel.py
+msgid "no longer exists"
+msgstr "non esiste più"
+
+#: apps/frontend/admin_panel.py
+msgid "searched for “%(text)s”"
+msgstr "ha cercato “%(text)s”"
+
+#: apps/frontend/admin_panel.py
+msgid "Newest first. A gold bar marks something changed; tap a row to open the page concerned."
+msgstr "Dal più recente. Una barra dorata indica una modifica; tocca una riga per aprire la pagina interessata."

@@ -35,6 +35,7 @@ def panel_activity(request):
     page = Paginator(admin_panel.interactions(selected), PAGE_SIZE).get_page(
         request.GET.get("page")
     )
+    days = admin_panel.by_day(admin_panel.describe(page))
     response = render(
         request,
         "frontend/admin/activity.html",
@@ -42,6 +43,7 @@ def panel_activity(request):
             "page_title": _("Activity"),
             "back_url": reverse("admin-panel"),
             "page": page,
+            "days": days,
             "selected": selected,
             "anonymous": admin_panel.ANONYMOUS,
             "visitors": admin_panel.visitors(),

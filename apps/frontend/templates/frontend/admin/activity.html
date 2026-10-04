@@ -2,21 +2,35 @@
 {% load i18n %}
 
 {% block extra_style %}
-  .activity { max-width: 48rem; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 0.8rem; }
+  /* The page itself never scrolls (see `html, body` in base.html): the filter stays put and only
+     the feed below it scrolls. */
+  .activity { flex: 1; min-height: 0; max-width: 48rem; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 0.8rem; }
   .activity select {
     appearance: none; width: 100%; padding: 0.6rem 0.8rem; font: inherit; color: var(--text);
     background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem;
   }
-  .activity ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; }
-  .activity li {
-    padding: 0.55rem 0.75rem; background: var(--surface); border: 1px solid var(--border);
-    border-radius: 0.6rem; font-size: 0.85rem; overflow-wrap: anywhere;
+  .feed { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 0.4rem; }
+  .feed h2 {
+    position: sticky; top: 0; z-index: 1; margin: 0.4rem 0 0; padding: 0.3rem 0.2rem; background: var(--bg);
+    font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted);
   }
-  .activity .when, .activity .meta { color: var(--muted); font-size: 0.78rem; }
-  .activity .who { font-weight: 600; }
-  .activity .bad { color: var(--accent); }
-  .activity .pager { display: flex; justify-content: space-between; font-size: 0.9rem; }
-  .activity .pager a { color: var(--accent); }
+  .feed .list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+  .feed .row {
+    display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.75rem; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 0.6rem; color: var(--text); text-decoration: none;
+    border-left: 4px solid var(--border);
+  }
+  .feed .row.change { border-left-color: var(--accent); }
+  .feed .row .body { flex: 1; min-width: 0; }
+  .feed .row .text { font-size: 0.92rem; font-weight: 600; overflow-wrap: anywhere; }
+  .feed .row .meta { margin-top: 0.15rem; font-size: 0.78rem; color: var(--muted); overflow-wrap: anywhere; }
+  .feed .row .go { color: var(--muted); font-size: 1.2rem; }
+  .feed .row.failed .text { color: var(--accent); }
+  .feed .tag { border: 1px solid var(--border); border-radius: 999px; padding: 0 0.45rem; font-size: 0.7rem; }
+  .feed .pager { display: flex; justify-content: space-between; font-size: 0.9rem; padding: 0.4rem 0 0.8rem; }
+  .feed .pager a { color: var(--accent); }
+  .feed .empty { color: var(--muted); text-align: center; padding: 1rem; }
+  .legend { margin: 0; font-size: 0.78rem; color: var(--muted); }
 {% endblock %}
 
 {% block content %}
@@ -33,27 +47,40 @@
       </select>
       <noscript><button type="submit">{% translate "Filter" %}</button></noscript>
     </form>
+    <p class="legend">{% translate "Newest first. A gold bar marks something changed; tap a row to open the page concerned." %}</p>
 
-    <ul>
-      {% for row in page %}
-        <li>
-          <div><span class="who">{% if row.username %}{{ row.username }}{% else %}{% translate "Not signed in" %}{% endif %}</span>
-            · {% if row.kind == "action" %}{% translate "changed" %}{% else %}{% translate "opened" %}{% endif %}
-            <code>{{ row.path }}</code>{% if row.action %} <em>({{ row.action }})</em>{% endif %}{% if row.query %} “{{ row.query }}”{% endif %}</div>
-          <div class="when">{{ row.created_at|date:"Y-m-d H:i:s" }}
-            · <span{% if row.status >= 400 %} class="bad"{% endif %}>{{ row.method }} {{ row.status }}</span></div>
-        </li>
+    <div class="feed">
+      {% for day in days %}
+        <h2>{% if day.label %}{{ day.label }} · {% endif %}{{ day.date|date:"l j F Y" }}</h2>
+        <div class="list">
+          {% for e in day.entries %}
+            {% with row=e.row %}
+              {% if e.url %}<a class="row{% if row.kind == 'action' %} change{% endif %}{% if row.status >= 400 %} failed{% endif %}" href="{{ e.url }}">{% else %}<div class="row{% if row.kind == 'action' %} change{% endif %}{% if row.status >= 400 %} failed{% endif %}">{% endif %}
+                <div class="body">
+                  <div class="text">{{ e.text }}</div>
+                  {% if e.detail %}<div class="meta">{{ e.detail }}</div>{% endif %}
+                  <div class="meta">
+                    {{ row.created_at|date:"H:i:s" }} ·
+                    {% if row.username %}{{ row.username }}{% else %}{% translate "Not signed in" %}{% endif %}
+                    {% if e.section_label %}· <span class="tag">{{ e.section_label }}</span>{% endif %}
+                  </div>
+                </div>
+                {% if e.url %}<span class="go" aria-hidden="true">›</span>{% endif %}
+              {% if e.url %}</a>{% else %}</div>{% endif %}
+            {% endwith %}
+          {% endfor %}
+        </div>
       {% empty %}
-        <li>{% translate "Nothing recorded yet." %}</li>
+        <p class="empty">{% translate "Nothing recorded yet." %}</p>
       {% endfor %}
-    </ul>
 
-    {% if page.has_other_pages %}
-      <div class="pager">
-        {% if page.has_previous %}<a href="?user={{ selected|urlencode }}&page={{ page.previous_page_number }}">&larr; {% translate "Newer" %}</a>{% else %}<span></span>{% endif %}
-        <span class="meta">{{ page.number }} / {{ page.paginator.num_pages }}</span>
-        {% if page.has_next %}<a href="?user={{ selected|urlencode }}&page={{ page.next_page_number }}">{% translate "Older" %} &rarr;</a>{% else %}<span></span>{% endif %}
-      </div>
-    {% endif %}
+      {% if page.has_other_pages %}
+        <div class="pager">
+          {% if page.has_previous %}<a href="?user={{ selected|urlencode }}&page={{ page.previous_page_number }}">&larr; {% translate "Newer" %}</a>{% else %}<span></span>{% endif %}
+          <span class="legend">{{ page.number }} / {{ page.paginator.num_pages }}</span>
+          {% if page.has_next %}<a href="?user={{ selected|urlencode }}&page={{ page.next_page_number }}">{% translate "Older" %} &rarr;</a>{% else %}<span></span>{% endif %}
+        </div>
+      {% endif %}
+    </div>
   </div>
 {% endblock %}

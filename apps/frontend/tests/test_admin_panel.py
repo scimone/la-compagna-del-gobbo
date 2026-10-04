@@ -71,3 +71,57 @@ def test_only_an_admin_can_assign_a_character(client, users):
     assert response.status_code == 302
     hero.refresh_from_db()
     assert hero.owner == alice
+
+
+def test_activity_reads_as_sentences_with_links_to_the_page_concerned(client, users):
+    boss, alice = users
+    hero = _character(alice)
+    Interaction.objects.create(
+        username="alice",
+        user=alice,
+        kind="view",
+        route="character-detail",
+        path=f"/characters/{hero.pk}/",
+        object_id=str(hero.pk),
+        method="GET",
+        status=200,
+    )
+    Interaction.objects.create(
+        username="alice",
+        user=alice,
+        kind="action",
+        route="character-act",
+        action="hp_delta",
+        path=f"/characters/{hero.pk}/act/",
+        object_id=str(hero.pk),
+        method="POST",
+        status=200,
+    )
+    Interaction.objects.create(
+        username="alice",
+        user=alice,
+        kind="view",
+        route="character-detail",
+        path="/characters/99999/",
+        object_id="99999",
+        method="GET",
+        status=404,
+    )
+    client.force_login(boss)
+    html = client.get("/admin-panel/activity/").content.decode()
+    assert "Opened the sheet of Hero" in html and "Played Hero" in html
+    assert "Changed hit points" in html
+    assert html.count(f'href="/characters/{hero.pk}/"') == 2  # the view, and the change's target
+    assert "/act/" not in html.replace("/admin-panel/activity/", "")  # never links to a POST url
+    assert "#99999" in html and "no longer exists" in html
+
+
+def test_activity_is_newest_first(client, users):
+    boss, _ = users
+    for n in ("first", "second"):
+        Interaction.objects.create(
+            username="x", kind="view", path=f"/{n}/", method="GET", status=200
+        )
+    client.force_login(boss)
+    html = client.get("/admin-panel/activity/").content.decode()
+    assert html.index("/second/") < html.index("/first/")
