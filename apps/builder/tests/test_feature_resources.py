@@ -69,3 +69,11 @@ def test_circle_of_the_land_asks_for_a_new_land_after_a_long_rest(owner):
     assert land.land_options(character) is None
     with pytest.raises(ValueError):
         land.change_land(character, "Arid Land")
+
+
+def test_a_species_trait_that_starts_at_level_5_gets_its_resource_then(owner):
+    character = build_character(owner, "fighter", "soldier", "dragonborn")
+    assert not character.resources.filter(name="Draconic Flight").exists()
+    character.classes.update(level=5)
+    feature_resources.refresh(character)
+    assert character.resources.filter(name="Draconic Flight").exists()

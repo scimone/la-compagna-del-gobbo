@@ -35,6 +35,9 @@ class FeatureResource:
     feature: str  # `Feature.name_en` (a "(...)" suffix, as on a lineage, is ignored)
     maximum: tuple
     reset: str = _LONG
+    #: Character level the trait starts at, where it is not level 1 ("When you reach character
+    #: level 5"): species traits are all granted at creation, so their resource waits for this.
+    min_level: int = 1
 
 
 FEATURE_RESOURCES: tuple[FeatureResource, ...] = (
@@ -42,11 +45,11 @@ FEATURE_RESOURCES: tuple[FeatureResource, ...] = (
     FeatureResource("species", "orc", "Adrenaline Rush", _PB, _SHORT),
     FeatureResource("species", "orc", "Relentless Endurance", _ONE),
     FeatureResource("species", "dragonborn", "Breath Weapon", _PB),
-    FeatureResource("species", "dragonborn", "Draconic Flight", _ONE),
+    FeatureResource("species", "dragonborn", "Draconic Flight", _ONE, min_level=5),
     FeatureResource("species", "aasimar", "Healing Hands", _ONE),
-    FeatureResource("species", "aasimar", "Celestial Revelation", _ONE),
+    FeatureResource("species", "aasimar", "Celestial Revelation", _ONE, min_level=3),
     FeatureResource("species", "goliath", "Giant Ancestry", _PB),
-    FeatureResource("species", "goliath", "Large Form", _ONE),
+    FeatureResource("species", "goliath", "Large Form", _ONE, min_level=5),
     FeatureResource("species", "dwarf", "Stonecunning", _PB),
     # feats
     FeatureResource("feat", "lucky", "Luck Points", _PB),
@@ -170,7 +173,7 @@ def refresh(character: Character) -> None:
     subclass_names = {row.klass_id: row.subclass.name_en for row in classes if row.subclass}
     existing = {r.name: r for r in CharacterResource.objects.filter(character=character)}
     for row in FEATURE_RESOURCES:
-        if not _has(character, row, subclass_names):
+        if total < row.min_level or not _has(character, row, subclass_names):
             continue
         maximum = _maximum(character, row, levels, total)
         if maximum <= 0:
