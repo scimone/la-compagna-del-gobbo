@@ -126,16 +126,16 @@
   {% if strip.conditions.any or can_edit %}
   <div class="st-card st-wide st-conds">
     <span class="k">{% translate "Conditions" %}</span>
-    {% if strip.conditions.exhaustion %}
+    {% for c in strip.conditions.extra %}
       <details class="cond">
-        <summary>{{ strip.conditions.exhaustion_name }} {{ strip.conditions.exhaustion }}</summary>
-        <ul>{% for line in strip.conditions.exhaustion_rules %}<li>{{ line }}</li>{% endfor %}</ul>
+        <summary>{{ c.name }}{% if c.level %} {{ c.level }}{% else %} <small>({% translate "automatic" %})</small>{% endif %}</summary>
+        <div class="cond-text">{{ c.text }}</div>
       </details>
-    {% endif %}
+    {% endfor %}
     {% for c in strip.conditions.active %}
       <details class="cond">
-        <summary>{{ c.name }}{% if not c.stored %} <small>({% translate "applied" %})</small>{% endif %}</summary>
-        <ul>{% for line in c.rules %}<li>{{ line }}</li>{% endfor %}</ul>
+        <summary>{{ c.name }}{% if c.applied %} <small>({% translate "applied" %})</small>{% endif %}</summary>
+        <div class="cond-text">{{ c.text }}</div>
       </details>
     {% endfor %}
     {% if strip.conditions.summary %}
@@ -147,8 +147,10 @@
       <div class="cond-edit">
         <div class="cs-chips">
           {% for c in strip.conditions.rows %}
-            <button type="button" class="chip{% if c.stored %} on{% endif %}" data-act="condition" data-id="{{ c.id }}"
-                    data-value="{% if c.stored %}0{% else %}1{% endif %}" aria-pressed="{% if c.stored %}true{% else %}false{% endif %}">{{ c.name }}</button>
+            {# Selected while in effect, the ones another condition applies included; one that is only #}
+            {# applied cannot be switched off while what applies it is on. #}
+            <button type="button" class="chip{% if c.on %} on{% endif %}" data-act="condition" data-id="{{ c.id }}"
+                    data-value="{% if c.stored %}0{% else %}1{% endif %}" aria-pressed="{% if c.on %}true{% else %}false{% endif %}"{% if c.on and not c.stored %} disabled{% endif %}>{{ c.name }}</button>
           {% endfor %}
         </div>
         <div class="cs-res-row">

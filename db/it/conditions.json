@@ -1,0 +1,552 @@
+{
+ "blinded": {
+  "_self": [
+   "entries",
+   "name"
+  ],
+  "entries": [
+   "Finché il personaggio ha la condizione Accecato, subisce i seguenti effetti.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Il personaggio non può vedere e fallisce automaticamente qualsiasi prova di caratteristica che richieda la vista."
+      ],
+      "name": "Non può vedere"
+     },
+     {
+      "entries": [
+       "I tiri per colpire contro il personaggio hanno {@variantrule Advantage|XPHB|vantaggio}, mentre i suoi tiri per colpire hanno {@variantrule Disadvantage|XPHB|svantaggio}."
+      ],
+      "name": "Attacchi influenzati"
+     }
+    ]
+   }
+  ],
+  "name": "Accecato"
+ },
+ "bloodied": {
+  "_self": [
+   "entries",
+   "name"
+  ],
+  "entries": [
+   "Una creatura è Sanguinante finché le restano la metà dei suoi {@variantrule Hit Points|XPHB|punti ferita} o meno."
+  ],
+  "name": "Sanguinante"
+ },
+ "charmed": {
+  "_self": [
+   "entries",
+   "name"
+  ],
+  "entries": [
+   "Finché il personaggio ha la condizione Affascinato, subisce i seguenti effetti.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Il personaggio non può attaccare chi lo ha affascinato né prenderlo come bersaglio di capacità dannose o di {@variantrule Magical Effect|XPHB|effetti magici}."
+      ],
+      "name": "Non può nuocere a chi lo ha affascinato"
+     },
+     {
+      "entries": [
+       "Chi ha affascinato il personaggio ha {@variantrule Advantage|XPHB|vantaggio} a qualsiasi prova di caratteristica per interagire socialmente con lui."
+      ],
+      "name": "Vantaggio sociale"
+     }
+    ]
+   }
+  ],
+  "name": "Affascinato"
+ },
+ "concentration": {
+  "_self": [
+   "entries",
+   "name"
+  ],
+  "entries": [
+   "Alcuni incantesimi e altri effetti richiedono Concentrazione per rimanere attivi, come specificato nelle loro descrizioni. Se chi ha generato l’effetto perde la Concentrazione, l’effetto termina. Se l’effetto ha una durata massima, la sua descrizione specifica per quanto tempo chi lo ha generato può concentrarsi: fino a 1 minuto, 1 ora o un’altra durata. Chi ha generato l’effetto può terminare la Concentrazione in qualsiasi momento (senza bisogno di alcuna azione). I fattori seguenti interrompono la Concentrazione.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Il personaggio perde la Concentrazione su un effetto nel momento in cui inizia a lanciare un incantesimo che richiede Concentrazione o attiva un altro effetto che richiede Concentrazione."
+      ],
+      "name": "Un altro effetto che richiede Concentrazione"
+     },
+     {
+      "entries": [
+       "Se subisce danni, il personaggio deve superare un {@variantrule Saving Throw|XPHB|tiro salvezza} su Costituzione per mantenere la Concentrazione. La CD è pari a 10 o alla metà dei danni subiti (per difetto), a seconda di quale sia il valore più alto, fino a una CD massima di 30."
+      ],
+      "name": "Danni"
+     },
+     {
+      "entries": [
+       "La Concentrazione del personaggio termina se ha la condizione {@condition Incapacitated|XPHB|incapacitato} o se muore."
+      ],
+      "name": "Incapacitato o morto"
+     }
+    ]
+   }
+  ],
+  "name": "Concentrazione"
+ },
+ "deafened": {
+  "_self": [
+   "entries",
+   "name"
+  ],
+  "entries": [
+   "Finché il personaggio ha la condizione Assordato, subisce il seguente effetto.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Il personaggio non può sentire e fallisce automaticamente qualsiasi prova di caratteristica che richieda l’udito."
+      ],
+      "name": "Non può sentire"
+     }
+    ]
+   }
+  ],
+  "name": "Assordato"
+ },
+ "exhaustion": {
+  "_self": [
+   "entries",
+   "name"
+  ],
+  "entries": [
+   "Finché il personaggio ha la condizione Indebolimento, subisce i seguenti effetti.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Questa condizione è cumulativa. Ogni volta che il personaggio la riceve, ottiene 1 livello di Indebolimento. Muore se il suo livello di Indebolimento è 6."
+      ],
+      "name": "Livelli di Indebolimento"
+     },
+     {
+      "entries": [
+       "Quando il personaggio effettua un Tiro d20, il tiro è ridotto di 2 volte il suo livello di Indebolimento."
+      ],
+      "name": "Tiri d20 influenzati"
+     },
+     {
+      "entries": [
+       "La {@variantrule Speed|XPHB|velocità} del personaggio è ridotta di un numero di piedi pari a 5 volte il suo livello di Indebolimento (1,5 metri per livello)."
+      ],
+      "name": "Velocità ridotta"
+     },
+     {
+      "entries": [
+       "Completare un {@variantrule Long Rest|XPHB|riposo lungo} rimuove 1 livello di Indebolimento. Quando il livello di Indebolimento raggiunge 0, la condizione termina."
+      ],
+      "name": "Rimuovere i livelli di Indebolimento"
+     }
+    ]
+   }
+  ],
+  "name": "Indebolimento"
+ },
+ "frightened": {
+  "_self": [
+   "entries",
+   "name"
+  ],
+  "entries": [
+   "Finché il personaggio ha la condizione Spaventato, subisce i seguenti effetti.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Il personaggio ha {@variantrule Disadvantage|XPHB|svantaggio} alle prove di caratteristica e ai tiri per colpire finché la fonte della paura è in linea di vista."
+      ],
+      "name": "Prove di caratteristica e attacchi influenzati"
+     },
+     {
+      "entries": [
+       "Il personaggio non può avvicinarsi volontariamente alla fonte della paura."
+      ],
+      "name": "Non può avvicinarsi"
+     }
+    ]
+   }
+  ],
+  "name": "Spaventato"
+ },
+ "grappled": {
+  "_self": [
+   "entries",
+   "name"
+  ],
+  "entries": [
+   "Finché il personaggio ha la condizione Afferrato, subisce i seguenti effetti.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "La {@variantrule Speed|XPHB|velocità} del personaggio è 0 e non può aumentare."
+      ],
+      "name": "Velocità 0"
+     },
+     {
+      "entries": [
+       "Il personaggio ha {@variantrule Disadvantage|XPHB|svantaggio} ai tiri per colpire contro qualsiasi bersaglio diverso da chi lo sta afferrando."
+      ],
+      "name": "Attacchi influenzati"
+     },
+     {
+      "entries": [
+       "Chi afferra può trascinare o trasportare il personaggio quando si muove, ma ogni 30 cm di movimento gli costano 30 cm in più, a meno che il personaggio sia Minuscolo o di due o più categorie di taglia più piccolo."
+      ],
+      "name": "Trascinabile"
+     }
+    ]
+   }
+  ],
+  "name": "Afferrato"
+ },
+ "incapacitated": {
+  "_self": [
+   "entries",
+   "name"
+  ],
+  "entries": [
+   "Finché il personaggio ha la condizione Incapacitato, subisce i seguenti effetti.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Il personaggio non può compiere alcuna {@variantrule Action|XPHB|azione}, {@variantrule Bonus Action|XPHB|azione bonus} o {@variantrule Reaction|XPHB|reazione}."
+      ],
+      "name": "Inattivo"
+     },
+     {
+      "entries": [
+       "La sua {@status Concentration|XPHB|concentrazione} si interrompe."
+      ],
+      "name": "Niente concentrazione"
+     },
+     {
+      "entries": [
+       "Non può parlare."
+      ],
+      "name": "Senza parola"
+     },
+     {
+      "entries": [
+       "Se è incapacitato quando tira l’{@variantrule Initiative|XPHB|iniziativa}, ha {@variantrule Disadvantage|XPHB|svantaggio} al tiro."
+      ],
+      "name": "Sorpreso"
+     }
+    ]
+   }
+  ],
+  "name": "Incapacitato"
+ },
+ "invisible": {
+  "_self": [
+   "entries",
+   "name"
+  ],
+  "entries": [
+   "Finché il personaggio ha la condizione Invisibile, subisce i seguenti effetti.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Se è invisibile quando tira l’{@variantrule Initiative|XPHB|iniziativa}, ha {@variantrule Advantage|XPHB|vantaggio} al tiro."
+      ],
+      "name": "Sorpresa"
+     },
+     {
+      "entries": [
+       "Il personaggio non è influenzato da alcun effetto che richieda di vedere il bersaglio, a meno che chi lo genera possa in qualche modo vederlo. Anche l’equipaggiamento che indossa o trasporta è nascosto."
+      ],
+      "name": "Nascosto"
+     },
+     {
+      "entries": [
+       "I tiri per colpire contro il personaggio hanno {@variantrule Disadvantage|XPHB|svantaggio}, mentre i suoi tiri per colpire hanno {@variantrule Advantage|XPHB|vantaggio}. Se una creatura può in qualche modo vederlo, il personaggio non ottiene questo beneficio contro di essa."
+      ],
+      "name": "Attacchi influenzati"
+     }
+    ]
+   }
+  ],
+  "name": "Invisibile"
+ },
+ "paralyzed": {
+  "_self": [
+   "entries",
+   "name"
+  ],
+  "entries": [
+   "Finché il personaggio ha la condizione Paralizzato, subisce i seguenti effetti.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Il personaggio ha la condizione {@condition Incapacitated|XPHB|incapacitato}."
+      ],
+      "name": "Incapacitato"
+     },
+     {
+      "entries": [
+       "La {@variantrule Speed|XPHB|velocità} del personaggio è 0 e non può aumentare."
+      ],
+      "name": "Velocità 0"
+     },
+     {
+      "entries": [
+       "Il personaggio fallisce automaticamente i {@variantrule Saving Throw|XPHB|tiri salvezza} su Forza e Destrezza."
+      ],
+      "name": "Tiri salvezza influenzati"
+     },
+     {
+      "entries": [
+       "I tiri per colpire contro il personaggio hanno {@variantrule Advantage|XPHB|vantaggio}."
+      ],
+      "name": "Attacchi influenzati"
+     },
+     {
+      "entries": [
+       "Qualsiasi tiro per colpire che lo colpisca è un {@variantrule Critical Hit|XPHB|colpo critico} se l’attaccante si trova entro 1,5 metri dal personaggio."
+      ],
+      "name": "Colpi critici automatici"
+     }
+    ]
+   }
+  ],
+  "name": "Paralizzato"
+ },
+ "petrified": {
+  "_self": [
+   "entries",
+   "name"
+  ],
+  "entries": [
+   "Finché il personaggio ha la condizione Pietrificato, subisce i seguenti effetti.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Il personaggio viene trasformato, insieme a qualsiasi oggetto non magico che indossa e trasporta, in una sostanza solida e inanimata (di solito pietra). Il suo peso aumenta di dieci volte e smette di invecchiare."
+      ],
+      "name": "Trasformato in sostanza inanimata"
+     },
+     {
+      "entries": [
+       "Il personaggio ha la condizione {@condition Incapacitated|XPHB|incapacitato}."
+      ],
+      "name": "Incapacitato"
+     },
+     {
+      "entries": [
+       "La {@variantrule Speed|XPHB|velocità} del personaggio è 0 e non può aumentare."
+      ],
+      "name": "Velocità 0"
+     },
+     {
+      "entries": [
+       "I tiri per colpire contro il personaggio hanno {@variantrule Advantage|XPHB|vantaggio}."
+      ],
+      "name": "Attacchi influenzati"
+     },
+     {
+      "entries": [
+       "Il personaggio fallisce automaticamente i {@variantrule Saving Throw|XPHB|tiri salvezza} su Forza e Destrezza."
+      ],
+      "name": "Tiri salvezza influenzati"
+     },
+     {
+      "entries": [
+       "Il personaggio ha {@variantrule Resistance|XPHB|resistenza} a tutti i danni."
+      ],
+      "name": "Resistenza ai danni"
+     },
+     {
+      "entries": [
+       "Il personaggio ha {@variantrule Immunity|XPHB|immunità} alla condizione {@condition Poisoned|XPHB|avvelenato}."
+      ],
+      "name": "Immunità al veleno"
+     }
+    ]
+   }
+  ],
+  "name": "Pietrificato"
+ },
+ "poisoned": {
+  "_self": [
+   "entries",
+   "name"
+  ],
+  "entries": [
+   "Finché il personaggio ha la condizione Avvelenato, subisce il seguente effetto.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Il personaggio ha {@variantrule Disadvantage|XPHB|svantaggio} ai tiri per colpire e alle prove di caratteristica."
+      ],
+      "name": "Prove di caratteristica e attacchi influenzati"
+     }
+    ]
+   }
+  ],
+  "name": "Avvelenato"
+ },
+ "prone": {
+  "_self": [
+   "entries",
+   "name"
+  ],
+  "entries": [
+   "Finché il personaggio ha la condizione Prono, subisce i seguenti effetti.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Le uniche opzioni di movimento del personaggio sono {@variantrule Crawling|XPHB|strisciare} oppure spendere una quantità di movimento pari alla metà della sua {@variantrule Speed|XPHB|velocità} (per difetto) per rialzarsi e porre fine alla condizione. Se la sua {@variantrule Speed|XPHB|velocità} è 0, non può rialzarsi."
+      ],
+      "name": "Movimento limitato"
+     },
+     {
+      "entries": [
+       "Il personaggio ha {@variantrule Disadvantage|XPHB|svantaggio} ai tiri per colpire. Un tiro per colpire contro il personaggio ha {@variantrule Advantage|XPHB|vantaggio} se l’attaccante si trova entro 1,5 metri da lui; altrimenti ha {@variantrule Disadvantage|XPHB|svantaggio}."
+      ],
+      "name": "Attacchi influenzati"
+     }
+    ]
+   }
+  ],
+  "name": "Prono"
+ },
+ "restrained": {
+  "_self": [
+   "entries",
+   "name"
+  ],
+  "entries": [
+   "Finché il personaggio ha la condizione Trattenuto, subisce i seguenti effetti.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "La {@variantrule Speed|XPHB|velocità} del personaggio è 0 e non può aumentare."
+      ],
+      "name": "Velocità 0"
+     },
+     {
+      "entries": [
+       "I tiri per colpire contro il personaggio hanno {@variantrule Advantage|XPHB|vantaggio}, mentre i suoi tiri per colpire hanno {@variantrule Disadvantage|XPHB|svantaggio}."
+      ],
+      "name": "Attacchi influenzati"
+     },
+     {
+      "entries": [
+       "Il personaggio ha {@variantrule Disadvantage|XPHB|svantaggio} ai {@variantrule Saving Throw|XPHB|tiri salvezza} su Destrezza."
+      ],
+      "name": "Tiri salvezza influenzati"
+     }
+    ]
+   }
+  ],
+  "name": "Trattenuto"
+ },
+ "stunned": {
+  "_self": [
+   "entries",
+   "name"
+  ],
+  "entries": [
+   "Finché il personaggio ha la condizione Stordito, subisce i seguenti effetti.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Il personaggio ha la condizione {@condition Incapacitated|XPHB|incapacitato}."
+      ],
+      "name": "Incapacitato"
+     },
+     {
+      "entries": [
+       "Il personaggio fallisce automaticamente i {@variantrule Saving Throw|XPHB|tiri salvezza} su Forza e Destrezza."
+      ],
+      "name": "Tiri salvezza influenzati"
+     },
+     {
+      "entries": [
+       "I tiri per colpire contro il personaggio hanno {@variantrule Advantage|XPHB|vantaggio}."
+      ],
+      "name": "Attacchi influenzati"
+     }
+    ]
+   }
+  ],
+  "name": "Stordito"
+ },
+ "surprised": {
+  "_self": [
+   "entries",
+   "name"
+  ],
+  "entries": [
+   "Se una creatura viene colta di sorpresa all’inizio del combattimento, è sorpresa e ha quindi {@variantrule Disadvantage|XPHB|svantaggio} al tiro di {@variantrule Initiative|XPHB|iniziativa}."
+  ],
+  "name": "Sorpreso"
+ },
+ "unconscious": {
+  "_self": [
+   "entries",
+   "name"
+  ],
+  "entries": [
+   "Finché il personaggio ha la condizione Privo di sensi, subisce i seguenti effetti.",
+   {
+    "entries": [
+     {
+      "entries": [
+       "Il personaggio ha le condizioni {@condition Incapacitated|XPHB|incapacitato} e {@condition Prone|XPHB|prono} e lascia cadere ciò che sta tenendo. Quando questa condizione termina, resta {@condition Prone|XPHB|prono}."
+      ],
+      "name": "Inerte"
+     },
+     {
+      "entries": [
+       "La {@variantrule Speed|XPHB|velocità} del personaggio è 0 e non può aumentare."
+      ],
+      "name": "Velocità 0"
+     },
+     {
+      "entries": [
+       "I tiri per colpire contro il personaggio hanno {@variantrule Advantage|XPHB|vantaggio}."
+      ],
+      "name": "Attacchi influenzati"
+     },
+     {
+      "entries": [
+       "Il personaggio fallisce automaticamente i {@variantrule Saving Throw|XPHB|tiri salvezza} su Forza e Destrezza."
+      ],
+      "name": "Tiri salvezza influenzati"
+     },
+     {
+      "entries": [
+       "Qualsiasi tiro per colpire che lo colpisca è un {@variantrule Critical Hit|XPHB|colpo critico} se l’attaccante si trova entro 1,5 metri dal personaggio."
+      ],
+      "name": "Colpi critici automatici"
+     },
+     {
+      "entries": [
+       "Il personaggio non è consapevole di ciò che lo circonda."
+      ],
+      "name": "Inconsapevole"
+     }
+    ]
+   }
+  ],
+  "name": "Privo di sensi"
+ }
+}

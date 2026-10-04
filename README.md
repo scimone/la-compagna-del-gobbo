@@ -151,6 +151,7 @@ kept on `db/handbook.json` copied verbatim from `db_old/`).
 | `Skill` | Defined | `db/skills.json` | `ability` is a FK to `Ability`, keyed by the source's own 3-letter short code (`str`/`dex`/.../`cha`) — see `docs/data_migration_2025.md` §3.1 |
 | `Ability` | Defined | `db/abilities.json` | 6 rows (Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma) - a first-party source now (was scraped from `db_old/handbook.json`'s "Ability Descriptions" table). `id` is the source's own short code (`str`, `dex`, ...), not a slugified name - every other domain references abilities by this same code. Referenced by `Skill.ability`, `Class.primary_abilities`/`saving_throw_abilities`/`spellcasting_ability`, `Spell.saving_throw_abilities` |
 | `Sense` | Defined | `db/senses.json` | |
+| `Condition` | Defined | `db/conditions.json` (`condition` + `status` lists) | 18 rows: the 15 conditions (`kind="condition"`) and Bloodied/Concentration/Surprised (`kind="status"`). Only the rules text is data; what each does to the numbers is `apps/characters/conditions.py` (keyed by the same ids, checked by `test_conditions.py`) |
 | `Mastery` | Defined | `db/masteries.json` | |
 | `EquipmentType` | Defined | `db/equipment-base.json` (`itemType`) | 23 rows. New - the old format had no such catalog, only a free-text `Equipment.category` string. `Equipment.type` FKs here now |
 | `EquipmentGroup` | Defined | `db/equipment.json` (`itemGroup`) | 6 rows. New - a named category of interchangeable items (e.g. "Arcane Focus"); `focus_classes` M2Ms to `Class` |
@@ -503,6 +504,7 @@ assets) and `otherVersions` (cross-references to non-XPHB printings — we only 
 | `Skill` | A skill (e.g. Athletics, Perception) |
 | `Ability` | One of the six core ability scores (Strength, Dexterity, ...) |
 | `Sense` | A special sense (e.g. Darkvision) |
+| `Condition` | A condition (Blinded, ...) or glossary status (Bloodied, ...) with its rules text |
 | `Proficiency` | A proficiency category (weapon/armor/tool/skill) granted by a `Class` or `Background` |
 | `Language` | A language (e.g. Common, Elvish) |
 | `Spell` | A spell definition |

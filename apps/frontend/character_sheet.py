@@ -42,7 +42,7 @@ from apps.frontend.character_views import (
     _step_url,
     _warning_text,
 )
-from apps.frontend.entries_render import machine_translated_badge
+from apps.frontend.entries_render import machine_translated_badge, render_entries
 from apps.frontend.views import (
     _CASTING_TIME_FILTER_LABELS,
     _SCHOOL_LABELS,
@@ -70,6 +70,9 @@ from apps.rules.models import (
     Skill,
     Species,
     Spell,
+)
+from apps.rules.models import (
+    Condition as RulesCondition,
 )
 from apps.rules.services import spell as spell_service
 
@@ -227,29 +230,40 @@ def _strip(character: Character, stats, items) -> dict:
 
 
 def _conditions(character: Character) -> dict:
-    """The Stats tab's Conditions card: every condition (on or off, for the toggles), the rules of
-    the ones in effect - including those another one applies and Unconscious at 0 hit points - and
-    what they add up to. The Exhaustion level has its own stepper."""
+    """The Stats tab's Conditions card: every condition (a pill each, selected while it is in
+    effect - the ones another condition applies included), the rules text of the ones in effect,
+    and what they add up to. The Exhaustion level has its own stepper. Bloodied is no choice: it
+    shows while half the hit points or fewer remain."""
     in_effect = conditions.active(character)
     stored = set(character.conditions)
-    rows = [
-        {
-            "id": c.id,
-            "name": c.name,
-            "stored": c.id in stored,
-            "on": c.id in in_effect,
-            "rules": c.rules,
+    texts = {c.pk: c for c in RulesCondition.objects.all()}
+
+    def row(condition_id: str, **extra) -> dict:
+        text = texts[condition_id]
+        return {
+            "id": condition_id,
+            "name": text.name,
+            "text": render_entries(text.entries),
+            **extra,
         }
+
+    rows = [
+        row(c.id, stored=c.id in stored, on=c.id in in_effect, applied=c.id not in stored)
         for c in conditions.CONDITIONS
     ]
+    extra = []
+    if character.exhaustion:
+        extra.append(row(conditions.EXHAUSTION_ID, level=character.exhaustion))
+    if conditions.bloodied(character):
+        extra.append(row("bloodied"))
     return {
         "rows": rows,
         "active": [r for r in rows if r["on"]],
+        "extra": extra,
         "exhaustion": character.exhaustion,
-        "exhaustion_name": conditions.EXHAUSTION_NAME,
-        "exhaustion_rules": conditions.EXHAUSTION_RULES,
+        "exhaustion_name": texts[conditions.EXHAUSTION_ID].name,
         "summary": conditions.summary(character),
-        "any": bool(in_effect or character.exhaustion),
+        "any": bool(in_effect or character.exhaustion or extra),
     }
 
 

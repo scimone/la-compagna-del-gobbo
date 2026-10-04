@@ -96,6 +96,7 @@ def adjust_hit_points(character: Character, delta: int) -> None:
     )
     if was_down and character.current_hit_points > 0:
         character.death_save_successes = character.death_save_failures = 0
+    _sync_unconscious(character, was_down)
     character.save()
 
 
@@ -135,6 +136,7 @@ def set_hit_points(character: Character, value: int) -> None:
     character.current_hit_points = _clamp(value, 0, character.hit_point_maximum)
     if was_down and character.current_hit_points > 0:
         character.death_save_successes = character.death_save_failures = 0
+    _sync_unconscious(character, was_down)
     character.save()
 
 
@@ -154,16 +156,36 @@ def toggle_death_save(character: Character, kind: str, index: int) -> None:
     character.save(update_fields=[field, "updated_at"])
 
 
+def _store_condition(character: Character, condition_id: str, on: bool) -> None:
+    """Change the stored list without saving. Putting a condition on also stores the ones that
+    outlast it ("When this condition ends, you remain Prone"), so that they are still there
+    when it is taken off."""
+    current = [c for c in character.conditions if c != condition_id]
+    if on:
+        current.append(condition_id)
+        for kept in conditions.BY_ID[condition_id].remains:
+            if kept not in current:
+                current.append(kept)
+    character.conditions = current
+
+
 def set_condition(character: Character, condition_id: str, on: bool) -> None:
     """Put a condition on the character or take it off (conditions don't stack: it is there or it
     isn't). Exhaustion has its own level, see `set_exhaustion()`."""
     if condition_id not in conditions.BY_ID:
         raise ValueError("unknown condition")
-    current = [c for c in character.conditions if c != condition_id]
-    if on:
-        current.append(condition_id)
-    character.conditions = current
+    _store_condition(character, condition_id, on)
     character.save(update_fields=["conditions"])
+
+
+def _sync_unconscious(character: Character, was_down: bool) -> None:
+    """The Handbook's "Falling Unconscious": at 0 hit points a character has the Unconscious
+    condition until it regains any hit points. (Prone stays - see `_store_condition()`.)"""
+    if character.current_hit_points < 1:
+        if conditions.UNCONSCIOUS not in character.conditions:
+            _store_condition(character, conditions.UNCONSCIOUS, True)
+    elif was_down and conditions.UNCONSCIOUS in character.conditions:
+        _store_condition(character, conditions.UNCONSCIOUS, False)
 
 
 def set_exhaustion(character: Character, level: int) -> None:

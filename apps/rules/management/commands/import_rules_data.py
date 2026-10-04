@@ -18,6 +18,7 @@ from apps.rules.models import (
     Class,
     ClassLevel,
     ClassStartingEquipmentOption,
+    Condition,
     Effect,
     Equipment,
     EquipmentGroup,
@@ -625,6 +626,7 @@ class Command(BaseCommand):
         self._import_ability()
         self._import_skills()
         self._import_senses()
+        self._import_conditions()
         self._import_masteries()
         self._import_languages()
         self._import_equipment_types()
@@ -678,6 +680,7 @@ class Command(BaseCommand):
             Rule,
             Skill,
             Sense,
+            Condition,
             Mastery,
             EquipmentProperty,
             EquipmentType,
@@ -743,6 +746,24 @@ class Command(BaseCommand):
         self._check_unique(Sense, rows)
         Sense.objects.bulk_create(rows)
         self.stdout.write(f"  Sense: {Sense.objects.count()}")
+
+    def _import_conditions(self):
+        data = _load("conditions.json")
+        rows = [
+            Condition(
+                id=_slug(it["name"]),
+                name=it["name"],
+                kind=kind,
+                page=it["page"],
+                srd=bool(it.get("srd52", False)),
+                entries=it.get("entries", []),
+            )
+            for kind in (Condition.KIND_CONDITION, Condition.KIND_STATUS)
+            for it in data[kind]
+        ]
+        self._check_unique(Condition, rows)
+        Condition.objects.bulk_create(rows)
+        self.stdout.write(f"  Condition: {Condition.objects.count()}")
 
     def _import_masteries(self):
         rows = [

@@ -15,6 +15,7 @@ from apps.rules.models import (
     Ability,
     Background,
     Class,
+    Condition,
     Equipment,
     EquipmentProperty,
     Feat,
@@ -75,6 +76,11 @@ class RuleTranslationOptions(TranslationOptions):
 
 @register(Skill)
 class SkillTranslationOptions(TranslationOptions):
+    fields = ("name", "entries")
+
+
+@register(Condition)
+class ConditionTranslationOptions(TranslationOptions):
     fields = ("name", "entries")
 
 

@@ -5,6 +5,7 @@ from .choice_definition import ChoiceDefinition
 from .class_ import Class
 from .class_level import ClassLevel
 from .class_starting_equipment_option import ClassStartingEquipmentOption
+from .condition import Condition
 from .effect import Effect
 from .equipment import Equipment
 from .equipment_group import EquipmentGroup
@@ -50,6 +51,7 @@ __all__ = [
     "OptionalFeature",
     "Proficiency",
     "Rule",
+    "Condition",
     "Sense",
     "Skill",
     "Species",
