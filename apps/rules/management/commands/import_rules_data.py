@@ -476,13 +476,15 @@ def _inline_header_class_features(node, class_feature_lookup: dict):
     page instead of just being duplicated onto it.
 
     A pointer to a `classFeature` with no `header` (a genuine standalone feature, e.g. Cleric's
-    Protector/Thaumaturge choice) is left alone - it keeps its own `Feature` row, created
-    separately by the caller, so inlining it here too would duplicate it.
+    Protector/Thaumaturge choice) is inlined too - it keeps its own `Feature` row, created
+    separately by the caller, so its text appears twice; leaving the pointer instead would
+    render nothing (the renderer has no case for a bare `refClassFeature`), cutting the parent
+    feature off right after "Choose one:".
     """
     if isinstance(node, dict):
         if node.get("type") == "refClassFeature" and "classFeature" in node:
             raw = class_feature_lookup.get(_parse_class_feature_ref(node["classFeature"]))
-            if raw is not None and raw.get("header"):
+            if raw is not None:
                 return {
                     "type": "entries",
                     "name": raw["name"],

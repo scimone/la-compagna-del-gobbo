@@ -183,3 +183,14 @@ def test_a_spell_option_is_not_matched_to_a_different_option(catalogs):
     for english, italian in zip(symbol.entries_en, symbol.entries_it or [], strict=False):
         if isinstance(english, str) and isinstance(italian, str) and "Incapacitated" in english:
             assert "spaventat" not in italian.lower() or "Constitution" not in english
+
+
+def test_a_standalone_classfeature_choice_is_inlined_not_dropped(catalogs):
+    # Cleric's Divine Order points at Protector/Thaumaturge via `refClassFeature` (neither has a
+    # `header`); a bare pointer renders nothing, which cut the feature off after "Choose one:".
+    order = Feature.objects.get(
+        class_level__klass__id="cleric", class_level__level=1, name_en="Divine Order"
+    )
+    html = render_entries(order.entries)
+    assert "<h3>Protector</h3>" in html
+    assert "<h3>Thaumaturge</h3>" in html
