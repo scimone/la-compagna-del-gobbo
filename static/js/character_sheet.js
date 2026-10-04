@@ -194,6 +194,10 @@
       restDialog.dataset.hp = state.hp;
       restDialog.dataset.maxHp = state.max_hp;
       restDialog.dataset.con = state.con_modifier;
+      Object.keys(state.hit_dice || {}).forEach(function (die) {
+        var pool = restDialog.querySelector('[data-rest-pool="' + die + '"]');
+        if (pool) pool.dataset.left = state.hit_dice[die].total - state.hit_dice[die].spent;
+      });
     }
     var restTile = root.querySelector('[data-rest="short"]');
     if (restTile) restTile.disabled = state.hp < 1;
@@ -671,6 +675,9 @@
   function shortRestReset(dialog) {
     dialog._rolls = [];
     dialog._hp = Number(dialog.dataset.hp);
+    dialog._anyDice = Array.prototype.some.call(dialog.querySelectorAll("[data-rest-pool]"), function (pool) {
+      return Number(pool.dataset.left) > 0;
+    });
     dialog.querySelector("[data-rest-log]").innerHTML = "";
     dialog.querySelector("[data-rest-roll]").value = "";
     dialog.querySelectorAll("[data-rest-pool]").forEach(function (pool) {
@@ -697,6 +704,8 @@
     }
     var full = dialog._hp >= Number(dialog.dataset.maxHp);
     dialog.querySelector("[data-rest-spender]").hidden = !any || full;
+    // With no Hit Dice to begin with, the dice are not mentioned at all.
+    dialog.querySelector("[data-rest-dice]").hidden = !dialog._anyDice;
     dialog.querySelector("[data-rest-none]").hidden = any;
     dialog.querySelector("[data-rest-hp]").textContent = dialog._hp;
   }

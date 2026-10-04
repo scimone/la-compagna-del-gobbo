@@ -3,7 +3,9 @@
 {% if can_edit %}
 <dialog class="cs-cast" id="cs-short-rest-dialog" data-hp="{{ strip.hp }}" data-max-hp="{{ strip.max_hp }}" data-con="{{ strip.con_modifier }}">
   <h3>{% translate "Short Rest" %}</h3>
-  <p class="cs-cast-ask">{% translate "One hour of light activity. You can spend Hit Dice to regain hit points: roll the die yourself, type the result here and your Constitution modifier is added." %}</p>
+  <p class="cs-cast-ask">{% translate "One hour of light activity." %}</p>
+  <div data-rest-dice>
+  <p class="cs-cast-ask">{% translate "You can spend Hit Dice to regain hit points: roll the die yourself, type the result here and your Constitution modifier is added." %}</p>
   <p class="cs-cast-note">{% translate "Hit points" %}: <b data-rest-hp>{{ strip.hp }}</b> / {{ strip.max_hp }} &middot; {% translate "Constitution modifier" %}: {{ strip.con_modifier|stringformat:"+d" }}</p>
   <div data-rest-spender>
     {% for hd in strip.hit_dice %}
@@ -21,6 +23,7 @@
   </div>
   <p class="cs-cast-note" data-rest-none hidden>{% translate "No Hit Dice left to spend." %}</p>
   <ul class="cs-cast-note" data-rest-log></ul>
+  </div>
   <p class="cs-cast-note">{% translate "Abilities that recharge on a short rest are restored: Pact Magic slots, and the resources that come back on one." %} {% translate "Cancelling counts as an interrupted rest: nothing is gained." %}</p>
   <div class="cs-cast-buttons">
     <button type="button" data-rest-cancel>{% translate "Cancel" %}</button>

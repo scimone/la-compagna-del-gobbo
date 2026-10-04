@@ -2585,3 +2585,9 @@ msgstr "Termina il riposo"
 
 msgid "A short rest needs at least 1 hit point"
 msgstr "Un riposo breve richiede almeno 1 Punto Ferita"
+
+msgid "One hour of light activity."
+msgstr "Un'ora di attività leggera."
+
+msgid "You can spend Hit Dice to regain hit points: roll the die yourself, type the result here and your Constitution modifier is added."
+msgstr "Puoi spendere Dadi Ferita per recuperare Punti Ferita: tira tu il dado, scrivi qui il risultato e verrà aggiunto il tuo modificatore di Costituzione."
