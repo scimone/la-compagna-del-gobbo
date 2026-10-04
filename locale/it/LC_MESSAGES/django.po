@@ -2546,3 +2546,8 @@ msgstr "Non adesso"
 #: apps/frontend/templates/frontend/_list_item.html
 msgid "Unprepare"
 msgstr "Rimuovi"
+
+#: apps/frontend/templates/frontend/characters/sheet/_spellbook.html
+msgctxt "heading"
+msgid "Prepared"
+msgstr "Preparati"

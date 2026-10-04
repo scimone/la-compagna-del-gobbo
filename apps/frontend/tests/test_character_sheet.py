@@ -377,7 +377,7 @@ def test_spellbook_lists_the_rest_of_the_class_list_greyed_out_below_and_prepare
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
 
     above, below = html.split('class="cs-unprepared"')
-    assert "Not prepared" in below
+    assert "Not prepared" in below and ">Prepared</h3>" in above
     offered = Spell.objects.filter(level=1, classes__contains=["Cleric"]).exclude(pk__in=known)
     extra = offered.first()
     assert f"/world/spells/{extra.pk}/" in below and f"/world/spells/{extra.pk}/" not in above
