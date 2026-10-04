@@ -457,7 +457,9 @@ def test_a_long_rest_asks_whether_to_change_the_prepared_spells(signed_in, alice
 
     assert "prepared spells" in response.json()["prompt"]
     fighter = finished(alice, "fighter", background="soldier")
-    assert act(signed_in, fighter, action="long_rest").json()["prompt"] == ""
+    # A Fighter has no prepared spells to change, but may swap a Weapon Mastery weapon.
+    prompt = act(signed_in, fighter, action="long_rest").json()
+    assert "prepared spells" not in prompt["prompt"] and prompt["prompt_tab"] == "proficiencies"
 
 
 def test_a_hand_added_spell_of_a_preparing_class_follows_its_preparation(signed_in, alice):

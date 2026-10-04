@@ -27,6 +27,7 @@ from django.utils.translation import gettext_lazy, pgettext_lazy
 from django.views.decorators.http import require_GET, require_POST
 
 from apps.builder import tables
+from apps.builder.class_spec import CLASS_SPEC
 from apps.builder.resolvers.proficiency import WeaponProficiency
 from apps.builder.services import creation, derived_stats, progression
 from apps.characters.models import Character, CharacterChoice
@@ -160,6 +161,21 @@ def _header(character: Character, stats) -> dict:
     }
 
 
+def _recovery(character: Character, stats) -> dict | None:
+    """Arcane / Natural Recovery at the Short Rest: what it is called, how many levels of slots it
+    brings back, and the slot pools it may take from (a pact pool never; nothing above level 5)."""
+    feature = play.slot_recovery(character)
+    if feature is None:
+        return None
+    classes = list(character.classes.select_related("klass"))
+    pools = [
+        p
+        for p in _slots(character, stats, classes)
+        if p["key"].isdigit() and p["level"] <= play.SLOT_RECOVERY_MAX_LEVEL
+    ]
+    return {**feature, "pools": pools}
+
+
 def _percent(part: int, whole: int) -> int:
     return round(max(0, min(1, part / whole)) * 100) if whole else 0
 
@@ -175,6 +191,7 @@ def _strip(character: Character, stats, items) -> dict:
         "con_modifier": stats.abilities["con"]["modifier"],
         "hp": character.current_hit_points,
         "max_hp": character.hit_point_maximum,
+        "recovery": _recovery(character, stats),
         "hp_reduction": character.max_hit_points_reduction,
         "drained": bool(character.ability_reductions),
         "ability_reductions": [
@@ -1036,6 +1053,24 @@ def _proficiencies(character: Character) -> dict:
             )
     masteries.sort(key=lambda m: m["name"])
 
+    # After a Long Rest: one mastery weapon may be swapped for another the class could choose.
+    swap = None
+    if character.weapon_mastery_changes:
+        offered = {}
+        for class_id in character.weapon_mastery_changes:
+            if class_id in CLASS_SPEC:
+                offered.update({w.id: w.name for w in play.mastery_weapons(character, class_id)})
+        chosen = (mastery_choice.value if mastery_choice else []) or []
+        swap = {
+            "current": sorted(
+                ((w.id, w.name) for w in Equipment.objects.filter(id__in=chosen)),
+                key=lambda t: t[1],
+            ),
+            "candidates": [
+                (i, n) for i, n in sorted(offered.items(), key=lambda t: t[1]) if i not in chosen
+            ],
+        }
+
     tools = {
         e.id: e
         for e in Equipment.objects.filter(id__in=[p.name for p in held if p.category == "tool"])
@@ -1052,6 +1087,7 @@ def _proficiencies(character: Character) -> dict:
         "armor": armor,
         "weapons": weapons,
         "masteries": masteries,
+        "mastery_swap": swap,
         "tool_groups": tool_groups,
         "languages": sorted(
             cl.language.name for cl in character.languages.select_related("language")
@@ -1190,13 +1226,18 @@ def _act_hit_dice(character, post):
 
 def _act_short_rest(character, post):
     """`rolls=d10:6,d8:3`: the die and the result the player rolled for each Hit Die spent."""
+    recover = {}
+    for part in post.get("recover", "").split(","):
+        if part:
+            level, _sep, count = part.partition(":")
+            recover[level] = int(count)
     rolls = []
     for part in post.get("rolls", "").split(","):
         if part:
             die, _sep, result = part.partition(":")
             rolls.append((die, int(result)))
     con = derived_stats.compute(character).abilities["con"]["modifier"]
-    healed = play.short_rest(character, rolls, con)
+    healed = play.short_rest(character, rolls, con, recover)
     message = _("Short rest taken")
     if healed:
         message += " - " + _("%(hp)d hit points regained") % {"hp": healed}
@@ -1212,7 +1253,17 @@ def _act_long_rest(character, post):
     result = {"refresh": True, "message": _("Long rest taken")}
     if character.spell_changes:
         result["prompt"] = _spell_change_prompt()
+    elif character.weapon_mastery_changes:
+        result["prompt"] = _(
+            "You can change one of your Weapon Mastery weapons now. Do you want to do it?"
+        )
+        result["prompt_tab"] = "proficiencies"
     return result
+
+
+def _act_mastery_swap(character, post):
+    play.swap_weapon_mastery(character, post.get("old", ""), post.get("new", ""))
+    return {"refresh": True, "message": _("Weapon Mastery changed")}
 
 
 def _act_resource(character, post):
@@ -1429,6 +1480,7 @@ _ACTIONS["item_sell"] = _act_item_sell
 _ACTIONS["cast"] = _act_cast
 _ACTIONS["short_rest"] = _act_short_rest
 _ACTIONS["long_rest"] = _act_long_rest
+_ACTIONS["weapon_mastery_swap"] = _act_mastery_swap
 _ACTIONS["resource"] = _act_resource
 _ACTIONS["spell_add"] = _act_spell_add
 _ACTIONS["spell_prepare"] = _act_spell_prepare
@@ -1493,6 +1545,7 @@ def character_act(request, pk):
             "refresh": bool(outcome.get("refresh")),
             "message": outcome.get("message", ""),
             "prompt": outcome.get("prompt", ""),
+            "prompt_tab": outcome.get("prompt_tab", ""),
             "state": _state(character),
         }
     )

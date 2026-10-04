@@ -91,6 +91,10 @@ class Character(models.Model):
     #: the class) and used up as spells are unprepared. No entry: the list is locked until then.
     spell_changes = models.JSONField(default=dict, blank=True)
 
+    # `{class id: 1}`: the classes whose Weapon Mastery weapons may be changed now (after a rest).
+    weapon_mastery_changes = models.JSONField(default=dict, blank=True)
+    # The once-per-Long-Rest spell slot recoveries used (`["Arcane Recovery"]`, Natural Recovery).
+    spell_recoveries_used = models.JSONField(default=list, blank=True)
     # Reductions that last until a Long Rest (a monster's drain): taken off the maximum hit points
     # and off the ability scores (`{"str": 2}`). The stored values stay the full ones.
     max_hit_points_reduction = models.PositiveSmallIntegerField(default=0)

@@ -29,6 +29,23 @@
     </div>
     <div class="chip-panel desc" hidden></div>
   {% else %}<p class="cs-empty">{% translate "None" %}</p>{% endif %}
+  {% if can_edit and proficiencies.mastery_swap %}
+    <p class="cs-cast-note">{% translate "After a long rest you can change one of these weapons." %}</p>
+    <button type="button" data-mastery-swap>{% translate "Change a weapon" %}</button>
+    <dialog class="cs-cast" id="cs-mastery-dialog">
+      <h3>{% translate "Weapon Mastery" %}</h3>
+      <label class="cs-cast-field"><span class="k">{% translate "Weapon to replace" %}</span>
+        <select data-mastery-old>{% for id, name in proficiencies.mastery_swap.current %}<option value="{{ id }}">{{ name }}</option>{% endfor %}</select>
+      </label>
+      <label class="cs-cast-field"><span class="k">{% translate "New weapon" %}</span>
+        <select data-mastery-new>{% for id, name in proficiencies.mastery_swap.candidates %}<option value="{{ id }}">{{ name }}</option>{% endfor %}</select>
+      </label>
+      <div class="cs-cast-buttons">
+        <button type="button" data-mastery-cancel>{% translate "Cancel" %}</button>
+        <button type="button" class="ok" data-mastery-confirm>{% translate "Change" %}</button>
+      </div>
+    </dialog>
+  {% endif %}
 </section>
 
 {% for g in proficiencies.tool_groups %}

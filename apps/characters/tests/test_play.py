@@ -5,6 +5,7 @@ import pytest
 from apps.builder.services import derived_stats
 from apps.characters.models import (
     Character,
+    CharacterChoice,
     CharacterClass,
     CharacterFeature,
     CharacterInventoryItem,
@@ -590,3 +591,56 @@ def test_reductions_lower_the_maximum_and_the_scores_until_a_long_rest(fighter):
     assert fighter.hit_point_maximum == full and fighter.current_hit_points == full
     assert fighter.ability_reductions == {}
     assert derived_stats.compute(fighter).abilities["str"]["score"] == con
+
+
+def test_a_long_rest_lets_a_class_swap_one_weapon_mastery(fighter):
+    fighter.weapon_mastery_changes = {}
+    CharacterChoice.objects.update_or_create(
+        character=fighter, key="class.weapon_mastery", defaults={"value": ["longsword"]}
+    )
+    with pytest.raises(ValueError):  # nothing to change before a rest
+        play.swap_weapon_mastery(fighter, "longsword", "greatsword")
+
+    play.long_rest(fighter)
+    assert fighter.weapon_mastery_changes == {"fighter": 1}
+    with pytest.raises(ValueError):
+        play.swap_weapon_mastery(fighter, "dagger", "greatsword")  # not a mastered weapon
+    play.swap_weapon_mastery(fighter, "longsword", "greatsword")
+
+    fighter.refresh_from_db()
+    assert CharacterChoice.objects.get(character=fighter, key="class.weapon_mastery").value == [
+        "greatsword"
+    ]
+    assert fighter.weapon_mastery_changes == {}  # the one change is used up
+
+
+def test_arcane_recovery_brings_back_spent_slots_once_until_a_long_rest(hero):
+    CharacterClass.objects.create(
+        character=hero, klass=Class.objects.get(pk="wizard"), level=5, is_starting_class=True
+    )
+    play.set_hit_points(hero, 5)
+    assert play.slot_recovery(hero) is None  # the feature is not on the sheet yet
+    CharacterFeature.objects.create(
+        character=hero, feature=Feature.objects.get(name_en="Arcane Recovery")
+    )
+    hero.spell_slots_spent = {"1": 3, "3": 1, "6": 1}
+    hero.save()
+    assert play.slot_recovery(hero) == {"name": "Arcane Recovery", "budget": 3}  # half of 5, up
+
+    with pytest.raises(ValueError):
+        play.short_rest(hero, [], 0, recover={"1": 2, "3": 1})  # 5 levels, 3 allowed
+    with pytest.raises(ValueError):
+        play.short_rest(hero, [], 0, recover={"6": 1})  # no slot above level 5
+    with pytest.raises(ValueError):
+        play.short_rest(hero, [], 0, recover={"2": 1})  # none of those is spent
+
+    play.short_rest(hero, [], 0, recover={"3": 1})
+    hero.refresh_from_db()
+    assert hero.spell_slots_spent == {"1": 3, "3": 0, "6": 1}
+    assert play.slot_recovery(hero) is None  # once until a long rest
+    with pytest.raises(ValueError):
+        play.short_rest(hero, [], 0, recover={"1": 1})
+
+    play.long_rest(hero)
+    hero.refresh_from_db()
+    assert play.slot_recovery(hero) is not None

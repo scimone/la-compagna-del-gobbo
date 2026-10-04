@@ -24,6 +24,17 @@
   <p class="cs-cast-note" data-rest-none hidden>{% translate "No Hit Dice left to spend." %}</p>
   <ul class="cs-cast-note" data-rest-log></ul>
   </div>
+  {% if strip.recovery %}
+  <div data-rest-recovery data-budget="{{ strip.recovery.budget }}">
+    <p class="cs-cast-ask">{% blocktranslate with name=strip.recovery.name budget=strip.recovery.budget %}{{ name }}: recover spent spell slots with a combined level of up to {{ budget }} (none of level 6 or higher). Once until a long rest.{% endblocktranslate %}</p>
+    {% for pool in strip.recovery.pools %}
+      <label class="cs-cast-field" data-recover-slot="{{ pool.key }}" data-level="{{ pool.level }}"><span class="k">{% translate "Level" %} {{ pool.level }}</span>
+        <input type="number" min="0" value="0" inputmode="numeric" data-recover-count>
+      </label>
+    {% endfor %}
+    <p class="cs-cast-note"><span data-recover-total>0</span> / {{ strip.recovery.budget }} {% translate "levels recovered" %}</p>
+  </div>
+  {% endif %}
   <p class="cs-cast-note">{% translate "Abilities that recharge on a short rest are restored: Pact Magic slots, and the resources that come back on one." %} {% translate "Cancelling counts as an interrupted rest: nothing is gained." %}</p>
   <div class="cs-cast-buttons">
     <button type="button" data-rest-cancel>{% translate "Cancel" %}</button>

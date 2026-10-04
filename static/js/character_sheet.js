@@ -157,7 +157,7 @@
             // The server offers to go and change the prepared spells (after a long rest).
             if (result.json.prompt && window.appConfirm) {
               return window.appConfirm(result.json.prompt).then(function (yes) {
-                if (yes) showTab("spellbook", true);
+                if (yes) showTab(result.json.prompt_tab || "spellbook", true);
                 return true;
               });
             }
@@ -674,7 +674,15 @@
       shortRestSpend(dialog);
     } else if (event.target.closest("[data-rest-confirm]")) {
       var params = { action: event.target.closest("[data-rest-confirm]").dataset.restConfirm + "_rest" };
-      if (dialog.id === "cs-short-rest-dialog") params.rolls = (dialog._rolls || []).join(",");
+      if (dialog.id === "cs-short-rest-dialog") {
+        params.rolls = (dialog._rolls || []).join(",");
+        var recover = [];
+        dialog.querySelectorAll("[data-recover-slot]").forEach(function (row) {
+          var count = Number(row.querySelector("[data-recover-count]").value) || 0;
+          if (count > 0) recover.push(row.dataset.recoverSlot + ":" + count);
+        });
+        if (recover.length) params.recover = recover.join(",");
+      }
       dialog.close();
       send(params);
     }
@@ -693,6 +701,22 @@
       if (row) pool.dataset.left = row.querySelectorAll(".pip-btn.on").length;
     });
     dialog._rolls = [];
+    // Arcane / Natural Recovery: the slots spent right now, as the spellbook's pips show them.
+    var recovery = dialog.querySelector("[data-rest-recovery]");
+    if (recovery) {
+      var anySpent = false;
+      recovery.querySelectorAll("[data-recover-slot]").forEach(function (row) {
+        var pips = root.querySelector('.cs-slot-row[data-slot="' + row.dataset.recoverSlot + '"]');
+        var spent = pips ? pips.querySelectorAll(".pip-btn:not(.on)").length : 0;
+        var input = row.querySelector("[data-recover-count]");
+        input.max = spent;
+        input.value = 0;
+        row.hidden = spent < 1;
+        if (spent > 0) anySpent = true;
+      });
+      recovery.hidden = !anySpent;
+      recovery.querySelector("[data-recover-total]").textContent = "0";
+    }
     dialog._hp = Number(dialog.dataset.hp);
     dialog._anyDice = Array.prototype.some.call(dialog.querySelectorAll("[data-rest-pool]"), function (pool) {
       return Number(pool.dataset.left) > 0;
@@ -704,6 +728,26 @@
     });
     shortRestSync(dialog);
   }
+
+  // The recovered slots may not exceed the feature's combined level: trim the one just edited.
+  root.addEventListener("input", function (event) {
+    var input = event.target.closest("[data-recover-count]");
+    if (!input) return;
+    var recovery = input.closest("[data-rest-recovery]");
+    var budget = Number(recovery.dataset.budget);
+    var rows = recovery.querySelectorAll("[data-recover-slot]");
+    function total() {
+      var sum = 0;
+      rows.forEach(function (row) {
+        sum += Number(row.dataset.level) * (Number(row.querySelector("[data-recover-count]").value) || 0);
+      });
+      return sum;
+    }
+    var count = Math.max(0, Number(input.value) || 0);
+    input.value = Math.min(count, Number(input.max));
+    while (total() > budget && Number(input.value) > 0) input.value = Number(input.value) - 1;
+    recovery.querySelector("[data-recover-total]").textContent = total();
+  });
 
   function shortRestPoolLeft(dialog, die) {
     var pool = dialog.querySelector('[data-rest-pool="' + die + '"] [data-rest-left]');
@@ -751,6 +795,28 @@
     input.value = "";
     shortRestSync(dialog);
   }
+
+  // Weapon Mastery after a Long Rest: swap one weapon for another (the server checks the choice).
+  root.addEventListener("click", function (event) {
+    var open = event.target.closest("[data-mastery-swap]");
+    var dialog = document.getElementById("cs-mastery-dialog");
+    if (open && dialog) {
+      dialog.showModal();
+      return;
+    }
+    if (!dialog || !event.target.closest("#cs-mastery-dialog")) return;
+    if (event.target.closest("[data-mastery-cancel]")) {
+      dialog.close();
+    } else if (event.target.closest("[data-mastery-confirm]")) {
+      var params = {
+        action: "weapon_mastery_swap",
+        old: dialog.querySelector("[data-mastery-old]").value,
+        new: dialog.querySelector("[data-mastery-new]").value,
+      };
+      dialog.close();
+      send(params);
+    }
+  });
 
   // A filter popover closes when you tap anywhere else.
   document.addEventListener("click", function (event) {

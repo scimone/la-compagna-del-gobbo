@@ -11,8 +11,11 @@ An item row is one of two kinds, named `kind` in the functions that take a row i
 
 from django.db import models, transaction
 
+from apps.builder.class_spec import CLASS_SPEC
+from apps.builder.services import derived_stats
 from apps.characters.models import (
     Character,
+    CharacterChoice,
     CharacterCurrency,
     CharacterCustomItem,
     CharacterFeat,
@@ -530,6 +533,66 @@ def grant_spell_changes(character: Character, when: str, class_ids=None) -> None
         character.save(update_fields=["spell_changes"])
 
 
+# --- weapon mastery ----------------------------------------------------------------------------
+
+MASTERY_CHOICE = "class.weapon_mastery"
+
+
+def grant_weapon_mastery_changes(character: Character) -> None:
+    """A Long Rest lets each class with Weapon Mastery change one of its weapon choices."""
+    changes = {
+        row.klass_id: 1
+        for row in character.classes.all()
+        if CLASS_SPEC.get(row.klass_id) and CLASS_SPEC[row.klass_id].weapon_mastery
+    }
+    if changes != character.weapon_mastery_changes:
+        character.weapon_mastery_changes = changes
+        character.save(update_fields=["weapon_mastery_changes"])
+
+
+def mastery_weapons(character: Character, class_id: str) -> list[Equipment]:
+    """The weapons `class_id` could choose Weapon Mastery for (its melee-only / proficient-only
+    rule), by name."""
+    spec = CLASS_SPEC[class_id].weapon_mastery
+    weapons = list(
+        Equipment.objects.filter(
+            weapon_category__in=["simple", "martial"],
+            type_id__in=["m"] if spec.melee_only else ["m", "r"],
+            masteries__isnull=False,
+        )
+        .distinct()
+        .order_by("name")
+        .prefetch_related("properties")
+    )
+    if spec.proficient_only:
+        held = character.proficiencies.filter(category="weapon").values_list("name", flat=True)
+        proficiency = derived_stats.weapon_proficiency(held)
+        weapons = [w for w in weapons if proficiency.covers(w)]
+    return weapons
+
+
+def swap_weapon_mastery(character: Character, old_id: str, new_id: str) -> None:
+    """Change one Weapon Mastery weapon for another, using up the class's change from a Long
+    Rest."""
+    choice = CharacterChoice.objects.filter(character=character, key=MASTERY_CHOICE).first()
+    chosen = list(choice.value) if choice else []
+    if old_id not in chosen:
+        raise ValueError("that weapon is not one of the mastered ones")
+    if new_id in chosen:
+        raise ValueError("that weapon is already mastered")
+    for class_id in character.weapon_mastery_changes:
+        if class_id in CLASS_SPEC and any(
+            w.id == new_id for w in mastery_weapons(character, class_id)
+        ):
+            break
+    else:
+        raise ValueError("no weapon mastery change can take that weapon")
+    del character.weapon_mastery_changes[class_id]
+    character.save(update_fields=["weapon_mastery_changes"])
+    choice.value = [new_id if w == old_id else w for w in chosen]
+    choice.save(update_fields=["value"])
+
+
 def learn_class_spell(
     character: Character, spell_id: str, class_id: str, max_level: int
 ) -> CharacterSpell:
@@ -686,6 +749,27 @@ def _spent_hit_dice(character: Character, die: str) -> int:
     )
 
 
+#: The features that recover spent spell slots at a Short Rest, once per Long Rest:
+#: `feature name -> class id` (whose level sets how many levels' worth come back).
+SLOT_RECOVERY = {"Arcane Recovery": "wizard", "Natural Recovery": "druid"}
+SLOT_RECOVERY_MAX_LEVEL = 5
+
+
+def slot_recovery(character: Character) -> dict | None:
+    """The slot recovery the character may use at this Short Rest: `{"name", "budget"}` (the
+    combined slot level allowed: half the class level, rounded up), or None - not a Wizard or a
+    Circle of the Land Druid, or already used since the last Long Rest."""
+    for name, class_id in SLOT_RECOVERY.items():
+        row = character.classes.filter(klass_id=class_id).first()
+        if (
+            row
+            and name not in character.spell_recoveries_used
+            and character.features.filter(feature__name_en=name).exists()
+        ):
+            return {"name": name, "budget": (row.level + 1) // 2}
+    return None
+
+
 def _require_standing(character: Character) -> None:
     if character.current_hit_points < 1:
         raise ValueError("a character needs at least 1 hit point to begin a rest")
@@ -696,8 +780,13 @@ def short_rest(
     character: Character,
     rolls: list[tuple[str, int]],
     con_modifier: int,
+    recover: dict[str, int] | None = None,
 ) -> int:
     """Take a short rest (1 hour). Returns the hit points regained.
+
+    `recover` (`{"1": 2, "3": 1}`: slot level -> how many) is the spell slots Arcane / Natural
+    Recovery brings back: their combined level within the feature's budget, none above level 5,
+    only ones that are spent.
 
     `rolls` is one `(die, result)` per Hit Die spent (`[("d8", 5), ("d8", 3)]`), the result being
     what the player rolled at the table: each heals that plus the Constitution modifier (at least
@@ -726,6 +815,23 @@ def short_rest(
         character.death_save_successes = character.death_save_failures = 0
     slots = dict(character.spell_slots_spent)
     slots.pop("pact", None)
+    if recover:
+        feature = slot_recovery(character)
+        if feature is None:
+            raise ValueError("no spell slot recovery to use")
+        total = 0
+        for key, count in recover.items():
+            if not key.isdigit() or not 1 <= int(key) <= SLOT_RECOVERY_MAX_LEVEL or count < 0:
+                raise ValueError(f"cannot recover a {key} slot")
+            if count > int(slots.get(key, 0)):
+                raise ValueError(f"not that many spent level {key} slots")
+            total += int(key) * count
+        if total > feature["budget"]:
+            raise ValueError(f"only {feature['budget']} levels of slots can be recovered")
+        for key, count in recover.items():
+            slots[key] = int(slots.get(key, 0)) - count
+        if total:
+            character.spell_recoveries_used = [*character.spell_recoveries_used, feature["name"]]
     character.spell_slots_spent = slots
     character.save()
     for row in character.resources.all():
@@ -748,6 +854,7 @@ def long_rest(character: Character) -> None:
     _require_standing(character)
     character.max_hit_points_reduction = 0
     character.ability_reductions = {}
+    character.spell_recoveries_used = []
     character.current_hit_points = character.hit_point_maximum
     character.temporary_hit_points = 0
     character.death_save_successes = character.death_save_failures = 0
@@ -756,4 +863,5 @@ def long_rest(character: Character) -> None:
     character.classes.update(hit_dice_spent=0)
     character.spells.filter(free_cast_used=True).update(free_cast_used=False)
     grant_spell_changes(character, "rest")
+    grant_weapon_mastery_changes(character)
     CharacterResource.objects.filter(character=character).update(current_uses=models.F("max_uses"))
