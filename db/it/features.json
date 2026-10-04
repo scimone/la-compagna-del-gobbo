@@ -498,7 +498,27 @@
  },
  "class:cleric:1:divine-order": {
   "entries": [
-   "Il chierico si dedica a uno dei seguenti ruoli sacri a scelta."
+   "Il chierico si dedica a uno dei seguenti ruoli sacri a scelta.",
+   {
+    "entries": [
+     {
+      "entries": [
+       {
+        "name": "Protettore",
+        "entries": [
+         "Addestrato a combattere, il chierico ha acquisito competenza con le armi da guerra e con le armature pesanti."
+        ]
+       },
+       {
+        "name": "Taumaturgo",
+        "entries": [
+         "Il chierico conosce un trucchetto extra dalla lista degli incantesimi da chierico. Inoltre, la connessione mistica con il divino gli conferisce un bonus alle prove di Intelligenza ({@skill Arcana|XPHB|Arcano} o {@skill Religion|XPHB|Religione}). Il bonus è pari al suo modificatore di Saggezza (minimo di +1)."
+        ]
+       }
+      ]
+     }
+    ]
+   }
   ],
   "name": "Ordine divino"
  },
@@ -739,7 +759,27 @@
    "name"
   ],
   "entries": [
-   "Il druido si è dedicato a uno dei seguenti ruoli sacri a sua scelta."
+   "Il druido si è dedicato a uno dei seguenti ruoli sacri a sua scelta.",
+   {
+    "entries": [
+     {
+      "entries": [
+       {
+        "name": "Mago",
+        "entries": [
+         "Il druido conosce un trucchetto extra dalla lista degli incantesimi da druido. Inoltre, la connessione mistica con {@skill Nature|XPHB|natura} gli conferisce un bonus alle prove di Intelligenza ({@skill Arcana|XPHB|Arcano} o Natura). Il bonus è pari al suo modificatore di Saggezza (bonus minimo di +1)."
+        ]
+       },
+       {
+        "name": "Guardiano",
+        "entries": [
+         "Addestrato a combattere, il druido ottiene competenza con le {@filter armi da guerra|items|type=martial weapon} e con le {@filter armature medie|items|type=Medium Armor}."
+        ]
+       }
+      ]
+     }
+    ]
+   }
   ],
   "name": "Ordine primordiale"
  },
@@ -1548,7 +1588,18 @@
  "class:paladin:3:channel-divinity": {
   "entries": [
    "Il paladino può incanalare l'energia divina direttamente dai Piani Esterni, usandola per alimentare effetti magici. Inizia con uno di questi effetti: Percezione del Divino, descritto di seguito. Gli altri privilegi del paladino gli conferiscono ulteriori effetti di Incanalare Divinità. Ogni volta che il personaggio usa Incanalare Divinità di questa classe, è possibile scegliere l'effetto desiderato della classe.",
-   "Il paladino può usare Incanalare divinità due volte. Per quanto riguarda gli utilizzi consumati, ne recupera uno dopo aver completato un {@variantrule Short Rest|XPHB|riposo breve} e li recupera tutti dopo un {@variantrule Long Rest|XPHB|riposo lungo}. Ottiene un uso aggiuntivo una volta raggiunto il livello 11."
+   "Il paladino può usare Incanalare divinità due volte. Per quanto riguarda gli utilizzi consumati, ne recupera uno dopo aver completato un {@variantrule Short Rest|XPHB|riposo breve} e li recupera tutti dopo un {@variantrule Long Rest|XPHB|riposo lungo}. Ottiene un uso aggiuntivo una volta raggiunto il livello 11.",
+   null,
+   {
+    "entries": [
+     {
+      "name": "Percezione del divino",
+      "entries": [
+       "Come {@variantrule Bonus Action|XPHB|azione bonus}, il paladino può amplificare i propri sensi per individuare celestiali, immondi e non morti. Per i prossimi 10 minuti o finché non è {@condition Incapacitated|XPHB|incapacitato}, conosce la posizione di ogni creatura summenzionata in un raggio di 18 metri da sé e può distinguerne la tipologia. Entro lo stesso raggio, il paladino individua anche la presenza di qualsiasi luogo o oggetto sacro o sacrilego, con gli stessi effetti dell'incantesimo santificare."
+      ]
+     }
+    ]
+   }
   ],
   "name": "Incanalare divinità"
  },
@@ -1885,7 +1936,29 @@
  },
  "class:rogue:14:devious-strikes": {
   "entries": [
-   "Il ladro ha scoperto nuovi modi più infidi di utilizzare il proprio Attacco furtivo. I seguenti effetti si aggiungono alle opzioni di Colpo astuto."
+   "Il ladro ha scoperto nuovi modi più infidi di utilizzare il proprio Attacco furtivo. I seguenti effetti si aggiungono alle opzioni di Colpo astuto.",
+   {
+    "entries": [
+     {
+      "name": "Intontimento (costo: 2d6)",
+      "entries": [
+       "Il bersaglio deve superare un tiro salvezza su Costituzione, altrimenti nel suo turno successivo può fare solo una delle seguenti cose: muoversi, oppure eseguire un'azione o un'{@variantrule Bonus Action|XPHB|azione bonus}."
+      ]
+     },
+     {
+      "name": "Atterramento (costo: 6d6)",
+      "entries": [
+       "Il bersaglio deve superare un tiro salvezza su Costituzione, altrimenti diventa {@condition Unconscious|XPHB|privo di sensi} per 1 minuto o finché non subisce dei danni. Dopodiché, ripete il tiro salvezza alla fine di ogni suo turno e, se lo supera, l'effetto svanisce."
+      ]
+     },
+     {
+      "name": "Rabbuio (costo: 3d6)",
+      "entries": [
+       "Il bersaglio deve superare un tiro salvezza su Destrezza, altrimenti è {@condition Blinded|XPHB|accecato} fino al termine del proprio turno successivo."
+      ]
+     }
+    ]
+   }
   ],
   "name": "Colpi infidi"
  },
@@ -1997,7 +2070,30 @@
  "class:rogue:5:cunning-strike": {
   "entries": [
    "Il ladro ha ideato modi più astuti di utilizzare il proprio Attacco furtivo. Quando infligge danni da Attacco furtivo, è possibile aggiungere uno dei seguenti effetti del Colpo astuto. Ogni effetto prevede un costo in dadi di danno dell'Attacco furtivo. Il dado da spendere viene rimosso prima del tiro e l'effetto entra in vigore subito dopo aver inflitto i danni dell'attacco. Per esempio, se si aggiunge il veleno, è necessario rimuovere {@dice 1d6} dai danni dell'Attacco furtivo prima di tirare.",
-   "Se uno degli effetti di Colpo astuto richiede un tiro salvezza, la CD equivale a 8 più il modificatore di Destrezza e il bonus di {@variantrule Proficiency|XPHB|competenza}."
+   "Se uno degli effetti di Colpo astuto richiede un tiro salvezza, la CD equivale a 8 più il modificatore di Destrezza e il bonus di {@variantrule Proficiency|XPHB|competenza}.",
+   {
+    "entries": [
+     {
+      "name": "Veleno (costo: 1d6)",
+      "entries": [
+       "Il ladro aggiunge una tossina al proprio attacco, costringendo il bersaglio a effettuare un tiro salvezza su Costituzione. Se lo fallisce, è {@condition Poisoned|XPHB|avvelenato} per 1 minuto. Alla fine di ogni suo turno, il bersaglio {@condition Poisoned|XPHB|avvelenato} ripete il tiro salvezza e, se lo supera, l'effetto svanisce.",
+       "Per utilizzare questo effetto, è necessario avere con sé le {@item Poisoner's Kit|XPHB|sostanze da avvelenatore}."
+      ]
+     },
+     {
+      "name": "Sgambetto (costo: 1d6)",
+      "entries": [
+       "Se il bersaglio è di taglia Grande o inferiore, deve superare un tiro salvezza su Destrezza, altrimenti ottiene la condizione {@condition Prone|XPHB|prono}."
+      ]
+     },
+     {
+      "name": "Ritirata (costo: 1d6)",
+      "entries": [
+       "Subito dopo l'attacco, il ladro si muove fino alla metà della propria {@variantrule Speed|XPHB|velocità} senza provocare {@action Opportunity Attack|XPHB|attacchi di opportunità}."
+      ]
+     }
+    ]
+   }
   ],
   "name": "Colpo astuto"
  },
