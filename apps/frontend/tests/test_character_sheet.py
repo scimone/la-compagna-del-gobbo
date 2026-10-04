@@ -160,7 +160,8 @@ def test_the_stats_tab_reads_the_rests_then_hit_points_then_the_fight_numbers(si
     assert 'class="st-card st-dice"' in html and 'class="st-card st-death"' in html
 
 
-def test_the_stats_tab_shows_progress_bars_and_one_pip_per_hit_die(signed_in, alice):
+def test_the_stats_tab_shows_progress_bars_and_one_pip_per_hit_die(signed_in, alice, settings):
+    settings.DM_ACCOUNTS = ["alice"]  # only the DM (or an admin) sets Hit Dice by hand
     cleric = finished(alice, "cleric")
     act(signed_in, cleric, action="xp", value="150")
     act(signed_in, cleric, action="hp_delta", delta="-3")
@@ -176,7 +177,8 @@ def test_the_stats_tab_shows_progress_bars_and_one_pip_per_hit_die(signed_in, al
     assert row.count('data-delta="-1"') == 1  # tapping the empty pip recovers the die
 
 
-def test_hit_dice_pips_spend_and_recover_over_http(signed_in, alice):
+def test_hit_dice_pips_spend_and_recover_over_http(signed_in, alice, settings):
+    settings.DM_ACCOUNTS = ["alice"]  # only the DM (or an admin) sets Hit Dice by hand
     cleric = finished(alice, "cleric")
 
     spent = act(signed_in, cleric, action="hit_dice", die="d8", delta="1").json()
@@ -184,6 +186,17 @@ def test_hit_dice_pips_spend_and_recover_over_http(signed_in, alice):
 
     assert spent["state"]["hit_dice"]["d8"] == {"total": 1, "spent": 1}
     assert back["state"]["hit_dice"]["d8"] == {"total": 1, "spent": 0}
+
+
+def test_only_the_dm_or_an_admin_edits_hit_dice_by_hand(signed_in, alice, settings):
+    cleric = finished(alice, "cleric")
+    settings.DM_ACCOUNTS = []
+    settings.ADMIN_ACCOUNTS = []
+
+    assert act(signed_in, cleric, action="hit_dice", die="d8", delta="1").status_code == 403
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "stats")
+    row = html.split('data-hd="d8"')[1].split("</div>")[0]
+    assert " disabled" in row  # the pips are there to look at only
 
 
 def test_changing_the_xp_asks_for_a_redraw_so_the_progress_bar_follows(signed_in, alice):
@@ -718,7 +731,8 @@ def test_hit_points_death_saves_inspiration_and_xp(signed_in, alice):
     assert (cleric.death_save_failures, cleric.inspiration) == (2, True)
 
 
-def test_hit_dice_are_spent_and_recovered_within_the_pool(signed_in, alice):
+def test_hit_dice_are_spent_and_recovered_within_the_pool(signed_in, alice, settings):
+    settings.DM_ACCOUNTS = ["alice"]  # only the DM (or an admin) sets Hit Dice by hand
     fighter = finished(alice, "fighter", background="soldier")
 
     spent = act(signed_in, fighter, action="hit_dice", die="d10", delta="1").json()["state"]

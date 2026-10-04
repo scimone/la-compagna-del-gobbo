@@ -9,10 +9,7 @@ An item row is one of two kinds, named `kind` in the functions that take a row i
 `CharacterInventoryItem`) or `"custom"` (a `CharacterCustomItem`).
 """
 
-import datetime
-
 from django.db import models, transaction
-from django.utils import timezone
 
 from apps.characters.models import (
     Character,
@@ -659,18 +656,6 @@ def _spent_hit_dice(character: Character, die: str) -> int:
     )
 
 
-LONG_REST_GAP = datetime.timedelta(hours=16)
-
-
-def next_long_rest_at(character: Character) -> datetime.datetime | None:
-    """When the next Long Rest may begin (16 hours after the last), or None if it may now."""
-    last = character.last_long_rest_at
-    if last is None:
-        return None
-    ready = last + LONG_REST_GAP
-    return ready if ready > timezone.now() else None
-
-
 def _require_standing(character: Character) -> None:
     if character.current_hit_points < 1:
         raise ValueError("a character needs at least 1 hit point to begin a rest")
@@ -726,14 +711,11 @@ def short_rest(
 
 @transaction.atomic
 def long_rest(character: Character) -> None:
-    """Take a long rest (8 hours, at least 16 hours after the last one): every hit point and every
+    """Take a long rest (8 hours): every hit point and every
     spent Hit Die back, temporary hit points gone, the death saves cleared, every spell slot and
     free cast (Magic Initiate's) and every limited-use resource restored.
     Heroic Inspiration is not touched."""
     _require_standing(character)
-    if next_long_rest_at(character):
-        raise ValueError("a long rest needs 16 hours since the last one")
-    character.last_long_rest_at = timezone.now()
     character.current_hit_points = character.max_hit_points
     character.temporary_hit_points = 0
     character.death_save_successes = character.death_save_failures = 0

@@ -202,7 +202,7 @@
     var restTile = root.querySelector('[data-rest="short"]');
     if (restTile) restTile.disabled = state.hp < 1;
     var longTile = root.querySelector('[data-rest="long"]');
-    if (longTile) longTile.disabled = state.hp < 1 || !!state.long_rest_ready_at;
+    if (longTile) longTile.disabled = state.hp < 1;
     var title = document.querySelector("header .brand");
     if (title && state.name) title.textContent = state.name;
 

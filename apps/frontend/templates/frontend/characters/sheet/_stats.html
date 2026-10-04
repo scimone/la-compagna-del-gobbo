@@ -13,7 +13,7 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
       <span>{% translate "Short Rest" %}</span>
     </button>
-    <button type="button" class="st-rest" data-rest="long"{% if strip.hp < 1 %} disabled title="{% translate 'A long rest needs at least 1 hit point' %}"{% elif strip.long_rest_ready_at %} disabled title="{% blocktranslate with when=strip.long_rest_ready_at|date:'DATETIME_FORMAT' %}You can take another long rest from {{ when }}{% endblocktranslate %}"{% endif %}>
+    <button type="button" class="st-rest" data-rest="long"{% if strip.hp < 1 %} disabled title="{% translate 'A long rest needs at least 1 hit point' %}"{% endif %}>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6M3 18h18M3 14h18M5 10V7a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/></svg>
       <span>{% translate "Long Rest" %}</span>
     </button>
@@ -93,7 +93,7 @@
         <span class="cs-pips">
           {% for on in hd.pips %}
             <button type="button" class="pip-btn{% if on %} on{% endif %}" data-act="hit_dice" data-die="{{ hd.die }}" data-delta="{% if on %}1{% else %}-1{% endif %}"
-                    aria-label="{% if on %}{% translate 'Spend a Hit Die' %}{% else %}{% translate 'Recover a Hit Die' %}{% endif %}"{% if not can_edit %} disabled{% endif %}></button>
+                    aria-label="{% if on %}{% translate 'Spend a Hit Die' %}{% else %}{% translate 'Recover a Hit Die' %}{% endif %}"{% if not can_edit_hit_dice %} disabled{% endif %}></button>
           {% endfor %}
         </span>
         <span class="cnt"><b class="left">{{ hd.left }}</b>/{{ hd.total }}</span>

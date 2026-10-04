@@ -172,7 +172,6 @@ def _strip(character: Character, stats, items) -> dict:
         "shield_worn": stats.armor_class["shield"],
         "initiative": stats.initiative,
         "con_modifier": stats.abilities["con"]["modifier"],
-        "long_rest_ready_at": play.next_long_rest_at(character),
         "hp": character.current_hit_points,
         "max_hp": character.max_hit_points,
         "hp_percent": _percent(character.current_hit_points, character.max_hit_points),
@@ -1126,6 +1125,8 @@ def character_detail(request, pk):
             "back_url": reverse("characters-overview"),
             "character": character,
             "can_edit": can_edit,
+            # Hit Dice are spent by resting; only the DM or an administrator sets them by hand.
+            "can_edit_hit_dice": access.can_speak_as_dm(request.user),
             "can_assign": access.is_admin(request.user),
             "can_reopen": access.is_admin(request.user) and creation.can_reopen(character),
             # Not `tabs`/`active_tab`: base.html draws its own `?tab=` strip for those names.
@@ -1435,7 +1436,6 @@ def _state(character: Character) -> dict:
         "hp": character.current_hit_points,
         "max_hp": character.max_hit_points,
         "con_modifier": stats.abilities["con"]["modifier"],
-        "long_rest_ready_at": bool(play.next_long_rest_at(character)),
         "temp_hp": character.temporary_hit_points,
         "death_successes": character.death_save_successes,
         "death_failures": character.death_save_failures,
@@ -1462,7 +1462,10 @@ def character_act(request, pk):
         request.user, character
     ):
         return JsonResponse({"error": "forbidden"}, status=403)
-    handler = _ACTIONS.get(request.POST.get("action", ""))
+    action = request.POST.get("action", "")
+    if action == "hit_dice" and not access.can_speak_as_dm(request.user):
+        return JsonResponse({"error": "forbidden"}, status=403)
+    handler = _ACTIONS.get(action)
     if handler is None:
         return JsonResponse({"error": "unknown action"}, status=400)
     try:

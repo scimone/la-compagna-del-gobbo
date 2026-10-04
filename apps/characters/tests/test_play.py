@@ -1,9 +1,6 @@
 """Play-state changes (`characters.services.play`): what the character sheet lets the owner tick."""
 
-import datetime
-
 import pytest
-from django.utils import timezone
 
 from apps.characters.models import (
     Character,
@@ -571,15 +568,3 @@ def test_level_gain_opens_one_change_for_a_bard_and_each_change_uses_it_up(hero)
     with pytest.raises(ValueError):  # the one change is spent
         play.set_spell_prepared(hero, "shield", False, limit=4)
     play.set_spell_prepared(hero, "bless", True, limit=4)  # filling a free slot costs nothing
-
-
-def test_a_long_rest_needs_16_hours_since_the_last_one(fighter):
-    play.long_rest(fighter)
-    assert play.next_long_rest_at(fighter) is not None
-    with pytest.raises(ValueError):
-        play.long_rest(fighter)
-
-    fighter.last_long_rest_at = timezone.now() - datetime.timedelta(hours=16, minutes=1)
-    fighter.save()
-    assert play.next_long_rest_at(fighter) is None
-    play.long_rest(fighter)
