@@ -89,8 +89,11 @@
     return stack.length ? stack[stack.length - 1] : null;
   }
 
+  // Transient pages (the account form) never stay in a menu's stack, wherever in it they are.
   function dropTransients(stack) {
-    while (stack.length && isTransient(top(stack).u)) stack.pop();
+    for (var i = stack.length - 1; i >= 0; i--) {
+      if (isTransient(stack[i].u)) stack.splice(i, 1);
+    }
   }
 
   function urlOf(href) {
@@ -221,6 +224,8 @@
     } else if (!entry || entry.u !== url) {
       stack.push({ u: url });
     }
+    // Once the user has moved on from a detour page, it is no longer part of the menu's history.
+    if (stack.length > 1 && !isTransient(top(stack).u)) dropTransients(stack);
     entry = top(stack);
     var parent = parentUrl();
     if (parent) entry.p = parent;
@@ -298,6 +303,14 @@
         var state = read();
         var menu = link.dataset.menu;
         event.preventDefault();
+        if (state.active === menu && isTransient(currentUrl())) {
+          // On a detour page (the account form) opened from this menu: go back to where it was.
+          var kept = state.stacks[menu].slice();
+          dropTransients(kept);
+          setPending("switch", { menu: menu });
+          location.assign(top(kept) ? top(kept).u : dest);
+          return;
+        }
         if (state.active === menu) {
           // Tapping the menu you are already in returns to its root page (World: the first tab),
           // dropping whatever was drilled into.

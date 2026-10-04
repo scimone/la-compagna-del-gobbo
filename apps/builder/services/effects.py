@@ -182,6 +182,10 @@ def apply(character: Character) -> None:
             notes=grant.source,
         )
 
+    from apps.characters.services import play  # local: play -> builder.services
+
+    play.merge_duplicate_items(character)
+
     CharacterCurrency.objects.update_or_create(
         character=character,
         defaults=equipment_resolver.split_coins(gold) | {"electrum": 0, "platinum": 0},

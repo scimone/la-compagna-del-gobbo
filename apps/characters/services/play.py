@@ -329,6 +329,28 @@ def add_item(character: Character, equipment_id: str, quantity: int = 1) -> Char
 
 
 @transaction.atomic
+def merge_duplicate_items(character: Character) -> int:
+    """Fold catalog stacks of the same item (and the same pack, or none) into one, adding up the
+    quantities. A character never lists the same gear twice. Returns how many rows went away."""
+    groups: dict[tuple, list[CharacterInventoryItem]] = {}
+    for row in character.inventory_items.order_by("pk"):
+        groups.setdefault((row.equipment_id, row.parent_id), []).append(row)
+    merged = 0
+    for rows in groups.values():
+        keep, extra = rows[0], rows[1:]
+        if not extra:
+            continue
+        keep.quantity = _clamp(sum(r.quantity for r in rows), 1, MAX_QUANTITY)
+        keep.equipped = any(r.equipped for r in rows)
+        keep.attuned = any(r.attuned for r in rows)
+        keep.notes = next((r.notes for r in rows if r.notes), "")
+        keep.save(update_fields=["quantity", "equipped", "attuned", "notes"])
+        CharacterInventoryItem.objects.filter(pk__in=[r.pk for r in extra]).delete()
+        merged += len(extra)
+    return merged
+
+
+@transaction.atomic
 def buy_item(
     character: Character, equipment_id: str, quantity: int = 1
 ) -> tuple[CharacterInventoryItem, int]:
