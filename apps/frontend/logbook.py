@@ -24,6 +24,7 @@ def list_entries() -> list[LogEntry]:
 
 
 DM_AVATAR = "images/dm-256.png"
+DM_FULL = "images/dm-1024.png"
 
 
 def avatar_url(entry: LogEntry) -> str:
@@ -44,7 +45,7 @@ def avatar_url(entry: LogEntry) -> str:
 def full_url(entry: LogEntry) -> str:
     """The whole, unzoomed picture behind `avatar_url`, or "" when there is none."""
     if entry.as_dm:
-        return avatar_url(entry)
+        return static(DM_FULL) if finders.find(DM_FULL) else avatar_url(entry)
     character = entry.character
     if character is None or not character.portrait:
         return ""

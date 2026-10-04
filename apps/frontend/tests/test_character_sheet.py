@@ -1702,3 +1702,33 @@ def test_adding_magic_initiate_by_hand_asks_for_its_list_and_spells(signed_in, a
 
     act(signed_in, fighter, action="feature_remove", feature=feature)
     assert not fighter.spells.filter(source="feat:magic-initiate").exists()
+
+
+def test_hit_points_that_change_the_conditions_ask_for_a_redraw(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    maximum = cleric.hit_point_maximum
+
+    # a plain loss of hit points changes nothing else, so the script needn't redraw
+    assert act(signed_in, cleric, action="hp_delta", delta="-1").json()["refresh"] is False
+
+    # dropping to 0 stores Unconscious (and Prone): the Conditions card must follow at once
+    down = act(signed_in, cleric, action="hp_set", value="0").json()
+    assert down["refresh"] is True
+    cleric.refresh_from_db()
+    assert "unconscious" in cleric.conditions
+
+    # healing ends it; crossing half the maximum flips Bloodied, which also redraws
+    up = act(signed_in, cleric, action="hp_set", value=str(maximum // 2 + 1)).json()
+    assert up["refresh"] is True
+    cleric.refresh_from_db()
+    assert "unconscious" not in cleric.conditions and "prone" in cleric.conditions
+    assert (
+        act(signed_in, cleric, action="hp_set", value=str(maximum // 2)).json()["refresh"] is True
+    )
+
+
+def test_the_slot_descriptions_are_tooltip_data_for_players(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
+    assert 'data-tip-title="Spell Slots"' in html
+    assert "All slots reset after a Long Rest." in html

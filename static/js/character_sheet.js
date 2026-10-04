@@ -818,23 +818,45 @@
     }
   });
 
-  // Spell / Pact Magic slots for someone who cannot tick them by hand: tapping a row shows or hides
-  // what the slots are (the panels are only rendered for them - see `_spellbook.html`).
-  function toggleSlotHelp(row) {
-    var group = row.closest(".cs-level-group");
-    var panel = group && group.querySelector('[data-slot-help="' + row.dataset.slotInfo + '"]');
-    if (!panel) return;
-    panel.hidden = !panel.hidden;
-    row.setAttribute("aria-expanded", panel.hidden ? "false" : "true");
+  // Spell / Pact Magic slots for someone who cannot tick them by hand: tapping a row shows what the
+  // slots are, as a tooltip under it (the same one the coins use); tapping it again or anywhere
+  // else hides it.
+  // (The coin handler above hides any tip on every click, so what was showing is noted first, in
+  // the capture phase.)
+  var slotTipWas = null;
+  document.addEventListener(
+    "click",
+    function () { slotTipWas = coinTip ? coinTip.dataset.for : null; },
+    true
+  );
+  function toggleSlotTip(row) {
+    var was = slotTipWas;
+    slotTipWas = null;
+    hideCoinTip();
+    if (was === row.dataset.slot + "-slot") return;
+    coinTip = document.createElement("div");
+    coinTip.className = "coin-tip slot-tip";
+    coinTip.dataset.for = row.dataset.slot + "-slot";
+    var title = document.createElement("b");
+    title.textContent = row.dataset.tipTitle;
+    coinTip.appendChild(title);
+    coinTip.appendChild(document.createTextNode(row.dataset.tip));
+    document.body.appendChild(coinTip);
+    var r = row.getBoundingClientRect();
+    var w = coinTip.offsetWidth;
+    coinTip.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, r.right - w)) + "px";
+    coinTip.style.top = (r.bottom + 6) + "px";
+    setTimeout(hideCoinTip, 8000);
   }
-  root.addEventListener("click", function (event) {
-    var row = event.target.closest(".cs-slot-row[data-slot-info]");
-    if (row) toggleSlotHelp(row);
+  document.addEventListener("click", function (event) {
+    var row = event.target.closest(".cs-slot-row[data-tip]");
+    if (row) toggleSlotTip(row);
   });
-  root.addEventListener("keydown", function (event) {
+  document.addEventListener("keydown", function (event) {
     if (event.key !== "Enter" && event.key !== " ") return;
-    var row = event.target.closest(".cs-slot-row[data-slot-info]");
-    if (row) { event.preventDefault(); toggleSlotHelp(row); }
+    var row = event.target.closest(".cs-slot-row[data-tip]");
+    slotTipWas = coinTip ? coinTip.dataset.for : null;
+    if (row) { event.preventDefault(); toggleSlotTip(row); }
   });
 
   // Circle of the Land after a Long Rest: take a land (the server checks the choice).

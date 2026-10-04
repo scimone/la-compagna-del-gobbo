@@ -1358,6 +1358,14 @@ def _act_cast(character, post):
     return {"message": _("Cast %(name)s") % {"name": spell.name}, "refresh": redraw}
 
 
+def _act_hp(character, change):
+    """Run a hit point change; the sheet is redrawn when it moved the conditions (0 hit points is
+    Unconscious, half or fewer is Bloodied), which the script cannot work out for itself."""
+    before = (list(character.conditions), conditions.bloodied(character))
+    change()
+    return (list(character.conditions), conditions.bloodied(character)) != before
+
+
 def _act_xp(character, post):
     play.set_experience(character, _int(post, "value"))
     return True  # the progress bar under it moves
@@ -1368,8 +1376,8 @@ def _act_xp(character, post):
 _ACTIONS = {
     "name": lambda c, p: play.rename(c, p.get("value", "")),
     "xp": _act_xp,
-    "hp_delta": lambda c, p: play.adjust_hit_points(c, _int(p, "delta")),
-    "hp_set": lambda c, p: play.set_hit_points(c, _int(p, "value")),
+    "hp_delta": lambda c, p: _act_hp(c, lambda: play.adjust_hit_points(c, _int(p, "delta"))),
+    "hp_set": lambda c, p: _act_hp(c, lambda: play.set_hit_points(c, _int(p, "value"))),
     # The sheet is redrawn: the lowered numbers show on the abilities, saves, skills and so on.
     "hp_max_reduction": lambda c, p: play.set_hit_point_reduction(c, _int(p, "value")) or True,
     "ability_reduction": lambda c, p: (
