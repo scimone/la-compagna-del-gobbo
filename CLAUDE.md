@@ -92,9 +92,10 @@ i18n section for the format and why the two are separate problems.
 `CharacterResource`) and taking a **short/long rest** (per the SRD's Riposo breve/lungo) live in
 `apps/characters/services/play.py`, called by the character sheet's `POST /characters/<id>/act/`
 (see the README). `rules` stays read-only, `builder` stays creation/leveling. Not tracked, so not
-handled: exhaustion, reduced ability scores, the 16 h between long rests, interrupted rests, and
-the class features that choose something at a rest (Arcane Recovery, Natural Recovery, swapping
-prepared spells or weapon mastery).
+handled: exhaustion, the 16 h between long rests (game time, not real time) and the timing of an
+interrupted rest (the player says whether it was interrupted). Handled in `play.py`: reduced max HP /
+ability scores (restored by a long rest), Arcane / Natural Recovery (slots back at a short rest, once per
+long rest) and Natural Recovery's free Circle spell, and the long rest's one Weapon Mastery swap.
 
 ## Environment gotchas
 

@@ -471,7 +471,8 @@ def cast_spell(
       when it is in the spellbook (`in_spellbook`), but it takes 10 minutes longer and cannot be
       upcast.
     - A spell with a free cast (Magic Initiate's) can be cast once without a slot (`free`); the
-      use comes back on a long rest (`long_rest`).
+      use comes back on a long rest (`long_rest`). So can one Circle spell (Natural Recovery), once
+      among all of them.
     - Any other spell must be prepared (or always prepared) and expends one slot of the spell's
       level or higher - `slot_key` is the pool (`"1"`..`"9"` or `"pact"`), `slot_level` the level
       it casts at and `slot_max` how many slots the pool has (both derived by the caller).
@@ -490,10 +491,14 @@ def cast_spell(
     if not is_prepared:
         raise ValueError(f"{spell.name} is not prepared")
     if free:
-        if not row.free_cast or row.free_cast_used:
+        if row.free_cast and not row.free_cast_used:
+            row.free_cast_used = True
+            row.save(update_fields=["free_cast_used"])
+        elif is_circle_spell(row) and natural_free_cast_left(character):
+            character.spell_recoveries_used = [*character.spell_recoveries_used, NATURAL_FREE_CAST]
+            character.save(update_fields=["spell_recoveries_used"])
+        else:
             raise ValueError(f"{spell.name} has no free cast left")
-        row.free_cast_used = True
-        row.save(update_fields=["free_cast_used"])
         return "free"
     if slot_level < spell.level:
         raise ValueError("the slot is too low for this spell")
@@ -725,12 +730,11 @@ def adjust_resource(character: Character, resource_id: int, delta: int) -> None:
 # --- rests -------------------------------------------------------------------------------------
 #
 # SRD "Riposo breve" / "Riposo lungo" (Rules Glossary). What is *not* tracked, so not handled here:
-# an interrupted rest (initiative, a spell that is not a cantrip, damage, an hour of exertion - the
-# player decides whether the rest was completed; the sheet offers "interrupted" on the long rest,
-# which grants the short rest's benefits when an hour had passed), exhaustion and reduced ability
-# scores (the sheet has neither), and the class features that let you choose
-# something at a rest (Arcane Recovery, Natural Recovery, swapping prepared spells or weapon
-# mastery).
+# the timing of an interrupted rest (initiative, a spell that is not a cantrip, damage, an hour of
+# exertion - the player says whether the rest was completed; the long rest offers "interrupted",
+# which grants the short rest's benefits when an hour had passed), exhaustion, and the 16 hours
+# between long rests (game time, not real time). Reduced maximum hit points and ability scores are
+# kept on the character and cleared by a long rest.
 
 
 def hit_dice_left(character: Character) -> dict[str, int]:
@@ -768,6 +772,23 @@ def slot_recovery(character: Character) -> dict | None:
         ):
             return {"name": name, "budget": (row.level + 1) // 2}
     return None
+
+
+#: Natural Recovery's other half: once until a Long Rest, one Circle spell (level 1+) is cast
+#: without a slot. Kept in `spell_recoveries_used` beside the slot recovery, cleared by `long_rest`.
+NATURAL_FREE_CAST = "Natural Recovery free cast"
+
+
+def is_circle_spell(row: CharacterSpell) -> bool:
+    return row.source.startswith("subclass:") and row.spell.level > 0
+
+
+def natural_free_cast_left(character: Character) -> bool:
+    """Whether the Natural Recovery free cast of a Circle spell is still there to use."""
+    return (
+        NATURAL_FREE_CAST not in character.spell_recoveries_used
+        and character.features.filter(feature__name_en="Natural Recovery").exists()
+    )
 
 
 def _require_standing(character: Character) -> None:

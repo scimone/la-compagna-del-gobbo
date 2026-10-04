@@ -563,6 +563,7 @@ def _prepared_limits(stats) -> dict[str, int]:
 def _spellbook_rows(character: Character, can_edit: bool, limits: dict | None = None) -> list[dict]:
     rows = []
     limits = limits or {}
+    natural_free = play.natural_free_cast_left(character)
     for cs in (
         character.spells.select_related("spell", "klass")
         .prefetch_related("spell__saving_throw_abilities")
@@ -589,7 +590,10 @@ def _spellbook_rows(character: Character, can_edit: bool, limits: dict | None = 
                 "source": f"class:{cs.klass_id}" if cs.klass_id else "",
                 "ritual": cs.spell.ritual,
                 "slot": cs.spell.level > 0 and prepared,
-                "free": cs.free_cast and not cs.free_cast_used and cs.spell.level > 0,
+                "free": (
+                    (cs.free_cast and not cs.free_cast_used and cs.spell.level > 0)
+                    or (natural_free and play.is_circle_spell(cs))
+                ),
                 "concentration": cs.spell.concentration,
             }
         row = _spellbook_row(cs.spell, status, removable, cast)
@@ -1295,7 +1299,9 @@ def _act_cast(character, post):
         ritual=post.get("ritual") == "1",
         free=free,
     )
-    return {"message": _("Cast %(name)s") % {"name": spell.name}}
+    # Natural Recovery's free cast is one for all the Circle spells: the others lose theirs too.
+    redraw = free and character.spells.filter(spell=spell, source__startswith="subclass:").exists()
+    return {"message": _("Cast %(name)s") % {"name": spell.name}, "refresh": redraw}
 
 
 def _act_xp(character, post):

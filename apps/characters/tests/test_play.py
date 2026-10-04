@@ -644,3 +644,32 @@ def test_arcane_recovery_brings_back_spent_slots_once_until_a_long_rest(hero):
     play.long_rest(hero)
     hero.refresh_from_db()
     assert play.slot_recovery(hero) is not None
+
+
+def test_natural_recovery_lets_one_circle_spell_be_cast_free_once_per_long_rest(hero):
+    CharacterClass.objects.create(
+        character=hero, klass=Class.objects.get(pk="druid"), level=5, is_starting_class=True
+    )
+    CharacterFeature.objects.create(
+        character=hero, feature=Feature.objects.get(name_en="Natural Recovery")
+    )
+    spells = list(Spell.objects.filter(level=1)[:2])
+    for spell in spells:
+        CharacterSpell.objects.create(
+            character=hero,
+            spell=spell,
+            prepared=True,
+            always_prepared=True,
+            klass_id="druid",
+            source="subclass:589",
+        )
+    assert play.natural_free_cast_left(hero)
+
+    assert play.cast_spell(hero, spells[0].pk, free=True) == "free"
+    assert not play.natural_free_cast_left(hero)
+    with pytest.raises(ValueError):  # one free cast for all the Circle spells
+        play.cast_spell(hero, spells[1].pk, free=True)
+
+    play.long_rest(hero)
+    hero.refresh_from_db()
+    assert play.natural_free_cast_left(hero)
