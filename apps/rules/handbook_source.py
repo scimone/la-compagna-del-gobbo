@@ -83,7 +83,7 @@ def _chapters_source() -> list[dict]:
     """db/handbook.json uses a top-level "data" key (one item per chapter), unlike every other
     db/*.json file's type-named key - a different dump format from a different source pass (see
     docs/data_migration_2025.md - the "Playing the Game" chapter is copied verbatim from
-    db_old/, unchanged; the SRD chapters after it were appended later).
+    the old dump, unchanged; the SRD chapters after it were appended later).
     """
     return _load_json(DB_DIR / "handbook.json")["data"]
 

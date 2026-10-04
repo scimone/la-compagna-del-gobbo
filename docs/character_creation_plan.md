@@ -325,7 +325,7 @@ Key design decisions:
 - **i18n:** all UI strings via `gettext` (`.po` + `.mo`; note the `msgfmt` caveat in CLAUDE.md).
   Game content already translates via modeltranslation. **New vocabulary** needing both languages:
   alignment names/blurbs, ability-method names, step names, trinkets (§10-D5), the D&D-standard
-  Italian terms for the class options above (take from `glossary.md`). Measurements go through
+  Italian terms for the class options above. Measurements go through
   `apps/frontend/units.py` as elsewhere (speed 30 ft → 9 m).
 
 ---

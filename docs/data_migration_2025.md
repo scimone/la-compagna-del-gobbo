@@ -6,8 +6,9 @@ the old one now preserved at `db_old/`. Written *before* touching any model or i
 the mapping is decided deliberately rather than discovered file-by-file while coding (the same
 discipline the README's "Known data-import issues" section calls for on the old format).
 
-`db_old/` is kept in the repo as a permanent historical snapshot — one field (Spell class lists,
-see below) is intentionally still sourced from it going forward, so it isn't a throwaway.
+`db_old/` has since been deleted from the repo. The one thing still needed from it (Spell class
+lists, see below) now lives in `db/spell_classes.json`; the other `db_old/...` mentions in this
+document are historical.
 
 ## 1. What changed, project-wide
 
@@ -68,8 +69,7 @@ an optional trailing `|source`, don't require exact string equality.
 
 ## 2. Decisions made (confirmed with the user before implementing)
 
-- **HandbookSection**: `db_old/handbook.json` is copied to `db/handbook.json` (not moved —
-  `db_old/` stays a complete snapshot). `_import_handbook`/`_load_handbook` keep working exactly
+- **HandbookSection**: `db_old/handbook.json` was copied to `db/handbook.json`. `_import_handbook`/`_load_handbook` keep working exactly
   as they do today; no model or logic change needed here. `Ability` import switches away from
   scraping this file's "Ability Descriptions" table (see §3.1) now that `db/abilities.json`
   exists as a first-party source — `handbook.json` is now used for `HandbookSection` only.
@@ -80,7 +80,7 @@ an optional trailing `|source`, don't require exact string equality.
   list), not in `rules.json`'s variant rules. All 391 spell names match exactly between
   `db/spells.json` and `db_old/spells.json` (verified: empty symmetric difference), so these two
   fields are populated from `db_old/spells.json`'s `classes`/`subclasses` arrays, joined by exact
-  spell name, as a **frozen supplemental source** — this is a deliberate, documented exception to
+  spell name (now extracted to `db/spell_classes.json`, Artificer already removed), as a **frozen supplemental source** — this is a deliberate, documented exception to
   "only `db/` is live source data," kept until upstream ships a real replacement. Flagged with a
   comment at the import site, not silently done.
 - **Lore fields** (`Species.lore`, `Background.lore`, `Class.lore`): no fluff/foundry file ships

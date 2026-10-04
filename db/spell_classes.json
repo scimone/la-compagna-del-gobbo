@@ -1,0 +1,4916 @@
+{
+  "Acid Splash": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Evoker"
+    ]
+  },
+  "Aid": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid",
+      "Paladin",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Life Domain",
+      "Cleric: Peace Domain",
+      "Cleric: Solidarity Domain (PSA)",
+      "Paladin: Oath of Devotion",
+      "Sorcerer: Clockwork Sorcery",
+      "Sorcerer: Clockwork Soul",
+      "Sorcerer: Divine Soul",
+      "Warlock: Celestial Patron"
+    ]
+  },
+  "Alarm": {
+    "classes": [
+      "Ranger",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of the Watchers",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Clockwork Sorcery",
+      "Sorcerer: Clockwork Soul",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Alter Self": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Druid: Circle of the Moon",
+      "Fighter: Eldritch Knight",
+      "Ranger: Hollow Warden",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Draconic Sorcery",
+      "Sorcerer: Lunar Sorcery"
+    ]
+  },
+  "Animal Friendship": {
+    "classes": [
+      "Bard",
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Nature Domain"
+    ]
+  },
+  "Animal Messenger": {
+    "classes": [
+      "Bard",
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore"
+    ]
+  },
+  "Animal Shapes": {
+    "classes": [
+      "Druid"
+    ],
+    "subclasses": []
+  },
+  "Animate Dead": {
+    "classes": [
+      "Cleric",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Death Domain",
+      "Druid: Circle of Spores",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oathbreaker",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Animate Objects": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Forge Domain"
+    ]
+  },
+  "Antilife Shell": {
+    "classes": [
+      "Druid"
+    ],
+    "subclasses": [
+      "Cleric: Death Domain",
+      "Cleric: Grave Domain",
+      "Warlock: The Undead",
+      "Warlock: Undead Patron"
+    ]
+  },
+  "Antimagic Field": {
+    "classes": [
+      "Cleric",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Sorcerer: Divine Soul",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Antipathy/Sympathy": {
+    "classes": [
+      "Bard",
+      "Druid",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Arcane Eye": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Cleric: Knowledge Domain",
+      "Cleric: Knowledge Domain (PSA)",
+      "Cleric: Light Domain",
+      "Fighter: Eldritch Knight",
+      "Ranger: Swarmkeeper",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Draconic Sorcery",
+      "Wizard: Diviner"
+    ]
+  },
+  "Arcane Gate": {
+    "classes": [
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Arcane Lock": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Arcane Vigor": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Armor of Agathys": {
+    "classes": [
+      "Warlock"
+    ],
+    "subclasses": [
+      "Paladin: Oath of Conquest"
+    ]
+  },
+  "Arms of Hadar": {
+    "classes": [
+      "Warlock"
+    ],
+    "subclasses": [
+      "Sorcerer: Aberrant Mind",
+      "Sorcerer: Aberrant Sorcery"
+    ]
+  },
+  "Astral Projection": {
+    "classes": [
+      "Cleric",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Augury": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Barbarian: Path of the Ancestral Guardian",
+      "Bard: College of Lore",
+      "Cleric: Knowledge Domain",
+      "Cleric: Knowledge Domain (PSA)",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul",
+      "Wizard: Diviner"
+    ]
+  },
+  "Aura of Life": {
+    "classes": [
+      "Cleric",
+      "Paladin"
+    ],
+    "subclasses": [
+      "Cleric: Life Domain",
+      "Cleric: Solidarity Domain (PSA)",
+      "Cleric: Twilight Domain",
+      "Druid: Circle of Wildfire",
+      "Sorcerer: Divine Soul",
+      "Warlock: The Undying"
+    ]
+  },
+  "Aura of Purity": {
+    "classes": [
+      "Cleric",
+      "Paladin"
+    ],
+    "subclasses": [
+      "Cleric: Peace Domain",
+      "Paladin: Oath of the Watchers",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Aura of Vitality": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Paladin"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Twilight Domain",
+      "Paladin: Oath of the Crown",
+      "Sorcerer: Divine Soul",
+      "Sorcerer: Spellfire Sorcery"
+    ]
+  },
+  "Awaken": {
+    "classes": [
+      "Bard",
+      "Druid"
+    ],
+    "subclasses": []
+  },
+  "Bane": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Warlock"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Ambition Domain (PSA)",
+      "Cleric: Grave Domain",
+      "Paladin: Oath of Vengeance",
+      "Sorcerer: Divine Soul",
+      "Sorcerer: Shadow Sorcery",
+      "Warlock: The Undead",
+      "Warlock: Undead Patron"
+    ]
+  },
+  "Banishing Smite": {
+    "classes": [
+      "Paladin"
+    ],
+    "subclasses": [
+      "Paladin: Oath of the Noble Genies",
+      "Warlock: The Hexblade"
+    ]
+  },
+  "Banishment": {
+    "classes": [
+      "Cleric",
+      "Paladin",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Knowledge Domain",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of the Crown",
+      "Paladin: Oath of the Watchers",
+      "Paladin: Oath of Vengeance",
+      "Ranger: Horizon Walker",
+      "Ranger: Monster Slayer",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Barkskin": {
+    "classes": [
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Nature Domain",
+      "Druid: Circle of the Land"
+    ]
+  },
+  "Beacon of Hope": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Life Domain",
+      "Cleric: Peace Domain",
+      "Cleric: Solidarity Domain (PSA)",
+      "Paladin: Oath of Devotion",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Beast Sense": {
+    "classes": [
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Barbarian: Path of the Totem Warrior",
+      "Barbarian: Path of the Wild Heart",
+      "Bard: College of Lore"
+    ]
+  },
+  "Befuddlement": {
+    "classes": [
+      "Bard",
+      "Druid",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Bestow Curse": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Ambition Domain (PSA)",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of Conquest",
+      "Paladin: Oathbreaker",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Bigby's Hand": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Warlock: The Fathomless",
+      "Wizard: Evoker"
+    ]
+  },
+  "Blade Barrier": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Blade Ward": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Rogue: Scion of the Three",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Bless": {
+    "classes": [
+      "Cleric",
+      "Paladin"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Life Domain",
+      "Cleric: Solidarity Domain (PSA)",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Blight": {
+    "classes": [
+      "Druid",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Death Domain",
+      "Cleric: Grave Domain",
+      "Druid: Circle of Spores",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oathbreaker",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Blinding Smite": {
+    "classes": [
+      "Paladin"
+    ],
+    "subclasses": []
+  },
+  "Blindness/Deafness": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Death Domain",
+      "Druid: Circle of Spores",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul",
+      "Sorcerer: Lunar Sorcery",
+      "Warlock: The Fiend",
+      "Warlock: The Undead",
+      "Warlock: The Undying",
+      "Warlock: Undead Patron"
+    ]
+  },
+  "Blink": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Trickery Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Warlock: Archfey Patron",
+      "Warlock: The Archfey",
+      "Warlock: The Hexblade"
+    ]
+  },
+  "Blur": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Warlock: The Genie",
+      "Warlock: The Hexblade",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Burning Hands": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Light Domain",
+      "Druid: Circle of the Land",
+      "Druid: Circle of Wildfire",
+      "Fighter: Eldritch Knight",
+      "Monk: Way of the Sun Soul",
+      "Rogue: Arcane Trickster",
+      "Warlock: Fiend Patron",
+      "Warlock: The Fiend",
+      "Warlock: The Genie",
+      "Wizard: Evoker"
+    ]
+  },
+  "Call Lightning": {
+    "classes": [
+      "Druid"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Tempest Domain",
+      "Druid: Circle of the Land"
+    ]
+  },
+  "Calm Emotions": {
+    "classes": [
+      "Bard",
+      "Cleric"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Paladin: Oath of Redemption",
+      "Sorcerer: Aberrant Mind",
+      "Sorcerer: Aberrant Sorcery",
+      "Sorcerer: Divine Soul",
+      "Warlock: Archfey Patron",
+      "Warlock: The Archfey"
+    ]
+  },
+  "Chain Lightning": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Evoker"
+    ]
+  },
+  "Charm Monster": {
+    "classes": [
+      "Bard",
+      "Druid",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Draconic Sorcery"
+    ]
+  },
+  "Charm Person": {
+    "classes": [
+      "Bard",
+      "Druid",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Glamour",
+      "Bard: College of Lore",
+      "Cleric: Trickery Domain",
+      "Fighter: Eldritch Knight",
+      "Ranger: Fey Wanderer",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Chill Touch": {
+    "classes": [
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Cleric: Death Domain",
+      "Druid: Circle of Spores",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Rogue: Scion of the Three"
+    ]
+  },
+  "Chromatic Orb": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of the Noble Genies",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Draconic Sorcery",
+      "Wizard: Evoker"
+    ]
+  },
+  "Circle of Death": {
+    "classes": [
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Circle of Power": {
+    "classes": [
+      "Cleric",
+      "Paladin",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Solidarity Domain (PSA)",
+      "Cleric: Twilight Domain",
+      "Paladin: Oath of the Crown",
+      "Sorcerer: Divine Soul",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Clairvoyance": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Barbarian: Path of the Ancestral Guardian",
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul",
+      "Warlock: Great Old One Patron",
+      "Warlock: The Great Old One",
+      "Wizard: Diviner"
+    ]
+  },
+  "Clone": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Cloud of Daggers": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Cloudkill": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Death Domain",
+      "Druid: Circle of Spores",
+      "Druid: Circle of the Land",
+      "Paladin: Oath of Conquest",
+      "Warlock: The Undead",
+      "Warlock: Undead Patron"
+    ]
+  },
+  "Color Spray": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Lunar Sorcery",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Command": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Paladin"
+    ],
+    "subclasses": [
+      "Bard: College of Glamour",
+      "Bard: College of Lore",
+      "Cleric: Knowledge Domain",
+      "Cleric: Knowledge Domain (PSA)",
+      "Cleric: Order Domain",
+      "Paladin: Oath of Conquest",
+      "Paladin: Oath of the Crown",
+      "Sorcerer: Divine Soul",
+      "Sorcerer: Draconic Sorcery",
+      "Warlock: Fiend Patron",
+      "Warlock: The Fiend"
+    ]
+  },
+  "Commune": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Cleric: Order Domain",
+      "Paladin: Oath of Devotion",
+      "Paladin: Oath of Glory",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Commune with Nature": {
+    "classes": [
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Barbarian: Path of the Totem Warrior",
+      "Barbarian: Path of the Wild Heart",
+      "Druid: Circle of the Land",
+      "Paladin: Oath of the Ancients"
+    ]
+  },
+  "Compelled Duel": {
+    "classes": [
+      "Paladin"
+    ],
+    "subclasses": [
+      "Paladin: Oath of the Crown"
+    ]
+  },
+  "Comprehend Languages": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Knowledge Domain",
+      "Fighter: Banneret",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Diviner"
+    ]
+  },
+  "Compulsion": {
+    "classes": [
+      "Bard"
+    ],
+    "subclasses": [
+      "Cleric: Order Domain",
+      "Paladin: Oath of Glory"
+    ]
+  },
+  "Cone of Cold": {
+    "classes": [
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Druid: Circle of the Land",
+      "Ranger: Winter Walker",
+      "Warlock: The Fathomless",
+      "Warlock: The Genie",
+      "Warlock: The Hexblade",
+      "Wizard: Evoker"
+    ]
+  },
+  "Confusion": {
+    "classes": [
+      "Bard",
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Knowledge Domain",
+      "Cleric: Knowledge Domain (PSA)",
+      "Cleric: Trickery Domain",
+      "Druid: Circle of Spores",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oathbreaker",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Lunar Sorcery",
+      "Warlock: Great Old One Patron"
+    ]
+  },
+  "Conjure Animals": {
+    "classes": [
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Druid: Circle of the Moon"
+    ]
+  },
+  "Conjure Barrage": {
+    "classes": [
+      "Ranger"
+    ],
+    "subclasses": []
+  },
+  "Conjure Celestial": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Conjure Elemental": {
+    "classes": [
+      "Druid",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Druid: Circle of the Land",
+      "Druid: Circle of the Sea"
+    ]
+  },
+  "Conjure Fey": {
+    "classes": [
+      "Druid"
+    ],
+    "subclasses": []
+  },
+  "Conjure Minor Elementals": {
+    "classes": [
+      "Druid",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of the Noble Genies",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Conjure Volley": {
+    "classes": [
+      "Ranger"
+    ],
+    "subclasses": []
+  },
+  "Conjure Woodland Beings": {
+    "classes": [
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": []
+  },
+  "Contact Other Plane": {
+    "classes": [
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Paladin: Oath of the Noble Genies",
+      "Wizard: Diviner"
+    ]
+  },
+  "Contagion": {
+    "classes": [
+      "Cleric",
+      "Druid"
+    ],
+    "subclasses": [
+      "Druid: Circle of Spores",
+      "Paladin: Oathbreaker",
+      "Sorcerer: Divine Soul",
+      "Sorcerer: Shadow Sorcery",
+      "Warlock: The Undying"
+    ]
+  },
+  "Contingency": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Continual Flame": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul",
+      "Wizard: Evoker"
+    ]
+  },
+  "Control Water": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Tempest Domain",
+      "Druid: Circle of the Land",
+      "Druid: Circle of the Sea",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul",
+      "Warlock: The Fathomless",
+      "Warlock: The Genie"
+    ]
+  },
+  "Control Weather": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Cordon of Arrows": {
+    "classes": [
+      "Ranger"
+    ],
+    "subclasses": []
+  },
+  "Counterspell": {
+    "classes": [
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of Redemption",
+      "Paladin: Oath of the Watchers",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Spellfire Sorcery",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Create Food and Water": {
+    "classes": [
+      "Cleric",
+      "Paladin"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Druid: Circle of the Land",
+      "Sorcerer: Divine Soul",
+      "Warlock: The Genie"
+    ]
+  },
+  "Create or Destroy Water": {
+    "classes": [
+      "Cleric",
+      "Druid"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Sorcerer: Divine Soul",
+      "Warlock: The Fathomless"
+    ]
+  },
+  "Create Undead": {
+    "classes": [
+      "Cleric",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Creation": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Forge Domain",
+      "Sorcerer: Shadow Sorcery",
+      "Warlock: The Genie",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Crown of Madness": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oathbreaker",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Crusader's Mantle": {
+    "classes": [
+      "Paladin"
+    ],
+    "subclasses": [
+      "Cleric: Solidarity Domain (PSA)",
+      "Cleric: War Domain"
+    ]
+  },
+  "Cure Wounds": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid",
+      "Paladin",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Life Domain",
+      "Druid: Circle of the Moon",
+      "Druid: Circle of Wildfire",
+      "Sorcerer: Divine Soul",
+      "Sorcerer: Spellfire Sorcery",
+      "Warlock: Celestial Patron",
+      "Warlock: The Celestial"
+    ]
+  },
+  "Dancing Lights": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Darkness": {
+    "classes": [
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Monk: Warrior of Shadow",
+      "Monk: Way of Shadow",
+      "Paladin: Oathbreaker",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Shadow Magic",
+      "Sorcerer: Shadow Sorcery",
+      "Wizard: Evoker"
+    ]
+  },
+  "Darkvision": {
+    "classes": [
+      "Druid",
+      "Ranger",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Monk: Way of Shadow",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Daylight": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Paladin",
+      "Ranger",
+      "Sorcerer"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Light Domain",
+      "Druid: Circle of the Land",
+      "Sorcerer: Divine Soul",
+      "Warlock: Celestial Patron",
+      "Warlock: The Celestial"
+    ]
+  },
+  "Death Ward": {
+    "classes": [
+      "Cleric",
+      "Paladin"
+    ],
+    "subclasses": [
+      "Cleric: Ambition Domain (PSA)",
+      "Cleric: Death Domain",
+      "Cleric: Grave Domain",
+      "Cleric: Life Domain",
+      "Sorcerer: Divine Soul",
+      "Sorcerer: Lunar Sorcery",
+      "Warlock: The Undead",
+      "Warlock: The Undying"
+    ]
+  },
+  "Delayed Blast Fireball": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Evoker"
+    ]
+  },
+  "Demiplane": {
+    "classes": [
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Destructive Wave": {
+    "classes": [
+      "Paladin"
+    ],
+    "subclasses": [
+      "Cleric: Strength Domain (PSA)",
+      "Cleric: Tempest Domain",
+      "Cleric: Zeal Domain (PSA)"
+    ]
+  },
+  "Detect Evil and Good": {
+    "classes": [
+      "Cleric",
+      "Paladin"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Grave Domain",
+      "Sorcerer: Divine Soul",
+      "Warlock: The Genie"
+    ]
+  },
+  "Detect Magic": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid",
+      "Paladin",
+      "Ranger",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Cleric: Knowledge Domain",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of the Watchers",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul",
+      "Wizard: Diviner"
+    ]
+  },
+  "Detect Poison and Disease": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Paladin",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Detect Thoughts": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Knowledge Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Aberrant Mind",
+      "Sorcerer: Aberrant Sorcery",
+      "Warlock: Great Old One Patron",
+      "Warlock: The Great Old One",
+      "Wizard: Diviner"
+    ]
+  },
+  "Dimension Door": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Ambition Domain (PSA)",
+      "Cleric: Trickery Domain",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of Vengeance",
+      "Ranger: Fey Wanderer",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Disguise Self": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Ambition Domain (PSA)",
+      "Cleric: Trickery Domain",
+      "Fighter: Eldritch Knight",
+      "Ranger: Gloom Stalker",
+      "Rogue: Arcane Trickster",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Disintegrate": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Dispel Evil and Good": {
+    "classes": [
+      "Cleric",
+      "Paladin"
+    ],
+    "subclasses": [
+      "Cleric: Grave Domain",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Dispel Magic": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid",
+      "Paladin",
+      "Ranger",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Cleric: Knowledge Domain",
+      "Cleric: Trickery Domain",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of Devotion",
+      "Ranger: Fey Wanderer",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Clockwork Sorcery",
+      "Sorcerer: Clockwork Soul",
+      "Sorcerer: Divine Soul",
+      "Sorcerer: Lunar Sorcery",
+      "Sorcerer: Spellfire Sorcery",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Dissonant Whispers": {
+    "classes": [
+      "Bard"
+    ],
+    "subclasses": [
+      "Sorcerer: Aberrant Mind",
+      "Sorcerer: Aberrant Sorcery",
+      "Warlock: Great Old One Patron",
+      "Warlock: The Great Old One"
+    ]
+  },
+  "Divination": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul",
+      "Wizard: Diviner"
+    ]
+  },
+  "Divine Favor": {
+    "classes": [
+      "Paladin"
+    ],
+    "subclasses": [
+      "Cleric: Strength Domain (PSA)",
+      "Cleric: War Domain"
+    ]
+  },
+  "Divine Smite": {
+    "classes": [
+      "Paladin"
+    ],
+    "subclasses": []
+  },
+  "Divine Word": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Dominate Beast": {
+    "classes": [
+      "Druid",
+      "Ranger",
+      "Sorcerer"
+    ],
+    "subclasses": [
+      "Cleric: Nature Domain",
+      "Cleric: Strength Domain (PSA)",
+      "Paladin: Oath of Conquest",
+      "Ranger: Hollow Warden",
+      "Warlock: Archfey Patron",
+      "Warlock: The Archfey",
+      "Warlock: The Great Old One"
+    ]
+  },
+  "Dominate Monster": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Dominate Person": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Ambition Domain (PSA)",
+      "Cleric: Order Domain",
+      "Cleric: Trickery Domain",
+      "Paladin: Oath of Conquest",
+      "Paladin: Oathbreaker",
+      "Warlock: Archfey Patron",
+      "Warlock: The Archfey",
+      "Warlock: The Great Old One"
+    ]
+  },
+  "Dragon's Breath": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Draconic Sorcery"
+    ]
+  },
+  "Drawmij's Instant Summons": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Dream": {
+    "classes": [
+      "Bard",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Druid: Circle of the Land",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Druidcraft": {
+    "classes": [
+      "Druid"
+    ],
+    "subclasses": [
+      "Barbarian: Path of the Giant",
+      "Bard: College of Lore",
+      "Bard: College of the Moon",
+      "Cleric: Nature Domain",
+      "Cleric: Strength Domain (PSA)",
+      "Druid: Circle of the Land",
+      "Fighter: Arcane Archer"
+    ]
+  },
+  "Earthquake": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Sorcerer"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Eldritch Blast": {
+    "classes": [
+      "Warlock"
+    ],
+    "subclasses": []
+  },
+  "Elemental Weapon": {
+    "classes": [
+      "Druid",
+      "Paladin",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Forge Domain",
+      "Warlock: The Hexblade"
+    ]
+  },
+  "Elementalism": {
+    "classes": [
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Bard: College of the Moon",
+      "Cleric: Arcana Domain",
+      "Cleric: Nature Domain",
+      "Cleric: Strength Domain (PSA)",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Monk: Warrior of the Elements",
+      "Paladin: Oath of the Noble Genies",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Enhance Ability": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid",
+      "Ranger",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Strength Domain (PSA)",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of Glory",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Enlarge/Reduce": {
+    "classes": [
+      "Bard",
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Ensnaring Strike": {
+    "classes": [
+      "Ranger"
+    ],
+    "subclasses": [
+      "Paladin: Oath of the Ancients"
+    ]
+  },
+  "Entangle": {
+    "classes": [
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore"
+    ]
+  },
+  "Enthrall": {
+    "classes": [
+      "Bard",
+      "Warlock"
+    ],
+    "subclasses": []
+  },
+  "Etherealness": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Evard's Black Tentacles": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Aberrant Mind",
+      "Sorcerer: Aberrant Sorcery",
+      "Warlock: The Fathomless",
+      "Warlock: The Great Old One"
+    ]
+  },
+  "Expeditious Retreat": {
+    "classes": [
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Eyebite": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Fabricate": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Forge Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Faerie Fire": {
+    "classes": [
+      "Bard",
+      "Druid"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Light Domain",
+      "Cleric: Twilight Domain",
+      "Ranger: Swarmkeeper",
+      "Warlock: Archfey Patron",
+      "Warlock: The Archfey"
+    ]
+  },
+  "False Life": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Death Domain",
+      "Cleric: Grave Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Warlock: The Undead",
+      "Warlock: The Undying"
+    ]
+  },
+  "Fear": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of Conquest",
+      "Ranger: Gloom Stalker",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Draconic Sorcery",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Feather Fall": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Feign Death": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul",
+      "Warlock: The Undying"
+    ]
+  },
+  "Find Familiar": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Find Steed": {
+    "classes": [
+      "Paladin"
+    ],
+    "subclasses": []
+  },
+  "Find the Path": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Find Traps": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Finger of Death": {
+    "classes": [
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Fire Bolt": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Evoker"
+    ]
+  },
+  "Fire Shield": {
+    "classes": [
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: War Domain",
+      "Cleric: Zeal Domain (PSA)",
+      "Druid: Circle of Wildfire",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Spellfire Sorcery",
+      "Warlock: Fiend Patron",
+      "Warlock: The Fiend",
+      "Warlock: The Genie",
+      "Wizard: Evoker"
+    ]
+  },
+  "Fire Storm": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Sorcerer"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Fireball": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Light Domain",
+      "Cleric: Zeal Domain (PSA)",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Warlock: Fiend Patron",
+      "Warlock: The Fiend",
+      "Warlock: The Genie",
+      "Wizard: Evoker"
+    ]
+  },
+  "Flame Blade": {
+    "classes": [
+      "Druid",
+      "Sorcerer"
+    ],
+    "subclasses": [
+      "Bard: College of Lore"
+    ]
+  },
+  "Flame Strike": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Cleric: Light Domain",
+      "Cleric: War Domain",
+      "Cleric: Zeal Domain (PSA)",
+      "Druid: Circle of Wildfire",
+      "Paladin: Oath of Devotion",
+      "Paladin: Oath of Glory",
+      "Sorcerer: Divine Soul",
+      "Sorcerer: Spellfire Sorcery",
+      "Warlock: The Celestial",
+      "Warlock: The Fiend",
+      "Warlock: The Genie"
+    ]
+  },
+  "Flaming Sphere": {
+    "classes": [
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Light Domain",
+      "Druid: Circle of Wildfire",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Warlock: The Celestial"
+    ]
+  },
+  "Flesh to Stone": {
+    "classes": [
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Fly": {
+    "classes": [
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of the Noble Genies",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Draconic Sorcery"
+    ]
+  },
+  "Fog Cloud": {
+    "classes": [
+      "Druid",
+      "Ranger",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Tempest Domain",
+      "Druid: Circle of the Land",
+      "Druid: Circle of the Sea",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Warlock: The Genie"
+    ]
+  },
+  "Forbiddance": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Forcecage": {
+    "classes": [
+      "Bard",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Evoker"
+    ]
+  },
+  "Foresight": {
+    "classes": [
+      "Bard",
+      "Druid",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Diviner"
+    ]
+  },
+  "Fount of Moonlight": {
+    "classes": [
+      "Bard",
+      "Druid"
+    ],
+    "subclasses": [
+      "Druid: Circle of the Moon"
+    ]
+  },
+  "Freedom of Movement": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Cleric: War Domain",
+      "Cleric: Zeal Domain (PSA)",
+      "Druid: Circle of the Land",
+      "Paladin: Oath of Devotion",
+      "Paladin: Oath of Glory",
+      "Sorcerer: Clockwork Sorcery",
+      "Sorcerer: Clockwork Soul",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Friends": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Gaseous Form": {
+    "classes": [
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Druid: Circle of Spores",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of the Noble Genies",
+      "Ranger: Swarmkeeper",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Gate": {
+    "classes": [
+      "Cleric",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Geas": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid",
+      "Paladin",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Paladin: Oath of the Crown",
+      "Sorcerer: Divine Soul",
+      "Warlock: Fiend Patron"
+    ]
+  },
+  "Gentle Repose": {
+    "classes": [
+      "Cleric",
+      "Paladin",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Grave Domain",
+      "Druid: Circle of Spores",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Giant Insect": {
+    "classes": [
+      "Druid"
+    ],
+    "subclasses": []
+  },
+  "Glibness": {
+    "classes": [
+      "Bard",
+      "Warlock"
+    ],
+    "subclasses": []
+  },
+  "Globe of Invulnerability": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Glyph of Warding": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Goodberry": {
+    "classes": [
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore"
+    ]
+  },
+  "Grasping Vine": {
+    "classes": [
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Cleric: Nature Domain"
+    ]
+  },
+  "Grease": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Greater Invisibility": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Twilight Domain",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Ranger: Gloom Stalker",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Shadow Sorcery",
+      "Warlock: Archfey Patron",
+      "Warlock: The Archfey",
+      "Warlock: The Genie",
+      "Warlock: The Undead",
+      "Warlock: Undead Patron",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Greater Restoration": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid",
+      "Paladin",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Cleric: Life Domain",
+      "Cleric: Peace Domain",
+      "Sorcerer: Clockwork Sorcery",
+      "Sorcerer: Clockwork Soul",
+      "Sorcerer: Divine Soul",
+      "Sorcerer: Spellfire Sorcery",
+      "Warlock: Celestial Patron",
+      "Warlock: The Celestial"
+    ]
+  },
+  "Guardian of Faith": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Cleric: Life Domain",
+      "Cleric: Light Domain",
+      "Cleric: Solidarity Domain (PSA)",
+      "Paladin: Oath of Devotion",
+      "Paladin: Oath of the Crown",
+      "Sorcerer: Divine Soul",
+      "Warlock: Celestial Patron",
+      "Warlock: The Celestial"
+    ]
+  },
+  "Guards and Wards": {
+    "classes": [
+      "Bard",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Guidance": {
+    "classes": [
+      "Cleric",
+      "Druid"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Bard: College of Spirits",
+      "Bard: College of the Moon",
+      "Cleric: Nature Domain",
+      "Cleric: Strength Domain (PSA)",
+      "Druid: Circle of Stars",
+      "Druid: Circle of the Land",
+      "Druid: Circle of the Stars",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Guiding Bolt": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Solidarity Domain (PSA)",
+      "Cleric: War Domain",
+      "Druid: Circle of Stars",
+      "Druid: Circle of the Stars",
+      "Paladin: Oath of Glory",
+      "Sorcerer: Divine Soul",
+      "Sorcerer: Spellfire Sorcery",
+      "Warlock: Celestial Patron",
+      "Warlock: The Celestial"
+    ]
+  },
+  "Gust of Wind": {
+    "classes": [
+      "Druid",
+      "Ranger",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Tempest Domain",
+      "Druid: Circle of the Sea",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Warlock: The Fathomless",
+      "Warlock: The Genie",
+      "Wizard: Evoker"
+    ]
+  },
+  "Hail of Thorns": {
+    "classes": [
+      "Ranger"
+    ],
+    "subclasses": []
+  },
+  "Hallow": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul",
+      "Warlock: The Fiend"
+    ]
+  },
+  "Hallucinatory Terrain": {
+    "classes": [
+      "Bard",
+      "Druid",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Lunar Sorcery",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Harm": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Haste": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Strength Domain (PSA)",
+      "Cleric: Zeal Domain (PSA)",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of Glory",
+      "Paladin: Oath of Vengeance",
+      "Ranger: Horizon Walker",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Heal": {
+    "classes": [
+      "Cleric",
+      "Druid"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Healing Word": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Heat Metal": {
+    "classes": [
+      "Bard",
+      "Druid"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Forge Domain"
+    ]
+  },
+  "Hellish Rebuke": {
+    "classes": [
+      "Warlock"
+    ],
+    "subclasses": [
+      "Paladin: Oathbreaker"
+    ]
+  },
+  "Heroes' Feast": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Heroism": {
+    "classes": [
+      "Bard",
+      "Paladin"
+    ],
+    "subclasses": [
+      "Cleric: Order Domain",
+      "Cleric: Peace Domain",
+      "Paladin: Oath of Glory"
+    ]
+  },
+  "Hex": {
+    "classes": [
+      "Warlock"
+    ],
+    "subclasses": [
+      "Warlock: Great Old One Patron"
+    ]
+  },
+  "Hold Monster": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: War Domain",
+      "Druid: Circle of the Sea",
+      "Paladin: Oath of Redemption",
+      "Paladin: Oath of the Watchers",
+      "Paladin: Oath of Vengeance",
+      "Ranger: Monster Slayer",
+      "Sorcerer: Lunar Sorcery"
+    ]
+  },
+  "Hold Person": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Order Domain",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of Conquest",
+      "Paladin: Oath of Redemption",
+      "Paladin: Oath of Vengeance",
+      "Ranger: Winter Walker",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Holy Aura": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Hunger of Hadar": {
+    "classes": [
+      "Warlock"
+    ],
+    "subclasses": [
+      "Sorcerer: Aberrant Mind",
+      "Sorcerer: Aberrant Sorcery",
+      "Sorcerer: Shadow Sorcery",
+      "Warlock: Great Old One Patron"
+    ]
+  },
+  "Hunter's Mark": {
+    "classes": [
+      "Ranger"
+    ],
+    "subclasses": [
+      "Paladin: Oath of Vengeance"
+    ]
+  },
+  "Hypnotic Pattern": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Trickery Domain",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of Redemption",
+      "Rogue: Arcane Trickster",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Ice Knife": {
+    "classes": [
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Ranger: Winter Walker",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Ice Storm": {
+    "classes": [
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Tempest Domain",
+      "Druid: Circle of the Land",
+      "Druid: Circle of the Sea",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of the Ancients",
+      "Ranger: Winter Walker",
+      "Rogue: Arcane Trickster",
+      "Wizard: Evoker"
+    ]
+  },
+  "Identify": {
+    "classes": [
+      "Bard",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Forge Domain",
+      "Cleric: Knowledge Domain",
+      "Cleric: Knowledge Domain (PSA)",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Diviner"
+    ]
+  },
+  "Illusory Script": {
+    "classes": [
+      "Bard",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Imprisonment": {
+    "classes": [
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Incendiary Cloud": {
+    "classes": [
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Inflict Wounds": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Paladin: Oathbreaker",
+      "Sorcerer: Divine Soul",
+      "Sorcerer: Shadow Sorcery"
+    ]
+  },
+  "Insect Plague": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Sorcerer"
+    ],
+    "subclasses": [
+      "Cleric: Nature Domain",
+      "Cleric: Strength Domain (PSA)",
+      "Cleric: Tempest Domain",
+      "Druid: Circle of the Land",
+      "Ranger: Swarmkeeper",
+      "Sorcerer: Divine Soul",
+      "Warlock: Fiend Patron"
+    ]
+  },
+  "Invisibility": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Trickery Domain",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Jallarzi's Storm of Radiance": {
+    "classes": [
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Wizard: Evoker"
+    ]
+  },
+  "Jump": {
+    "classes": [
+      "Druid",
+      "Ranger",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Knock": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Legend Lore": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Knowledge Domain",
+      "Cleric: Knowledge Domain (PSA)",
+      "Paladin: Oath of Glory",
+      "Sorcerer: Divine Soul",
+      "Sorcerer: Draconic Sorcery",
+      "Warlock: The Undying",
+      "Wizard: Diviner"
+    ]
+  },
+  "Leomund's Secret Chest": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Leomund's Tiny Hut": {
+    "classes": [
+      "Bard",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Twilight Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Evoker"
+    ]
+  },
+  "Lesser Restoration": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid",
+      "Paladin",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Life Domain",
+      "Paladin: Oath of Devotion",
+      "Sorcerer: Clockwork Sorcery",
+      "Sorcerer: Clockwork Soul",
+      "Sorcerer: Divine Soul",
+      "Sorcerer: Lunar Sorcery",
+      "Sorcerer: Spellfire Sorcery",
+      "Warlock: Celestial Patron",
+      "Warlock: The Celestial"
+    ]
+  },
+  "Levitate": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Light": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Cleric: Light Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul",
+      "Warlock: Celestial Patron",
+      "Warlock: The Celestial",
+      "Wizard: Evoker"
+    ]
+  },
+  "Lightning Arrow": {
+    "classes": [
+      "Ranger"
+    ],
+    "subclasses": []
+  },
+  "Lightning Bolt": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Druid: Circle of the Land",
+      "Druid: Circle of the Sea",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Warlock: The Fathomless",
+      "Wizard: Evoker"
+    ]
+  },
+  "Locate Animals or Plants": {
+    "classes": [
+      "Bard",
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore"
+    ]
+  },
+  "Locate Creature": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid",
+      "Paladin",
+      "Ranger",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Order Domain",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul",
+      "Wizard: Diviner"
+    ]
+  },
+  "Locate Object": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid",
+      "Paladin",
+      "Ranger",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul",
+      "Wizard: Diviner"
+    ]
+  },
+  "Longstrider": {
+    "classes": [
+      "Bard",
+      "Druid",
+      "Ranger",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Mage Armor": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Mage Hand": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Fighter: Eldritch Knight",
+      "Ranger: Swarmkeeper",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Magic Circle": {
+    "classes": [
+      "Cleric",
+      "Paladin",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Fighter: Eldritch Knight",
+      "Ranger: Monster Slayer",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Magic Jar": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Magic Missile": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Evoker"
+    ]
+  },
+  "Magic Mouth": {
+    "classes": [
+      "Bard",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Magic Weapon": {
+    "classes": [
+      "Paladin",
+      "Ranger",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Cleric: Forge Domain",
+      "Cleric: War Domain",
+      "Cleric: Zeal Domain (PSA)",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of Glory",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Major Image": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Mass Cure Wounds": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid"
+    ],
+    "subclasses": [
+      "Cleric: Life Domain",
+      "Cleric: Solidarity Domain (PSA)",
+      "Druid: Circle of the Moon",
+      "Druid: Circle of Wildfire",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Mass Heal": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Mass Healing Word": {
+    "classes": [
+      "Bard",
+      "Cleric"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Life Domain",
+      "Cleric: Order Domain",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Mass Suggestion": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Maze": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Meld into Stone": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Druid: Circle of the Land",
+      "Sorcerer: Divine Soul",
+      "Warlock: The Genie"
+    ]
+  },
+  "Melf's Acid Arrow": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Evoker"
+    ]
+  },
+  "Mending": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Bard: College of the Moon",
+      "Cleric: Arcana Domain",
+      "Cleric: Nature Domain",
+      "Cleric: Strength Domain (PSA)",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Message": {
+    "classes": [
+      "Bard",
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Bard: College of the Moon",
+      "Cleric: Arcana Domain",
+      "Cleric: Nature Domain",
+      "Cleric: Strength Domain (PSA)",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Meteor Swarm": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Evoker"
+    ]
+  },
+  "Mind Blank": {
+    "classes": [
+      "Bard",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Mind Sliver": {
+    "classes": [
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Aberrant Mind",
+      "Sorcerer: Aberrant Sorcery"
+    ]
+  },
+  "Mind Spike": {
+    "classes": [
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Knowledge Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Diviner"
+    ]
+  },
+  "Minor Illusion": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Fighter: Eldritch Knight",
+      "Monk: Warrior of Shadow",
+      "Monk: Way of Shadow",
+      "Rogue: Arcane Trickster",
+      "Rogue: Scion of the Three",
+      "Wizard: Illusionist",
+      "Wizard: School of Illusion"
+    ]
+  },
+  "Mirage Arcane": {
+    "classes": [
+      "Bard",
+      "Druid",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Mirror Image": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Glamour",
+      "Bard: College of Lore",
+      "Cleric: Ambition Domain (PSA)",
+      "Cleric: Trickery Domain",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of the Noble Genies",
+      "Rogue: Arcane Trickster",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Mislead": {
+    "classes": [
+      "Bard",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Twilight Domain",
+      "Ranger: Fey Wanderer",
+      "Sorcerer: Lunar Sorcery",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Misty Step": {
+    "classes": [
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of the Ancients",
+      "Paladin: Oath of Vengeance",
+      "Ranger: Fey Wanderer",
+      "Ranger: Horizon Walker",
+      "Rogue: Arcane Trickster",
+      "Warlock: Archfey Patron"
+    ]
+  },
+  "Modify Memory": {
+    "classes": [
+      "Bard",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Ambition Domain (PSA)",
+      "Cleric: Trickery Domain",
+      "Warlock: Great Old One Patron"
+    ]
+  },
+  "Moonbeam": {
+    "classes": [
+      "Druid"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Bard: College of the Moon",
+      "Cleric: Twilight Domain",
+      "Druid: Circle of the Moon",
+      "Paladin: Oath of the Ancients",
+      "Paladin: Oath of the Watchers"
+    ]
+  },
+  "Mordenkainen's Faithful Hound": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Mordenkainen's Magnificent Mansion": {
+    "classes": [
+      "Bard",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Mordenkainen's Private Sanctum": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Mordenkainen's Sword": {
+    "classes": [
+      "Bard",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Evoker"
+    ]
+  },
+  "Move Earth": {
+    "classes": [
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Nondetection": {
+    "classes": [
+      "Bard",
+      "Ranger",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Knowledge Domain",
+      "Cleric: Knowledge Domain (PSA)",
+      "Cleric: Trickery Domain",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of the Watchers",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Shadow Sorcery",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Nystul's Magic Aura": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Otiluke's Freezing Sphere": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Evoker"
+    ]
+  },
+  "Otiluke's Resilient Sphere": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Peace Domain",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of Redemption",
+      "Rogue: Arcane Trickster",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Otto's Irresistible Dance": {
+    "classes": [
+      "Bard",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Pass without Trace": {
+    "classes": [
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Trickery Domain",
+      "Druid: Circle of the Land",
+      "Monk: Way of Shadow",
+      "Sorcerer: Shadow Sorcery"
+    ]
+  },
+  "Passwall": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Druid: Circle of the Land"
+    ]
+  },
+  "Phantasmal Force": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of the Noble Genies",
+      "Rogue: Arcane Trickster",
+      "Warlock: Archfey Patron",
+      "Warlock: Great Old One Patron",
+      "Warlock: The Archfey",
+      "Warlock: The Genie",
+      "Warlock: The Great Old One",
+      "Warlock: The Undead",
+      "Warlock: Undead Patron",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Phantasmal Killer": {
+    "classes": [
+      "Bard",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Shadow Sorcery",
+      "Warlock: The Genie",
+      "Warlock: The Hexblade",
+      "Warlock: Undead Patron",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Phantom Steed": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Ranger: Hollow Warden",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Lunar Sorcery",
+      "Warlock: The Undead",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Planar Ally": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Planar Binding": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Sorcerer: Divine Soul",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Plane Shift": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Plant Growth": {
+    "classes": [
+      "Bard",
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Nature Domain",
+      "Druid: Circle of the Land",
+      "Druid: Circle of Wildfire",
+      "Paladin: Oath of the Ancients",
+      "Warlock: Archfey Patron",
+      "Warlock: The Archfey"
+    ]
+  },
+  "Poison Spray": {
+    "classes": [
+      "Druid",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Bard: College of the Moon",
+      "Cleric: Arcana Domain",
+      "Cleric: Death Domain",
+      "Cleric: Nature Domain",
+      "Cleric: Strength Domain (PSA)",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Polymorph": {
+    "classes": [
+      "Bard",
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Trickery Domain",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Power Word Fortify": {
+    "classes": [
+      "Bard",
+      "Cleric"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Power Word Heal": {
+    "classes": [
+      "Bard",
+      "Cleric"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Power Word Kill": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Power Word Stun": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Prayer of Healing": {
+    "classes": [
+      "Cleric",
+      "Paladin"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Prestidigitation": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Fighter: Arcane Archer",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Prismatic Spray": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Evoker"
+    ]
+  },
+  "Prismatic Wall": {
+    "classes": [
+      "Bard",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Produce Flame": {
+    "classes": [
+      "Druid"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Bard: College of the Moon",
+      "Cleric: Nature Domain",
+      "Cleric: Strength Domain (PSA)",
+      "Druid: Circle of the Land"
+    ]
+  },
+  "Programmed Illusion": {
+    "classes": [
+      "Bard",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Project Image": {
+    "classes": [
+      "Bard",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Protection from Energy": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Ranger",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Forge Domain",
+      "Cleric: Strength Domain (PSA)",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of Glory",
+      "Paladin: Oath of the Ancients",
+      "Paladin: Oath of Vengeance",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Clockwork Sorcery",
+      "Sorcerer: Clockwork Soul",
+      "Sorcerer: Divine Soul",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Protection from Evil and Good": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Paladin",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of Devotion",
+      "Ranger: Horizon Walker",
+      "Ranger: Monster Slayer",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Clockwork Sorcery",
+      "Sorcerer: Clockwork Soul",
+      "Sorcerer: Divine Soul",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Protection from Poison": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Paladin",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Strength Domain (PSA)",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Purify Food and Drink": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Paladin"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Raise Dead": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Paladin"
+    ],
+    "subclasses": [
+      "Cleric: Grave Domain",
+      "Cleric: Life Domain",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Rary's Telepathic Bond": {
+    "classes": [
+      "Bard",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Peace Domain",
+      "Sorcerer: Aberrant Mind",
+      "Sorcerer: Aberrant Sorcery",
+      "Sorcerer: Lunar Sorcery",
+      "Wizard: Diviner"
+    ]
+  },
+  "Ray of Enfeeblement": {
+    "classes": [
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Ambition Domain (PSA)",
+      "Cleric: Death Domain",
+      "Cleric: Grave Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Ray of Frost": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Druid: Circle of the Land",
+      "Druid: Circle of the Sea",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Evoker"
+    ]
+  },
+  "Ray of Sickness": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Death Domain",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Lunar Sorcery",
+      "Warlock: The Undying",
+      "Warlock: Undead Patron"
+    ]
+  },
+  "Regenerate": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Reincarnate": {
+    "classes": [
+      "Druid"
+    ],
+    "subclasses": []
+  },
+  "Remove Curse": {
+    "classes": [
+      "Cleric",
+      "Paladin",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Ranger: Winter Walker",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Resistance": {
+    "classes": [
+      "Cleric",
+      "Druid"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Bard: College of the Moon",
+      "Cleric: Nature Domain",
+      "Cleric: Strength Domain (PSA)",
+      "Druid: Circle of the Land",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Resurrection": {
+    "classes": [
+      "Bard",
+      "Cleric"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Reverse Gravity": {
+    "classes": [
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Revivify": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Paladin",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Grave Domain",
+      "Cleric: Life Domain",
+      "Druid: Circle of Wildfire",
+      "Sorcerer: Divine Soul",
+      "Warlock: Celestial Patron",
+      "Warlock: The Celestial"
+    ]
+  },
+  "Rope Trick": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Ranger: Gloom Stalker",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Sacred Flame": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Sorcerer: Divine Soul",
+      "Warlock: Celestial Patron",
+      "Warlock: The Celestial"
+    ]
+  },
+  "Sanctuary": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Peace Domain",
+      "Monk: Way of the Open Hand",
+      "Paladin: Oath of Devotion",
+      "Paladin: Oath of Redemption",
+      "Sorcerer: Divine Soul",
+      "Warlock: The Genie"
+    ]
+  },
+  "Scorching Ray": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Light Domain",
+      "Druid: Circle of Wildfire",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Spellfire Sorcery",
+      "Warlock: Fiend Patron",
+      "Warlock: The Fiend",
+      "Warlock: The Genie",
+      "Wizard: Evoker"
+    ]
+  },
+  "Scrying": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Knowledge Domain",
+      "Cleric: Knowledge Domain (PSA)",
+      "Cleric: Light Domain",
+      "Druid: Circle of the Land",
+      "Paladin: Oath of the Watchers",
+      "Paladin: Oath of Vengeance",
+      "Sorcerer: Divine Soul",
+      "Wizard: Diviner"
+    ]
+  },
+  "Searing Smite": {
+    "classes": [
+      "Paladin"
+    ],
+    "subclasses": [
+      "Cleric: Forge Domain",
+      "Cleric: Zeal Domain (PSA)"
+    ]
+  },
+  "See Invisibility": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Light Domain",
+      "Cleric: Twilight Domain",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of the Watchers",
+      "Rogue: Arcane Trickster",
+      "Wizard: Diviner"
+    ]
+  },
+  "Seeming": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Ranger: Gloom Stalker",
+      "Warlock: Archfey Patron",
+      "Warlock: The Archfey",
+      "Warlock: The Genie",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Sending": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Peace Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Aberrant Mind",
+      "Sorcerer: Aberrant Sorcery",
+      "Sorcerer: Divine Soul",
+      "Warlock: The Great Old One",
+      "Wizard: Diviner"
+    ]
+  },
+  "Sequester": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Shapechange": {
+    "classes": [
+      "Druid",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Shatter": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Tempest Domain",
+      "Cleric: Zeal Domain (PSA)",
+      "Druid: Circle of the Sea",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Evoker"
+    ]
+  },
+  "Shield": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Lunar Sorcery",
+      "Warlock: The Hexblade",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Shield of Faith": {
+    "classes": [
+      "Cleric",
+      "Paladin"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Strength Domain (PSA)",
+      "Cleric: War Domain",
+      "Paladin: Oath of Devotion",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Shillelagh": {
+    "classes": [
+      "Druid"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Bard: College of the Moon",
+      "Cleric: Nature Domain",
+      "Cleric: Strength Domain (PSA)",
+      "Druid: Circle of the Land"
+    ]
+  },
+  "Shining Smite": {
+    "classes": [
+      "Paladin"
+    ],
+    "subclasses": [
+      "Warlock: The Hexblade"
+    ]
+  },
+  "Shocking Grasp": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Evoker"
+    ]
+  },
+  "Silence": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Druid: Circle of the Land",
+      "Monk: Way of Shadow",
+      "Sorcerer: Divine Soul",
+      "Warlock: The Fathomless",
+      "Warlock: The Undying"
+    ]
+  },
+  "Silent Image": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Simulacrum": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Sleep": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Twilight Domain",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of Redemption",
+      "Rogue: Arcane Trickster",
+      "Warlock: Archfey Patron",
+      "Warlock: The Archfey"
+    ]
+  },
+  "Sleet Storm": {
+    "classes": [
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Tempest Domain",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Warlock: The Fathomless",
+      "Warlock: The Genie"
+    ]
+  },
+  "Slow": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Order Domain",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Sorcerous Burst": {
+    "classes": [
+      "Sorcerer"
+    ],
+    "subclasses": []
+  },
+  "Spare the Dying": {
+    "classes": [
+      "Cleric",
+      "Druid"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Bard: College of the Moon",
+      "Cleric: Death Domain",
+      "Cleric: Grave Domain",
+      "Cleric: Nature Domain",
+      "Cleric: Strength Domain (PSA)",
+      "Druid: Circle of the Land",
+      "Sorcerer: Divine Soul",
+      "Warlock: The Undying"
+    ]
+  },
+  "Speak with Animals": {
+    "classes": [
+      "Bard",
+      "Druid",
+      "Ranger",
+      "Warlock"
+    ],
+    "subclasses": [
+      "Barbarian: Path of the Totem Warrior",
+      "Barbarian: Path of the Wild Heart",
+      "Bard: College of Lore",
+      "Cleric: Nature Domain",
+      "Paladin: Oath of the Ancients"
+    ]
+  },
+  "Speak with Dead": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Knowledge Domain",
+      "Cleric: Knowledge Domain (PSA)",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Rogue: Phantom",
+      "Sorcerer: Divine Soul",
+      "Warlock: The Undead",
+      "Warlock: The Undying",
+      "Warlock: Undead Patron"
+    ]
+  },
+  "Speak with Plants": {
+    "classes": [
+      "Bard",
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore"
+    ]
+  },
+  "Spider Climb": {
+    "classes": [
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Spike Growth": {
+    "classes": [
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Nature Domain",
+      "Druid: Circle of the Land",
+      "Warlock: The Genie"
+    ]
+  },
+  "Spirit Guardians": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Bard: College of Spirits",
+      "Cleric: War Domain",
+      "Paladin: Oath of the Crown",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Spiritual Weapon": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Life Domain",
+      "Cleric: War Domain",
+      "Paladin: Oath of Conquest",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Staggering Smite": {
+    "classes": [
+      "Paladin"
+    ],
+    "subclasses": [
+      "Warlock: The Hexblade"
+    ]
+  },
+  "Starry Wisp": {
+    "classes": [
+      "Bard",
+      "Druid"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Bard: College of the Moon",
+      "Cleric: Nature Domain",
+      "Cleric: Strength Domain (PSA)",
+      "Druid: Circle of the Land",
+      "Druid: Circle of the Moon"
+    ]
+  },
+  "Steel Wind Strike": {
+    "classes": [
+      "Ranger",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: War Domain",
+      "Ranger: Hollow Warden"
+    ]
+  },
+  "Stinking Cloud": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Warlock: Fiend Patron",
+      "Warlock: The Fiend"
+    ]
+  },
+  "Stone Shape": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul",
+      "Warlock: The Genie"
+    ]
+  },
+  "Stoneskin": {
+    "classes": [
+      "Druid",
+      "Ranger",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Strength Domain (PSA)",
+      "Cleric: War Domain",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of Conquest",
+      "Paladin: Oath of Redemption",
+      "Paladin: Oath of the Ancients",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Storm of Vengeance": {
+    "classes": [
+      "Druid"
+    ],
+    "subclasses": []
+  },
+  "Suggestion": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Knowledge Domain",
+      "Cleric: Knowledge Domain (PSA)",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Warlock: Fiend Patron"
+    ]
+  },
+  "Summon Aberration": {
+    "classes": [
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Aberrant Mind",
+      "Sorcerer: Aberrant Sorcery",
+      "Warlock: Great Old One Patron"
+    ]
+  },
+  "Summon Beast": {
+    "classes": [
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Sorcerer: Shadow Sorcery",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Summon Celestial": {
+    "classes": [
+      "Cleric",
+      "Paladin"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul",
+      "Warlock: Celestial Patron"
+    ]
+  },
+  "Summon Construct": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Clockwork Sorcery",
+      "Sorcerer: Clockwork Soul"
+    ]
+  },
+  "Summon Dragon": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Sorcerer: Draconic Sorcery"
+    ]
+  },
+  "Summon Elemental": {
+    "classes": [
+      "Druid",
+      "Ranger",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Fighter: Eldritch Knight",
+      "Paladin: Oath of the Noble Genies",
+      "Rogue: Arcane Trickster",
+      "Warlock: The Fathomless"
+    ]
+  },
+  "Summon Fey": {
+    "classes": [
+      "Druid",
+      "Ranger",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Ranger: Fey Wanderer",
+      "Rogue: Arcane Trickster",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Summon Fiend": {
+    "classes": [
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Summon Undead": {
+    "classes": [
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Warlock: Undead Patron"
+    ]
+  },
+  "Sunbeam": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Sorcerer: Divine Soul",
+      "Wizard: Evoker"
+    ]
+  },
+  "Sunburst": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Sorcerer: Divine Soul",
+      "Wizard: Evoker"
+    ]
+  },
+  "Swift Quiver": {
+    "classes": [
+      "Ranger"
+    ],
+    "subclasses": []
+  },
+  "Symbol": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Druid",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Sorcerer: Divine Soul",
+      "Wizard: Abjurer"
+    ]
+  },
+  "Synaptic Static": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Knowledge Domain"
+    ]
+  },
+  "Tasha's Bubbling Cauldron": {
+    "classes": [
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Tasha's Hideous Laughter": {
+    "classes": [
+      "Bard",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Warlock: Great Old One Patron",
+      "Warlock: The Great Old One"
+    ]
+  },
+  "Telekinesis": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Fighter: Psi Warrior",
+      "Sorcerer: Aberrant Mind",
+      "Sorcerer: Aberrant Sorcery",
+      "Warlock: Great Old One Patron",
+      "Warlock: The Great Old One"
+    ]
+  },
+  "Telepathy": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Diviner"
+    ]
+  },
+  "Teleport": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Teleportation Circle": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Ranger: Horizon Walker"
+    ]
+  },
+  "Tenser's Floating Disk": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Thaumaturgy": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Barbarian: Path of the Giant",
+      "Bard: College of Lore",
+      "Ranger: Drakewarden",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Thorn Whip": {
+    "classes": [
+      "Druid"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Bard: College of the Moon",
+      "Cleric: Nature Domain",
+      "Cleric: Strength Domain (PSA)",
+      "Druid: Circle of the Land"
+    ]
+  },
+  "Thunderclap": {
+    "classes": [
+      "Bard",
+      "Druid",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Bard: College of the Moon",
+      "Cleric: Arcana Domain",
+      "Cleric: Nature Domain",
+      "Cleric: Strength Domain (PSA)",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Evoker"
+    ]
+  },
+  "Thunderous Smite": {
+    "classes": [
+      "Paladin"
+    ],
+    "subclasses": [
+      "Cleric: Zeal Domain (PSA)",
+      "Paladin: Oath of the Noble Genies"
+    ]
+  },
+  "Thunderwave": {
+    "classes": [
+      "Bard",
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Tempest Domain",
+      "Druid: Circle of the Sea",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Warlock: The Fathomless",
+      "Warlock: The Genie",
+      "Wizard: Evoker"
+    ]
+  },
+  "Time Stop": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "Toll the Dead": {
+    "classes": [
+      "Cleric",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Cleric: Death Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Tongues": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Knowledge Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Divine Soul",
+      "Wizard: Diviner"
+    ]
+  },
+  "Transport via Plants": {
+    "classes": [
+      "Druid"
+    ],
+    "subclasses": []
+  },
+  "Tree Stride": {
+    "classes": [
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Cleric: Nature Domain",
+      "Druid: Circle of the Land",
+      "Paladin: Oath of the Ancients"
+    ]
+  },
+  "True Polymorph": {
+    "classes": [
+      "Bard",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain"
+    ]
+  },
+  "True Resurrection": {
+    "classes": [
+      "Cleric",
+      "Druid"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "True Seeing": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Sorcerer: Divine Soul",
+      "Wizard: Diviner"
+    ]
+  },
+  "True Strike": {
+    "classes": [
+      "Bard",
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Arcana Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Diviner"
+    ]
+  },
+  "Tsunami": {
+    "classes": [
+      "Druid"
+    ],
+    "subclasses": []
+  },
+  "Unseen Servant": {
+    "classes": [
+      "Bard",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Vampiric Touch": {
+    "classes": [
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Ambition Domain (PSA)",
+      "Cleric: Death Domain",
+      "Cleric: Grave Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Lunar Sorcery"
+    ]
+  },
+  "Vicious Mockery": {
+    "classes": [
+      "Bard"
+    ],
+    "subclasses": []
+  },
+  "Vitriolic Sphere": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Evoker"
+    ]
+  },
+  "Wall of Fire": {
+    "classes": [
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Forge Domain",
+      "Cleric: Light Domain",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Sorcerer: Spellfire Sorcery",
+      "Warlock: Celestial Patron",
+      "Warlock: Fiend Patron",
+      "Warlock: The Celestial",
+      "Warlock: The Fiend",
+      "Wizard: Evoker"
+    ]
+  },
+  "Wall of Force": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Paladin: Oath of Redemption",
+      "Sorcerer: Clockwork Sorcery",
+      "Sorcerer: Clockwork Soul",
+      "Wizard: Evoker"
+    ]
+  },
+  "Wall of Ice": {
+    "classes": [
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Evoker"
+    ]
+  },
+  "Wall of Stone": {
+    "classes": [
+      "Druid",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Druid: Circle of the Land",
+      "Warlock: The Genie",
+      "Wizard: Evoker"
+    ]
+  },
+  "Wall of Thorns": {
+    "classes": [
+      "Druid"
+    ],
+    "subclasses": []
+  },
+  "Warding Bond": {
+    "classes": [
+      "Cleric",
+      "Paladin"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Peace Domain",
+      "Cleric: Solidarity Domain (PSA)",
+      "Paladin: Oath of the Crown",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Water Breathing": {
+    "classes": [
+      "Druid",
+      "Ranger",
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Druid: Circle of the Land",
+      "Druid: Circle of the Sea",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Water Walk": {
+    "classes": [
+      "Cleric",
+      "Druid",
+      "Ranger",
+      "Sorcerer"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Druid: Circle of the Land",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Web": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Druid: Circle of the Land",
+      "Fighter: Eldritch Knight",
+      "Ranger: Swarmkeeper",
+      "Rogue: Arcane Trickster"
+    ]
+  },
+  "Weird": {
+    "classes": [
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Wizard: Illusionist"
+    ]
+  },
+  "Wind Walk": {
+    "classes": [
+      "Druid"
+    ],
+    "subclasses": []
+  },
+  "Wind Wall": {
+    "classes": [
+      "Druid",
+      "Ranger"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Nature Domain",
+      "Warlock: The Genie"
+    ]
+  },
+  "Wish": {
+    "classes": [
+      "Sorcerer",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Cleric: Arcana Domain",
+      "Warlock: The Genie"
+    ]
+  },
+  "Witch Bolt": {
+    "classes": [
+      "Sorcerer",
+      "Warlock",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Fighter: Eldritch Knight",
+      "Rogue: Arcane Trickster",
+      "Wizard: Evoker"
+    ]
+  },
+  "Word of Radiance": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Word of Recall": {
+    "classes": [
+      "Cleric"
+    ],
+    "subclasses": [
+      "Sorcerer: Divine Soul"
+    ]
+  },
+  "Wrathful Smite": {
+    "classes": [
+      "Paladin"
+    ],
+    "subclasses": [
+      "Ranger: Hollow Warden",
+      "Warlock: The Hexblade"
+    ]
+  },
+  "Yolande's Regal Presence": {
+    "classes": [
+      "Bard",
+      "Wizard"
+    ],
+    "subclasses": [
+      "Paladin: Oath of Glory"
+    ]
+  },
+  "Zone of Truth": {
+    "classes": [
+      "Bard",
+      "Cleric",
+      "Paladin"
+    ],
+    "subclasses": [
+      "Bard: College of Lore",
+      "Cleric: Order Domain",
+      "Paladin: Oath of Devotion",
+      "Paladin: Oath of the Crown",
+      "Ranger: Monster Slayer",
+      "Sorcerer: Divine Soul"
+    ]
+  }
+}

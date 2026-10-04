@@ -45,10 +45,9 @@ from apps.rules.models.effect import TAG_PATTERN
 from apps.rules.translation_sync import sync_catalogs
 
 DB_DIR = Path(settings.BASE_DIR) / "db"
-#: `Spell.classes`/`subclasses` have no replacement anywhere in the new `db/` dump (see
-#: `docs/data_migration_2025.md` §2/§3.4) - deliberately still read from here, a frozen exception
-#: to "only db/ is live source data", kept until upstream ships a real replacement.
-DB_OLD_DIR = Path(settings.BASE_DIR) / "db_old"
+#: `Spell.classes`/`subclasses` are read from `db/spell_classes.json` (`{spell name: {classes,
+#: subclasses}}`), since the 2025 `db/` dump has no spell-list data (see
+#: `docs/data_migration_2025.md` §2/§3.4).
 
 #: Single-letter/short-code decode tables - the new source uses these throughout instead of the
 #: old dump's spelled-out words. Only the codes actually observed in `db/` are listed; anything
@@ -130,7 +129,7 @@ CLASS_SHORT_DESCRIPTIONS = {
 
 #: `Grung` (source VGM) is absent from `db/species.json` as shipped (see
 #: `docs/data_migration_2025.md` §3.5 - dropped there because it isn't XPHB content) - added
-#: back by hand afterward, at the project owner's request, from `db_old/species.json`'s row
+#: back by hand afterward, at the project owner's request, from the old dump's species row
 #: converted into the new format (see that entry's own `"source": "VGM"`, kept as-is rather than
 #: relabeled XPHB, and its `page` is `0` since the old data never carried a real one either).
 SPECIES_SHORT_DESCRIPTIONS = {
@@ -182,11 +181,6 @@ def _load_if_exists(filename: str) -> dict | None:
     if not (DB_DIR / filename).exists():
         return None
     return _load(filename)
-
-
-def _load_old(filename: str) -> dict:
-    with open(DB_OLD_DIR / filename, encoding="utf-8") as f:
-        return json.load(f)
 
 
 def _slug(name: str) -> str:
@@ -1195,19 +1189,12 @@ class Command(BaseCommand):
         )
 
     def _import_spells(self):
-        old_spells = {it["name"].lower(): it for it in _load_old("spells.json")["items"]}
+        spell_classes = {n.lower(): v for n, v in _load("spell_classes.json").items()}
         ability_by_name = {a.name.lower(): a for a in Ability.objects.all()}
 
         rows = []
         for it in _load("spells.json")["spell"]:
-            old = old_spells.get(it["name"].lower(), {})
-            # `db_old/spells.json`'s `classes`/`subclasses` name "Artificer" (a class this
-            # project's own `db/` drop never had - see `Spell`'s docstring) - dropped here rather
-            # than carried into the catalog, at the project owner's request.
-            old_classes = [c for c in old.get("classes", []) if c != "Artificer"]
-            old_subclasses = [
-                sc for sc in old.get("subclasses", []) if not sc.startswith("Artificer:")
-            ]
+            old = spell_classes.get(it["name"].lower(), {})
             rows.append(
                 Spell(
                     id=_slug(it["name"]),
@@ -1225,8 +1212,8 @@ class Command(BaseCommand):
                         for d in it.get("duration", [])
                     ),
                     ritual=bool((it.get("meta") or {}).get("ritual", False)),
-                    classes=old_classes,
-                    subclasses=old_subclasses,
+                    classes=old.get("classes", []),
+                    subclasses=old.get("subclasses", []),
                     entries=it.get("entries", []),
                     entries_higher_level=it.get("entriesHigherLevel", []),
                 )

@@ -22,9 +22,9 @@ class Spell(models.Model):
     dropped this data entirely (confirmed: no `classes`/`subclasses`-shaped field anywhere in
     `db/spells.json`, and no replacement - `db/classes.json`'s `additionalSpells` only covers
     bonus/granted spells, not full spell-list eligibility). Since all 391 spell names match
-    exactly between `db/spells.json` and `db_old/spells.json`, these two fields are populated from
-    `db_old/spells.json`'s arrays instead - a deliberate, frozen exception to "only `db/` is live
-    source data", kept until upstream ships a real replacement (see
+    exactly between `db/spells.json` and the old dump, these two fields are populated from
+    `db/spell_classes.json` (extracted from that old dump) instead, kept until upstream ships a
+    real replacement (see
     `docs/data_migration_2025.md`). Still plain JSON lists, not relations, for the same reason as
     before: `subclasses` names plenty of pre-XPHB subclasses (e.g. "Way of Shadow", "The Archfey")
     this project's own `Subclass` table has no row for, so a hard FK would either drop that data or

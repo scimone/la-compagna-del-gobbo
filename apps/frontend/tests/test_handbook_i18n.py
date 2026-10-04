@@ -312,7 +312,7 @@ def test_spell_school_casting_time_and_classes_are_translated_in_italian(client,
 
 
 def test_artificer_is_dropped_entirely_from_spell_classes(client, catalogs):
-    # `db_old/spells.json` (the only source for `Spell.classes`/`subclasses`, see Spell's
+    # `db/spell_classes.json` (the only source for `Spell.classes`/`subclasses`, see Spell's
     # docstring) names Acid Splash's casters as Artificer, Sorcerer and Wizard - Artificer isn't
     # one of this project's Class rows and is dropped at import time, at the project owner's
     # request, rather than shown as an unlinked class name.

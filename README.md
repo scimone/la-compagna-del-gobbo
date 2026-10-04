@@ -134,16 +134,16 @@ below, and the design decisions called out there. `builder` still has no models 
 section for why.
 
 **`db/` was replaced wholesale in 2025** with a rawer, more cross-referenced source dump (the
-previous format is preserved at `db_old/` — one field, `Spell.classes`/`subclasses`, is still
-deliberately sourced from there, see below). The table below describes the *current* `db/`
+previous format's one still-needed field, `Spell.classes`/`subclasses`, now lives in
+`db/spell_classes.json`, see below). The table below describes the *current* `db/`
 format; the "Known data-import issues" section further down is historical - it documents bugs
 found while building the import against the *old* `db_old/` format and is left as-is for that
 reason, not updated for the new one. See
 [docs/data_migration_2025.md](docs/data_migration_2025.md) for the 2025 migration's own write-up
 (the new format's shape, the field-by-field mapping decisions, and the three data-loss tradeoffs
-resolved with the project owner: `Spell.classes`/`subclasses` merged from `db_old/`, lore fields
+resolved with the project owner: `Spell.classes`/`subclasses` merged from the old dump (`db/spell_classes.json`), lore fields
 (now populated - see below) initially left empty pending a fluff-data drop, `HandbookSection`
-kept on `db/handbook.json` copied verbatim from `db_old/`).
+kept on `db/handbook.json` copied verbatim from the old dump).
 
 | Model | Status | Source | Notes |
 |---|---|---|---|
@@ -1067,8 +1067,7 @@ Italian wording in the display slot - `{@skill Perception|XPHB|Percezione}`,
 still resolves them.
 
 **The handbook shows the same content in both languages.** It's translated from the Italian SRD
-5.2.1 (`IT_SRD_CC_v5.2.1.md`) plus `missing_text.md`, which covers everything the SRD chapter
-has; what neither has - the "Playing the Game" intro, "Rules Glossary", "Player or DM?", the three
+5.2.1 (`IT_SRD_CC_v5.2.1.md`); what it doesn't have - the "Playing the Game" intro, "Rules Glossary", "Player or DM?", the three
 worked examples and two small boxes - is listed in `OMITTED_ROW_IDS` / `OMITTED_BLOCK_IDS` in
 `handbook_source.py` and dropped from the *English* handbook as well, at import time, rather than
 Italian pages showing English text. To bring a part back: translate it in `db/it/handbook.json`,
@@ -1281,10 +1280,7 @@ No `users` app, no real auth (only the password-less accounts in `frontend`, for
 ## Other files in this repo
 
 `db/*.json` (plus their `*_schema.json` siblings) is the XPHB content dump the `rules` models
-above are sourced from — see [Model status](#model-status). `db_old/` is the previous (pre-2025)
-dump, kept as a permanent snapshot rather than deleted - one field (`Spell.classes`/`subclasses`)
-is still deliberately read from it at import time, since the current `db/` dropped that data with
-no replacement; see [docs/data_migration_2025.md](docs/data_migration_2025.md). `glossary.md` and
-`extract_from_json.py` are pre-existing reference material (Italian/English D&D terminology, and
-whatever produced the `db/` dump) unrelated to this Django scaffold; they're left untouched for
-now.
+above are sourced from — see [Model status](#model-status). `db/spell_classes.json` holds the
+`Spell.classes`/`subclasses` lists, which the current dump dropped; see
+[docs/data_migration_2025.md](docs/data_migration_2025.md). `IT_SRD_CC_v5.2.1.md` is the Italian SRD
+the Italian translations were taken from.
