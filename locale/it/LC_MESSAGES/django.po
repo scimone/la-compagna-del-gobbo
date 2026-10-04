@@ -2525,3 +2525,20 @@ msgstr "ha cercato “%(text)s”"
 #: apps/frontend/admin_panel.py
 msgid "Newest first. A gold bar marks something changed; tap a row to open the page concerned."
 msgstr "Dal più recente. Una barra dorata indica una modifica; tocca una riga per aprire la pagina interessata."
+
+#: apps/frontend/templates/frontend/characters/sheet/_spellbook.html
+msgid "Not prepared"
+msgstr "Non preparati"
+
+#: apps/frontend/character_sheet.py
+#: apps/frontend/templates/frontend/characters/levelup_done.html
+msgid "You can change your prepared spells now. Do you want to do it?"
+msgstr "Puoi cambiare gli incantesimi preparati adesso. Vuoi farlo?"
+
+#: apps/frontend/templates/frontend/characters/levelup_done.html
+msgid "Yes, open the Spellbook"
+msgstr "Sì, apri gli Incantesimi"
+
+#: apps/frontend/templates/frontend/characters/levelup_done.html
+msgid "Not now"
+msgstr "Non adesso"

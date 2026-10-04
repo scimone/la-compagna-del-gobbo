@@ -42,6 +42,8 @@ MAX_QUANTITY = 9999
 #: `CharacterSpell.source` of a spell the player added from the sheet. The builder's grants carry
 #: their own source, and only these can be taken away again from the sheet.
 SPELL_SOURCE = "sheet"
+#: The source of a class-list spell that only got a row once prepared (`learn_class_spell`).
+CLASS_SPELL_SOURCE = "class"
 #: The same for a feature, feat or option the player added from the sheet (`add_feature`).
 FEATURE_SOURCE = "sheet"
 #: What `add_feature`/`remove_feature` take as `kind`, and the model each one is stored in.
@@ -493,6 +495,31 @@ def grant_spell_changes(character: Character, when: str, class_ids=None) -> None
     if changes != character.spell_changes:
         character.spell_changes = changes
         character.save(update_fields=["spell_changes"])
+
+
+def learn_class_spell(
+    character: Character, spell_id: str, class_id: str, max_level: int
+) -> CharacterSpell:
+    """Give the character a spell of one of its prepared-spell classes' lists, unprepared - what
+    preparing a spell it has not "met" yet needs first (the spellbook lists every spell the class
+    could prepare, not only the ones that already have a row). `max_level` is the highest spell
+    level the class can cast. `ValueError` when the spell is not on the class's list, is a
+    cantrip or is too high; a class that keeps a spellbook (the Wizard) learns spells another way.
+    """
+    spell = Spell.objects.get(pk=spell_id)
+    klass = character.classes.select_related("klass").get(klass_id=class_id).klass
+    if character.spells.filter(klass_id=class_id, in_spellbook=True).exists():
+        raise ValueError(f"{spell.name} is not in the spellbook")
+    if getattr(klass, "name_en", klass.name) not in (spell.classes or []):
+        raise ValueError(f"{spell.name} is not a {klass.name} spell")
+    if spell.level < 1 or spell.level > max_level:
+        raise ValueError(f"{spell.name} is not a spell this class can prepare")
+    row, _created = CharacterSpell.objects.get_or_create(
+        character=character,
+        spell=spell,
+        defaults={"klass_id": class_id, "prepared": False, "source": CLASS_SPELL_SOURCE},
+    )
+    return row
 
 
 def set_spell_prepared(

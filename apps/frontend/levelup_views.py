@@ -129,6 +129,13 @@ def character_levelup_done(request, pk):
                 for f in done["features"]
             ],
             "sheet_url": reverse("character-detail", args=[character.pk]),
+            # SRD "Preparing Spells": a level can open a change of the prepared spells - offer to
+            # go and make it, rather than leaving the player to find the Spellbook tab.
+            "spellbook_url": (
+                reverse("character-detail", args=[character.pk]) + "?tab=spellbook"
+                if character.spell_changes
+                else ""
+            ),
         },
     )
     add_never_cache_headers(response)

@@ -362,6 +362,10 @@
   .cs-weight b { color: var(--text); }
   .cs-prepared { margin: 0.2rem 0; font-size: 0.8rem; color: var(--muted); }
   .cs-prepared b { color: var(--text); }
+  /* Spells the class could prepare but has not: the row greyed out, under the prepared ones. */
+  .cs-unprepared { margin-top: 1.4rem; }
+  #cs .cs-unprepared-head { margin: 0 0 0.2rem; font-size: 1rem; color: var(--muted); }
+  .cs-unprepared .item-list > li > a { opacity: 0.5; }
   .cs-prepared.open { color: var(--accent); font-weight: 600; }
   .cs-warnings { margin: 0.3rem 0 0.2rem; padding: 0.4rem 0.9rem 0.4rem 1.6rem; border: 1px dashed var(--border); border-radius: 0.6rem; color: var(--muted); font-size: 0.85rem; }
   /* Gear rows are the Features/Spellbook rows; the Equip pill, the quick Sell button, or (in the

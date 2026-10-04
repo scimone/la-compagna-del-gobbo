@@ -313,7 +313,12 @@ def test_spellbook_shows_the_casting_numbers_the_slots_and_the_spells(signed_in,
     assert 'name="q"' in sticky and "filter-popover" in sticky  # metrics, search and filters stick
     assert 'data-slot="1"' in html and html.count('class="pip-btn on"') == 2  # two 1st-level slots
     assert 'name="q"' in html and "filter-popover" in html  # the World's search and filters
-    assert html.count("data-search=") == cleric.spells.count()
+    own = html.split('class="cs-unprepared"')[0]
+    assert (
+        own.count("data-search=")
+        == cleric.spells.filter(prepared=True).count()
+        + cleric.spells.filter(prepared=False).exclude(spell__level__gt=0).count()
+    )
 
 
 def test_spellbook_rows_link_to_the_world_page_and_drop_the_level_filter(signed_in, alice):
@@ -360,6 +365,52 @@ def test_spellbook_shows_the_prepared_count_and_toggles_preparation(signed_in, a
     act(signed_in, cleric, action="spell_prepare", spell=row.spell_id, prepared="0")
     row.refresh_from_db()
     assert not row.prepared
+
+
+def test_spellbook_lists_the_rest_of_the_class_list_greyed_out_below_and_prepares_it(
+    signed_in, alice
+):
+    cleric = finished(alice, "cleric")
+    known = set(cleric.spells.values_list("spell_id", flat=True))
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
+
+    above, below = html.split('class="cs-unprepared"')
+    assert "Not prepared" in below
+    offered = Spell.objects.filter(level=1, classes__contains=["Cleric"]).exclude(pk__in=known)
+    extra = offered.first()
+    assert f"/world/spells/{extra.pk}/" in below and f"/world/spells/{extra.pk}/" not in above
+    assert not Spell.objects.filter(pk__in=re.findall(r"/world/spells/([^/]+)/", below), level=0)
+    assert f"Spells <b>{cleric.spells.count()}</b>" in html  # the offer is not "known"
+
+    # Make room (a level-1 cleric's list is full) - then preparing it creates the row.
+    cleric.spells.filter(prepared=True, always_prepared=False, spell__level__gt=0).update(
+        prepared=False
+    )
+    response = act(
+        signed_in, cleric, action="spell_prepare", spell=extra.pk, prepared="1", klass="cleric"
+    )
+    assert response.status_code == 200
+    assert cleric.spells.get(spell=extra).prepared
+    assert cleric.spells.get(spell=extra).source == "class"
+
+    # A spell that is not on the class's list is refused.
+    other = Spell.objects.filter(level=1).exclude(classes__contains=["Cleric"]).first()
+    refused = act(
+        signed_in, cleric, action="spell_prepare", spell=other.pk, prepared="1", klass="cleric"
+    )
+    assert refused.status_code == 400
+    assert not cleric.spells.filter(spell=other).exists()
+
+
+def test_a_long_rest_asks_whether_to_change_the_prepared_spells(signed_in, alice):
+    cleric = finished(alice, "cleric")
+
+    response = act(signed_in, cleric, action="long_rest")
+
+    assert "prepared spells" in response.json()["prompt"]
+    fighter = finished(alice, "fighter", background="soldier")
+    assert act(signed_in, fighter, action="long_rest").json()["prompt"] == ""
 
 
 def test_a_hand_added_spell_of_a_preparing_class_follows_its_preparation(signed_in, alice):

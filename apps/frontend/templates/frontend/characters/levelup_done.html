@@ -6,6 +6,9 @@
   .done h2 { margin: 0; font-size: 1.3rem; }
   .done ul { margin: 0; padding-left: 1.2rem; line-height: 1.6; }
   .done a.btn { display: block; text-align: center; padding: 0.65rem 1rem; border-radius: 0.6rem; background: var(--accent); color: var(--accent-text); font-weight: 600; text-decoration: none; }
+  .done .ask { display: flex; flex-direction: column; gap: 0.6rem; padding: 0.8rem; border: 1px solid var(--accent); border-radius: 0.6rem; }
+  .done .ask p { margin: 0; }
+  .done a.btn.secondary { background: none; color: var(--text); border: 1px solid var(--border); }
   .done li a { color: var(--accent); }
 {% endblock %}
 {% block content %}
@@ -16,6 +19,12 @@
       <h3>{% translate "New features" %}</h3>
       <ul>{% for f in features %}<li><a href="{{ f.url }}">{{ f.name }}</a></li>{% endfor %}</ul>
     {% endif %}
-    <a class="btn" href="{{ sheet_url }}">{% translate "Back to the character sheet" %}</a>
+    {% if spellbook_url %}
+      <div class="ask">
+        <p>{% translate "You can change your prepared spells now. Do you want to do it?" %}</p>
+        <a class="btn" href="{{ spellbook_url }}">{% translate "Yes, open the Spellbook" %}</a>
+      </div>
+    {% endif %}
+    <a class="btn{% if spellbook_url %} secondary{% endif %}" href="{{ sheet_url }}">{% if spellbook_url %}{% translate "Not now" %}{% else %}{% translate "Back to the character sheet" %}{% endif %}</a>{% translate "Back to the character sheet" %}</a>
   </div>
 {% endblock %}

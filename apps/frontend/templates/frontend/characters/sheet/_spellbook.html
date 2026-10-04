@@ -5,7 +5,7 @@
   {# SRD "Preparing Spells": how many the class has prepared of what its table allows (always- #}
   {# prepared spells and cantrips don't count), and below it when it may change that list. #}
   <div class="cs-invbar">
-      <span class="cs-weight">{% translate "Spells" %} <b>{{ spellbook.spells|length }}</b>{% for p in spellbook.preparation %} · {% if spellbook.preparation|length > 1 %}{{ p.class }} {% endif %}{% translate "Prepared" %} <b>{{ p.count }}/{{ p.limit }}</b>{% endfor %}</span>
+      <span class="cs-weight">{% translate "Spells" %} <b>{{ spellbook.known_count }}</b>{% for p in spellbook.preparation %} · {% if spellbook.preparation|length > 1 %}{{ p.class }} {% endif %}{% translate "Prepared" %} <b>{{ p.count }}/{{ p.limit }}</b>{% endfor %}</span>
       {% if can_edit %}<button type="button" class="cs-add-btn" data-add-open="cs-add-spell">+ {% translate "Add spell" %}</button>{% endif %}
   </div>
   {% for p in spellbook.preparation %}
@@ -23,7 +23,7 @@
 {% endif %}
 
 <div class="cs-scroll">
-{% if spellbook.spell_groups %}
+{% if spellbook.spell_groups or spellbook.unprepared_groups %}
   {# One section per spell level, its own sticky heading (stays in view above its own rows, like #}
   {# the Handbook's chapter headings) carrying that level's slots right next to the level name -  #}
   {# a Pact Magic pool included, at its own level, alongside a multiclass table's if both exist.  #}
@@ -60,6 +60,21 @@
         {% endif %}
       </section>
     {% endfor %}
+  {% if spellbook.unprepared_groups %}
+    <div class="cs-unprepared">
+      <h3 class="cs-unprepared-head">{% translate "Not prepared" %}</h3>
+      {% for g in spellbook.unprepared_groups %}
+        <section class="cs-level-group" data-level-group="{{ g.level }}">
+          <div class="cs-level-head"><h3>{{ g.label }}</h3></div>
+          <ul class="item-list compact-thumbs">
+            {% for s in g.spells %}
+              {% include "frontend/_list_item.html" with item=s %}
+            {% endfor %}
+          </ul>
+        </section>
+      {% endfor %}
+    </div>
+  {% endif %}
   </div>
   <p class="cs-empty" id="cs-spells-empty" hidden>{% translate "No spells match." %}</p>
 {% else %}

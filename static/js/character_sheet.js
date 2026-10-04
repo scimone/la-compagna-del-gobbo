@@ -152,7 +152,16 @@
           }
           apply(result.json.state);
           if (result.json.message) notify(result.json.message);
-          return (result.json.refresh ? refresh() : Promise.resolve()).then(function () { return true; });
+          return (result.json.refresh ? refresh() : Promise.resolve()).then(function () {
+            // The server offers to go and change the prepared spells (after a long rest).
+            if (result.json.prompt && window.appConfirm) {
+              return window.appConfirm(result.json.prompt).then(function (yes) {
+                if (yes) showTab("spellbook", true);
+                return true;
+              });
+            }
+            return true;
+          });
         })
         .catch(function () { showError(); return false; });
     });
@@ -456,6 +465,9 @@
     list.querySelectorAll(".cs-level-group").forEach(function (group) {
       var items = group.querySelectorAll("li");
       group.hidden = items.length > 0 && !Array.prototype.some.call(items, function (li) { return !li.hidden; });
+    });
+    list.querySelectorAll(".cs-unprepared").forEach(function (block) {
+      block.hidden = !Array.prototype.some.call(block.querySelectorAll("li"), function (li) { return !li.hidden; });
     });
     var empty = document.getElementById(scope.dataset.filterEmpty);
     if (empty) empty.hidden = shown > 0;

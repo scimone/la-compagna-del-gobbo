@@ -14,6 +14,7 @@ from math import ceil
 
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
 from django.db.models import Q
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -577,8 +578,64 @@ def _spellbook_rows(character: Character, can_edit: bool, limits: dict | None = 
                 and cs.klass_id in limits
                 and not character.spell_changes.get(cs.klass_id)
             )
-            row["prepare"] = {"spell": cs.spell.pk, "on": cs.prepared, "locked": locked}
+            full = (
+                not cs.prepared
+                and cs.klass_id in limits
+                and _prepared_count(character, cs.klass_id) >= limits[cs.klass_id]
+            )
+            row["prepare"] = {"spell": cs.spell.pk, "on": cs.prepared, "locked": locked or full}
+        row["unprepared"] = cs.spell.level > 0 and not prepared
         rows.append(row)
+    return rows
+
+
+def _prepared_count(character: Character, class_id: str) -> int:
+    return character.spells.filter(
+        klass_id=class_id, prepared=True, always_prepared=False, spell__level__gt=0
+    ).count()
+
+
+def _max_spell_level(entry: dict) -> int:
+    """The highest spell level a spellcasting entry (see `derived_stats._spellcasting`) casts."""
+    levels = [n for n, count in enumerate(entry["slots"], start=1) if count]
+    if entry["pact"]:
+        levels.append(entry["pact"]["level"])
+    return max(levels, default=0)
+
+
+def _learnable_rows(character: Character, stats, classes, can_edit: bool, limits: dict) -> list:
+    """The spells a class that prepares spells could prepare but the character has no row for yet
+    (the whole class list up to the level it casts) - shown greyed out under the prepared ones.
+    A class that keeps a spellbook (the Wizard) prepares from that book only, so adds none."""
+    known = set(character.spells.values_list("spell_id", flat=True))
+    names = {c.klass_id: getattr(c.klass, "name_en", c.klass.name) for c in classes}
+    rows = []
+    for entry in stats.spellcasting:
+        kind, _sep, class_id = entry["source"].partition(":")
+        if kind != "class" or class_id not in limits or class_id not in names:
+            continue
+        if character.spells.filter(klass_id=class_id, in_spellbook=True).exists():
+            continue
+        top = _max_spell_level(entry)
+        full = _prepared_count(character, class_id) >= limits[class_id]
+        for spell in (
+            Spell.objects.filter(level__gte=1, level__lte=top)
+            .prefetch_related("saving_throw_abilities")
+            .order_by("level", "name")
+        ):
+            if spell.pk in known or names[class_id] not in (spell.classes or []):
+                continue
+            row = _spellbook_row(spell, "", False)
+            row["unprepared"] = row["learnable"] = True
+            if can_edit:
+                row["prepare"] = {
+                    "spell": spell.pk,
+                    "on": False,
+                    "locked": full,
+                    "klass": class_id,
+                }
+            rows.append(row)
+            known.add(spell.pk)
     return rows
 
 
@@ -678,7 +735,9 @@ def _finish_cast(cast: dict, sources: list[dict], slots: list[dict]) -> None:
 
 
 def _spellbook(request, character: Character, stats, classes, can_edit: bool) -> dict:
-    rows = _spellbook_rows(character, can_edit, _prepared_limits(stats))
+    limits = _prepared_limits(stats)
+    rows = _spellbook_rows(character, can_edit, limits)
+    rows += _learnable_rows(character, stats, classes, can_edit, limits)
     slots = _slots(character, stats, classes)
     sources = _casting_sources(stats, classes)
     for row in rows:
@@ -694,8 +753,10 @@ def _spellbook(request, character: Character, stats, classes, can_edit: bool) ->
     for pool in slots:
         slots_by_level.setdefault(pool["level"], []).append(pool)
     spells_by_level: dict[int, list[dict]] = {}
+    unprepared_by_level: dict[int, list[dict]] = {}
     for row in rows:
-        spells_by_level.setdefault(row["level"], []).append(row)
+        by_level = unprepared_by_level if row["unprepared"] else spells_by_level
+        by_level.setdefault(row["level"], []).append(row)
     groups = [
         {
             "level": level,
@@ -705,12 +766,24 @@ def _spellbook(request, character: Character, stats, classes, can_edit: bool) ->
         }
         for level in sorted(set(spells_by_level) | set(slots_by_level))
     ]
+    # What the class could prepare but has not: the same level headings, no slots, below the rest.
+    unprepared = [
+        {
+            "level": level,
+            "label": f"{_('Level')} {level}",
+            "slots": [],
+            "spells": unprepared_by_level[level],
+        }
+        for level in sorted(unprepared_by_level)
+    ]
     # The "Level" filter would just repeat the level groups above - not necessary, unlike the
     # World Spells list, which has no such grouping of its own.
     filters = [f for f in _spell_filters(rows) if f["name"] not in ("level", "class")]
     return {
         "sources": sources,
         "spell_groups": groups,
+        "unprepared_groups": unprepared,
+        "known_count": sum(1 for r in rows if not r.get("learnable")),
         "spells": rows,
         "spell_filters": filters,
         "preparation": _preparation(character, stats, classes),
@@ -1105,9 +1178,16 @@ def _act_short_rest(character, post):
     return {"refresh": True, "message": message}
 
 
+def _spell_change_prompt() -> str:
+    return _("You can change your prepared spells now. Do you want to do it?")
+
+
 def _act_long_rest(character, post):
     play.long_rest(character)
-    return {"refresh": True, "message": _("Long rest taken")}
+    result = {"refresh": True, "message": _("Long rest taken")}
+    if character.spell_changes:
+        result["prompt"] = _spell_change_prompt()
+    return result
 
 
 def _act_resource(character, post):
@@ -1182,13 +1262,17 @@ def _act_spell_add(character, post):
 
 def _act_spell_prepare(character, post):
     spell_id = post.get("spell", "")
-    row = character.spells.get(spell_id=spell_id)
     stats = derived_stats.compute(character)
-    limit = next(
-        (e["prepared"] for e in stats.spellcasting if e["source"] == f"class:{row.klass_id}"),
-        None,
-    )
-    play.set_spell_prepared(character, spell_id, post.get("prepared") == "1", limit=limit)
+    row = character.spells.filter(spell_id=spell_id).first()
+    class_id = row.klass_id if row else post.get("klass", "")
+    entry = next((e for e in stats.spellcasting if e["source"] == f"class:{class_id}"), None)
+    with transaction.atomic():
+        if row is None:  # a class-list spell the spellbook offered without a row of its own
+            if entry is None:
+                raise ValueError("not a spell of one of this character's classes")
+            play.learn_class_spell(character, spell_id, class_id, _max_spell_level(entry))
+        limit = entry["prepared"] if entry else None
+        play.set_spell_prepared(character, spell_id, post.get("prepared") == "1", limit=limit)
     return {"refresh": True}
 
 
@@ -1360,6 +1444,7 @@ def character_act(request, pk):
             "ok": True,
             "refresh": bool(outcome.get("refresh")),
             "message": outcome.get("message", ""),
+            "prompt": outcome.get("prompt", ""),
             "state": _state(character),
         }
     )
