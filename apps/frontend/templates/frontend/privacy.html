@@ -1,0 +1,23 @@
+{% extends "frontend/account.html" %}
+{% load i18n %}
+
+{% block content %}
+  {% get_current_language as lang %}
+  <div class="account">
+    {% if lang == "it" %}
+      <h2>Informativa sulla privacy</h2>
+      <p>Questa app è un gestionale di personaggi di D&amp;D riservato a un piccolo gruppo di amici su invito. Non è un servizio pubblico.</p>
+      <p><strong>Dati raccolti.</strong> Accedendo con Google riceviamo soltanto il tuo indirizzo e-mail, usato per riconoscerti e associarti ai tuoi personaggi, e il nome che scegli tu al primo accesso. Salviamo inoltre i contenuti che inserisci (personaggi, diario, segnalibri).</p>
+      <p><strong>Uso.</strong> I dati servono solo al funzionamento dell'app. Non vengono venduti, condivisi con terzi né usati per pubblicità o profilazione. Gli altri giocatori vedono solo il nome che hai scelto.</p>
+      <p><strong>Conservazione e cancellazione.</strong> I dati restano finché l'account è attivo. Per chiedere la modifica o la cancellazione dell'account e dei dati scrivi a <a href="mailto:scimone.mail@gmail.com">scimone.mail@gmail.com</a>.</p>
+      <p><strong>Cookie.</strong> Usiamo solo cookie tecnici (sessione, lingua), nessun cookie di tracciamento.</p>
+    {% else %}
+      <h2>Privacy policy</h2>
+      <p>This app is a D&amp;D character manager for a small group of friends, by invitation only. It is not a public service.</p>
+      <p><strong>Data we collect.</strong> When you sign in with Google we receive only your e-mail address, used to recognise you and link you to your characters, plus the display name you choose on first sign-in. We also store the content you enter (characters, logbook, bookmarks).</p>
+      <p><strong>How it is used.</strong> Data is used only to run the app. It is never sold, shared with third parties, or used for advertising or profiling. Other players see only the name you chose.</p>
+      <p><strong>Retention and deletion.</strong> Data is kept while your account is active. To ask for your account and data to be changed or deleted, e-mail <a href="mailto:scimone.mail@gmail.com">scimone.mail@gmail.com</a>.</p>
+      <p><strong>Cookies.</strong> Only essential cookies (session, language); no tracking cookies.</p>
+    {% endif %}
+  </div>
+{% endblock %}

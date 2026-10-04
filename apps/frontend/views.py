@@ -886,6 +886,16 @@ def account(request):
     return response
 
 
+def privacy(request):
+    """The privacy policy. Public - Google's OAuth consent screen links to it, so it must load
+    without signing in (see `CloudflareAccessMiddleware`)."""
+    return render(
+        request,
+        "frontend/privacy.html",
+        {"page_title": _("Privacy policy"), "back_url": reverse("account")},
+    )
+
+
 def welcome(request):
     """First sign-in through Cloudflare Access: the account exists but has no name yet, so ask
     for one (`RequireNameMiddleware` sends every page here until it is given)."""

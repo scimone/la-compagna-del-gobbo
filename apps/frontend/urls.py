@@ -125,6 +125,7 @@ urlpatterns = [
     path("admin-panel/activity/", admin_views.panel_activity, name="admin-activity"),
     path("account/", views.account, name="account"),
     path("welcome/", views.welcome, name="welcome"),
+    path("privacy/", views.privacy, name="privacy"),
     path("account/logout/", views.account_logout, name="account-logout"),
     path("bookmarks/toggle/", views.bookmark_toggle, name="bookmark-toggle"),
     path("world/", views.world, name="world-overview"),

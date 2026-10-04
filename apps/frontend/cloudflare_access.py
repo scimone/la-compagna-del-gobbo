@@ -90,13 +90,17 @@ def get_or_create_user_by_email(email: str):
     return user
 
 
+# The privacy policy Google's consent screen links to: it has to load without signing in.
+PUBLIC_PATH = "/privacy/"
+
+
 class RequireNameMiddleware:
     """Right after the first Google sign-in the account has no name: send every page load to the
     welcome page until one is given. Only under Cloudflare Access (the password-less sign-in
     already asks for a name)."""
 
     _EXEMPT_PREFIXES = ("/welcome/", "/static/", "/media/", "/i18n/", "/account/logout/")
-    _EXEMPT_PATHS = ("/manifest.json", "/serviceworker.js", "/favicon.ico")
+    _EXEMPT_PATHS = ("/manifest.json", "/serviceworker.js", "/favicon.ico", "/privacy/")
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -120,7 +124,7 @@ class CloudflareAccessMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if not is_enabled():
+        if not is_enabled() or request.path == PUBLIC_PATH:
             return self.get_response(request)
         email = verified_email(request.headers.get(JWT_HEADER, ""))
         if email is None:

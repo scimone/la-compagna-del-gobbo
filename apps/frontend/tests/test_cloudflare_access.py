@@ -138,3 +138,9 @@ def test_link_refuses_an_address_used_by_another_account():
     User.objects.create_user(username="a")
     with pytest.raises(CommandError):
         call_command("link_account_email", "a", "x@example.com")
+
+
+def test_privacy_policy_is_public(client, settings):
+    settings.CF_ACCESS_TEAM_DOMAIN = "team.cloudflareaccess.com"
+    settings.CF_ACCESS_AUD = "aud"
+    assert client.get("/privacy/").status_code == 200
