@@ -435,6 +435,10 @@ def test_a_hand_added_spell_of_a_preparing_class_follows_its_preparation(signed_
     assert cleric.spells.get(spell=cleric_spell[0]).klass_id == "cleric"
     assert cleric.spells.get(spell=free).klass_id is None  # not on its list: just prepared
     assert cleric.spells.get(spell=free).prepared
+    assert cleric.spells.get(spell=free).always_prepared  # off every list: nothing to swap it for
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
+    row = next(chunk for chunk in html.split("<li") if f"/world/spells/{free.pk}/" in chunk)
+    assert "Always prepared" in row and "item-prepare" not in row
 
 
 def test_cannot_prepare_more_spells_than_the_class_allows_nor_always_prepared_ones(

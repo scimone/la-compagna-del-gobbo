@@ -546,7 +546,8 @@ def _spellbook_rows(character: Character, can_edit: bool, limits: dict | None = 
         if cs.always_prepared:
             status = _("Always prepared")
         elif cs.prepared and cs.spell.level > 0:
-            status = _("Prepared")
+            # The Prepared button already says so - only a read-only sheet has no button.
+            status = "" if can_edit else _("Prepared")
         elif cs.in_spellbook:
             status = _("In spellbook")
         else:

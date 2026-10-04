@@ -369,7 +369,7 @@ def test_an_item_that_is_not_the_characters_cannot_be_touched(hero, db):
 def test_a_spell_is_added_prepared_and_marked_as_added_from_the_sheet(hero):
     row = play.add_spell(hero, "fireball")
 
-    assert (row.prepared, row.always_prepared, row.source) == (True, False, play.SPELL_SOURCE)
+    assert (row.prepared, row.always_prepared, row.source) == (True, True, play.SPELL_SOURCE)
     assert hero.spells.filter(spell_id="fireball").count() == 1
     with pytest.raises(ValueError):  # already there
         play.add_spell(hero, "fireball")

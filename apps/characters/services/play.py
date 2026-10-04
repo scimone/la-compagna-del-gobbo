@@ -391,6 +391,9 @@ def add_spell(character: Character, spell_id: str, limits: dict | None = None) -
     """
     spell = Spell.objects.get(pk=spell_id)
     klass_id, prepared, in_spellbook = None, True, False
+    # Not on the list of a class that prepares spells: nothing to swap it for, so it stays
+    # prepared whatever happens (a cantrip needs no preparing).
+    always = spell.level > 0
     for class_id, limit in (limits or {}).items():
         row = character.classes.select_related("klass").filter(klass_id=class_id).first()
         if row and row.klass.name in (spell.classes or []):
@@ -400,12 +403,14 @@ def add_spell(character: Character, spell_id: str, limits: dict | None = None) -
                 klass_id=class_id, prepared=True, always_prepared=False, spell__level__gt=0
             ).count()
             prepared = spell.level == 0 or used < limit
+            always = False
             break
     row, created = CharacterSpell.objects.get_or_create(
         character=character,
         spell=spell,
         defaults={
             "prepared": prepared,
+            "always_prepared": always,
             "klass_id": klass_id,
             "in_spellbook": in_spellbook,
             "source": SPELL_SOURCE,
