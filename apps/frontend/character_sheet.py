@@ -583,7 +583,9 @@ def _spellbook_rows(character: Character, can_edit: bool, limits: dict | None = 
                 and cs.klass_id in limits
                 and _prepared_count(character, cs.klass_id) >= limits[cs.klass_id]
             )
-            row["prepare"] = {"spell": cs.spell.pk, "on": cs.prepared, "locked": locked or full}
+            # No Prepare button at all while the class has no room for another spell.
+            if not full:
+                row["prepare"] = {"spell": cs.spell.pk, "on": cs.prepared, "locked": locked}
         row["unprepared"] = cs.spell.level > 0 and not prepared
         rows.append(row)
     return rows
@@ -627,11 +629,11 @@ def _learnable_rows(character: Character, stats, classes, can_edit: bool, limits
                 continue
             row = _spellbook_row(spell, "", False)
             row["unprepared"] = row["learnable"] = True
-            if can_edit:
+            if can_edit and not full:
                 row["prepare"] = {
                     "spell": spell.pk,
                     "on": False,
-                    "locked": full,
+                    "locked": False,
                     "klass": class_id,
                 }
             rows.append(row)

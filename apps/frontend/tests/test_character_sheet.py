@@ -10,7 +10,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils.html import escape
 from PIL import Image
 
-from apps.builder.services import creation
+from apps.builder.services import creation, derived_stats
 from apps.builder.tests.conftest import build_character
 from apps.characters.models import (
     Character,
@@ -382,6 +382,11 @@ def test_spellbook_lists_the_rest_of_the_class_list_greyed_out_below_and_prepare
     assert f"/world/spells/{extra.pk}/" in below and f"/world/spells/{extra.pk}/" not in above
     assert not Spell.objects.filter(pk__in=re.findall(r"/world/spells/([^/]+)/", below), level=0)
     assert f"Spells <b>{cleric.spells.count()}</b>" in html  # the offer is not "known"
+
+    limit = derived_stats.compute(cleric).spellcasting[0]["prepared"]
+    count = cleric.spells.filter(prepared=True, always_prepared=False, spell__level__gt=0).count()
+    # A Prepare button only while the class has room for another spell.
+    assert ("spell_prepare" in below) == (count < limit)
 
     # Make room (a level-1 cleric's list is full) - then preparing it creates the row.
     cleric.spells.filter(prepared=True, always_prepared=False, spell__level__gt=0).update(
