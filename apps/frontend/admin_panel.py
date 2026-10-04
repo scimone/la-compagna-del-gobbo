@@ -5,12 +5,14 @@ spell Fireball", "Changed hit points of Gandalf" - with a link to the page conce
 
 from datetime import timedelta
 
+from django.contrib.auth import get_user_model
 from django.db.models import Count
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from apps.characters.models import Character
+from apps.frontend import accounts
 from apps.frontend.models import Interaction, LogEntry
 from apps.rules import models as rules
 
@@ -146,19 +148,30 @@ def _action_labels():
 
 def visitors() -> list[dict]:
     """Everyone who has an interaction on record, most active first, for the filter's menu:
-    `{"username", "count"}` - an empty username is the signed-out visitors."""
+    `{"username", "name", "count"}` - `username` is the filter's value, `name` what to show (the
+    name the person gave, else the username); an empty username is the signed-out visitors."""
     rows = (
         Interaction.objects.values("username")
         .annotate(count=Count("id"))
         .order_by("-count", "username")
     )
-    return [{"username": r["username"], "count": r["count"]} for r in rows]
+    users = {u.username: u for u in get_user_model().objects.all()}
+    return [
+        {
+            "username": r["username"],
+            "name": accounts.display_name(users[r["username"]])
+            if r["username"] in users
+            else r["username"],
+            "count": r["count"],
+        }
+        for r in rows
+    ]
 
 
 def interactions(username: str = ""):
     """The log, newest first. `username` narrows it to one visitor (`ANONYMOUS` for signed-out
     ones); empty means everyone."""
-    qs = Interaction.objects.order_by("-created_at", "-id")
+    qs = Interaction.objects.select_related("user").order_by("-created_at", "-id")
     if username == ANONYMOUS:
         qs = qs.filter(username="")
     elif username:
@@ -217,6 +230,7 @@ def describe(rows) -> list[dict]:
         out.append(
             {
                 "row": row,
+                "who": accounts.display_name(row.user) if row.user else row.username,
                 "section": section,
                 "section_label": sections.get(section, ""),
                 "text": text,

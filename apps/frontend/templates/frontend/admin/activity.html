@@ -39,9 +39,9 @@
       <select name="user" aria-label="{% translate 'User' %}" onchange="this.form.submit()">
         <option value="">{% translate "Everyone" %}</option>
         {% for v in visitors %}
-          <option value="{% if v.username %}{{ v.username }}{% else %}{{ anonymous }}{% endif %}"
+          <option value="{% if v.username %}{{ v.name }}{% else %}{{ anonymous }}{% endif %}"
                   {% if selected == v.username and v.username or selected == anonymous and not v.username %}selected{% endif %}>
-            {% if v.username %}{{ v.username }}{% else %}{% translate "Not signed in" %}{% endif %} ({{ v.count }})
+            {% if v.username %}{{ v.name }}{% else %}{% translate "Not signed in" %}{% endif %} ({{ v.count }})
           </option>
         {% endfor %}
       </select>
@@ -61,7 +61,7 @@
                   {% if e.detail %}<div class="meta">{{ e.detail }}</div>{% endif %}
                   <div class="meta">
                     {{ row.created_at|date:"H:i:s" }} ·
-                    {% if row.username %}{{ row.username }}{% else %}{% translate "Not signed in" %}{% endif %}
+                    {% if e.who %}{{ e.who }}{% else %}{% translate "Not signed in" %}{% endif %}
                     {% if e.section_label %}· <span class="tag">{{ e.section_label }}</span>{% endif %}
                   </div>
                 </div>

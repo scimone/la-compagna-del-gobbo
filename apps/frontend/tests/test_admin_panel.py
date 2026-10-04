@@ -1,5 +1,7 @@
 """The admin panel (activity log by user) and the admin-only "assign character" action."""
 
+from datetime import UTC
+
 import pytest
 from django.contrib.auth import get_user_model
 from django.test import override_settings
@@ -125,3 +127,22 @@ def test_activity_is_newest_first(client, users):
     client.force_login(boss)
     html = client.get("/admin-panel/activity/").content.decode()
     assert html.index("/second/") < html.index("/first/")
+
+
+def test_times_are_shown_in_berlin_and_people_by_name(client, users):
+    from datetime import datetime
+
+    boss, alice = users
+    alice.first_name = "Alice Rossi"
+    alice.save()
+    row = Interaction.objects.create(
+        username="alice", user=alice, kind="view", path="/x/", method="GET", status=200
+    )
+    Interaction.objects.filter(pk=row.pk).update(
+        created_at=datetime(2026, 1, 15, 22, 30, 5, tzinfo=UTC)
+    )
+    client.force_login(boss)
+    html = client.get("/admin-panel/activity/").content.decode()
+    assert "23:30:05" in html  # 22:30 UTC is 23:30 in Berlin (winter)
+    assert html.count("Alice Rossi") >= 2  # the row and the filter's option
+    assert ">alice" not in html.replace("value=", "")
