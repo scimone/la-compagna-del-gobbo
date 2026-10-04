@@ -146,3 +146,17 @@ def test_times_are_shown_in_berlin_and_people_by_name(client, users):
     assert "23:30:05" in html  # 22:30 UTC is 23:30 in Berlin (winter)
     assert html.count("Alice Rossi") >= 2  # the row and the filter's option
     assert ">alice" not in html.replace("value=", "")
+
+
+def test_filtering_by_a_user_with_a_display_name_finds_their_rows(client, users):
+    boss, alice = users
+    alice.first_name = "Alice Rossi"
+    alice.save()
+    Interaction.objects.create(
+        username="alice", user=alice, kind="view", path="/mine/", method="GET", status=200
+    )
+    client.force_login(boss)
+    page = client.get("/admin-panel/activity/").content.decode()
+    assert 'value="alice"' in page and 'value="Alice Rossi"' not in page
+    filtered = client.get("/admin-panel/activity/?user=alice").content.decode()
+    assert "Nothing recorded yet" not in filtered and "/mine/" in filtered
