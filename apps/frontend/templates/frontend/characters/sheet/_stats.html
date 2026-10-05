@@ -199,7 +199,7 @@
     </label>
     <div class="drain-abilities">
     {% for key, label, lost in strip.ability_reductions %}
-      <label class="cs-cast-field"><span class="k">{{ label }} {% translate "reduced by" %}</span>
+      <label class="cs-cast-field"><span class="k">{{ label }}</span>
         <input type="number" min="0" inputmode="numeric" value="{{ lost }}"{% if can_edit %} data-act="ability_reduction" data-ability="{{ key }}"{% else %} disabled{% endif %}>
       </label>
     {% endfor %}
