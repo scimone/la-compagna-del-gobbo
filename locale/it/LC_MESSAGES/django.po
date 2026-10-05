@@ -2767,8 +2767,11 @@ msgstr "Stato"
 msgid "Heal"
 msgstr "Cura"
 
-msgid "Amount"
-msgstr "Quantità"
+msgid "Change hit points"
+msgstr "Modifica i punti ferita"
 
-msgid "Hit points to lose or regain"
-msgstr "Punti ferita da perdere o recuperare"
+msgid "Clear"
+msgstr "Cancella tutto"
+
+msgid "Set to"
+msgstr "Imposta a"

@@ -34,25 +34,14 @@
     </div>
     <div class="st-hp-main">
       {% if can_edit %}<button type="button" class="step" data-act="hp_delta" data-delta="-1" aria-label="{% translate 'Lose 1 hit point' %}">−</button>{% endif %}
-      <span class="hp-val">
-        {% if can_edit %}
-          <input type="number" min="0" inputmode="numeric" value="{{ strip.hp }}" data-act="hp_set" data-bind="hp" aria-label="{% translate 'Current hit points' %}">
-        {% else %}
-          <b data-bind="hp">{{ strip.hp }}</b>
-        {% endif %}
+      {# Tap the number for the keypad (_hp_dialog.html): any amount at once. #}
+      {% if can_edit %}<button type="button" class="hp-val" data-hp-open aria-label="{% translate 'Change hit points' %}">{% else %}<span class="hp-val">{% endif %}
+        <b data-bind="hp">{{ strip.hp }}</b>
         <span class="of">/ <span data-bind="max_hp">{{ strip.max_hp }}</span></span>
-      </span>
+      {% if can_edit %}</button>{% else %}</span>{% endif %}
       {% if can_edit %}<button type="button" class="step" data-act="hp_delta" data-delta="1" aria-label="{% translate 'Regain 1 hit point' %}">+</button>{% endif %}
     </div>
     <div class="cs-bar hp" data-hp-bar style="--pct: {{ strip.hp_percent }}%"><i></i></div>
-    {% if can_edit %}
-    {# Any amount at once: type it, then Damage or Heal (the ± buttons above move one point). #}
-    <div class="st-hp-amount">
-      <button type="button" class="hp-apply dmg" data-hp-apply="-1">{% translate "Damage" %}</button>
-      <input type="number" min="1" inputmode="numeric" placeholder="{% translate 'Amount' %}" aria-label="{% translate 'Hit points to lose or regain' %}" data-hp-amount>
-      <button type="button" class="hp-apply heal" data-hp-apply="1">{% translate "Heal" %}</button>
-    </div>
-    {% endif %}
   </div>
 
   {# Armor Class, Initiative, Speed: the numbers of a fight. #}

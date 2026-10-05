@@ -132,7 +132,7 @@ def test_the_stats_tab_holds_every_number_that_changes_during_play(signed_in, al
         "Death Saves",
     ):
         assert card in html
-    assert 'data-act="xp"' in html and 'data-act="hp_set"' in html
+    assert 'data-act="xp"' in html and "data-hp-open" in html
     assert html.count('data-death="successes"') == 1 and html.count('class="box ') == 6
     assert html.count('<div class="cs-scroll">') == 1
 
@@ -161,7 +161,8 @@ def test_the_stats_tab_reads_the_rests_then_hit_points_then_the_fight_numbers(si
     assert 'class="st-card st-dice"' in html and 'class="st-card st-death"' in html
     # Exhaustion sits right on top of Conditions; hit points can be changed by any typed amount.
     assert html.index('st-card st-exh') < html.index('st-conds')
-    assert "data-hp-amount" in html and 'data-hp-apply="-1"' in html and 'data-hp-apply="1"' in html
+    page = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
+    assert 'id="cs-hp-dialog"' in page and all(f'data-hp-do="{k}"' in page for k in ("damage", "heal", "set"))
 
 
 def test_the_stats_tab_shows_progress_bars_and_one_pip_per_hit_die(signed_in, alice, settings):

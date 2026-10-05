@@ -268,18 +268,83 @@
       .catch(function () { showError(); });
   }
 
-  // Damage / Heal with a typed amount: one `hp_delta` of that size instead of tapping +/- per point.
+  // ---- hit points: tapping the number opens a keypad (_hp_dialog.html) - an amount, then Damage, ----
+  // ---- Heal or Set. The previews follow the rules `play.adjust_hit_points` applies. -------------
+
+  function hpNumbers() {
+    var temp = root.querySelector('[data-bind="temp_hp"]');
+    return {
+      hp: Number(root.querySelector('[data-bind="hp"]').textContent) || 0,
+      max: Number(root.querySelector('[data-bind="max_hp"]').textContent) || 0,
+      temp: Number(temp && (temp.matches("input") ? temp.value : temp.textContent)) || 0,
+    };
+  }
+
+  function hpOutcome(kind, amount, n) {
+    if (kind === "heal") return Math.min(n.max, n.hp + amount);
+    if (kind === "set") return Math.max(0, Math.min(n.max, amount));
+    return Math.max(0, n.hp - Math.max(0, amount - n.temp)); // temporary hit points go first
+  }
+
+  function hpPadDraw(dialog) {
+    var n = hpNumbers();
+    var amount = dialog._amount;
+    dialog.querySelector("[data-hp-now]").textContent = n.hp;
+    dialog.querySelector("[data-hp-max]").textContent = n.max;
+    dialog.querySelector("[data-hp-temp]").textContent = n.temp;
+    dialog.querySelector("[data-hp-temp-line]").hidden = !n.temp;
+    var display = dialog.querySelector("[data-hp-amount]");
+    display.textContent = amount || "0";
+    display.classList.toggle("empty", !amount);
+    ["damage", "heal", "set"].forEach(function (kind) {
+      var preview = dialog.querySelector('[data-hp-preview="' + kind + '"]');
+      var ready = kind === "set" ? amount !== "" : Number(amount) > 0;
+      preview.textContent = ready ? (kind === "set" ? hpOutcome(kind, Number(amount), n) : "→ " + hpOutcome(kind, Number(amount), n)) : "";
+      dialog.querySelector('[data-hp-do="' + kind + '"]').disabled = !ready;
+    });
+  }
+
+  function hpPadKey(dialog, key) {
+    if (key === "clear") dialog._amount = "";
+    else if (key === "back") dialog._amount = dialog._amount.slice(0, -1);
+    else if (dialog._amount.length < 4) dialog._amount = (dialog._amount + key).replace(/^0+(?=\d)/, "");
+    hpPadDraw(dialog);
+  }
+
+  function hpPadDo(dialog, kind) {
+    var amount = Number(dialog._amount);
+    if (dialog._amount === "" || (kind !== "set" && !amount)) return;
+    dialog.close();
+    if (kind === "set") send({ action: "hp_set", value: String(amount) });
+    else send({ action: "hp_delta", delta: String(kind === "damage" ? -amount : amount) });
+  }
+
   root.addEventListener("click", function (event) {
-    var apply = event.target.closest("button[data-hp-apply]");
-    if (!apply) return;
-    var field = root.querySelector("[data-hp-amount]");
-    var amount = Math.floor(Number(field && field.value));
-    if (!amount || amount < 1) {
-      if (field) field.focus();
+    if (event.target.closest("[data-hp-open]")) {
+      var opener = document.getElementById("cs-hp-dialog");
+      if (!opener || !opener.showModal) return;
+      opener._amount = "";
+      hpPadDraw(opener);
+      opener.showModal();
       return;
     }
-    send({ action: "hp_delta", delta: String(amount * Number(apply.dataset.hpApply)) });
-    field.value = "";
+    var dialog = event.target.closest("#cs-hp-dialog");
+    if (!dialog) return;
+    var key = event.target.closest("[data-hp-key]");
+    var action = event.target.closest("[data-hp-do]");
+    if (key) hpPadKey(dialog, key.dataset.hpKey);
+    else if (action && !action.disabled) hpPadDo(dialog, action.dataset.hpDo);
+    else if (event.target.closest("[data-hp-cancel]")) dialog.close();
+  });
+  // A physical keyboard works too: digits, Backspace, Delete (clear), Escape (the dialog's own).
+  document.addEventListener("keydown", function (event) {
+    var dialog = document.getElementById("cs-hp-dialog");
+    if (!dialog || !dialog.open) return;
+    if (/^[0-9]$/.test(event.key)) hpPadKey(dialog, event.key);
+    else if (event.key === "Backspace") hpPadKey(dialog, "back");
+    else if (event.key === "Delete") hpPadKey(dialog, "clear");
+    else return;
+    event.preventDefault();
   });
 
   root.addEventListener("click", function (event) {

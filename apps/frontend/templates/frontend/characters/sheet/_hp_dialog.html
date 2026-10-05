@@ -1,0 +1,25 @@
+{% load i18n %}
+{# Outside the tab panels, like the cast dialog. Opened by tapping the hit points on the Stats tab: #}
+{# an amount typed on its own keypad (no phone keyboard), then Damage, Heal or Set. What each would #}
+{# leave is previewed by `character_sheet.js`; the server (`play.adjust_hit_points`) has the last word. #}
+{% if can_edit %}
+<dialog class="cs-cast cs-hp-pad" id="cs-hp-dialog">
+  <h3>{% translate "Hit Points" %}</h3>
+  <p class="cs-cast-note hp-pad-now"><b data-hp-now></b> / <span data-hp-max></span><span data-hp-temp-line> &middot; {% translate "Temp HP" %} <b data-hp-temp></b></span></p>
+  <output class="hp-pad-amount" data-hp-amount aria-live="polite">0</output>
+  <div class="hp-pad-keys">
+    {% for key in "123456789" %}<button type="button" data-hp-key="{{ key }}">{{ key }}</button>{% endfor %}
+    <button type="button" data-hp-key="clear" aria-label="{% translate 'Clear' %}">C</button>
+    <button type="button" data-hp-key="0">0</button>
+    <button type="button" data-hp-key="back" aria-label="{% translate 'Delete' %}">⌫</button>
+  </div>
+  <div class="hp-pad-actions">
+    <button type="button" class="dmg" data-hp-do="damage" disabled>{% translate "Damage" %}<small data-hp-preview="damage"></small></button>
+    <button type="button" class="heal" data-hp-do="heal" disabled>{% translate "Heal" %}<small data-hp-preview="heal"></small></button>
+  </div>
+  <div class="cs-cast-buttons">
+    <button type="button" data-hp-cancel>{% translate "Cancel" %}</button>
+    <button type="button" data-hp-do="set" disabled>{% translate "Set to" %} <span data-hp-preview="set"></span></button>
+  </div>
+</dialog>
+{% endif %}

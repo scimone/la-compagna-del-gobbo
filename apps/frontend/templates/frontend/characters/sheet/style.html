@@ -131,12 +131,25 @@
   .step:active:not(:disabled) { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
   .step.small { width: 2.1rem; height: 2.1rem; font-size: 1.2rem; }
 
-  .st-hp-amount { display: grid; grid-template-columns: 1fr minmax(0, 6rem) 1fr; gap: 0.5rem; margin-top: 0.7rem; }
-  #cs .st-hp-amount input { text-align: center; font-weight: 700; font-size: 1.1rem; }
-  .hp-apply { padding: 0.55rem 0.4rem; border: 1px solid var(--border); border-radius: 0.8rem; background: var(--surface); font: inherit; font-weight: 700; cursor: pointer; }
-  .hp-apply.dmg { color: var(--text); }
-  .hp-apply.heal { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
-  .hp-apply:active { opacity: 0.7; }
+  button.hp-val { padding: 0.1rem 0.7rem; border: 1px dashed transparent; border-radius: 0.8rem; background: none; color: inherit; font: inherit; cursor: pointer; }
+  button.hp-val:hover, button.hp-val:focus-visible { border-color: var(--border); background: var(--bg); }
+  button.hp-val:active { background: color-mix(in srgb, var(--accent) 10%, var(--bg)); }
+
+  /* The hit point keypad (_hp_dialog.html) */
+  dialog.cs-hp-pad { max-width: 20rem; }
+  .hp-pad-now { margin-top: 0; }
+  .hp-pad-now b { color: var(--text); }
+  .hp-pad-amount { display: block; margin: 0.4rem 0 0.6rem; padding: 0.35rem 0.6rem; text-align: right; font-size: 2.4rem; font-weight: 800; line-height: 1.1; background: var(--bg); border: 1px solid var(--border); border-radius: 0.7rem; font-variant-numeric: tabular-nums; }
+  .hp-pad-amount.empty { color: var(--muted); }
+  .hp-pad-keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
+  .hp-pad-keys button { padding: 0.65rem 0; font: inherit; font-size: 1.3rem; font-weight: 700; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 0.7rem; cursor: pointer; }
+  .hp-pad-keys button:active { background: var(--border); }
+  .hp-pad-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.7rem; }
+  .hp-pad-actions button { display: flex; flex-direction: column; align-items: center; gap: 0.1rem; padding: 0.6rem 0.4rem; font: inherit; font-weight: 800; font-size: 1rem; border-radius: 0.8rem; border: 1px solid var(--border); cursor: pointer; }
+  .hp-pad-actions button small { font-size: 0.75rem; font-weight: 600; opacity: 0.85; min-height: 1em; }
+  .hp-pad-actions .dmg { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .hp-pad-actions .heal { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+  .hp-pad-actions button:disabled, .cs-hp-pad .cs-cast-buttons button:disabled { opacity: 0.4; cursor: default; }
 
   /* Rests */
   .st-rests { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
