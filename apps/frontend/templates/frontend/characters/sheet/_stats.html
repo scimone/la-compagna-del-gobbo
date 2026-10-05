@@ -65,19 +65,19 @@
       <b class="v">{{ strip.initiative|stringformat:"+d" }}</b>
       <span class="k">{% translate "Initiative" %}</span>
     </div>
+    <button type="button" class="st-tile st-insp cs-insp{% if strip.inspiration %} on{% endif %}" data-act="inspiration"
+            data-value="{% if strip.inspiration %}0{% else %}1{% endif %}" aria-pressed="{% if strip.inspiration %}true{% else %}false{% endif %}"{% if not can_edit %} disabled{% endif %}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.8 2.7 5.9 6.4.7-4.8 4.3 1.4 6.3L12 16.8 6.3 20l1.4-6.3L2.9 9.4l6.4-.7z"/></svg>
+      <span class="k">{% translate "Heroic Inspiration" %}</span>
+    </button>
+  </div>
+
+  {# Speed beside Passive Perception; Death Saves get one slim line below. #}
+  <div class="st-pair st-wide">
     <div class="st-tile">
       <b class="v">{{ header.speed }}</b>
       <span class="k">{% translate "Speed" %}</span>
     </div>
-  </div>
-
-  {# Heroic Inspiration beside Passive Perception; Death Saves get one slim line below. #}
-  <div class="st-pair st-wide">
-  <button type="button" class="st-card st-insp cs-insp{% if strip.inspiration %} on{% endif %}" data-act="inspiration"
-          data-value="{% if strip.inspiration %}0{% else %}1{% endif %}" aria-pressed="{% if strip.inspiration %}true{% else %}false{% endif %}"{% if not can_edit %} disabled{% endif %}>
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.8 2.7 5.9 6.4.7-4.8 4.3 1.4 6.3L12 16.8 6.3 20l1.4-6.3L2.9 9.4l6.4-.7z"/></svg>
-    <span class="k">{% translate "Heroic Inspiration" %}</span>
-  </button>
     <div class="st-tile st-pp">
       <b class="v">{{ header.passive_perception }}</b>
       <span class="k">{% translate "Passive Perception" %}</span>
@@ -194,7 +194,7 @@
   {# What a monster drained, until the next Long Rest. #}
   <details class="st-card st-wide st-drain"{% if strip.hp_reduction or strip.drained %} open{% endif %}>
     <summary class="k">{% translate "Reduced until a long rest" %}</summary>
-    <label class="cs-cast-field"><span class="k">{% translate "Hit point maximum reduced by" %}</span>
+    <label class="cs-cast-field"><span class="k">{% translate "Hit point maximum" %}</span>
       <span class="drain-in"><i aria-hidden="true">−</i><input type="number" min="0" inputmode="numeric" value="{{ strip.hp_reduction }}"{% if can_edit %} data-act="hp_max_reduction"{% else %} disabled{% endif %}></span>
     </label>
     <div class="drain-abilities">

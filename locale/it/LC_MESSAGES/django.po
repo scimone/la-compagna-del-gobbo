@@ -2775,3 +2775,6 @@ msgstr "Cancella tutto"
 
 msgid "Set to"
 msgstr "Imposta a"
+
+msgid "Hit point maximum"
+msgstr "Massimo di Punti Ferita"

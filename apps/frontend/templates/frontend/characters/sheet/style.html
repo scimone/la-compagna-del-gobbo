@@ -109,7 +109,7 @@
   .st-wide { grid-column: 1 / -1; }
   .st-card { min-width: 0; padding: 0.85rem 0.95rem; display: flex; flex-direction: column; gap: 0.55rem;
     background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); text-align: left; }
-  .st .k { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; line-height: 1.2; }
+  .st .k { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 700; line-height: 1.2; }
   .st-head { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
   .st input[type="number"] { text-align: center; background: var(--bg); }
   .cs-bar { height: 0.55rem; overflow: hidden; background: var(--bg); border: 1px solid var(--border); border-radius: 1rem; }
@@ -164,7 +164,11 @@
   .st-tile { min-width: 0; padding: 0.85rem 0.3rem 0.7rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.35rem; text-align: center;
     background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
   .st-tile .v { font-size: 2rem; font-weight: 800; line-height: 1; }
-  .st-tile .k { font-size: 0.56rem; letter-spacing: 0.03em; overflow-wrap: normal; }
+  .st-tile .k { overflow-wrap: normal; }
+  /* Captions on top, at one height across the row; the value or icon is centred in what is left. */
+  .st-tile, .st-insp { justify-content: flex-start; }
+  .st-tile .k { order: -1; }
+  .st-tile > .v, .st-tile > .ac-emblem, .st-insp > svg { margin-block: auto; }
   .ac-emblem { position: relative; display: grid; place-items: center; width: 3.1rem; height: 3.4rem; }
   .ac-emblem svg { position: absolute; inset: 0; width: 100%; height: 100%; fill: color-mix(in srgb, var(--accent) 13%, var(--surface)); stroke: var(--accent); stroke-width: 1.4; stroke-linejoin: round; }
   .ac-emblem .v { position: relative; font-size: 1.5rem; margin-top: -0.15rem; }
@@ -177,7 +181,7 @@
   .st-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
   .st-pair > * { min-width: 0; }
   .st-pp { flex-direction: column; }
-  .st-insp { align-items: center; justify-content: center; gap: 0.4rem; text-align: center; cursor: pointer; font: inherit; }
+  .st-insp { align-items: center; gap: 0.4rem; text-align: center; cursor: pointer; font: inherit; }
   .st-insp:disabled { cursor: default; }
   .cs-insp svg { width: 2rem; height: 2rem; fill: none; stroke: var(--muted); stroke-width: 1.6; stroke-linejoin: round; }
   .cs-insp.on { background: color-mix(in srgb, var(--accent) 12%, var(--surface)); border-color: var(--accent); }
@@ -348,11 +352,10 @@
   .cs-cast-field.cs-cast-ritual { flex-direction: row; align-items: center; gap: 0.5rem; }
   .cs-cast-field[hidden], .cs-cast-note[hidden] { display: none; }
   .drain-abilities { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 0.5rem; }
-  .st-drain .drain-abilities .k { font-size: 0.6rem; letter-spacing: 0.02em; }
-  .st-drain .cs-cast-field .k { text-align: center; padding-left: 1.2rem; } /* centred over the box, not the minus */
-  .drain-in { display: flex; align-items: center; gap: 0.4rem; }
-  .drain-in i { width: 0.8rem; text-align: center; font-style: normal; font-weight: 800; font-size: 1.2rem; color: var(--muted); }
-  .drain-in input { flex: 1; min-width: 0; }
+  .st-drain .cs-cast-field .k { text-align: center; }
+  .drain-in { position: relative; display: block; }
+  .drain-in i { position: absolute; left: 0.6rem; top: 50%; transform: translateY(-50%); font-style: normal; font-weight: 800; font-size: 1.2rem; color: var(--muted); pointer-events: none; }
+  #cs .drain-in input { box-sizing: border-box; width: 100%; padding-left: 1.6rem; padding-right: 1.6rem; } /* the minus sits inside the box; both sides padded so the number stays centred */
   .cs-cast-field select { padding: 0.3rem; }
   .cs-cast-note { margin: 0.6rem 0 0; font-size: 0.85rem; color: var(--muted); }
   .cs-cast-buttons { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1rem; }
