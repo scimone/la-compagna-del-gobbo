@@ -197,11 +197,13 @@
     <label class="cs-cast-field"><span class="k">{% translate "Hit point maximum reduced by" %}</span>
       <input type="number" min="0" inputmode="numeric" value="{{ strip.hp_reduction }}"{% if can_edit %} data-act="hp_max_reduction"{% else %} disabled{% endif %}>
     </label>
+    <div class="drain-abilities">
     {% for key, label, lost in strip.ability_reductions %}
       <label class="cs-cast-field"><span class="k">{{ label }} {% translate "reduced by" %}</span>
         <input type="number" min="0" inputmode="numeric" value="{{ lost }}"{% if can_edit %} data-act="ability_reduction" data-ability="{{ key }}"{% else %} disabled{% endif %}>
       </label>
     {% endfor %}
+    </div>
   </details>
 
   {# Experience: the level, the number, how far it is to the next level, and the way up. #}
