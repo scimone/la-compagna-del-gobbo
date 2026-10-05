@@ -45,6 +45,14 @@
       {% if can_edit %}<button type="button" class="step" data-act="hp_delta" data-delta="1" aria-label="{% translate 'Regain 1 hit point' %}">+</button>{% endif %}
     </div>
     <div class="cs-bar hp" data-hp-bar style="--pct: {{ strip.hp_percent }}%"><i></i></div>
+    {% if can_edit %}
+    {# Any amount at once: type it, then Damage or Heal (the ± buttons above move one point). #}
+    <div class="st-hp-amount">
+      <button type="button" class="hp-apply dmg" data-hp-apply="-1">{% translate "Damage" %}</button>
+      <input type="number" min="1" inputmode="numeric" placeholder="{% translate 'Amount' %}" aria-label="{% translate 'Hit points to lose or regain' %}" data-hp-amount>
+      <button type="button" class="hp-apply heal" data-hp-apply="1">{% translate "Heal" %}</button>
+    </div>
+    {% endif %}
   </div>
 
   {# Armor Class, Initiative, Speed: the numbers of a fight. #}
@@ -106,8 +114,8 @@
   </div>
   </div>
 
-  {# Hit Dice beside Exhaustion, the same height as Death Saves; both sit on top of Conditions. #}
-  <div class="st-pair st-wide">
+  {# Hit Dice, then Exhaustion right on top of Conditions; each a slim full-width line like Death Saves. #}
+  <div class="st-wide st-vitals">
   <div class="st-card st-dice">
     <span class="k">{% translate "Hit Dice" %}</span>
     {% for hd in strip.hit_dice %}
@@ -123,6 +131,9 @@
       </div>
     {% endfor %}
   </div>
+  </div>
+
+  <div class="st-wide st-vitals">
   <div class="st-card st-exh">
     <span class="k">{{ strip.conditions.exhaustion_name }}</span>
     {% if can_edit %}

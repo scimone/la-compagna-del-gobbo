@@ -159,6 +159,9 @@ def test_the_stats_tab_reads_the_rests_then_hit_points_then_the_fight_numbers(si
     # The cards flow in a plain grid (no height-weighted rows), so nothing can overlap.
     assert 'class="st-card st-hp st-wide"' in html and "cs-row" not in html
     assert 'class="st-card st-dice"' in html and 'class="st-card st-death"' in html
+    # Exhaustion sits right on top of Conditions; hit points can be changed by any typed amount.
+    assert html.index('st-card st-exh') < html.index('st-conds')
+    assert "data-hp-amount" in html and 'data-hp-apply="-1"' in html and 'data-hp-apply="1"' in html
 
 
 def test_the_stats_tab_shows_progress_bars_and_one_pip_per_hit_die(signed_in, alice, settings):

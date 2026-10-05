@@ -131,6 +131,13 @@
   .step:active:not(:disabled) { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
   .step.small { width: 2.1rem; height: 2.1rem; font-size: 1.2rem; }
 
+  .st-hp-amount { display: grid; grid-template-columns: 1fr minmax(0, 6rem) 1fr; gap: 0.5rem; margin-top: 0.7rem; }
+  #cs .st-hp-amount input { text-align: center; font-weight: 700; font-size: 1.1rem; }
+  .hp-apply { padding: 0.55rem 0.4rem; border: 1px solid var(--border); border-radius: 0.8rem; background: var(--surface); font: inherit; font-weight: 700; cursor: pointer; }
+  .hp-apply.dmg { color: var(--text); }
+  .hp-apply.heal { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+  .hp-apply:active { opacity: 0.7; }
+
   /* Rests */
   .st-rests { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
   .st-rest { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.7rem 0.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); font-weight: 700; font-size: 0.9rem; cursor: pointer; }
@@ -164,6 +171,7 @@
   .cs-insp.on svg { fill: var(--accent); stroke: var(--accent); }
   .st-dice, .st-exh { flex-direction: row; align-items: center; justify-content: space-between; gap: 0.4rem 0.6rem; padding-block: 0.5rem; }
   .st-dice { flex-wrap: wrap; }
+  .st-dice .cs-hd-row { flex: 1 1 auto; }
   .st-exh .ctl { display: inline-flex; align-items: center; gap: 0.4rem; }
   .st-exh .cnt { color: var(--muted); font-size: 0.9rem; }
   .st-exh .cnt b { color: var(--text); font-size: 1.15rem; }

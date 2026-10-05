@@ -2763,3 +2763,12 @@ msgstr "Condizione"
 
 msgid "Status"
 msgstr "Stato"
+
+msgid "Heal"
+msgstr "Cura"
+
+msgid "Amount"
+msgstr "Quantità"
+
+msgid "Hit points to lose or regain"
+msgstr "Punti ferita da perdere o recuperare"

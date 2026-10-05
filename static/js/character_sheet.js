@@ -268,6 +268,20 @@
       .catch(function () { showError(); });
   }
 
+  // Damage / Heal with a typed amount: one `hp_delta` of that size instead of tapping +/- per point.
+  root.addEventListener("click", function (event) {
+    var apply = event.target.closest("button[data-hp-apply]");
+    if (!apply) return;
+    var field = root.querySelector("[data-hp-amount]");
+    var amount = Math.floor(Number(field && field.value));
+    if (!amount || amount < 1) {
+      if (field) field.focus();
+      return;
+    }
+    send({ action: "hp_delta", delta: String(amount * Number(apply.dataset.hpApply)) });
+    field.value = "";
+  });
+
   root.addEventListener("click", function (event) {
     var button = event.target.closest("button[data-act]");
     if (button && !button.disabled && button.dataset.picksUrl) {
