@@ -2701,8 +2701,8 @@ msgstr "Privo di sensi"
 msgid "Exhaustion"
 msgstr "Indebolimento"
 
-msgid "Exhaustion %(level)s: D20 Tests -%(penalty)s, Speed -%(speed)s ft"
-msgstr "Indebolimento %(level)s: Tiri d20 -%(penalty)s, velocità -%(speed)s ft"
+msgid "Exhaustion %(level)s: D20 Tests -%(penalty)s, Speed -%(speed)s"
+msgstr "Indebolimento %(level)s: Tiri d20 -%(penalty)s, velocità -%(speed)s"
 
 msgid "You can't take actions, Bonus Actions or Reactions"
 msgstr "Non può compiere azioni, azioni bonus né reazioni"
@@ -2722,8 +2722,8 @@ msgstr "Vantaggio ai tiri per colpire del personaggio"
 msgid "Attack rolls against you: Advantage and Disadvantage may cancel out"
 msgstr "Tiri per colpire contro il personaggio: vantaggio e svantaggio possono annullarsi"
 
-msgid "Attack rolls against you: Advantage within 5 ft, Disadvantage farther"
-msgstr "Tiri per colpire contro il personaggio: vantaggio entro 1,5 m, svantaggio da più lontano"
+msgid "Attack rolls against you: Advantage within %(distance)s, Disadvantage farther"
+msgstr "Tiri per colpire contro il personaggio: vantaggio entro %(distance)s, svantaggio da più lontano"
 
 msgid "Attack rolls against you: Advantage and Disadvantage cancel out"
 msgstr "Tiri per colpire contro il personaggio: vantaggio e svantaggio si annullano"
@@ -2743,8 +2743,8 @@ msgstr "Fallisce automaticamente i tiri salvezza su Forza e Destrezza"
 msgid "Disadvantage on Dexterity saving throws"
 msgstr "Svantaggio ai tiri salvezza su Destrezza"
 
-msgid "Hits from within 5 feet are Critical Hits"
-msgstr "I colpi da entro 1,5 metri sono colpi critici"
+msgid "Hits from within %(distance)s are Critical Hits"
+msgstr "I colpi da entro %(distance)s sono colpi critici"
 
 msgid "automatic"
 msgstr "automatica"
@@ -2757,3 +2757,6 @@ msgstr "Svantaggio all’iniziativa"
 
 msgid "Advantage on Initiative"
 msgstr "Vantaggio all’iniziativa"
+
+msgid "Condition"
+msgstr "Condizione"

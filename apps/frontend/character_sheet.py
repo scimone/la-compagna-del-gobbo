@@ -262,7 +262,7 @@ def _conditions(character: Character) -> dict:
         "extra": extra,
         "exhaustion": character.exhaustion,
         "exhaustion_name": texts[conditions.EXHAUSTION_ID].name,
-        "summary": conditions.summary(character),
+        "summary": conditions.summary(character, units.distance),
         "any": bool(in_effect or character.exhaustion or extra),
     }
 

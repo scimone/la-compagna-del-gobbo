@@ -136,7 +136,7 @@
      },
      {
       "entries": [
-       "La {@variantrule Speed|XPHB|velocità} del personaggio è ridotta di un numero di piedi pari a 5 volte il suo livello di Indebolimento (1,5 metri per livello)."
+       "La {@variantrule Speed|XPHB|velocità} del personaggio è ridotta di 1,5 metri per ogni suo livello di Indebolimento."
       ],
       "name": "Velocità ridotta"
      },

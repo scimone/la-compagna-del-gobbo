@@ -127,7 +127,7 @@
                             "type": "entries",
                             "name": "Speed Reduced",
                             "entries": [
-                                "Your {@variantrule Speed|XPHB} is reduced by a number of feet equal to 5 times your Exhaustion level."
+                                "Your {@variantrule Speed|XPHB} is reduced by a number of meters equal to 1.5 times your Exhaustion level."
                             ]
                         },
                         {
@@ -211,7 +211,7 @@
                             "type": "entries",
                             "name": "Movable",
                             "entries": [
-                                "The grappler can drag or carry you when it moves, but every foot of movement costs it 1 extra foot unless you are Tiny or two or more sizes smaller than it."
+                                "The grappler can drag or carry you when it moves, but every meter of movement costs it 1 extra meter unless you are Tiny or two or more sizes smaller than it."
                             ]
                         }
                     ]

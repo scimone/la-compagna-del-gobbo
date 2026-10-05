@@ -1058,8 +1058,10 @@ def _handbook_search(request, q: str):
 def handbook_rules_glossary(request):
     q = _search_query(request)
     rules = rule_service.list_rules()
+    conditions = rule_service.list_conditions()
     if q:
         rules = _by_name(rules, q)
+        conditions = _by_name(conditions, q)
     items = [
         {
             "pk": rule.pk,
@@ -1068,9 +1070,27 @@ def handbook_rules_glossary(request):
             "page": rule.page,
             "url": reverse("world-rule-detail", args=[rule.pk]),
             "letter": _index_letter(rule.name),
+            "sort": rule.name,
         }
         for rule in rules
     ]
+    # The glossary's conditions sit among the rules, marked "[Condition]" behind their names.
+    items += [
+        {
+            "pk": condition.pk,
+            "name": format_html(
+                "{} [{}]",
+                _badged_heading(condition.name, _self_translated(condition, "name")),
+                _("Condition"),
+            ),
+            "page": condition.page,
+            "url": reverse("world-condition-detail", args=[condition.pk]),
+            "letter": _index_letter(condition.name),
+            "sort": condition.name,
+        }
+        for condition in conditions
+    ]
+    items.sort(key=lambda item: item["sort"].casefold())
     return _list_page(
         request,
         "Glossary",
@@ -2094,6 +2114,24 @@ def world_item_detail(request, pk):
 # for) - this page only exists as the landing spot for `{@variantrule ...}` links found inside
 # other pages' text (see `apps.frontend.entries_render`), so "back" returns to the World hub
 # rather than to any one specific list.
+
+
+def world_condition_detail(request, pk):
+    condition = rule_service.get_condition(pk)
+    facts = [(_("Page"), condition.page)]
+    description_heading = _badged_heading(_("Description"), _self_translated(condition, "entries"))
+    plain_sections = [(description_heading, render_entries(condition.entries))]
+    return _detail_page(
+        request,
+        format_html(
+            "{} [{}]",
+            _badged_heading(condition.name, _self_translated(condition, "name")),
+            _("Condition"),
+        ),
+        "world-overview",
+        facts,
+        plain_sections=plain_sections,
+    )
 
 
 def world_rule_detail(request, pk):

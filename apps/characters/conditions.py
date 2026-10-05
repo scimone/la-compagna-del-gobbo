@@ -156,15 +156,16 @@ def effects(character) -> Effects:
     )
 
 
-def summary(character) -> list:
+def summary(character, distance=lambda feet: f"{feet:g} ft") -> list:
     """The in-effect lines for the sheet's Conditions card, most important first. Advantage and
-    Disadvantage on the same roll cancel out, so a roll with both says so."""
+    Disadvantage on the same roll cancel out, so a roll with both says so. `distance` formats a
+    length given in feet (the sheet passes the metric one)."""
     fx = effects(character)
     lines = []
     if fx.exhaustion:
         lines.append(
-            _("Exhaustion %(level)s: D20 Tests -%(penalty)s, Speed -%(speed)s ft")
-            % {"level": fx.exhaustion, "penalty": fx.d20_penalty, "speed": fx.speed_penalty}
+            _("Exhaustion %(level)s: D20 Tests -%(penalty)s, Speed -%(speed)s")
+            % {"level": fx.exhaustion, "penalty": fx.d20_penalty, "speed": distance(fx.speed_penalty)}
         )
     if fx.incapacitated:
         lines.append(_("You can't take actions, Bonus Actions or Reactions"))
@@ -185,7 +186,8 @@ def summary(character) -> list:
         if adv or dis:
             lines.append(_("Attack rolls against you: Advantage and Disadvantage may cancel out"))
         else:
-            lines.append(_("Attack rolls against you: Advantage within 5 ft, Disadvantage farther"))
+            lines.append(_("Attack rolls against you: Advantage within %(distance)s, Disadvantage farther")
+                % {"distance": distance(5)})
     elif adv and dis:
         lines.append(_("Attack rolls against you: Advantage and Disadvantage cancel out"))
     elif adv:
@@ -205,5 +207,5 @@ def summary(character) -> list:
     elif fx.dex_saves_disadvantage:
         lines.append(_("Disadvantage on Dexterity saving throws"))
     if fx.crit_within_5:
-        lines.append(_("Hits from within 5 feet are Critical Hits"))
+        lines.append(_("Hits from within %(distance)s are Critical Hits") % {"distance": distance(5)})
     return lines
