@@ -14,7 +14,7 @@ def get_rule(rule_key: str) -> Rule:
 
 
 def list_conditions():
-    return Condition.objects.filter(kind=Condition.KIND_CONDITION)
+    return Condition.objects.all()
 
 
 def get_condition(condition_id: str) -> Condition:

@@ -2760,3 +2760,6 @@ msgstr "Vantaggio all’iniziativa"
 
 msgid "Condition"
 msgstr "Condizione"
+
+msgid "Status"
+msgstr "Stato"

@@ -1074,14 +1074,14 @@ def handbook_rules_glossary(request):
         }
         for rule in rules
     ]
-    # The glossary's conditions sit among the rules, marked "[Condition]" behind their names.
+    # The glossary's conditions and statuses sit among the rules, marked "[Condition]"/"[Status]" behind their names.
     items += [
         {
             "pk": condition.pk,
             "name": format_html(
                 "{} [{}]",
                 _badged_heading(condition.name, _self_translated(condition, "name")),
-                _("Condition"),
+                _condition_kind_label(condition),
             ),
             "page": condition.page,
             "url": reverse("world-condition-detail", args=[condition.pk]),
@@ -2116,6 +2116,11 @@ def world_item_detail(request, pk):
 # rather than to any one specific list.
 
 
+def _condition_kind_label(condition) -> str:
+    """The bracketed tag behind a glossary condition's name: "Condition" or "Status"."""
+    return _("Status") if condition.kind == condition.KIND_STATUS else _("Condition")
+
+
 def world_condition_detail(request, pk):
     condition = rule_service.get_condition(pk)
     facts = [(_("Page"), condition.page)]
@@ -2126,7 +2131,7 @@ def world_condition_detail(request, pk):
         format_html(
             "{} [{}]",
             _badged_heading(condition.name, _self_translated(condition, "name")),
-            _("Condition"),
+            _condition_kind_label(condition),
         ),
         "world-overview",
         facts,
