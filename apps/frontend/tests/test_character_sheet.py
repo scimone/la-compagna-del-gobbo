@@ -149,8 +149,9 @@ def test_the_stats_tab_reads_the_rests_then_hit_points_then_the_fight_numbers(si
             "Hit Points",
             "Armor Class",
             "Passive Perception",
-            "Hit Dice",
             "Death Saves",
+            "Hit Dice",
+            "Conditions",
             "Experience Points",
         )
     ]

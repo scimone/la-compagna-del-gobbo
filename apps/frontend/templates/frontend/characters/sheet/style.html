@@ -153,8 +153,8 @@
   .cs-shield.on { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
   .cs-shield.on svg { fill: currentColor; }
 
-  /* Side-by-side pairs: Heroic Inspiration | Passive Perception, Hit Dice | Death Saves. */
-  .st-pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.3fr); gap: 0.7rem; }
+  /* Side-by-side pairs: Heroic Inspiration | Passive Perception, Hit Dice | Exhaustion. */
+  .st-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
   .st-pair > * { min-width: 0; }
   .st-pp { flex-direction: column; }
   .st-insp { align-items: center; justify-content: center; gap: 0.4rem; text-align: center; cursor: pointer; font: inherit; }
@@ -162,6 +162,11 @@
   .cs-insp svg { width: 2rem; height: 2rem; fill: none; stroke: var(--muted); stroke-width: 1.6; stroke-linejoin: round; }
   .cs-insp.on { background: color-mix(in srgb, var(--accent) 12%, var(--surface)); border-color: var(--accent); }
   .cs-insp.on svg { fill: var(--accent); stroke: var(--accent); }
+  .st-dice, .st-exh { flex-direction: row; align-items: center; justify-content: space-between; gap: 0.4rem 0.6rem; padding-block: 0.5rem; }
+  .st-dice { flex-wrap: wrap; }
+  .st-exh .ctl { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .st-exh .cnt { color: var(--muted); font-size: 0.9rem; }
+  .st-exh .cnt b { color: var(--text); font-size: 1.15rem; }
   .cs-hd-row { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem 0.6rem; }
   .cs-hd-row .lbl { flex: 0 0 auto; font-size: 1rem; font-weight: 800; }
   .cs-hd-row .cs-pips { flex: 1 1 auto; gap: 0.3rem; }

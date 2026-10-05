@@ -74,7 +74,7 @@
     </div>
   </div>
 
-  {# Heroic Inspiration beside Passive Perception, Hit Dice (one pip each, tap a full one to spend it); Death Saves get one slim line below. #}
+  {# Heroic Inspiration beside Passive Perception; Death Saves get one slim line below. #}
   <div class="st-pair st-wide">
   <button type="button" class="st-card st-insp cs-insp{% if strip.inspiration %} on{% endif %}" data-act="inspiration"
           data-value="{% if strip.inspiration %}0{% else %}1{% endif %}" aria-pressed="{% if strip.inspiration %}true{% else %}false{% endif %}"{% if not can_edit %} disabled{% endif %}>
@@ -85,21 +85,6 @@
       <b class="v">{{ header.passive_perception }}</b>
       <span class="k">{% translate "Passive Perception" %}</span>
     </div>
-  <div class="st-card st-dice">
-    <span class="k">{% translate "Hit Dice" %}</span>
-    {% for hd in strip.hit_dice %}
-      <div class="cs-hd-row" data-hd="{{ hd.die }}" data-total="{{ hd.total }}">
-        <span class="lbl">{{ hd.die }}</span>
-        <span class="cs-pips">
-          {% for on in hd.pips %}
-            <button type="button" class="pip-btn{% if on %} on{% endif %}" data-act="hit_dice" data-die="{{ hd.die }}" data-delta="{% if on %}1{% else %}-1{% endif %}"
-                    aria-label="{% if on %}{% translate 'Spend a Hit Die' %}{% else %}{% translate 'Recover a Hit Die' %}{% endif %}"{% if not can_edit_hit_dice %} disabled{% endif %}></button>
-          {% endfor %}
-        </span>
-        <span class="cnt"><b class="left">{{ hd.left }}</b>/{{ hd.total }}</span>
-      </div>
-    {% endfor %}
-  </div>
   </div>
 
   <div class="st-wide st-vitals">
@@ -118,6 +103,37 @@
         </div>
       {% endfor %}
     </div>
+  </div>
+  </div>
+
+  {# Hit Dice beside Exhaustion, the same height as Death Saves; both sit on top of Conditions. #}
+  <div class="st-pair st-wide">
+  <div class="st-card st-dice">
+    <span class="k">{% translate "Hit Dice" %}</span>
+    {% for hd in strip.hit_dice %}
+      <div class="cs-hd-row" data-hd="{{ hd.die }}" data-total="{{ hd.total }}">
+        <span class="lbl">{{ hd.die }}</span>
+        <span class="cs-pips">
+          {% for on in hd.pips %}
+            <button type="button" class="pip-btn{% if on %} on{% endif %}" data-act="hit_dice" data-die="{{ hd.die }}" data-delta="{% if on %}1{% else %}-1{% endif %}"
+                    aria-label="{% if on %}{% translate 'Spend a Hit Die' %}{% else %}{% translate 'Recover a Hit Die' %}{% endif %}"{% if not can_edit_hit_dice %} disabled{% endif %}></button>
+          {% endfor %}
+        </span>
+        <span class="cnt"><b class="left">{{ hd.left }}</b>/{{ hd.total }}</span>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="st-card st-exh">
+    <span class="k">{{ strip.conditions.exhaustion_name }}</span>
+    {% if can_edit %}
+    <span class="ctl">
+      <button type="button" class="step small" data-act="exhaustion" data-value="{{ strip.conditions.exhaustion|add:'-1' }}" aria-label="{% translate 'Lower the Exhaustion level' %}">−</button>
+      <span class="cnt"><b>{{ strip.conditions.exhaustion }}</b>/6</span>
+      <button type="button" class="step small" data-act="exhaustion" data-value="{{ strip.conditions.exhaustion|add:'1' }}" aria-label="{% translate 'Raise the Exhaustion level' %}">+</button>
+    </span>
+    {% else %}
+    <span class="cnt"><b>{{ strip.conditions.exhaustion }}</b>/6</span>
+    {% endif %}
   </div>
   </div>
 
@@ -152,14 +168,6 @@
             <button type="button" class="chip{% if c.on %} on{% endif %}" data-act="condition" data-id="{{ c.id }}"
                     data-value="{% if c.stored %}0{% else %}1{% endif %}" aria-pressed="{% if c.on %}true{% else %}false{% endif %}"{% if c.on and not c.stored %} disabled{% endif %}>{{ c.name }}</button>
           {% endfor %}
-        </div>
-        <div class="cs-res-row">
-          <span class="lbl">{{ strip.conditions.exhaustion_name }}</span>
-          <span class="ctl">
-            <button type="button" class="step small" data-act="exhaustion" data-value="{{ strip.conditions.exhaustion|add:'-1' }}" aria-label="{% translate 'Lower the Exhaustion level' %}">−</button>
-            <span class="cnt"><b>{{ strip.conditions.exhaustion }}</b>/6</span>
-            <button type="button" class="step small" data-act="exhaustion" data-value="{{ strip.conditions.exhaustion|add:'1' }}" aria-label="{% translate 'Raise the Exhaustion level' %}">+</button>
-          </span>
         </div>
       </div>
     {% endif %}
