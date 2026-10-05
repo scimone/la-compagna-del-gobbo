@@ -184,6 +184,8 @@
   .cs-insp.on svg { fill: var(--accent); stroke: var(--accent); }
   .st-dice, .st-exh { flex-direction: row; align-items: center; justify-content: space-between; gap: 0.4rem 0.6rem; padding-block: 0.5rem; }
   .st-dice { flex-wrap: wrap; }
+  .st-death, .st-dice, .st-exh { box-sizing: border-box; min-height: 4.1rem; } /* one height for the three slim lines */
+  .st-exh .step.small { width: 1.9rem; height: 1.9rem; font-size: 1.1rem; }
   .st-dice .cs-hd-row { flex: 1 1 auto; }
   .st-exh .ctl { display: inline-flex; align-items: center; gap: 0.4rem; }
   .st-exh .cnt { color: var(--muted); font-size: 0.9rem; }
@@ -346,8 +348,10 @@
   .cs-cast-field.cs-cast-ritual { flex-direction: row; align-items: center; gap: 0.5rem; }
   .cs-cast-field[hidden], .cs-cast-note[hidden] { display: none; }
   .drain-abilities { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 0.5rem; }
+  .st-drain .drain-abilities .k { font-size: 0.6rem; letter-spacing: 0.02em; }
+  .st-drain .cs-cast-field .k { text-align: center; padding-left: 1.2rem; } /* centred over the box, not the minus */
   .drain-in { display: flex; align-items: center; gap: 0.4rem; }
-  .drain-in i { font-style: normal; font-weight: 800; font-size: 1.2rem; color: var(--muted); }
+  .drain-in i { width: 0.8rem; text-align: center; font-style: normal; font-weight: 800; font-size: 1.2rem; color: var(--muted); }
   .drain-in input { flex: 1; min-width: 0; }
   .cs-cast-field select { padding: 0.3rem; }
   .cs-cast-note { margin: 0.6rem 0 0; font-size: 0.85rem; color: var(--muted); }
