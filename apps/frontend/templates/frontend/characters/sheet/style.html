@@ -190,7 +190,7 @@
   .st-dice { flex-wrap: wrap; }
   .st-death, .st-dice, .st-exh { box-sizing: border-box; min-height: 4.1rem; } /* one height for the three slim lines */
   .st-exh .step.small { width: 1.9rem; height: 1.9rem; font-size: 1.1rem; }
-  .st-dice .cs-hd-row { flex: 1 1 auto; }
+  .st-dice .cs-hd-row { margin-left: auto; justify-content: flex-end; } /* the dice sit on the right */
   .st-exh .ctl { display: inline-flex; align-items: center; gap: 0.4rem; }
   .st-exh .cnt { color: var(--muted); font-size: 0.9rem; }
   .st-exh .cnt b { color: var(--text); font-size: 1.15rem; }
@@ -353,9 +353,12 @@
   .cs-cast-field[hidden], .cs-cast-note[hidden] { display: none; }
   .drain-abilities { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 0.5rem; }
   .st-drain .cs-cast-field .k { text-align: center; }
-  .drain-in { position: relative; display: block; }
-  .drain-in i { position: absolute; left: 0.6rem; top: 50%; transform: translateY(-50%); font-style: normal; font-weight: 800; font-size: 1.2rem; color: var(--muted); pointer-events: none; }
-  #cs .drain-in input { box-sizing: border-box; width: 100%; padding-left: 1.6rem; padding-right: 1.6rem; } /* the minus sits inside the box; both sides padded so the number stays centred */
+  /* The reduction fields: the minus and the number sit together, centred, in a box that looks like the other inputs. */
+  .drain-in { display: flex; align-items: center; justify-content: center; gap: 0.15rem; padding: 0.3rem; background: var(--bg); border: 1px solid var(--border); border-radius: 0.5rem; }
+  .drain-in:focus-within { border-color: var(--accent); }
+  .drain-in i { font-style: normal; font-weight: 800; font-size: 1.2rem; color: var(--muted); }
+  #cs .drain-in input { flex: 0 0 auto; width: 2ch; field-sizing: content; padding: 0; border: 0; background: transparent; text-align: left; -moz-appearance: textfield; appearance: textfield; }
+  .drain-in input::-webkit-inner-spin-button, .drain-in input::-webkit-outer-spin-button { display: none; }
   .cs-cast-field select { padding: 0.3rem; }
   .cs-cast-note { margin: 0.6rem 0 0; font-size: 0.85rem; color: var(--muted); }
   .cs-cast-buttons { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1rem; }
