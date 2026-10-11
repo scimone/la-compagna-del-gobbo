@@ -43,6 +43,7 @@ from apps.frontend.views import (
     _format_components,
     _format_duration,
     _format_feat_category,
+    _format_option_prerequisite,
     _format_prerequisite,
     _format_range,
     _menu_image_url,
@@ -612,7 +613,7 @@ def _describe_invocation(pk):
     feature = get_object_or_404(OptionalFeature, pk=pk)
     facts = []
     if feature.prerequisite:
-        facts.append((_("Prerequisite"), _format_prerequisite(feature.prerequisite)))
+        facts.append((_("Prerequisite"), _format_option_prerequisite(feature.prerequisite)))
     return facts, [render_entries(feature.entries)]
 
 

@@ -370,11 +370,18 @@ def _render_option_links(nodes: list[dict], linker: _ReferenceLinker) -> str:
     return f'<ul class="feature-link-list">{"".join(items)}</ul>'
 
 
-def render_option_links(options) -> SafeString:
-    """The link rows of a class's Options tab: one per `OptionalFeature`, to its own page."""
+def render_option_links(options, prerequisite=None) -> SafeString:
+    """The link rows of a class's Options tab: one per `OptionalFeature`, to its own page, with
+    its prerequisite (`prerequisite(option)` -> safe HTML or "") after it."""
     items = "".join(
         f'<li><a href="{escape(reverse("world-option-detail", args=[o.pk]))}">'
-        f"{escape(o.name)}{self_translated_badge(bool(o.self_translated_fields))}</a></li>"
+        f"{escape(o.name)}{self_translated_badge(bool(o.self_translated_fields))}</a>"
+        + (
+            f' <span style="color:var(--muted)">({prerequisite(o)})</span>'
+            if prerequisite and o.prerequisite
+            else ""
+        )
+        + "</li>"
         for o in options
     )
     return mark_safe(f'<ul class="feature-link-list">{items}</ul>')

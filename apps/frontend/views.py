@@ -9,7 +9,7 @@ from django.shortcuts import redirect, render
 from django.templatetags.static import static
 from django.urls import reverse
 from django.utils.cache import add_never_cache_headers
-from django.utils.html import escape, format_html, format_html_join
+from django.utils.html import escape, format_html, format_html_join, strip_tags
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
@@ -458,6 +458,52 @@ def _format_prerequisite(raw_list):
             bits.append(summary.get("entrySummary") or summary.get("entry", ""))
         alternatives.append(", ".join(b for b in bits if b))
     return f" {_('or')} ".join(a for a in alternatives if a)
+
+
+def _format_option_prerequisite(raw_list, link=True):
+    """`OptionalFeature.prerequisite`: a list of alternatives, each `{level: {level, class}, spell:
+    [{entrySummary}], optionalfeature: ["name|source"]}` - every key in one entry must hold.
+    Class and option names are looked up (translated, and linked when `link`); returns "" for none.
+    """
+    alternatives = []
+    for entry in raw_list or []:
+        bits = []
+        level = entry.get("level")
+        if isinstance(level, dict):
+            klass_name = level.get("class", {}).get("name", "")
+            klass = Class.objects.filter(name_en__iexact=klass_name).first()
+            bits.append(
+                _("%(class)s level %(level)s")
+                % {"class": klass.name if klass else klass_name, "level": level.get("level")}
+            )
+        elif level:
+            bits.append(f"{_('Level')} {level}")
+        for spell in entry.get("spell", []):
+            text = spell.get("entrySummary") or spell.get("entry", "")
+            # Not extractable by makemessages (non-literal): the source strings are in the .po.
+            bits.append(_(text))
+        for ref in entry.get("optionalfeature", []):
+            name = ref.split("|")[0]
+            option = (
+                optional_feature_service.list_optional_features()
+                .filter(name_en__iexact=name)
+                .first()
+            )
+            if option is None:
+                bits.append(name.title())
+            elif link:
+                bits.append(
+                    format_html(
+                        '<a href="{}">{}</a>',
+                        reverse("world-option-detail", args=[option.pk]),
+                        option.name,
+                    )
+                )
+            else:
+                bits.append(option.name)
+        if bits:
+            alternatives.append(format_html_join(", ", "{}", ((b,) for b in bits)))
+    return format_html_join(f" {_('or')} ", "{}", ((a,) for a in alternatives))
 
 
 def _format_size(codes: list[str] | None) -> str:
@@ -1395,7 +1441,8 @@ def world_class_detail(request, pk):
     elif active_tab == "options" and klass.pk in _OPTION_LIST_FEATURES:
         types = [t for t, c in _OPTION_CLASS_ID.items() if c == klass.pk]
         body = render_option_links(
-            optional_feature_service.list_optional_features().filter(feature_type__in=types)
+            optional_feature_service.list_optional_features().filter(feature_type__in=types),
+            prerequisite=lambda o: _format_option_prerequisite(o.prerequisite),
         )
 
     return _detail_page(
@@ -1630,6 +1677,16 @@ def world_feats(request):
                     "properties": [
                         _option_type_label(option.feature_type),
                         class_names.get(klass_id, ""),
+                        *(
+                            [
+                                f"{_('Prerequisite')}: "
+                                + strip_tags(
+                                    _format_option_prerequisite(option.prerequisite, link=False)
+                                )
+                            ]
+                            if option.prerequisite
+                            else []
+                        ),
                     ],
                     "url": reverse("world-option-detail", args=[option.pk]),
                     "image": _menu_image_url("features_classes", f"{klass_id}.jpeg")
@@ -1727,13 +1784,6 @@ def world_option_detail(request, pk):
     """An Options pick's (Eldritch Invocation, Metamagic, Battle Master Maneuver) own page - not
     reachable from any World list (there isn't one for these), only from a character's own
     Features tab, but otherwise built the same way as a Feat's or a `Feature`'s own page.
-
-    No "Prerequisite" fact: `OptionalFeature.prerequisite` isn't shaped like `Feat.prerequisite`
-    despite the shared name (its `level` is a `{level, class}` dict, not a bare int, and it has
-    two keys - `spell`, `optionalfeature` - `_format_prerequisite()` doesn't handle at all) -
-    verified against every one of the 58 rows in db/optionalfeatures.json. Showing it would need
-    its own formatter for a fact that's usually redundant with the description text anyway (most
-    rows - 35/58 - have none at all), so it's left off rather than rendered wrong.
     """
     option = optional_feature_service.get_optional_feature(pk)
 
@@ -1751,6 +1801,8 @@ def world_option_detail(request, pk):
                 ),
             )
         )
+    if option.prerequisite:
+        facts.append((_("Prerequisite"), _format_option_prerequisite(option.prerequisite)))
     facts.append((_("Page"), option.page))
 
     description_heading = _badged_heading(_("Description"), _self_translated(option, "entries"))

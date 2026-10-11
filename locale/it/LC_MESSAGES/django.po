@@ -2778,3 +2778,9 @@ msgstr "Imposta a"
 
 msgid "Hit point maximum"
 msgstr "Massimo di Punti Ferita"
+
+msgid "%(class)s level %(level)s"
+msgstr "%(class)s di livello %(level)s"
+
+msgid "Warlock Cantrip That Deals Damage"
+msgstr "Trucchetto da Warlock che infligge danni"
