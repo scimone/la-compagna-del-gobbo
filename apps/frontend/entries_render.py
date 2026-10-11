@@ -370,21 +370,29 @@ def _render_option_links(nodes: list[dict], linker: _ReferenceLinker) -> str:
     return f'<ul class="feature-link-list">{"".join(items)}</ul>'
 
 
-def render_option_links(options, prerequisite=None) -> SafeString:
-    """The link rows of a class's Options tab: one per `OptionalFeature`, to its own page, with
-    its prerequisite (`prerequisite(option)` -> safe HTML or "") after it."""
-    items = "".join(
-        f'<li><a href="{escape(reverse("world-option-detail", args=[o.pk]))}">'
-        f"{escape(o.name)}{self_translated_badge(bool(o.self_translated_fields))}</a>"
-        + (
-            f' <span style="color:var(--muted)">({prerequisite(o)})</span>'
-            if prerequisite and o.prerequisite
-            else ""
+def render_option_links(options) -> SafeString:
+    """A class's Options tab: one link per `OptionalFeature`, to its own page, grouped under the
+    class level its prerequisite asks for (options with no level requirement first)."""
+    by_level: dict[int, list] = {}
+    for o in options:
+        level = 0
+        for entry in o.prerequisite or []:
+            if isinstance(entry.get("level"), dict):
+                level = entry["level"].get("level", 0)
+        by_level.setdefault(level, []).append(o)
+    groups = []
+    for level in sorted(by_level):
+        heading = f"{escape(gettext('Level'))} {level}" if level else escape(gettext("Any level"))
+        items = "".join(
+            f'<li><a href="{escape(reverse("world-option-detail", args=[o.pk]))}">'
+            f"{escape(o.name)}{self_translated_badge(bool(o.self_translated_fields))}</a></li>"
+            for o in by_level[level]
         )
-        + "</li>"
-        for o in options
-    )
-    return mark_safe(f'<ul class="feature-link-list">{items}</ul>')
+        groups.append(
+            f'<div class="level-group static"><div class="level-heading">{heading}</div>'
+            f'<ul class="feature-link-list">{items}</ul></div>'
+        )
+    return mark_safe("".join(groups))
 
 
 def render_class_features(features) -> SafeString:

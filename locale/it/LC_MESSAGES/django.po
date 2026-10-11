@@ -2784,3 +2784,6 @@ msgstr "%(class)s di livello %(level)s"
 
 msgid "Warlock Cantrip That Deals Damage"
 msgstr "Trucchetto da Warlock che infligge danni"
+
+msgid "Any level"
+msgstr "Qualsiasi livello"

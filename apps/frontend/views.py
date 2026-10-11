@@ -1441,8 +1441,7 @@ def world_class_detail(request, pk):
     elif active_tab == "options" and klass.pk in _OPTION_LIST_FEATURES:
         types = [t for t, c in _OPTION_CLASS_ID.items() if c == klass.pk]
         body = render_option_links(
-            optional_feature_service.list_optional_features().filter(feature_type__in=types),
-            prerequisite=lambda o: _format_option_prerequisite(o.prerequisite),
+            optional_feature_service.list_optional_features().filter(feature_type__in=types)
         )
 
     return _detail_page(
