@@ -28,6 +28,9 @@ dev = [
 DJANGO_SETTINGS_MODULE = "config.settings"
 python_files = ["test_*.py"]
 testpaths = ["apps"]
+markers = [
+    "no_default_campaign: do not put every test user and character into the shared test campaign",
+]
 
 [tool.ruff]
 line-length = 100

@@ -46,6 +46,7 @@ def test_saving_in_italian_queues_an_english_translation(client, alice):
 
 
 def test_the_other_language_reads_the_translation_and_the_writer_the_original(client, alice):
+    client.force_login(alice)
     entry = _entry(alice, title="Il drago")
     job = translations.enqueue("logentry", entry.pk, {"title": "Il drago"}, source_lang="it")
     _finish(job, {"title": "The dragon"})
@@ -60,6 +61,7 @@ def test_the_other_language_reads_the_translation_and_the_writer_the_original(cl
 
 
 def test_an_edited_text_never_shows_its_old_translation(client, alice):
+    client.force_login(alice)
     entry = _entry(alice, title="Il drago")
     _finish(
         translations.enqueue("logentry", entry.pk, entry.title and {"title": "Il drago"}, "it"),
@@ -97,6 +99,7 @@ def test_the_queue_and_job_size_are_bounded(alice, monkeypatch):
 
 
 def test_search_finds_text_as_written_or_in_its_translation(client, alice):
+    client.force_login(alice)
     entry = _entry(alice, title="Il drago", text="Waterdeep")
     _entry(alice, title="Altro")
     _finish(
@@ -250,6 +253,7 @@ def test_the_web_container_is_given_no_llm_credentials():
 
 
 def test_a_search_marks_the_matches_in_the_shown_text_escaped(client, alice):
+    client.force_login(alice)
     _entry(alice, title="Il Drago <b>", text="Un drago rosso. Il DRAGO dorme.")
 
     html = client.get("/logbook/?q=drago").content.decode()

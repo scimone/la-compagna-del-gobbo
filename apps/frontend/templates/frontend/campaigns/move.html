@@ -1,0 +1,24 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+{% block extra_style %}{% include "frontend/campaigns/_style.html" %}{% endblock %}
+{% block content %}
+  <div class="camp">
+    {% include "frontend/campaigns/_messages.html" %}
+    {% if mode == "transfer" %}
+      <p>{% blocktranslate with name=character.name %}Move {{ name }} to another campaign. The Logbook entries stay where they are.{% endblocktranslate %}</p>
+    {% else %}
+      <p>{% blocktranslate with name=character.name %}Make a copy of {{ name }}, with everything it has now (hit points, slots, items), in one of your campaigns. The copy is yours and independent of the original.{% endblocktranslate %}</p>
+    {% endif %}
+    {% if targets %}
+      <form method="post" data-nav="replace">
+        {% csrf_token %}
+        {% for t in targets %}
+          <label class="choice"><input type="radio" name="campaign" value="{{ t.pk }}" required> {{ t.name }}</label>
+        {% endfor %}
+        <button type="submit">{% if mode == "transfer" %}{% translate "Move" %}{% else %}{% translate "Copy" %}{% endif %}</button>
+      </form>
+    {% else %}
+      <p>{% translate "You are not in any other campaign." %}</p>
+    {% endif %}
+  </div>
+{% endblock %}

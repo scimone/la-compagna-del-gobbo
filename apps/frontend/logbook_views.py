@@ -8,7 +8,8 @@ from django.utils.cache import add_never_cache_headers
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
-from apps.frontend import logbook, logbook_markup
+from apps.campaigns.services import membership
+from apps.frontend import campaign_context, campaign_views, logbook, logbook_markup
 from apps.frontend.forms import ObjectiveEntryForm, PersonalEntryForm
 from apps.frontend.handbook_search import highlight, query_pattern
 from apps.frontend.models import LogEntry
@@ -18,9 +19,20 @@ def _sign_in_redirect(request):
     return redirect(f"{reverse('account')}?next={request.get_full_path()}")
 
 
+def _campaign_or_none(request):
+    """The current campaign, if the user is in one; the Logbook shows only that one's entries."""
+    campaign = campaign_context.current(request)
+    return campaign if campaign and membership.is_member(request.user, campaign) else None
+
+
 def logbook_list(request):
+    if not request.user.is_authenticated:
+        return _sign_in_redirect(request)
+    campaign = _campaign_or_none(request)
+    if campaign is None:
+        return campaign_views.no_campaign_page(request, _("Logbook"))
     q = request.GET.get("q", "").strip()
-    found = list(logbook.list_entries())
+    found = list(logbook.list_entries(campaign))
     if q:
         found = logbook.search(found, q)
     shown = logbook.display(found)
@@ -62,7 +74,7 @@ def logbook_list(request):
 
 
 def _editable_entry(request, pk):
-    entry = get_object_or_404(LogEntry, pk=pk)
+    entry = get_object_or_404(LogEntry.objects.select_related("campaign"), pk=pk)
     if not logbook.can_edit(request.user, entry):
         raise Http404
     return entry
@@ -92,12 +104,18 @@ def logbook_new(request):
         return _sign_in_redirect(request)
     kind = request.GET.get("kind")
     kind = LogEntry.PERSONAL if kind == LogEntry.PERSONAL else LogEntry.OBJECTIVE
+    campaign = _campaign_or_none(request)
+    if campaign is None:
+        raise Http404
     initial = {"date": timezone.localdate()}
-    form = _form_class(kind)(request.POST or None, initial=initial, user=request.user)
+    form = _form_class(kind)(
+        request.POST or None, initial=initial, user=request.user, campaign=campaign
+    )
     if request.method == "POST" and form.is_valid():
         entry = form.save(commit=False)
         entry.kind = kind
         entry.author = request.user
+        entry.campaign = campaign
         entry.save()
         logbook.queue_translation(entry)
         return redirect(f"{reverse('logbook-list')}#entry-{entry.pk}")
@@ -118,7 +136,13 @@ def logbook_edit(request, pk):
     initial = {
         name: text for name, (text, _translated) in shown.items() if name in form_class._meta.fields
     }
-    form = form_class(request.POST or None, instance=entry, initial=initial, user=request.user)
+    form = form_class(
+        request.POST or None,
+        instance=entry,
+        initial=initial,
+        user=request.user,
+        campaign=entry.campaign,
+    )
     if request.method == "POST" and form.is_valid():
         if form.has_changed():
             form.save()

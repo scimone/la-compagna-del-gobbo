@@ -5,6 +5,7 @@ import datetime
 import pytest
 from django.contrib.auth import get_user_model
 
+from apps.conftest import make_dm
 from apps.frontend.models import LogEntry
 
 
@@ -23,7 +24,8 @@ def _entry(author, **fields):
     return LogEntry.objects.create(author=author, **fields)
 
 
-def test_the_list_is_public_newest_last_with_one_dot_per_entry(client, alice):
+def test_the_list_is_newest_last_with_one_dot_per_entry(client, alice):
+    client.force_login(alice)
     _entry(alice, date=datetime.date(2026, 8, 1), title="Old tale", text="Goblin ambush")
     _entry(alice, date=datetime.date(2026, 9, 1), title="New tale", text="Waterdeep")
 
@@ -170,6 +172,7 @@ def test_only_an_admin_picks_any_character_and_without_one_nothing_is_saved(
 
 
 def test_a_personal_entry_shows_the_characters_round_picture(client, alice, settings, tmp_path):
+    client.force_login(alice)
     from io import BytesIO
 
     from django.core.files.uploadedfile import SimpleUploadedFile
@@ -193,6 +196,7 @@ def test_a_personal_entry_shows_the_characters_round_picture(client, alice, sett
 
 
 def test_an_objective_entry_has_no_character_picture(client, alice):
+    client.force_login(alice)
     _entry(alice, title="Tale", text="Body")
 
     html = client.get("/logbook/").content.decode()
@@ -224,6 +228,7 @@ def test_the_markdown_preview_renders_for_signed_in_users_only(client, alice):
 
 
 def test_links_in_the_text_become_links_but_only_safe_ones(client, alice):
+    client.force_login(alice)
     _entry(
         alice,
         title="T",
@@ -237,6 +242,7 @@ def test_links_in_the_text_become_links_but_only_safe_ones(client, alice):
 
 
 def test_messages_sit_above_the_entries_of_their_day_oldest_first(client, alice):
+    client.force_login(alice)
     from apps.characters.models import Character
 
     hero = Character.objects.create(name="Gobbo", owner=alice)
@@ -260,7 +266,7 @@ def test_only_the_dm_and_admins_can_post_as_dm(client, alice, bob, settings, tmp
 
     settings.MEDIA_ROOT = tmp_path
     settings.ADMIN_ACCOUNTS = []
-    settings.DM_ACCOUNTS = ["alice"]
+    make_dm(alice)
     _hero(alice, "Gobbo")
     _hero(bob, "Other")
     data = {"date": "2026-09-02", "text": "The door creaks open.", "character": ""}
@@ -278,6 +284,5 @@ def test_only_the_dm_and_admins_can_post_as_dm(client, alice, bob, settings, tmp
     page = client.get("/logbook/").content.decode()
     assert "log-entry personal dm" in page
 
-    settings.DM_ACCOUNTS = []  # an administrator may too
     settings.ADMIN_ACCOUNTS = ["alice"]
     assert "DM</option>" in client.get("/logbook/new/?kind=personal").content.decode()

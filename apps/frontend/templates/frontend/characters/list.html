@@ -47,9 +47,11 @@
     background: var(--accent); color: var(--accent-text); display: flex; align-items: center; justify-content: center;
     font-size: 2rem; line-height: 1; text-decoration: none; box-shadow: 0 0.2rem 0.7rem rgba(0,0,0,.3); }
   .fab:active { background: var(--accent-strong); }
+  {% include "frontend/campaigns/_bar_style.html" %}
 {% endblock %}
 {% block content %}
   <div class="chars">
+    {% include "frontend/campaigns/_bar.html" %}
     {% if drafts %}
       <h2>{% translate "In creation" %}</h2>
       <ul class="item-list">

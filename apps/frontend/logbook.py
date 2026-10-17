@@ -4,7 +4,7 @@ from django.contrib.staticfiles import finders
 from django.templatetags.static import static
 from django.urls import reverse
 
-from apps.characters.services import access
+from apps.campaigns.services import membership
 from apps.frontend import translations
 from apps.frontend.handbook_search import fold, query_pattern
 from apps.frontend.models import LogEntry
@@ -16,11 +16,12 @@ def _order(entry: LogEntry) -> tuple:
     return (entry.date.toordinal(), not personal, written, entry.pk)
 
 
-def list_entries() -> list[LogEntry]:
+def list_entries(campaign) -> list[LogEntry]:
     """Oldest first, so the newest is at the bottom like in a chat. Within a day the personal
     messages come first and the objective entries follow under them, each in the order they were
-    written."""
-    return sorted(LogEntry.objects.select_related("author", "character"), key=_order)
+    written. Only `campaign`'s journal."""
+    entries = LogEntry.objects.filter(campaign=campaign).select_related("author", "character")
+    return sorted(entries, key=_order)
 
 
 DM_AVATAR = "images/dm-256.png"
@@ -53,13 +54,16 @@ def full_url(entry: LogEntry) -> str:
 
 
 def can_edit(user, entry: LogEntry) -> bool:
-    """The author, or an administrator. Anyone else - and a signed-out visitor - only reads."""
-    if access.is_admin(user):
+    """The author (while still in the campaign), the campaign's DM, or an administrator. Anyone
+    else only reads."""
+    if not getattr(user, "is_authenticated", False):
+        return False
+    if membership.can_manage(user, entry.campaign):
         return True
-    return bool(
-        getattr(user, "is_authenticated", False)
-        and entry.author_id is not None
+    return (
+        entry.author_id is not None
         and entry.author_id == user.id
+        and membership.is_member(user, entry.campaign)
     )
 
 

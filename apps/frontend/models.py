@@ -54,6 +54,10 @@ class LogEntry(models.Model):
         on_delete=models.SET_NULL,
         related_name="log_entries",
     )
+    #: The campaign whose journal this is; deleting the campaign deletes its entries.
+    campaign = models.ForeignKey(
+        "campaigns.Campaign", on_delete=models.CASCADE, related_name="log_entries"
+    )
     kind = models.CharField(max_length=10, choices=KIND_CHOICES, default=OBJECTIVE)
     #: Whose entry a personal one is; kept as NULL if the character is deleted.
     character = models.ForeignKey(

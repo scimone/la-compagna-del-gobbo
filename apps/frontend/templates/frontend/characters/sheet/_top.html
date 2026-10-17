@@ -16,8 +16,12 @@
       </summary>
       <div class="cs-menu-list" role="menu">
         <a role="menuitem" href="{% url 'character-export-pdf' character.pk %}" download>{% translate "Export to PDF" %}</a>
+        <a role="menuitem" href="{% url 'character-move' character.pk %}">{% translate "Copy to a campaign" %}</a>
+        {% if can_move %}
+          <a role="menuitem" href="{% url 'character-move' character.pk %}?mode=transfer">{% translate "Move to another campaign" %}</a>
+        {% endif %}
         {% if can_reopen %}
-          {# Admins only: reopen the creation screens (a level-1 character; see `creation.reopen()`). #}
+          {# Owner, DM or admin: reopen the creation screens (a level-1 character; see `creation.reopen()`). #}
           <form method="post" action="{% url 'character-reopen' character.pk %}" data-nav="push"
                 data-app-confirm="{% translate 'Reopen the creation screens to change this character? Its inventory and gold are kept.' %}">
             {% csrf_token %}
@@ -25,7 +29,7 @@
           </form>
         {% endif %}
         {% if can_assign %}
-          {# Admins only: change which account owns the character. #}
+          {# DM or admin: change which member owns the character. #}
           <a role="menuitem" href="{% url 'character-assign' character.pk %}">{% translate "Assign to another user" %}</a>
         {% endif %}
       </div>

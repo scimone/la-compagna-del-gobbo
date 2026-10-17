@@ -5,6 +5,7 @@ import pytest
 from apps.builder.services import creation, derived_stats, progression
 from apps.builder.tests.conftest import build_character
 from apps.characters.models import Character, CharacterClass, CharacterFeat, CharacterResource
+from apps.conftest import default_campaign
 
 pytestmark = pytest.mark.usefixtures("imported_rules")
 
@@ -230,7 +231,7 @@ def test_a_level_up_that_is_not_ready_changes_nothing(owner):
 
 
 def test_only_a_finished_character_below_20_can_level_up(owner):
-    draft = creation.start_draft(owner, "Draft")
+    draft = creation.start_draft(owner, "Draft", default_campaign())
     assert not progression.can_level_up(draft)
     rogue = finished(owner, "rogue")
     assert not progression.can_level_up(rogue)  # the XP are not full

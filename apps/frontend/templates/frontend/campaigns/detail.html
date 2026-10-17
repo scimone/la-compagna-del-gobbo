@@ -1,0 +1,113 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+{% block extra_style %}{% include "frontend/campaigns/_style.html" %}{% endblock %}
+{% block content %}
+  <div class="camp">
+    {% include "frontend/campaigns/_messages.html" %}
+    {% if campaign.description %}<p>{{ campaign.description }}</p>{% endif %}
+
+    <h2>{% translate "Members" %}</h2>
+    <ul>
+      {% for p in people %}
+        <li>
+          <div class="row">
+            <div class="grow"><span class="name">{{ p.name }}</span>
+              <div class="detail">{% blocktranslate count n=p.characters %}{{ n }} character{% plural %}{{ n }} characters{% endblocktranslate %}</div></div>
+            {% if p.is_dm %}<span class="pill">{% translate "DM" %}</span>{% endif %}
+            {% if can_manage and not p.is_dm %}
+              <form class="inline" method="post" action="{% url 'campaign-act' campaign.pk %}"
+                    data-app-confirm="{% blocktranslate with name=p.name %}Make {{ name }} the DM? You become a player.{% endblocktranslate %}">
+                {% csrf_token %}<input type="hidden" name="action" value="transfer_dm"><input type="hidden" name="user" value="{{ p.membership.user_id }}">
+                <button type="submit" class="small secondary">{% translate "Make DM" %}</button>
+              </form>
+              <form class="inline" method="post" action="{% url 'campaign-act' campaign.pk %}" data-app-confirm="{{ p.remove_warning }}">
+                {% csrf_token %}<input type="hidden" name="action" value="remove_member"><input type="hidden" name="user" value="{{ p.membership.user_id }}">
+                <button type="submit" class="small danger">{% translate "Remove" %}</button>
+              </form>
+            {% endif %}
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+
+    {% if member or can_manage %}
+      <h2>{% translate "Invite" %}</h2>
+      <form class="box" method="post" action="{% url 'campaign-act' campaign.pk %}">
+        {% csrf_token %}<input type="hidden" name="action" value="invite">
+        <label for="email">{% translate "Gmail address" %}</label>
+        <input type="email" id="email" name="email" autocomplete="off" autocapitalize="none" required>
+        <button type="submit">{% translate "Invite" %}</button>
+        <p>{% translate "They see the invitation when they sign in with that address. Their Google account must also be on the app's access list (request it from scimone.mail@gmail.com)." %}</p>
+      </form>
+      {% if open_invites %}
+        <ul>
+          {% for i in open_invites %}
+            <li><div class="row">
+              <div class="grow"><span class="name">{{ i.email }}</span>
+                <div class="detail">{% blocktranslate with date=i.expires_at|date:"SHORT_DATE_FORMAT" %}Valid until {{ date }}{% endblocktranslate %}</div></div>
+              <form class="inline" method="post" action="{% url 'campaign-act' campaign.pk %}">
+                {% csrf_token %}<input type="hidden" name="action" value="revoke_invite"><input type="hidden" name="invite" value="{{ i.pk }}">
+                <button type="submit" class="small secondary">{% translate "Withdraw" %}</button>
+              </form>
+            </div></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <h2>{% translate "Join link" %}</h2>
+      <div class="box">
+        {% if campaign.join_enabled %}
+          <p>{% translate "Anyone with this link can join as a player (once they can sign in to the app)." %}</p>
+          <code>{{ join_url }}</code>
+        {% else %}
+          <p>{% translate "The join link is switched off." %}</p>
+        {% endif %}
+        {% if can_manage %}
+          <div class="row" style="margin-top: 0.6rem;">
+            <form class="inline" method="post" action="{% url 'campaign-act' campaign.pk %}">
+              {% csrf_token %}<input type="hidden" name="action" value="join_enabled"><input type="hidden" name="enabled" value="{% if campaign.join_enabled %}0{% else %}1{% endif %}">
+              <button type="submit" class="small secondary">{% if campaign.join_enabled %}{% translate "Switch off" %}{% else %}{% translate "Switch on" %}{% endif %}</button>
+            </form>
+            <form class="inline" method="post" action="{% url 'campaign-act' campaign.pk %}"
+                  data-app-confirm="{% translate 'Replace the link? The old one stops working.' %}">
+              {% csrf_token %}<input type="hidden" name="action" value="regenerate_code">
+              <button type="submit" class="small secondary">{% translate "New link" %}</button>
+            </form>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if can_manage %}
+      <h2>{% translate "Settings" %}</h2>
+      <form class="box" method="post" action="{% url 'campaign-act' campaign.pk %}">
+        {% csrf_token %}<input type="hidden" name="action" value="rename">
+        <label for="name">{% translate "Name" %}</label>
+        <input type="text" id="name" name="name" maxlength="100" value="{{ campaign.name }}" required>
+        <label for="description">{% translate "Description" %}</label>
+        <textarea id="description" name="description" maxlength="2000">{{ campaign.description }}</textarea>
+        <button type="submit">{% translate "Save" %}</button>
+      </form>
+      {% if has_characters %}
+        <p>{% translate "A campaign can only be deleted once it has no characters left." %}</p>
+      {% else %}
+        <form method="post" action="{% url 'campaign-act' campaign.pk %}"
+              data-app-confirm="{% translate 'Delete this campaign and its Logbook, for good?' %}">
+          {% csrf_token %}<input type="hidden" name="action" value="delete">
+          <button type="submit" class="danger">{% translate "Delete campaign" %}</button>
+        </form>
+      {% endif %}
+    {% endif %}
+
+    {% if member %}
+      {% if is_dm %}
+        <p>{% translate "You are the DM. To leave, make another member the DM first." %}</p>
+      {% else %}
+        <form method="post" action="{% url 'campaign-act' campaign.pk %}" data-app-confirm="{{ leave_warning }}">
+          {% csrf_token %}<input type="hidden" name="action" value="leave">
+          <button type="submit" class="secondary">{% translate "Leave campaign" %}</button>
+        </form>
+      {% endif %}
+    {% endif %}
+  </div>
+{% endblock %}

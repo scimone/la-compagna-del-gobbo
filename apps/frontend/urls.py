@@ -2,6 +2,7 @@ from django.urls import path
 
 from apps.frontend import (
     admin_views,
+    campaign_views,
     character_pdf,
     character_sheet,
     character_views,
@@ -123,6 +124,19 @@ urlpatterns = [
     path("logbook/<int:pk>/delete/", logbook_views.logbook_delete, name="logbook-delete"),
     path("admin-panel/", admin_views.panel_home, name="admin-panel"),
     path("admin-panel/activity/", admin_views.panel_activity, name="admin-activity"),
+    path("campaigns/", campaign_views.campaigns_home, name="campaigns-home"),
+    path("campaigns/new/", campaign_views.campaign_new, name="campaign-new"),
+    path("campaigns/join/", campaign_views.campaign_join_form, name="campaign-join-form"),
+    path(
+        "campaigns/invites/<int:pk>/<slug:answer>/",
+        campaign_views.invite_answer,
+        name="campaign-invite-answer",
+    ),
+    path("campaigns/<int:pk>/", campaign_views.campaign_detail, name="campaign-detail"),
+    path("campaigns/<int:pk>/act/", campaign_views.campaign_act, name="campaign-act"),
+    path("campaigns/<int:pk>/switch/", campaign_views.campaign_switch, name="campaign-switch"),
+    path("join/<str:code>/", campaign_views.campaign_join, name="campaign-join"),
+    path("characters/<int:pk>/move/", campaign_views.character_move, name="character-move"),
     path("account/", views.account, name="account"),
     path("welcome/", views.welcome, name="welcome"),
     path("privacy/", views.privacy, name="privacy"),

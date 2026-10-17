@@ -35,7 +35,7 @@
   var MENUS = ["characters", "handbook", "logbook", "world"];
   // Pages that are a detour from wherever they were opened, not a place of their own: leaving
   // the menu for another one must not park the account form on top of that menu's stack.
-  var TRANSIENT_PATHS = ["/account/", "/privacy/", "/admin-panel/", "/welcome/"];
+  var TRANSIENT_PATHS = ["/account/", "/privacy/", "/admin-panel/", "/welcome/", "/campaigns/", "/join/"];
   var MAX_DEPTH = 50;
   var PENDING_TTL_MS = 15000;
 

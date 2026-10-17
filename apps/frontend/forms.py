@@ -2,8 +2,8 @@ from django import forms
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 
+from apps.campaigns.services import membership
 from apps.characters.models import Character
-from apps.characters.services import access
 from apps.frontend.models import LogEntry
 
 
@@ -42,9 +42,10 @@ class _LogEntryForm(forms.ModelForm):
             "text": forms.Textarea(attrs={"rows": 8}),
         }
 
-    def __init__(self, *args, user=None, **kwargs):
+    def __init__(self, *args, user=None, campaign=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.user = user
+        self.campaign = campaign
 
 
 class ObjectiveEntryForm(_LogEntryForm):
@@ -57,9 +58,10 @@ class ObjectiveEntryForm(_LogEntryForm):
 class PersonalEntryForm(_LogEntryForm):
     """A character's own, subjective words: a date, who writes, and the text.
 
-    A character writes from its own perspective, so only an administrator picks who writes (from
-    every finished character). A player writes as their own character: with one, there is nothing
-    to choose; with several, the choice is among theirs; with none, nothing can be saved."""
+    A character writes from its own perspective, so only the campaign's DM (or an administrator)
+    picks who writes, from every finished character of the campaign. A player writes as their own
+    character: with one, there is nothing to choose; with several, the choice is among theirs;
+    with none, nothing can be saved."""
 
     class Meta(_LogEntryForm.Meta):
         fields = ["date", "character", "text"]
@@ -67,24 +69,25 @@ class PersonalEntryForm(_LogEntryForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        characters = Character.objects.filter(status=Character.STATUS_COMPLETE).order_by(
-            "name", "pk"
-        )
-        if not access.is_admin(self.user):
+        characters = Character.objects.filter(
+            campaign=self.campaign, status=Character.STATUS_COMPLETE
+        ).order_by("name", "pk")
+        manager = membership.can_manage(self.user, self.campaign)
+        if not manager:
             characters = characters.filter(owner=self.user)
         field = self.fields["character"]
         field.required = True
         field.empty_label = "---------"
         field.queryset = characters
         self.only = None
-        self.dm_option = access.can_speak_as_dm(self.user)
+        self.dm_option = manager
         if self.dm_option:
             # The extra option "DM" is the empty choice: no character speaks, the DM does.
             field.required = False
             field.empty_label = _("DM")
             if self.instance.pk and self.instance.as_dm:
                 self.initial["character"] = None
-        if not self.dm_option and not access.is_admin(self.user) and characters.count() <= 1:
+        if not manager and characters.count() <= 1:
             # Nothing to choose: the (only) character writes.
             self.only = self.instance.character or characters.first()
             del self.fields["character"]

@@ -8,7 +8,6 @@ its POST, then returns the context for its template (or a redirect). See
 `docs/character_creation_plan.md` section 5.
 """
 
-from django.contrib.auth import get_user_model
 from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -29,10 +28,11 @@ from apps.builder.services import (
     validation,
 )
 from apps.builder.services.store import STEPS, Draft, read_values
+from apps.campaigns.services import membership
 from apps.characters.models import Character
 from apps.characters.services import access
 from apps.characters.services import character as character_service
-from apps.frontend import accounts, translations, units
+from apps.frontend import accounts, campaign_context, campaign_views, translations, units
 from apps.frontend.entries_render import render_entries
 from apps.frontend.views import (
     _BACKGROUND_IMAGE_SLUGS,
@@ -98,15 +98,19 @@ def _sign_in_redirect(request):
 
 
 def characters_list(request):
-    """Every finished character of every account, plus the viewer's own unfinished ones."""
-    finished = Character.objects.filter(status=Character.STATUS_COMPLETE).select_related(
-        "owner", "species"
-    )
-    drafts = Character.objects.none()
-    if access.is_admin(request.user):
-        drafts = Character.objects.filter(status=Character.STATUS_DRAFT)
-    elif request.user.is_authenticated:
-        drafts = Character.objects.filter(status=Character.STATUS_DRAFT, owner=request.user)
+    """Every finished character of the current campaign, plus the viewer's own unfinished ones
+    (the campaign's DM and administrators see everyone's)."""
+    if not request.user.is_authenticated:
+        return _sign_in_redirect(request)
+    campaign = campaign_context.current(request)
+    if campaign is None:
+        return campaign_views.no_campaign_page(request, _("Characters"))
+    finished = Character.objects.filter(
+        campaign=campaign, status=Character.STATUS_COMPLETE
+    ).select_related("owner", "species")
+    drafts = Character.objects.filter(campaign=campaign, status=Character.STATUS_DRAFT)
+    if not membership.can_manage(request.user, campaign):
+        drafts = drafts.filter(owner=request.user)
     items = [
         _summary(c, access.can_edit(request.user, c))
         for c in finished
@@ -117,7 +121,7 @@ def characters_list(request):
         "frontend/characters/list.html",
         {
             "page_title": _("Characters"),
-            "can_create": access.is_admin(request.user),
+            "can_create": membership.is_member(request.user, campaign),
             "drafts": [
                 {
                     "character": c,
@@ -180,14 +184,15 @@ def _summary(character: Character, can_delete: bool = False) -> dict:
 
 
 def character_new(request):
-    """Ask for a name, then start a draft and drop the player into the first step. Only an
-    administrator creates characters."""
+    """Ask for a name, then start a draft in the current campaign and drop the player into the
+    first step. Any member of the campaign creates characters."""
     if not request.user.is_authenticated:
         return _sign_in_redirect(request)
-    if not access.is_admin(request.user):
+    campaign = campaign_context.current(request)
+    if campaign is None or not membership.is_member(request.user, campaign):
         raise Http404
     if request.method == "POST":
-        character = creation.start_draft(request.user, request.POST.get("name", ""))
+        character = creation.start_draft(request.user, request.POST.get("name", ""), campaign)
         return redirect(_step_url(character, "background"))
     return render(
         request,
@@ -301,9 +306,10 @@ def wizard_discard(request, pk):
 
 @require_POST
 def character_reopen(request, pk):
-    """Admins only: turn a finished level-1 character back into a draft and open the wizard."""
+    """Its owner, the campaign's DM or an admin: turn a finished level-1 character back into a
+    draft and open the wizard."""
     character = get_object_or_404(Character, pk=pk)
-    if not access.is_admin(request.user):
+    if not access.can_edit(request.user, character):
         return HttpResponseForbidden()
     if not creation.reopen(character):
         return redirect("character-detail", pk=pk)
@@ -321,11 +327,11 @@ def character_delete(request, pk):
 
 
 def character_assign(request, pk):
-    """Admins only: choose which account a character belongs to."""
-    if not access.is_admin(request.user):
-        raise Http404
+    """The campaign's DM or an admin: choose which member a character belongs to."""
     character = get_object_or_404(Character, pk=pk)
-    users = list(get_user_model().objects.order_by("username"))
+    if not membership.can_manage(request.user, character.campaign):
+        raise Http404
+    users = [m.user for m in membership.members(character.campaign)]
     if request.method == "POST":
         new_owner = next((u for u in users if str(u.pk) == request.POST.get("owner")), None)
         if new_owner is not None:

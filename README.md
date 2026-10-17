@@ -111,8 +111,9 @@ uv run ruff check .
 
 ## App boundaries
 
-Three Django apps form the actual game-logic layering (there's a fourth, `frontend`, covered in
-its own section below — it's the web UI shell, not part of this layering):
+Three Django apps form the actual game-logic layering. A small `campaigns` app sits beside
+`rules` (it owns who is in which campaign and knows nothing about characters), and `frontend`,
+covered in its own section below, is the web UI shell, not part of this layering:
 
 ```
 rules        static 5.5e game content (classes, species, spells, equipment, ...)
@@ -518,11 +519,37 @@ assets) and `otherVersions` (cross-references to non-XPHB printings — we only 
 returning querysets/instances, no HTTP concerns. Path-validity checks (e.g. `list_class_levels`
 404ing if the class doesn't exist) live here, not in the views.
 
+### `apps/campaigns/` — who plays with whom
+
+A **campaign** is the one scope of the app's private content: its characters and its Logbook. There
+are no groups above it. Models (`models/`, one file per model): `Campaign` (`name`, `description`,
+a secret `join_code` the DM can switch off or replace), `CampaignMembership` (`role` is `dm` or
+`player`; the database allows exactly **one DM per campaign**) and `CampaignInvite` (an e-mail,
+stored lower-cased, open for about six months; accepting or declining closes it). Services
+(`services/`): `membership.py` (**the one place that answers "who may see/manage what"**:
+`campaigns_for`, `is_member`, `can_manage`, `resolve_current`; administrators from
+`ADMIN_ACCOUNTS` are treated as members of, and DMs in, every campaign), `lifecycle.py` (create a
+campaign - its creator becomes the DM -, rename, hand the DM role over, join link, join by code) and
+`invites.py` (invite by e-mail, 20 per user per hour, match against the signed-in account's
+verified e-mail, accept/decline/withdraw).
+
+Everything that touches characters lives one layer up, in
+`characters/services/campaign_ops.py`: **copy** a character into any campaign you belong to
+(deep copy of the row and everything hanging off it - play state, inventory with its containers,
+money, portrait and pictures; the copy is yours; Logbook entries are never copied), **transfer** a
+character to another campaign (its owner or the DM; the owner has to be a member there too, and the
+Logbook entries stay behind), **leave / remove a member** (their characters in that campaign are
+deleted; the DM cannot leave before handing the role on) and delete an empty campaign.
+
+The first migration puts all existing accounts, characters and Logbook entries into the campaign
+**Obelisco infranto**, whose DM is `rikyfr95@gmail.com`. Signing in is still gated by Cloudflare
+Access, which is managed by hand (people ask `scimone.mail@gmail.com`); a campaign invite only decides
+what the account sees once it is in.
+
 ### `apps/characters/` — persisted character state
 
-The actual player characters. No ownership — any character can be read/managed by anyone,
-matching the "no users app" decision in the architecture doc. (The only accounts, password-less
-ones for per-user bookmarks, live in `frontend` and nothing here references them.)
+The actual player characters, each in one campaign (`Character.campaign`, `PROTECT`). Who sees and
+changes one is in `services/access.py` (see **Access** below).
 
 **Models** (`apps/characters/models/`, one file per model) now have real fields — there's no
 external data source to import here (this is app-generated state, not static content), so
@@ -662,9 +689,11 @@ did). Not modelled: the subclass choices that are only prose with no row to writ
 Prey, Blessed Strikes, Rage of the Wilds ... are read in the feature's text), resistances from
 feats, swapping Weapon Mastery or Expertise at a rest.
 
-**Access** (`apps/characters/services/access.py`): every character is *visible* to every account
-(another account's *unfinished* one is not); only its owner edits or deletes it. `can_view(user,
-character, section)` is the single place to later hide sections of a character from other accounts.
+**Access** (`apps/characters/services/access.py`): every finished character is *visible* to every
+member of its campaign (and to administrators), and to nobody else - they get a 404. The character's owner, the
+campaign's DM and administrators edit and delete it; only the DM and administrators move Hit Dice
+and spell slots by hand and reassign the owner. An unfinished one is its editors' only. `can_view(user,
+character, section)` is the single place to later hide sections of a character from other members.
 
 ### `apps/frontend/` — PWA shell
 
@@ -709,12 +738,23 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     `arrive()` recognises the `back_forward` navigation type and applies the same rule.
   - `TrackLastSectionUrlMiddleware`/`last_*_url` remain as the bottom nav links' `href`
     fallback (no JS, or a menu with nothing in this session's stack yet).
+- **Campaigns** (`campaign_views.py`, `campaign_context.py`, templates under `frontend/campaigns/`): the
+  current campaign is kept in the session (`campaign_context.current`; the first one you joined if
+  it is gone) and shown as a bar above the Characters and Logbook lists, which lead to
+  `/campaigns/`. A user in no campaign sees an explanation there (create one - becoming its DM -, or
+  join) instead of characters and Logbook; the World and Handbook stay open. `/campaigns/` lists your
+  campaigns, the invitations waiting for your e-mail (accept/decline), "create" and a "join with a
+  code or link" box; `/campaigns/<id>/` shows the members (the DM can make another member DM or
+  remove one), invitations (any member invites by e-mail, a member can withdraw), the join link
+  (`/join/<code>/`; the DM switches it off or replaces it), settings and delete (DM), and Leave
+  (with a warning listing the characters that leaving deletes). A character's 3-dot menu has
+  **Copy to a campaign** and, for its editors, **Move to another campaign** (`/characters/<id>/move/`).
 - `GET /` (`index`) — redirects to **Characters** (`/characters/`); the bottom nav also has
   **Handbook** → `/handbook/` and **World** → `/world/`. **All three menus are built out.**
 - **Characters** (`character_views.py` for the list and the wizard, `character_sheet.py` for the finished character's page; templates under `frontend/characters/`): `GET /characters/`
-  lists every finished character of every account (with its owner) plus the viewer's own
-  unfinished ones under "In creation"; the **`+`** button (`/characters/new/`, sign-in required)
-  asks for a name and starts the wizard at `/characters/<id>/create/<step>/` - steps `background →
+  lists every finished character of the current campaign (with its owner) plus the viewer's own
+  unfinished ones under "In creation" (the DM and admins see everyone's); the **`+`** button
+  (`/characters/new/`, any member of the campaign) asks for a name and starts the wizard at `/characters/<id>/create/<step>/` - steps `background →
   class → species → languages → equipment → abilities → alignment → story → review`, each
   reachable from a progress bar once its prerequisites exist. Progress is saved on every step (the
   draft is a real `Character` row), so leaving and coming back resumes. Finish and Discard use
@@ -795,7 +835,7 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
       button - shown even for a character with no spells), **and the World's own search box and filter buttons**
       (`_search_form.html`, same look) over the character's spells, filtered in the browser with the
       filters limited to what those spells use. Below it scroll the slot pips (read-only for players:
-      casting a spell spends a slot and a rest recovers them; only the DM or an admin taps a pip
+      casting a spell spends a slot and a rest recovers them; only the campaign's DM or an admin taps a pip
       by hand, as with Hit Dice - the `slots` action answers 403 to anyone else; Pact Magic separately; a multiclass caster gets the SRD's
       combined table) and the spells; a row unfolds the spell. A spell the player added by hand has a
       **Remove** button in its unfolded row (spells a class, species or feat gave cannot be removed).
@@ -1255,9 +1295,10 @@ interaction_report [--days N]` prints per-user, per-page and per-action counts, 
 
 #### Logbook and automatic translation
 
-`/logbook/` is the party's shared journal: a vertical timeline (`LogEntry`, `logbook.py`,
-`logbook_views.py`), readable by anyone, written by anyone signed in, edited/deleted by the author
-or an admin, searchable live (as written *and* in either language's translation).
+`/logbook/` is the current campaign's shared journal: a vertical timeline (`LogEntry`, with its
+`campaign`; `logbook.py`, `logbook_views.py`), readable and written by the campaign's members,
+edited/deleted by the author, the campaign's DM or an admin (a DM or admin can also write personal
+messages "as the DM"), searchable live (as written *and* in either language's translation).
 An entry's *Visited locations* is a text block like *Characters met*. The edit form starts from the
 text as the reader sees it, so an entry can be corrected while reading its machine translation;
 saving overwrites the stored original with the submitted text and queues the translation back into
@@ -1275,7 +1316,7 @@ its source text still equals the current text; the writer edits the original.
 
 ## Not in scope (per the architecture doc)
 
-No `users` app, no real auth (only the password-less accounts in `frontend`, for bookmarks), no combat system.
+No `users` app, no real auth of its own (identity comes from Cloudflare Access, or the password-less accounts in `frontend` for local runs), no combat system. Campaign membership is the only authorization there is.
 
 ## Other files in this repo
 

@@ -1,0 +1,8 @@
+{% load i18n %}
+{# The campaign you are looking at, above the Characters / Logbook list; tap to switch. #}
+{% if current_campaign %}
+  <a class="campaign-bar" href="{% url 'campaigns-home' %}" data-nav="push">
+    <span class="campaign-bar-name">{{ current_campaign.name }}</span>
+    {% if pending_invite_count %}<span class="campaign-bar-badge">{{ pending_invite_count }}</span>{% endif %}
+  </a>
+{% endif %}

@@ -13,8 +13,9 @@ from .store import EDITING_KEY, STEPS, Draft, Issue, clear_choices, set_choice
 REQUIRED_STEPS = tuple(s for s in STEPS if s not in ("story", "review"))
 
 
-def start_draft(owner, name: str) -> Character:
+def start_draft(owner, name: str, campaign) -> Character:
     character = Character.objects.create(
+        campaign=campaign,
         name=name.strip()[:100] or _("New character"),
         owner=owner if getattr(owner, "is_authenticated", False) else None,
         status=Character.STATUS_DRAFT,

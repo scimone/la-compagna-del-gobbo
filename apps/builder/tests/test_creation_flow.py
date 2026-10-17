@@ -5,6 +5,7 @@ import pytest
 from apps.builder.services import creation
 from apps.builder.services.store import Draft
 from apps.characters.models import Character
+from apps.conftest import default_campaign
 from apps.rules.models import Class
 
 from .conftest import build_character
@@ -69,7 +70,7 @@ def test_recomputing_is_idempotent(owner, class_id):
 
 
 def test_finalize_refuses_an_incomplete_draft(owner):
-    character = creation.start_draft(owner, "Nobody")
+    character = creation.start_draft(owner, "Nobody", default_campaign())
 
     problems = creation.finalize(character)
 
@@ -92,7 +93,7 @@ def test_the_ability_sum_invariant_holds(owner):
 
 
 def test_discard_only_deletes_drafts(owner):
-    draft = creation.start_draft(owner, "Draft")
+    draft = creation.start_draft(owner, "Draft", default_campaign())
     done = build_character(owner, "wizard")
     creation.finalize(done)
 

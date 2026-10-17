@@ -19,6 +19,7 @@ from apps.characters.models import (
     CharacterSpell,
 )
 from apps.characters.services import play
+from apps.conftest import default_campaign, make_dm
 from apps.rules.models import Feat, Feature, OptionalFeature, Spell
 
 pytestmark = pytest.mark.usefixtures("imported_rules")
@@ -160,13 +161,15 @@ def test_the_stats_tab_reads_the_rests_then_hit_points_then_the_fight_numbers(si
     assert 'class="st-card st-hp st-wide"' in html and "cs-row" not in html
     assert 'class="st-card st-dice"' in html and 'class="st-card st-death"' in html
     # Exhaustion sits right on top of Conditions; hit points can be changed by any typed amount.
-    assert html.index('st-card st-exh') < html.index('st-conds')
+    assert html.index("st-card st-exh") < html.index("st-conds")
     page = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
-    assert 'id="cs-hp-dialog"' in page and all(f'data-hp-do="{k}"' in page for k in ("damage", "heal", "set"))
+    assert 'id="cs-hp-dialog"' in page and all(
+        f'data-hp-do="{k}"' in page for k in ("damage", "heal", "set")
+    )
 
 
 def test_the_stats_tab_shows_progress_bars_and_one_pip_per_hit_die(signed_in, alice, settings):
-    settings.DM_ACCOUNTS = ["alice"]  # only the DM (or an admin) sets Hit Dice by hand
+    make_dm(alice)  # only the DM (or an admin) sets Hit Dice by hand
     cleric = finished(alice, "cleric")
     act(signed_in, cleric, action="xp", value="150")
     act(signed_in, cleric, action="hp_delta", delta="-3")
@@ -183,7 +186,7 @@ def test_the_stats_tab_shows_progress_bars_and_one_pip_per_hit_die(signed_in, al
 
 
 def test_hit_dice_pips_spend_and_recover_over_http(signed_in, alice, settings):
-    settings.DM_ACCOUNTS = ["alice"]  # only the DM (or an admin) sets Hit Dice by hand
+    make_dm(alice)  # only the DM (or an admin) sets Hit Dice by hand
     cleric = finished(alice, "cleric")
 
     spent = act(signed_in, cleric, action="hit_dice", die="d8", delta="1").json()
@@ -195,7 +198,6 @@ def test_hit_dice_pips_spend_and_recover_over_http(signed_in, alice, settings):
 
 def test_only_the_dm_or_an_admin_edits_hit_dice_by_hand(signed_in, alice, settings):
     cleric = finished(alice, "cleric")
-    settings.DM_ACCOUNTS = []
     settings.ADMIN_ACCOUNTS = []
 
     assert act(signed_in, cleric, action="hit_dice", die="d8", delta="1").status_code == 403
@@ -718,7 +720,7 @@ def test_the_sheet_is_in_italian_and_metric(signed_in, alice):
 
 
 def test_a_draft_is_not_a_sheet(signed_in, alice):
-    draft = creation.start_draft(alice, "Wip")
+    draft = creation.start_draft(alice, "Wip", default_campaign())
 
     assert signed_in.get(f"/characters/{draft.pk}/").status_code == 302
 
@@ -737,7 +739,7 @@ def test_only_the_owner_may_post_changes(client, alice, bob):
 
 
 def test_a_draft_cannot_be_changed_through_the_sheet(signed_in, alice):
-    draft = creation.start_draft(alice, "Wip")
+    draft = creation.start_draft(alice, "Wip", default_campaign())
 
     assert act(signed_in, draft, action="xp", value="10").status_code == 403
 
@@ -764,7 +766,7 @@ def test_hit_points_death_saves_inspiration_and_xp(signed_in, alice):
 
 
 def test_hit_dice_are_spent_and_recovered_within_the_pool(signed_in, alice, settings):
-    settings.DM_ACCOUNTS = ["alice"]  # only the DM (or an admin) sets Hit Dice by hand
+    make_dm(alice)  # only the DM (or an admin) sets Hit Dice by hand
     fighter = finished(alice, "fighter", background="soldier")
 
     spent = act(signed_in, fighter, action="hit_dice", die="d10", delta="1").json()["state"]
@@ -777,7 +779,7 @@ def test_hit_dice_are_spent_and_recovered_within_the_pool(signed_in, alice, sett
 
 
 def test_spell_slots_are_spent_and_recovered(signed_in, alice, settings):
-    settings.DM_ACCOUNTS = ["alice"]  # only the DM (or an admin) moves slots by hand
+    make_dm(alice)  # only the DM (or an admin) moves slots by hand
     wizard = finished(alice, "wizard", background="sage", species="elf")
 
     state = act(signed_in, wizard, action="slots", key="1", delta="1").json()["state"]
@@ -805,7 +807,6 @@ def test_spell_slots_are_spent_and_recovered(signed_in, alice, settings):
 
 def test_only_the_dm_or_an_admin_edits_spell_slots_by_hand(signed_in, alice, settings):
     wizard = finished(alice, "wizard", background="sage", species="elf")
-    settings.DM_ACCOUNTS = []
     settings.ADMIN_ACCOUNTS = []
 
     assert act(signed_in, wizard, action="slots", key="1", delta="1").status_code == 403

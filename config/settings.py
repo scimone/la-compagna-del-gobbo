@@ -129,6 +129,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "pwa",
     "apps.rules",
+    "apps.campaigns",
     "apps.characters",
     "apps.builder",
     "apps.frontend",
@@ -172,6 +173,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.i18n",
                 "apps.frontend.context_processors.last_section_urls",
+                "apps.frontend.campaign_context.context",
             ],
         },
     },
@@ -277,10 +279,6 @@ PWA_APP_LANG = "en-US"
 # Accounts (usernames, lower case) that may see and change every character, other accounts' too -
 # see `apps.characters.services.access.is_admin`.
 ADMIN_ACCOUNTS = ["scimone.mail@gmail.com", "rikyfr95@gmail.com"]
-
-# Accounts (usernames, lower case) with the Dungeon Master role: they (and the administrators) may
-# post logbook personal messages as "DM" - see `apps.characters.services.access.is_dm`.
-DM_ACCOUNTS = ["rikyfr95@gmail.com"]
 
 # Cloudflare Access sits in front of the app (via the tunnel) and signs every request it lets
 # through with a JWT; `CloudflareAccessMiddleware` verifies it and signs the visitor in as the

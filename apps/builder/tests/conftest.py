@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from apps.builder.services import abilities, class_choices, creation, origins
 from apps.builder.services.store import Draft
 from apps.builder.tables import STANDARD_ARRAY_BY_CLASS
+from apps.conftest import default_campaign
 
 
 @pytest.fixture
@@ -92,7 +93,7 @@ def complete_background_choices(character):
 
 def build_character(owner, class_id, background_id="soldier", species_id="human", name="Test"):
     """Drive every step to completion with the first valid answer at each. Returns the draft."""
-    character = creation.start_draft(owner, name)
+    character = creation.start_draft(owner, name, default_campaign())
     assert not origins.select_class(character, class_id)
     assert not origins.select_background(character, background_id)
     complete_background_choices(character)

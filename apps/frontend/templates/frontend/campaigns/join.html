@@ -1,0 +1,21 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+{% block extra_style %}{% include "frontend/campaigns/_style.html" %}{% endblock %}
+{% block content %}
+  <div class="camp">
+    {% include "frontend/campaigns/_messages.html" %}
+    {% if campaign %}
+      {% if already %}
+        <p>{% blocktranslate with name=campaign.name %}You are already in {{ name }}.{% endblocktranslate %}</p>
+        <a class="btn" href="{% url 'campaigns-home' %}">{% translate "Your campaigns" %}</a>
+      {% else %}
+        <p>{% blocktranslate with name=campaign.name %}Join the campaign <strong>{{ name }}</strong> as a player?{% endblocktranslate %}</p>
+        {% if campaign.description %}<p>{{ campaign.description }}</p>{% endif %}
+        <form method="post" data-nav="replace">{% csrf_token %}<button type="submit">{% translate "Join" %}</button></form>
+      {% endif %}
+    {% else %}
+      <p>{% translate "This join link is not valid any more. Ask a member of the campaign for a new one." %}</p>
+      <a class="btn" href="{% url 'campaigns-home' %}">{% translate "Your campaigns" %}</a>
+    {% endif %}
+  </div>
+{% endblock %}

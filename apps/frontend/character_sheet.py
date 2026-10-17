@@ -1218,10 +1218,11 @@ def character_detail(request, pk):
             "character": character,
             "can_edit": can_edit,
             # Hit Dice are spent by resting; only the DM or an administrator sets them by hand.
-            "can_edit_hit_dice": access.can_speak_as_dm(request.user),
-            "can_edit_slots": access.can_speak_as_dm(request.user),
-            "can_assign": access.is_admin(request.user),
-            "can_reopen": access.is_admin(request.user) and creation.can_reopen(character),
+            "can_edit_hit_dice": access.can_speak_as_dm(request.user, character.campaign),
+            "can_edit_slots": access.can_speak_as_dm(request.user, character.campaign),
+            "can_assign": access.can_speak_as_dm(request.user, character.campaign),
+            "can_move": can_edit,
+            "can_reopen": can_edit and creation.can_reopen(character),
             # Not `tabs`/`active_tab`: base.html draws its own `?tab=` strip for those names.
             "sheet_tabs": TABS,
             "sheet_tab": tab if tab in dict(TABS) else DEFAULT_TAB,
@@ -1601,7 +1602,9 @@ def character_act(request, pk):
     action = request.POST.get("action", "")
     # Hit Dice and spell slots are only ever moved by hand by the DM or an admin; a player spends
     # them by casting / resting.
-    if action in ("hit_dice", "slots") and not access.can_speak_as_dm(request.user):
+    if action in ("hit_dice", "slots") and not access.can_speak_as_dm(
+        request.user, character.campaign
+    ):
         return JsonResponse({"error": "forbidden"}, status=403)
     handler = _ACTIONS.get(action)
     if handler is None:

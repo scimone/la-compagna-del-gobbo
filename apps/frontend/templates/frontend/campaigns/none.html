@@ -1,0 +1,14 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+{% block extra_style %}{% include "frontend/campaigns/_style.html" %}{% endblock %}
+{% block content %}
+  <div class="camp">
+    <p>{% translate "You are not in a campaign yet, so there are no characters or logbook to show. Create a campaign (you become its DM) or join one." %}</p>
+    {% if pending_invite_count %}
+      <a class="btn" href="{% url 'campaigns-home' %}">{% blocktranslate count n=pending_invite_count %}{{ n }} invitation waiting{% plural %}{{ n }} invitations waiting{% endblocktranslate %}</a>
+    {% endif %}
+    <a class="btn" href="{% url 'campaign-new' %}">{% translate "Create a campaign" %}</a>
+    <a class="btn secondary" href="{% url 'campaigns-home' %}">{% translate "Join a campaign" %}</a>
+    <p>{% translate "The World and the Handbook are open to everyone." %}</p>
+  </div>
+{% endblock %}

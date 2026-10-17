@@ -5,6 +5,7 @@ import pytest
 from apps.builder.services import abilities, class_choices, creation, effects, origins
 from apps.builder.services.store import Draft
 from apps.characters.models import CharacterInventoryItem
+from apps.conftest import default_campaign
 
 from .conftest import build_character, complete_species
 
@@ -271,7 +272,7 @@ def test_prepared_spells_are_pruned_when_the_spellbook_no_longer_holds_them(owne
 
 
 def test_languages_are_two_distinct_standard_languages(owner):
-    c = creation.start_draft(owner, "x")
+    c = creation.start_draft(owner, "x", default_campaign())
     assert origins.save_languages(c, ["elvish"])  # too few
     assert origins.save_languages(c, ["elvish", "elvish"])  # duplicate
     assert origins.save_languages(c, ["elvish", "abyssal"])  # rare, not allowed at creation
@@ -281,7 +282,7 @@ def test_languages_are_two_distinct_standard_languages(owner):
 
 
 def test_roll_languages_fills_two_distinct_standard_languages(owner):
-    c = creation.start_draft(owner, "x")
+    c = creation.start_draft(owner, "x", default_campaign())
     rolled = origins.roll_languages(c)
     assert len(set(rolled)) == 2 and not origins.languages_issues(Draft(c))
 
@@ -290,7 +291,7 @@ def test_roll_languages_fills_two_distinct_standard_languages(owner):
 
 
 def _setup(owner):
-    c = creation.start_draft(owner, "x")
+    c = creation.start_draft(owner, "x", default_campaign())
     origins.select_class(c, "fighter")
     origins.select_background(c, "soldier")  # raises str/dex/con
     return c
@@ -471,8 +472,9 @@ def test_who_may_view_and_edit(owner, db):
     draft = Character.objects.create(name="b", owner=owner, status=Character.STATUS_DRAFT)
     ownerless = Character.objects.create(name="c")
 
-    for viewer in (owner, other, AnonymousUser()):  # everyone sees every finished character
+    for viewer in (owner, other):  # every member of the campaign sees every finished character
         assert access.can_view(viewer, mine) and access.can_view(viewer, ownerless)
+    assert not access.can_view(AnonymousUser(), mine)
     assert access.can_view(owner, draft) and not access.can_view(other, draft)
     assert not access.can_view(AnonymousUser(), draft)
     assert access.can_edit(owner, mine) and not access.can_edit(other, mine)

@@ -1,0 +1,57 @@
+{% extends "frontend/base.html" %}
+{% load i18n assets %}
+{% block extra_style %}{% include "frontend/campaigns/_style.html" %}{% endblock %}
+{% block content %}
+  <div class="camp">
+    {% include "frontend/campaigns/_messages.html" %}
+    {% if invites %}
+      <h2>{% translate "Invitations" %}</h2>
+      <ul>
+        {% for invite in invites %}
+          <li>
+            <div class="row">
+              <div class="grow"><span class="name">{{ invite.campaign.name }}</span>
+                <div class="detail">{% if invite.invited_by %}{% blocktranslate with name=invite.invited_by|display_name %}Invited by {{ name }}{% endblocktranslate %}{% endif %}</div></div>
+              <form class="inline" method="post" action="{% url 'campaign-invite-answer' invite.pk 'accept' %}">{% csrf_token %}<button type="submit" class="small">{% translate "Accept" %}</button></form>
+              <form class="inline" method="post" action="{% url 'campaign-invite-answer' invite.pk 'decline' %}">{% csrf_token %}<button type="submit" class="small secondary">{% translate "Decline" %}</button></form>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    <h2>{% translate "Your campaigns" %}</h2>
+    {% if rows %}
+      <ul>
+        {% for r in rows %}
+          <li class="{% if r.current %}current{% endif %}">
+            <div class="row">
+              <a class="grow" href="{% url 'campaign-detail' r.campaign.pk %}" style="color: inherit; text-decoration: none;">
+                <span class="name">{{ r.campaign.name }}</span>
+                <div class="detail">{% blocktranslate count n=r.members %}{{ n }} member{% plural %}{{ n }} members{% endblocktranslate %}</div>
+              </a>
+              {% if r.role %}<span class="pill">{{ r.role_label }}</span>{% endif %}
+              {% if not r.current %}
+                <form class="inline" method="post" action="{% url 'campaign-switch' r.campaign.pk %}">{% csrf_token %}<button type="submit" class="small secondary">{% translate "Open" %}</button></form>
+              {% endif %}
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="box">
+        <p>{% translate "You are not in any campaign yet. Create one (you become its DM) or join one with an invitation or a join link from its members." %}</p>
+        <p>{% translate "You can already browse the World and the Handbook." %}</p>
+      </div>
+    {% endif %}
+    <a class="btn" href="{% url 'campaign-new' %}">{% translate "Create a campaign" %}</a>
+    <form class="box" method="post" action="{% url 'campaign-join-form' %}">
+      {% csrf_token %}
+      <label for="code">{% translate "Join with a code or link" %}</label>
+      <input type="text" id="code" name="code" autocomplete="off" autocapitalize="none" required>
+      <button type="submit" class="secondary">{% translate "Join" %}</button>
+    </form>
+    {% if not rows %}
+      <p>{% translate "No invitation yet? Ask a member to invite the e-mail address you signed in with. To sign in at all, the app's access list must include your Google account: request it from scimone.mail@gmail.com." %}</p>
+    {% endif %}
+  </div>
+{% endblock %}

@@ -8,6 +8,7 @@ from apps.builder.services import creation
 from apps.builder.services.store import Draft
 from apps.builder.tests.conftest import build_character
 from apps.characters.models import Character
+from apps.conftest import default_campaign
 
 pytestmark = pytest.mark.usefixtures("imported_rules")
 
@@ -37,20 +38,23 @@ def step(pk, name):
 # --- the list, the + button, access ---------------------------------------
 
 
-def test_list_is_public_and_only_admins_get_the_plus_button(client, alice, settings):
+def test_the_list_needs_sign_in_and_members_get_the_plus_button(client, alice):
     response = client.get("/characters/")
+    assert response.status_code == 302 and response.url.startswith("/account/?next=")
 
-    assert response.status_code == 200
-    html = response.content.decode()
-    assert 'href="/characters/new/"' not in html and "No characters yet." in html
-
-    settings.ADMIN_ACCOUNTS = ["alice"]
     client.force_login(alice)
     html = client.get("/characters/").content.decode()
     assert 'href="/characters/new/"' in html and "Tap + to create" in html
 
 
-def test_only_admins_create_characters(client, alice, settings):
+def test_any_member_creates_characters_but_only_in_a_campaign(client, alice, bob):
+    client.force_login(alice)
+    client.post("/characters/new/", {"name": "Mira"})
+    assert Character.objects.get(name="Mira").campaign == default_campaign()
+
+
+@pytest.mark.no_default_campaign
+def test_nobody_creates_characters_outside_a_campaign(client, alice):
     client.force_login(alice)
 
     assert client.get("/characters/new/").status_code == 404
@@ -77,15 +81,16 @@ def test_starting_a_character_creates_an_owned_draft_at_background(signed_in, al
     assert "In creation" in signed_in.get("/characters/").content.decode()
 
 
-def test_everyone_sees_every_finished_character_but_only_the_owner_edits(client, alice, bob, db):
+def test_every_member_sees_every_finished_character_but_only_the_owner_edits(
+    client, alice, bob, db
+):
     mira = build_character(alice, "wizard", name="Mira")
     creation.finalize(mira)
 
-    # Anonymous and another account both see it, with its owner named.
-    for viewer in (client,):
-        html = viewer.get("/characters/").content.decode()
-        assert "Mira" in html and "alice" in html
-        assert viewer.get(f"/characters/{mira.pk}/").status_code == 200
+    client.force_login(alice)  # the owner sees it, with their name on it
+    html = client.get("/characters/").content.decode()
+    assert "Mira" in html
+    assert client.get(f"/characters/{mira.pk}/").status_code == 200
     client.force_login(bob)
     assert "Mira" in client.get("/characters/").content.decode()
     assert client.get(f"/characters/{mira.pk}/").status_code == 200
@@ -94,7 +99,7 @@ def test_everyone_sees_every_finished_character_but_only_the_owner_edits(client,
 
 
 def test_someone_elses_unfinished_character_is_private(client, alice, bob):
-    draft = creation.start_draft(alice, "Secret draft")
+    draft = creation.start_draft(alice, "Secret draft", default_campaign())
 
     client.force_login(bob)
     assert "Secret draft" not in client.get("/characters/").content.decode()
@@ -105,7 +110,7 @@ def test_someone_elses_unfinished_character_is_private(client, alice, bob):
 
 
 def test_a_step_that_needs_an_earlier_one_redirects_to_it(signed_in, alice):
-    draft = creation.start_draft(alice, "x")
+    draft = creation.start_draft(alice, "x", default_campaign())
 
     response = signed_in.get(step(draft.pk, "abilities"))
 
@@ -192,7 +197,7 @@ def test_a_fighter_created_entirely_through_the_forms(signed_in, alice, settings
 
 
 def test_an_invalid_class_is_rejected_with_a_message(signed_in, alice):
-    draft = creation.start_draft(alice, "x")
+    draft = creation.start_draft(alice, "x", default_campaign())
 
     response = signed_in.post(step(draft.pk, "class"), {"class": "jedi"})
 
@@ -200,7 +205,7 @@ def test_an_invalid_class_is_rejected_with_a_message(signed_in, alice):
 
 
 def test_finish_is_refused_until_everything_is_done(signed_in, alice):
-    draft = creation.start_draft(alice, "x")
+    draft = creation.start_draft(alice, "x", default_campaign())
 
     response = signed_in.post(f"/characters/{draft.pk}/create/finish/")
 
@@ -210,8 +215,8 @@ def test_finish_is_refused_until_everything_is_done(signed_in, alice):
 
 
 def test_discarding_deletes_only_your_own_draft(signed_in, alice, bob):
-    mine = creation.start_draft(alice, "mine")
-    theirs = creation.start_draft(bob, "theirs")
+    mine = creation.start_draft(alice, "mine", default_campaign())
+    theirs = creation.start_draft(bob, "theirs", default_campaign())
 
     assert signed_in.post(f"/characters/{theirs.pk}/create/discard/").status_code == 404
     assert signed_in.post(f"/characters/{mine.pk}/create/discard/").url == "/characters/"
@@ -245,7 +250,7 @@ def test_every_step_renders_for_a_finished_draft(signed_in, alice, class_id):
 
 
 def test_ability_step_methods_and_roll(signed_in, alice):
-    draft = creation.start_draft(alice, "x")
+    draft = creation.start_draft(alice, "x", default_campaign())
     from apps.builder.services import origins
 
     origins.select_class(draft, "fighter")
@@ -294,7 +299,7 @@ def test_review_adjustments_are_kept_and_can_be_undone(signed_in, alice):
 
 
 def test_the_bottom_nav_keeps_characters_active_inside_the_wizard(signed_in, alice):
-    draft = creation.start_draft(alice, "x")
+    draft = creation.start_draft(alice, "x", default_campaign())
     html = signed_in.get(step(draft.pk, "class")).content.decode()
     assert 'data-menu="characters"' in html
     assert reverse("characters-overview") == "/characters/"
@@ -317,7 +322,7 @@ def test_the_wizard_and_character_page_are_in_italian_and_metric(signed_in, alic
     assert "ft." not in page
     listing = signed_in.get("/characters/").content.decode()
     assert "Personaggi" in listing and "Nuovo personaggio" in listing
-    draft = creation.start_draft(alice, "x")
+    draft = creation.start_draft(alice, "x", default_campaign())
     step_page = signed_in.get(step(draft.pk, "class")).content.decode()
     assert "Le sue scelte di 1º livello si aprono subito sotto" in step_page
     assert "Fasi" in step_page and "Storia del personaggio" in step_page
@@ -349,7 +354,7 @@ AJAX = {"HTTP_X_REQUESTED_WITH": "XMLHttpRequest"}
 
 
 def test_background_options_have_the_icon_vignette_like_the_world_list(signed_in, alice):
-    draft = creation.start_draft(alice, "x")
+    draft = creation.start_draft(alice, "x", default_campaign())
     from apps.builder.services import origins
 
     origins.select_class(draft, "fighter")
@@ -361,7 +366,7 @@ def test_background_options_have_the_icon_vignette_like_the_world_list(signed_in
 
 
 def test_picking_a_row_opens_its_choices_right_under_it_without_pressing_next(signed_in, alice):
-    draft = creation.start_draft(alice, "x")
+    draft = creation.start_draft(alice, "x", default_campaign())
     from apps.builder.services import origins
 
     origins.select_class(draft, "fighter")
@@ -381,7 +386,7 @@ def test_picking_a_row_opens_its_choices_right_under_it_without_pressing_next(si
 
 
 def test_class_choices_live_under_the_class_not_in_a_later_step(signed_in, alice):
-    draft = creation.start_draft(alice, "x")
+    draft = creation.start_draft(alice, "x", default_campaign())
 
     html = signed_in.post(
         step(draft.pk, "class"), {"class": "wizard", "action": "select"}, **AJAX
@@ -396,7 +401,7 @@ def test_class_choices_live_under_the_class_not_in_a_later_step(signed_in, alice
 
 
 def test_a_refresh_saves_what_is_filled_in_and_shows_dependent_choices(signed_in, alice):
-    draft = creation.start_draft(alice, "x")
+    draft = creation.start_draft(alice, "x", default_campaign())
     from apps.builder.services import origins
 
     origins.select_class(draft, "wizard")
@@ -423,7 +428,7 @@ def class_choices_pickers(character):
 
 
 def test_spells_are_cards_with_an_icon_properties_and_a_read_button(signed_in, alice):
-    draft = creation.start_draft(alice, "x")
+    draft = creation.start_draft(alice, "x", default_campaign())
     from apps.builder.services import origins
 
     origins.select_class(draft, "wizard")
@@ -469,7 +474,7 @@ def test_tools_are_cards_too(signed_in, alice):
 
 
 def test_magic_initiate_names_its_list_and_only_offers_that_lists_spells(signed_in, alice):
-    draft = creation.start_draft(alice, "x")
+    draft = creation.start_draft(alice, "x", default_campaign())
     from apps.builder.services import origins
 
     origins.select_class(draft, "fighter")
@@ -536,8 +541,10 @@ def test_admin_reopens_edits_and_finishes_keeping_inventory(client, alice, bob, 
     items_before = list(character.inventory_items.values_list("pk", flat=True))
     url = f"/characters/{character.pk}/reopen/"
 
-    client.force_login(bob)
-    assert client.post(url).status_code == 403
+    from django.contrib.auth import get_user_model
+
+    client.force_login(get_user_model().objects.create_user(username="eve"))
+    assert client.post(url).status_code == 403  # another player
 
     client.force_login(alice)
     response = client.post(url)

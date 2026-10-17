@@ -55,6 +55,15 @@ each task (after verifying and redeploying), without waiting to be asked. Local 
 
 ## Architecture
 
+Everything private is scoped by **campaign** (`apps/campaigns`: `Campaign`, `CampaignMembership` with
+one DM per campaign, `CampaignInvite`; every `Character` and `LogEntry` has a `campaign`).
+`apps/campaigns/services/membership.py` is the single place that decides who may see or manage
+what; `characters/services/access.py` builds on it, and copy/transfer/leave live in
+`characters/services/campaign_ops.py`. Never query `Character`/`LogEntry` for a page without
+filtering by the current campaign (`apps/frontend/campaign_context.current`). In tests every new
+user and character is put into one shared campaign automatically (`apps/conftest.py`); opt out with
+`@pytest.mark.no_default_campaign`.
+
 Three Django apps form a strict dependency chain — `rules` (static game content, read-only,
 populated only via `import_rules_data`) → `characters` (persisted character state, FKs into
 `rules`, no auth/ownership) → `builder` (creation/leveling engine, called directly by

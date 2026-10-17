@@ -1,0 +1,17 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+{% block extra_style %}{% include "frontend/campaigns/_style.html" %}{% endblock %}
+{% block content %}
+  <div class="camp">
+    {% include "frontend/campaigns/_messages.html" %}
+    <p>{% translate "You will be the campaign's DM. You can invite people afterwards." %}</p>
+    <form method="post" data-nav="replace">
+      {% csrf_token %}
+      <label for="name">{% translate "Name" %}</label>
+      <input type="text" id="name" name="name" maxlength="100" value="{{ name }}" required autofocus>
+      <label for="description">{% translate "Description" %}</label>
+      <textarea id="description" name="description" maxlength="2000">{{ description }}</textarea>
+      <button type="submit">{% translate "Create" %}</button>
+    </form>
+  </div>
+{% endblock %}

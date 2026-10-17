@@ -44,6 +44,11 @@ class Character(models.Model):
         on_delete=models.SET_NULL,
         related_name="characters",
     )
+    #: The campaign the character plays in: only its members (and administrators) see it.
+    #: `PROTECT`: a campaign with characters cannot be deleted.
+    campaign = models.ForeignKey(
+        "campaigns.Campaign", on_delete=models.PROTECT, related_name="characters"
+    )
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=STATUS_COMPLETE)
     experience_points = models.PositiveIntegerField(default=0)
     species = models.ForeignKey(

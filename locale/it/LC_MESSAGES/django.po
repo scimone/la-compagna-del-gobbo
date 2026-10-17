@@ -2787,3 +2787,258 @@ msgstr "Trucchetto da Warlock che infligge danni"
 
 msgid "Any level"
 msgstr "Qualsiasi livello"
+
+msgid "That is not a valid e-mail address."
+msgstr "Questo non è un indirizzo e-mail valido."
+
+msgid "This person is already in the campaign."
+msgstr "Questa persona è già nella campagna."
+
+msgid "Too many invitations in a short time. Try again later."
+msgstr "Troppi inviti in poco tempo. Riprova più tardi."
+
+msgid "This invitation is not valid any more."
+msgstr "Questo invito non è più valido."
+
+msgid "A campaign needs a name."
+msgstr "Una campagna ha bisogno di un nome."
+
+msgid "The new DM has to be a member of the campaign."
+msgstr "Il nuovo DM deve essere un membro della campagna."
+
+msgid "This join link is not valid any more."
+msgstr "Questo link di ingresso non è più valido."
+
+msgid "You are not a member of that campaign."
+msgstr "Non fai parte di quella campagna."
+
+msgid "You cannot see this character."
+msgstr "Non puoi vedere questo personaggio."
+
+msgid "Only a finished character can be copied."
+msgstr "Si può copiare solo un personaggio finito."
+
+msgid "You cannot move this character."
+msgstr "Non puoi spostare questo personaggio."
+
+msgid "The character is already in that campaign."
+msgstr "Il personaggio è già in quella campagna."
+
+msgid "The character's owner is not a member of that campaign."
+msgstr "Il proprietario del personaggio non fa parte di quella campagna."
+
+msgid "This person is not in the campaign."
+msgstr "Questa persona non è nella campagna."
+
+msgid "The DM has to hand the DM role to someone else first."
+msgstr "Il DM deve prima passare il ruolo di DM a qualcun altro."
+
+msgid "Delete or move the campaign's characters first."
+msgstr "Prima elimina o sposta i personaggi della campagna."
+
+msgid "Player"
+msgstr "Giocatore"
+
+msgid "Campaigns"
+msgstr "Campagne"
+
+msgid "New campaign"
+msgstr "Nuova campagna"
+
+msgid "Join a campaign"
+msgstr "Unisciti a una campagna"
+
+msgid "Leave this campaign?"
+msgstr "Lasciare questa campagna?"
+
+msgid "Leaving deletes your characters in this campaign, for good: %(names)s. Leave anyway?"
+msgstr "Lasciare la campagna elimina per sempre i tuoi personaggi in essa: %(names)s. Lasciarla comunque?"
+
+msgid "Remove %(name)s? Their characters in this campaign are deleted, for good."
+msgstr "Rimuovere %(name)s? I suoi personaggi in questa campagna vengono eliminati per sempre."
+
+msgid "Saved."
+msgstr "Salvato."
+
+msgid "Invitation sent to %(email)s."
+msgstr "Invito inviato a %(email)s."
+
+msgid "The old join link no longer works."
+msgstr "Il vecchio link di ingresso non funziona più."
+
+msgid "Pick a member."
+msgstr "Scegli un membro."
+
+msgid "%(name)s is now the DM."
+msgstr "%(name)s è ora il DM."
+
+msgid "You left %(name)s."
+msgstr "Hai lasciato %(name)s."
+
+msgid "Pick a campaign."
+msgstr "Scegli una campagna."
+
+msgid "Move character"
+msgstr "Sposta personaggio"
+
+msgid "Copy character"
+msgstr "Copia personaggio"
+
+msgid "Privacy policy"
+msgstr "Informativa sulla privacy"
+
+msgid "Members"
+msgstr "Membri"
+
+msgid "%(n)s character"
+msgid_plural "%(n)s characters"
+msgstr[0] "%(n)s personaggio"
+msgstr[1] "%(n)s personaggi"
+
+msgid "Make %(name)s the DM? You become a player."
+msgstr "Rendere %(name)s il DM? Tu diventi un giocatore."
+
+msgid "Make DM"
+msgstr "Rendi DM"
+
+msgid "Invite"
+msgstr "Invita"
+
+msgid "Gmail address"
+msgstr "Indirizzo Gmail"
+
+msgid "They see the invitation when they sign in with that address. Their Google account must also be on the app's access list (request it from scimone.mail@gmail.com)."
+msgstr "Vedranno l'invito quando accedono con quell'indirizzo. Il loro account Google deve anche essere nell'elenco degli accessi dell'app (da richiedere a scimone.mail@gmail.com)."
+
+msgid "Valid until %(date)s"
+msgstr "Valido fino al %(date)s"
+
+msgid "Withdraw"
+msgstr "Ritira"
+
+msgid "Join link"
+msgstr "Link di ingresso"
+
+msgid "Anyone with this link can join as a player (once they can sign in to the app)."
+msgstr "Chiunque abbia questo link può unirsi come giocatore (una volta che può accedere all'app)."
+
+msgid "The join link is switched off."
+msgstr "Il link di ingresso è disattivato."
+
+msgid "Switch off"
+msgstr "Disattiva"
+
+msgid "Switch on"
+msgstr "Attiva"
+
+msgid "Replace the link? The old one stops working."
+msgstr "Sostituire il link? Quello vecchio smette di funzionare."
+
+msgid "New link"
+msgstr "Nuovo link"
+
+msgid "Settings"
+msgstr "Impostazioni"
+
+msgid "A campaign can only be deleted once it has no characters left."
+msgstr "Una campagna si può eliminare solo quando non ha più personaggi."
+
+msgid "Delete this campaign and its Logbook, for good?"
+msgstr "Eliminare questa campagna e il suo Diario, per sempre?"
+
+msgid "Delete campaign"
+msgstr "Elimina campagna"
+
+msgid "You are the DM. To leave, make another member the DM first."
+msgstr "Sei il DM. Per andartene, rendi prima DM un altro membro."
+
+msgid "Leave campaign"
+msgstr "Lascia la campagna"
+
+msgid "You are already in %(name)s."
+msgstr "Sei già in %(name)s."
+
+msgid "Your campaigns"
+msgstr "Le tue campagne"
+
+msgid "Join the campaign <strong>%(name)s</strong> as a player?"
+msgstr "Unirti alla campagna <strong>%(name)s</strong> come giocatore?"
+
+msgid "Join"
+msgstr "Unisciti"
+
+msgid "This join link is not valid any more. Ask a member of the campaign for a new one."
+msgstr "Questo link di ingresso non è più valido. Chiedi un nuovo link a un membro della campagna."
+
+msgid "Invitations"
+msgstr "Inviti"
+
+msgid "Invited by %(name)s"
+msgstr "Invitato da %(name)s"
+
+msgid "Accept"
+msgstr "Accetta"
+
+msgid "Decline"
+msgstr "Rifiuta"
+
+msgid "%(n)s member"
+msgid_plural "%(n)s members"
+msgstr[0] "%(n)s membro"
+msgstr[1] "%(n)s membri"
+
+msgid "Open"
+msgstr "Apri"
+
+msgid "You are not in any campaign yet. Create one (you become its DM) or join one with an invitation or a join link from its members."
+msgstr "Non sei ancora in nessuna campagna. Creane una (ne diventi il DM) oppure unisciti a una con un invito o un link di ingresso dei suoi membri."
+
+msgid "You can already browse the World and the Handbook."
+msgstr "Puoi già consultare il Mondo e il Manuale."
+
+msgid "Create a campaign"
+msgstr "Crea una campagna"
+
+msgid "Join with a code or link"
+msgstr "Unisciti con un codice o un link"
+
+msgid "No invitation yet? Ask a member to invite the e-mail address you signed in with. To sign in at all, the app's access list must include your Google account: request it from scimone.mail@gmail.com."
+msgstr "Nessun invito? Chiedi a un membro di invitare l'indirizzo e-mail con cui hai effettuato l'accesso. Per accedere, il tuo account Google deve essere nell'elenco degli accessi dell'app: richiedilo a scimone.mail@gmail.com."
+
+msgid "Move %(name)s to another campaign. The Logbook entries stay where they are."
+msgstr "Sposta %(name)s in un'altra campagna. Le voci del Diario restano dove sono."
+
+msgid "Make a copy of %(name)s, with everything it has now (hit points, slots, items), in one of your campaigns. The copy is yours and independent of the original."
+msgstr "Crea una copia di %(name)s, con tutto ciò che ha ora (punti ferita, slot, oggetti), in una delle tue campagne. La copia è tua e indipendente dall'originale."
+
+msgid "Move"
+msgstr "Sposta"
+
+msgid "Copy"
+msgstr "Copia"
+
+msgid "You are not in any other campaign."
+msgstr "Non sei in nessun'altra campagna."
+
+msgid "You will be the campaign's DM. You can invite people afterwards."
+msgstr "Sarai il DM della campagna. Potrai invitare persone in seguito."
+
+msgid "Create"
+msgstr "Crea"
+
+msgid "You are not in a campaign yet, so there are no characters or logbook to show. Create a campaign (you become its DM) or join one."
+msgstr "Non sei ancora in una campagna, quindi non ci sono personaggi né diario da mostrare. Crea una campagna (ne diventi il DM) oppure unisciti a una."
+
+msgid "%(n)s invitation waiting"
+msgid_plural "%(n)s invitations waiting"
+msgstr[0] "%(n)s invito in attesa"
+msgstr[1] "%(n)s inviti in attesa"
+
+msgid "The World and the Handbook are open to everyone."
+msgstr "Il Mondo e il Manuale sono aperti a tutti."
+
+msgid "Copy to a campaign"
+msgstr "Copia in una campagna"
+
+msgid "Move to another campaign"
+msgstr "Sposta in un'altra campagna"

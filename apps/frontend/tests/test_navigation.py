@@ -39,6 +39,9 @@ def _html(client, url):
 def test_menu_roots_have_no_back_arrow(client, db, url):
     # Back at a menu's root does nothing, so there is no arrow to press. The Glossary is a root
     # too now, a tab alongside Chapters rather than a page nested under it.
+    from django.contrib.auth import get_user_model
+
+    client.force_login(get_user_model().objects.create_user(username="viewer"))
     assert 'id="back-btn"' not in _html(client, url)
 
 
