@@ -578,13 +578,6 @@
     });
     var empty = document.getElementById(scope.dataset.filterEmpty);
     if (empty) empty.hidden = shown > 0;
-    // "Add all": offered once something narrows the catalog down to a set (but not for all of it).
-    var addAll = scope.querySelector("[data-add-all]");
-    if (addAll) {
-      var total = list.querySelectorAll("li").length;
-      addAll.hidden = !(shown > 1 && shown < total);
-      addAll.textContent = addAll.dataset.label.replace("%(n)s", shown);
-    }
     // The World's filter buttons show how many boxes are ticked.
     form.querySelectorAll(".filter-popover").forEach(function (popover) {
       var button = popover.querySelector(".filter-button");
@@ -1080,7 +1073,7 @@
       }
       // The stat blocks (damage for a weapon, AC for armor) of the picked Category only.
       body.querySelectorAll("[data-custom-for]").forEach(function (block) {
-        block.hidden = !section || block.dataset.customFor !== section.value;
+        block.hidden = !section || block.dataset.customFor.split(" ").indexOf(section.value) < 0;
       });
     }
 
@@ -1156,29 +1149,11 @@
     var tab = event.target.closest("[data-add-tab]");
     if (tab) return showAddPane(tab.closest(".cs-overlay"), tab.dataset.addTab);
 
-    var addAll = event.target.closest("[data-add-all]");
-    if (addAll) {
-      var scope = addAll.closest("[data-filter-list]");
-      var ids = [];
-      document.getElementById(scope.dataset.filterList).querySelectorAll("li").forEach(function (li) {
-        if (!li.hidden && li.dataset.id) ids.push(li.dataset.id);
-      });
-      if (!ids.length) return;
-      var body = new URLSearchParams();
-      body.append("action", "item_add_many");
-      body.append("quantity", String(addQuantity(addAll)));
-      ids.forEach(function (id) { body.append("equipment", id); });
-      window.appConfirm(addAll.dataset.confirm.replace("%(n)s", ids.length)).then(function (ok) {
-        if (ok) send(body);
-      });
-      return;
-    }
-
     var add = event.target.closest("[data-custom-add]");
     if (add) {
       // Not a <form>: a submit would reach navigation.js, which treats every submit as a page change.
       var overlay = add.closest(".cs-overlay");
-      var params = { action: "custom_add" };
+      var params = { action: add.dataset.customAction || "custom_add" };
       var form = add.closest("[data-custom-form]");
       var name = overlay.querySelector('[data-custom-form] [name="name"]');
       overlay.querySelectorAll("[data-custom-form] [name]").forEach(function (field) {
@@ -1212,6 +1187,7 @@
           else if (field.name === "damage_type" || field.name === "armor_kind") field.value = "";
         });
         updateCustomBuy();
+        if (window.itemForm) window.itemForm.reset(overlay); // the effects rows, the range boxes
         // Radios reset above, but the Category pill, weapon-category pill and Type popover also
         // carry their own live state (rebuilt options, hidden/shown, the popover's badge) - a
         // "change" event redoes that too.

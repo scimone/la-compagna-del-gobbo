@@ -339,3 +339,71 @@ def test_versatile_two_hands_need_a_free_off_hand(owner):
     assert not derived_stats.compute(fighter).attacks[0]["two_hands_free"]
     wear(fighter, "mace")
     assert derived_stats.compute(fighter).attacks[0]["damage_two_handed"] == ""
+
+
+def test_effects_of_worn_custom_items_and_custom_features_change_the_numbers(owner):
+    from apps.characters.models import CharacterCustomFeature, CharacterCustomItem
+
+    fighter = no_feats(build_character(owner, "fighter"))
+    wear(fighter)
+    set_scores(fighter, str=14, dex=10, wis=10)
+    before = derived_stats.compute(fighter)
+    ring = CharacterCustomItem.objects.create(
+        character=fighter,
+        name="Ring of the Fox",
+        section="misc",
+        effects=[
+            {"target": "ac", "value": 1},
+            {"target": "speed", "value": 10},
+            {"target": "initiative", "value": 2},
+            {"target": "passive_perception", "value": 5},
+            {"target": "ability_min:str", "value": 19},
+            {"target": "prof_skill:stealth", "value": 1},
+            {"target": "save:wis", "value": 1},
+            {"target": "skill_all", "value": 1},
+        ],
+    )
+    # Not worn yet: nothing changes.
+    assert derived_stats.compute(fighter).armor_class["value"] == before.armor_class["value"]
+    ring.equipped = True
+    ring.save()
+    after = derived_stats.compute(fighter)
+    assert after.armor_class["value"] == before.armor_class["value"] + 1
+    assert after.speed == before.speed + 10
+    assert after.initiative == before.initiative + 2
+    assert after.abilities["str"]["score"] == 19 and after.abilities["str"]["modifier"] == 4
+    stealth = after.skills["stealth"]
+    assert stealth["state"] == "proficient"
+    assert stealth["modifier"] == before.skills["stealth"]["modifier"] + after.proficiency_bonus + 1
+    assert after.saving_throws["wis"]["modifier"] == before.saving_throws["wis"]["modifier"] + 1
+    assert after.passive_perception == before.passive_perception + 5 + 1
+    CharacterCustomFeature.objects.create(
+        character=fighter, name="Blessed", effects=[{"target": "attack", "value": 1}]
+    )
+    assert derived_stats.compute(fighter).speed == before.speed + 10  # the feature adds, too
+
+
+def test_a_custom_weapons_own_bonuses_apply_to_that_weapon_only(owner):
+    from apps.characters.models import CharacterCustomItem
+
+    fighter = no_feats(build_character(owner, "fighter"))
+    set_scores(fighter, str=16)
+    wear(fighter, "longsword")
+    CharacterCustomItem.objects.create(
+        character=fighter,
+        name="Moonblade",
+        section="weapons",
+        weapon_category="martial",
+        damage_dice="1d6",
+        damage_type="slashing",
+        equipped=True,
+        effects=[
+            {"target": "weapon_attack", "value": 2},
+            {"target": "weapon_damage", "value": 2},
+            {"target": "damage", "value": 1},
+        ],
+    )
+    attacks = {a["equipment_id"]: a for a in derived_stats.compute(fighter).attacks}
+    moon = next(a for k, a in attacks.items() if k.startswith("custom:"))
+    assert moon["damage"] == "1d6+6"  # Str +3, its own +2 and the +1 to every damage roll
+    assert attacks["longsword"]["damage"] == "1d8+4"  # only the general +1

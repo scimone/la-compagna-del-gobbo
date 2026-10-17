@@ -1,0 +1,12 @@
+{# The effects editor (`_effects_editor.html`), shared by the sheet's "add" overlays and the pages #}
+{# that edit an item or a feature.                                                                #}
+.fx-editor { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.6rem; border: 1px solid var(--border); border-radius: 0.6rem; }
+.fx-editor .fx-title { margin: 0; font-size: 0.9rem; font-weight: 600; color: var(--text); }
+.fx-editor .hint { margin: 0; font-size: 0.8rem; color: var(--muted); line-height: 1.4; }
+.fx-rows { display: flex; flex-direction: column; gap: 0.4rem; }
+.fx-row { display: flex; gap: 0.4rem; align-items: center; }
+.fx-row select { flex: 1 1 auto; min-width: 0; padding: 0.4rem 0.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; color: var(--text); font: inherit; }
+.fx-row input[type=number] { flex: 0 0 4.5rem; width: 4.5rem; padding: 0.4rem 0.4rem; text-align: center; background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; color: var(--text); font: inherit; }
+.fx-row button { flex: 0 0 auto; width: 2rem; height: 2rem; padding: 0; background: none; border: 1px solid var(--border); border-radius: 50%; color: var(--muted); font-size: 1.1rem; line-height: 1; cursor: pointer; }
+.fx-add { align-self: flex-start; padding: 0.35rem 0.8rem; background: var(--surface); border: 1px solid var(--accent); border-radius: 1rem; color: var(--accent); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+[data-show-if][hidden], .fx-editor[hidden], .custom-stats[hidden] { display: none; }

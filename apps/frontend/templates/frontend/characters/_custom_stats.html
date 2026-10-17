@@ -1,9 +1,13 @@
 {% load i18n %}
-{# The numbers that let a custom weapon, armor or shield be worn. Shared by the "add an item" sheet #}
-{# (where `character_sheet.js` shows the block of the picked Category - `hidden` until then) and   #}
-{# the item page's edit form (where both blocks always show). `row` is the item being edited.     #}
+{# The numbers that let a custom weapon, armor or shield be worn, and the switch for a plain item #}
+{# that can be. Shared by the "add an item" sheet (where `character_sheet.js` shows the block of #}
+{# the picked Category - `hidden` until then) and the item page's edit form (where only the     #}
+{# block of the item's own Category is there at all, so an armor never shows weapon fields).    #}
+{# `row` is the item being edited.                                                               #}
+{% if not row or row.section == "weapons" %}
 <div class="custom-stats" data-custom-for="weapons"{% if not row %} hidden{% endif %}>
-  <p class="hint">{% translate "Weapon: fill in the damage to be able to equip it. Without one it is only a keepsake." %}</p>
+  <p class="fx-title">{% translate "Weapon" %}</p>
+  <p class="hint">{% translate "Fill in the damage to be able to equip it. Without one it is only a keepsake." %}</p>
   <div class="cs-form-row">
     <label>{% translate "Damage" %}<input type="text" name="damage_dice" maxlength="20" placeholder="1d8" autocomplete="off" value="{{ row.damage_dice }}"></label>
     <label>{% translate "Damage type" %}
@@ -17,9 +21,16 @@
   <label class="check"><input type="checkbox" name="finesse" value="1"{% if row.finesse %} checked{% endif %}> {% translate "Finesse (Strength or Dexterity)" %}</label>
   <label class="check"><input type="checkbox" name="two_handed" value="1"{% if row.two_handed %} checked{% endif %}> {% translate "Two-Handed" %}</label>
   <label class="check"><input type="checkbox" name="ranged" value="1"{% if row.ranged %} checked{% endif %}> {% translate "Ranged (uses Dexterity)" %}</label>
+  <div class="cs-form-row" data-show-if="ranged"{% if not row.ranged %} hidden{% endif %}>
+    <label>{% if weight_unit == "kg" %}{% translate "Normal range (m)" %}{% else %}{% translate "Normal range (ft)" %}{% endif %}<input type="number" name="range_normal" min="0" max="9999" step="any" inputmode="decimal" placeholder="{% if weight_unit == 'kg' %}24{% else %}80{% endif %}" value="{{ range_normal }}"></label>
+    <label>{% if weight_unit == "kg" %}{% translate "Long range (m)" %}{% else %}{% translate "Long range (ft)" %}{% endif %}<input type="number" name="range_long" min="0" max="9999" step="any" inputmode="decimal" placeholder="{% if weight_unit == 'kg' %}96{% else %}320{% endif %}" value="{{ range_long }}"></label>
+  </div>
 </div>
+{% endif %}
+{% if not row or row.section == "armor" %}
 <div class="custom-stats" data-custom-for="armor"{% if not row %} hidden{% endif %}>
-  <p class="hint">{% translate "Armor or shield: fill in the type and Armor Class to be able to equip it. A shield's AC is the bonus it adds." %}</p>
+  <p class="fx-title">{% translate "Armor" %}</p>
+  <p class="hint">{% translate "Fill in the type and Armor Class to be able to equip it. A shield's AC is the bonus it adds." %}</p>
   <div class="cs-form-row">
     <label>{% translate "Armor type" %}
       <select name="armor_kind">
@@ -32,3 +43,10 @@
   </div>
   <label class="check"><input type="checkbox" name="stealth_disadvantage" value="1"{% if row.stealth_disadvantage %} checked{% endif %}> {% translate "Stealth disadvantage" %}</label>
 </div>
+{% endif %}
+{% if not row or row.section == "tools" or row.section == "misc" %}
+<div class="custom-stats" data-custom-for="tools misc"{% if not row %} hidden{% endif %}>
+  <p class="hint">{% translate "Anything that is worn or held for what it does (a ring, a cloak, a talisman) can be equipped; give it effects below to change the sheet's numbers. An item with effects can always be equipped." %}</p>
+  <label class="check"><input type="checkbox" name="wearable" value="1"{% if row.wearable %} checked{% endif %}> {% translate "Can be equipped" %}</label>
+</div>
+{% endif %}

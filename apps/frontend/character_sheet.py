@@ -10,6 +10,7 @@ slot, change the HP, ...). Every rule for those changes lives in `characters.ser
 view only translates HTTP into calls and answers with the state the script needs to redraw.
 """
 
+import json
 from math import ceil
 
 from django.contrib import messages
@@ -30,7 +31,7 @@ from apps.builder import tables
 from apps.builder.class_spec import CLASS_SPEC
 from apps.builder.resolvers.proficiency import WeaponProficiency
 from apps.builder.services import creation, derived_stats, land, progression
-from apps.characters import conditions
+from apps.characters import conditions, custom_effects
 from apps.characters.models import Character, CharacterChoice
 from apps.characters.services import access, play, portrait
 from apps.frontend import translations, units
@@ -408,8 +409,32 @@ def _feature_items(character: Character, can_edit: bool = False) -> list[dict]:
     for co in character.optional_features.select_related("optional_feature"):
         option = co.optional_feature
         items.append({**_option_row(option), **_removal(can_edit, co.source, "option", option.pk)})
+    for custom in character.custom_features.all():
+        items.append(_custom_feature_row(custom, can_edit))
     items.sort(key=lambda item: item["name"].casefold())
     return items
+
+
+def _custom_feature_row(custom, can_edit: bool) -> dict:
+    """A feature the player made up, as a Features list row linking to its own page."""
+    row = {
+        "pk": custom.pk,
+        "kind": "custom_feature",
+        "name": custom.name,
+        "properties": [_("Custom")],
+        "url": reverse("character-custom-feature", args=[custom.character_id, custom.pk]),
+        "image": None,
+        "type": "custom",
+        "search": custom.name.lower(),
+    }
+    if can_edit:
+        row["remove"] = {
+            "act": "custom_feature_remove",
+            "param": "feature",
+            "id": custom.pk,
+            "confirm": _("Remove this feature?"),
+        }
+    return row
 
 
 def _feature_type_filter(items: list[dict], always: bool = False) -> dict | None:
@@ -425,6 +450,7 @@ def _feature_type_filter(items: list[dict], always: bool = False) -> dict | None
         "subclass": _("Subclass Features"),
         "species": _("Species Traits"),
         "option": _("Options"),
+        "custom": _("Custom"),
     }
     present = [kind for kind in labels if any(item["type"] == kind for item in items)]
     if len(present) <= 1 and not always:
@@ -906,10 +932,14 @@ def _item_card(kind: str, row, pack_name: str = "", stats=None) -> dict:
     if custom:
         if row.damage_dice:
             detail.append(_damage_text(row))
+        if row.range:
+            detail.append(f"{_('Range')} {units.weapon_range(row.range)}")
         if row.armor_kind == "shield" and row.ac:
             detail.append(f"{_('AC')} +{row.ac}")
         elif row.armor_kind and row.ac:
             detail.append(f"{_('AC')} {row.ac}")
+    if custom:
+        detail.extend(_effects_lines(row.effects))
     if not custom:
         if eq.damage_dice:
             detail.append(_damage_text(eq))
@@ -1487,6 +1517,31 @@ def _act_feature_add(character, post):
     return {"refresh": True, "message": _("Added %(name)s") % {"name": entry.name}}
 
 
+def _custom_feature_fields(post) -> dict:
+    return {
+        "name": post.get("name", ""),
+        "description": post.get("description", ""),
+        "effects": post.get("effects", ""),
+    }
+
+
+def _act_custom_feature_add(character, post):
+    feature = play.add_custom_feature(character, **_custom_feature_fields(post))
+    return {"refresh": True, "message": _("Added %(name)s") % {"name": feature.name}}
+
+
+def _act_custom_feature_edit(character, post):
+    feature = play.update_custom_feature(
+        character, _int(post, "feature"), **_custom_feature_fields(post)
+    )
+    return {"refresh": True, "message": _("Saved %(name)s") % {"name": feature.name}}
+
+
+def _act_custom_feature_remove(character, post):
+    play.remove_custom_feature(character, _int(post, "feature"))
+    return True
+
+
 def _act_feature_remove(character, post):
     kind, _sep, ref = post.get("feature", "").partition(":")
     play.remove_feature(character, kind, ref)
@@ -1517,13 +1572,6 @@ def _act_item_add(character, post):
     return {"refresh": True, "message": _("Added %(name)s") % {"name": item.equipment.name}}
 
 
-def _act_item_add_many(character, post):
-    """A whole set at once: `equipment` is a list of catalog ids, `quantity` of each."""
-    quantity = int(_number(post, "quantity") or 1)
-    count = play.add_items(character, post.getlist("equipment"), quantity)
-    return {"refresh": True, "message": _("Added %(count)s items") % {"count": count}}
-
-
 def _act_item_buy(character, post):
     quantity = int(_number(post, "quantity") or 1)
     item, price = play.buy_item(character, post.get("equipment", ""), quantity)
@@ -1537,6 +1585,29 @@ def _act_item_buy(character, post):
 def _int_or_none(post, name: str) -> int | None:
     number = _number(post, name)
     return None if number is None else int(number)
+
+
+def _effects_lines(effects) -> list[str]:
+    """A custom item's or feature's effects as lines of text ("+2 Armor Class")."""
+    if not effects:
+        return []
+    names = custom_effects.names()
+    return [custom_effects.describe(effect, names) for effect in effects]
+
+
+def _range_text(post) -> str:
+    """A ranged weapon's range as the catalog writes it ("80/320", in feet) from the two boxes
+    (typed in metres on the metric site)."""
+    factor = units.FEET_TO_METRES if units.is_metric() else 1
+
+    def feet(name):
+        number = _number(post, name)
+        return round(number / factor) if number else None
+
+    normal, long = feet("range_normal"), feet("range_long")
+    if normal and long:
+        return f"{normal}/{long}"
+    return str(normal or "")
 
 
 def _custom_fields(post) -> dict:
@@ -1564,6 +1635,9 @@ def _custom_fields(post) -> dict:
         "ranged": post.get("ranged") == "1",
         "finesse": post.get("finesse") == "1",
         "two_handed": post.get("two_handed") == "1",
+        "range": _range_text(post),
+        "wearable": post.get("wearable") == "1",
+        "effects": post.get("effects", ""),
     }
 
 
@@ -1616,7 +1690,6 @@ _ACTIONS["item_add"] = _act_item_add
 _ACTIONS["item_buy"] = _act_item_buy
 _ACTIONS["custom_add"] = _act_custom_add
 _ACTIONS["custom_edit"] = _act_custom_edit
-_ACTIONS["item_add_many"] = _act_item_add_many
 _ACTIONS["item_qty"] = _act_item_qty
 _ACTIONS["item_remove"] = _act_item_remove
 _ACTIONS["item_sell"] = _act_item_sell
@@ -1631,6 +1704,9 @@ _ACTIONS["spell_prepare"] = _act_spell_prepare
 _ACTIONS["spell_remove"] = _act_spell_remove
 _ACTIONS["feature_add"] = _act_feature_add
 _ACTIONS["feature_remove"] = _act_feature_remove
+_ACTIONS["custom_feature_add"] = _act_custom_feature_add
+_ACTIONS["custom_feature_edit"] = _act_custom_feature_edit
+_ACTIONS["custom_feature_remove"] = _act_custom_feature_remove
 
 
 def _state(character: Character) -> dict:
@@ -1852,7 +1928,12 @@ def character_features(request, pk):
     return render(
         request,
         "frontend/characters/sheet/_add_feature.html",
-        {"features": rows, "filters": filters},
+        {
+            "features": rows,
+            "filters": filters,
+            "effect_options": _effect_options_json(),
+            "effects_json": "",
+        },
     )
 
 
@@ -1994,8 +2075,6 @@ def character_items(request, pk):
         "frontend/characters/sheet/_add_item.html",
         {
             **_custom_form_context(),
-            "add_all_label": _("Add all (%(n)s)"),
-            "add_all_confirm": _("Add %(n)s items to the inventory?"),
             "items": rows,
             "filters": filters,
             # Suggestions for the custom item's free-text Type field - the catalog's own type
@@ -2024,6 +2103,11 @@ _CUSTOM_DAMAGE_LABELS = {
 }
 
 
+def _effect_options_json() -> str:
+    """The effects editor's choices as JSON for a `<script>` element."""
+    return json.dumps(custom_effects.editor_options()).replace("<", "\\u003c")
+
+
 def _custom_form_context(row=None) -> dict:
     """What the custom item form needs (the "add" sheet's and the item page's edit form alike):
     its choices, and - given a `row` - the values to start from, in the units the player types."""
@@ -2031,8 +2115,18 @@ def _custom_form_context(row=None) -> dict:
     if row is not None and row.weight:
         weight = round(row.weight * (units.POUNDS_TO_KG if units.is_metric() else 1), 2)
         weight = f"{weight:g}"
+    range_normal, _slash, range_long = (row.range if row is not None else "").partition("/")
+    if units.is_metric():  # shown in metres, like the weight
+        range_normal, range_long = (
+            f"{int(r) * units.FEET_TO_METRES:g}" if r else "" for r in (range_normal, range_long)
+        )
     return {
         "row": row,
+        "is_weapon": row is not None and row.section == "weapons",
+        "range_normal": range_normal,
+        "range_long": range_long,
+        "effects_json": json.dumps(row.effects) if row is not None and row.effects else "",
+        "effect_options": _effect_options_json(),
         "sections": [(key, label) for key, label, _types in _INVENTORY_SECTIONS],
         "weapon_categories": [
             (c, _pick_translation(_WEAPON_CATEGORY_LABELS, c)) for c in ("simple", "martial")
@@ -2071,6 +2165,8 @@ def _item_page_facts(kind: str, row) -> tuple[list, list]:
         )
     if row.damage_dice:
         facts.append((_("Damage"), _damage_text(row)))
+    if row.range:
+        facts.append((_("Range"), units.weapon_range(row.range)))
     if row.armor_kind:
         facts.append((_("Armor type"), _pick_translation(_ARMOR_KIND_LABELS, row.armor_kind)))
     if row.ac:
@@ -2089,6 +2185,8 @@ def _item_page_facts(kind: str, row) -> tuple[list, list]:
         facts.append((_("Properties"), ", ".join(properties)))
     if row.strength_requirement:
         facts.append((_("Strength required"), row.strength_requirement))
+    if row.effects:
+        facts.append((_("Effects"), "; ".join(_effects_lines(row.effects))))
     if row.value:
         facts.append((_("Cost"), _gold_label(row.value)))
     if row.weight:
@@ -2133,16 +2231,20 @@ def character_item(request, pk, kind, ref):
         else:
             post["kind"] = "catalog" if kind == "stack" else "custom"
             post["item"] = row.pk
+            post["section"] = getattr(row, "section", "")  # an item keeps its Category
         try:
             result = _ACTIONS[action](character, post)
         except (ValueError, ObjectDoesNotExist):
             messages.error(request, _("Could not save that change."))
-            return redirect(request.path)
+            return redirect(f"{request.path}?edit=1" if action == "custom_edit" else request.path)
         if kind != "catalog" and not type(row).objects.filter(pk=row.pk).exists():
             return redirect(inventory_url)  # sold or removed: nothing left to look at
         if isinstance(result, dict) and result.get("message"):
             messages.success(request, result["message"])
         return redirect(request.path)
+
+    if kind == "custom" and can_edit and request.GET.get("edit") == "1":
+        return _render_item_edit(request, row)
 
     facts, sections = _item_page_facts(kind, row)
     if kind == "catalog":
@@ -2182,6 +2284,96 @@ def character_item(request, pk, kind, ref):
             "back_url": back_url,
             "facts": facts,
             "body": mark_safe(tools.strip()),  # noqa: S308 - rendered from our own template
+        },
+    )
+    add_never_cache_headers(response)
+    return response
+
+
+def character_custom_feature(request, pk, ref):
+    """One custom feature's page: its description and effects, and for an editor the form that
+    changes them (?edit=1) and a Remove button - plain forms posting back here, like an item's
+    page."""
+    character = get_object_or_404(Character, pk=pk)
+    if character.status != Character.STATUS_COMPLETE or not access.can_view(
+        request.user, character
+    ):
+        raise Http404
+    can_edit = access.can_edit(request.user, character)
+    row = get_object_or_404(character.custom_features, pk=ref)
+    features_url = f"{reverse('character-detail', args=[pk])}?tab=features"
+    if request.method == "POST":
+        action = request.POST.get("action", "")
+        if not can_edit:
+            return HttpResponse(status=403)
+        if action not in ("custom_feature_edit", "custom_feature_remove"):
+            return HttpResponse(status=400)
+        post = request.POST.copy()
+        post["feature"] = row.pk
+        try:
+            result = _ACTIONS[action](character, post)
+        except (ValueError, ObjectDoesNotExist):
+            messages.error(request, _("Could not save that change."))
+            return redirect(
+                f"{request.path}?edit=1" if action == "custom_feature_edit" else request.path
+            )
+        if action == "custom_feature_remove":
+            return redirect(features_url)
+        if isinstance(result, dict) and result.get("message"):
+            messages.success(request, result["message"])
+        return redirect(request.path)
+
+    editing = can_edit and request.GET.get("edit") == "1"
+    body = render_to_string(
+        "frontend/characters/_feature_tools.html",
+        {
+            "row": row,
+            "can_edit": can_edit,
+            "editing": editing,
+            "effects_json": json.dumps(row.effects) if row.effects else "",
+            "effect_options": _effect_options_json(),
+            "cancel_url": request.path,
+            "messages": messages.get_messages(request),
+        },
+        request=request,
+    )
+    facts = [(_("Type"), _("Custom"))]
+    if row.effects and not editing:
+        facts.append((_("Effects"), "; ".join(_effects_lines(row.effects))))
+    response = render(
+        request,
+        "frontend/characters/item.html",
+        {
+            "page_title": _("Edit %(name)s") % {"name": row.name} if editing else row.name,
+            "back_url": request.path if editing else features_url,
+            "facts": [] if editing else facts,
+            "body": mark_safe(body.strip()),  # noqa: S308 - rendered from our own template
+        },
+    )
+    add_never_cache_headers(response)
+    return response
+
+
+def _render_item_edit(request, row):
+    """The page that edits a custom item: a form of its own (`_item_edit.html`) under the item's
+    name, instead of a toggle on its page."""
+    body = render_to_string(
+        "frontend/characters/_item_edit.html",
+        {
+            "form": _custom_form_context(row),
+            "cancel_url": request.path,
+            "messages": messages.get_messages(request),
+        },
+        request=request,
+    )
+    response = render(
+        request,
+        "frontend/characters/item.html",
+        {
+            "page_title": _("Edit %(name)s") % {"name": row.name},
+            "back_url": request.path,
+            "facts": [],
+            "body": mark_safe(body.strip()),  # noqa: S308 - rendered from our own template
         },
     )
     add_never_cache_headers(response)

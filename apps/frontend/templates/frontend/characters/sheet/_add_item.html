@@ -19,12 +19,11 @@
   <div data-add-pane="catalog" data-filter-list="cs-catalog" data-filter-empty="cs-catalog-empty">
     {% translate "Search items" as search_placeholder %}
     {% include "frontend/_search_form.html" with search_query="" search_placeholder=search_placeholder %}
-    {# One quantity for every Add / Buy below; "Add all" appears once a filter narrows the list to a set. #}
+    {# One quantity for every Add / Buy below. #}
     <div class="cs-add-extras">
       <label class="cs-add-qty">{% translate "Quantity" %}
         <input type="number" data-add-qty min="1" max="9999" value="1" inputmode="numeric" aria-label="{% translate 'Quantity to add' %}">
       </label>
-      <button type="button" class="equip add" data-add-all hidden data-label="{{ add_all_label }}" data-confirm="{{ add_all_confirm }}"></button>
     </div>
   </div>
 </div>
@@ -56,7 +55,7 @@
 </div>
 
 <div class="cs-scroll" data-add-pane="custom" hidden>
-  <p class="hint">{% translate "An item of your own: it is only listed, counted, weighed and sold - it has no game rules." %}</p>
+  <p class="hint">{% translate "An item of your own. Give it weapon or armor stats, or effects on the sheet's numbers, to be able to equip it." %}</p>
   <div class="cs-form" data-custom-form>
     <label>{% translate "Name" %}<input type="text" name="name" maxlength="200" autocomplete="off"></label>
     {# Same look as the World's own filters (the Features list's Class/Level dropdowns): a pill row #}
@@ -93,6 +92,8 @@
     </div>
     <label class="check"><input type="checkbox" name="valuable" value="1"> {% translate "Trade good or valuable (sells for its full value)" %}</label>
     {% include "frontend/characters/_custom_stats.html" with row=None %}
+    {% translate "What the item does to the sheet while it is equipped." as effects_hint %}
+    {% include "frontend/characters/_effects_editor.html" with hint=effects_hint effects_json="" %}
     <label>{% translate "Description" %}<textarea name="description" rows="3"></textarea></label>
     {# Two ways in: just add it (a gift, loot), or pay its cost out of the purse. The Buy button #}
     {# only shows while a cost is filled in that the purse can cover (`character_sheet.js`).    #}

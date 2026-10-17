@@ -1282,8 +1282,8 @@ msgid "Added %(name)s"
 msgstr "Aggiunto: %(name)s"
 
 #: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
-msgid "An item of your own: it is only listed, counted, weighed and sold - it has no game rules."
-msgstr "Un oggetto tutto tuo: viene solo elencato, contato, pesato e venduto, non ha regole di gioco."
+msgid "An item of your own. Give it weapon or armor stats, or effects on the sheet's numbers, to be able to equip it."
+msgstr "Un oggetto tutto tuo. Dagli le statistiche di un'arma o di un'armatura, o degli effetti sui numeri della scheda, per poterlo equipaggiare."
 
 #: apps/frontend/character_sheet.py apps/frontend/templates/frontend/characters/sheet/
 msgid "Catalog"
@@ -3043,15 +3043,6 @@ msgstr "Copia in una campagna"
 msgid "Move to another campaign"
 msgstr "Sposta in un'altra campagna"
 
-msgid "Add %(n)s items to the inventory?"
-msgstr "Aggiungere %(n)s oggetti all'inventario?"
-
-msgid "Add all (%(n)s)"
-msgstr "Aggiungi tutti (%(n)s)"
-
-msgid "Added %(count)s items"
-msgstr "Aggiunti %(count)s oggetti"
-
 msgid "Armor type"
 msgstr "Tipo di armatura"
 
@@ -3108,3 +3099,138 @@ msgstr "A distanza"
 
 msgid "Two-Handed"
 msgstr "A due mani"
+
+msgid "Speed (ft)"
+msgstr "Velocità (piedi)"
+
+msgid "All attack rolls"
+msgstr "Tutti i tiri per colpire"
+
+msgid "All damage rolls"
+msgstr "Tutti i tiri per i danni"
+
+msgid "Spell save DC"
+msgstr "CD dei tiri salvezza degli incantesimi"
+
+msgid "Spell attack bonus"
+msgstr "Bonus di attacco degli incantesimi"
+
+msgid "All saving throws"
+msgstr "Tutti i tiri salvezza"
+
+msgid "All skills"
+msgstr "Tutte le abilità"
+
+msgid "Attack rolls with this weapon"
+msgstr "Tiri per colpire con quest'arma"
+
+msgid "Damage rolls with this weapon"
+msgstr "Tiri per i danni con quest'arma"
+
+msgid "%(name)s score"
+msgstr "Punteggio di %(name)s"
+
+msgid "%(name)s saving throws"
+msgstr "Tiri salvezza su %(name)s"
+
+msgid "%(name)s checks"
+msgstr "Prove di %(name)s"
+
+msgid "Proficiency: %(name)s saving throws"
+msgstr "Competenza: tiri salvezza su %(name)s"
+
+msgid "Proficiency: %(name)s"
+msgstr "Competenza: %(name)s"
+
+msgid "Expertise: %(name)s"
+msgstr "Maestria: %(name)s"
+
+msgid "%(label)s at least %(value)s"
+msgstr "%(label)s almeno %(value)s"
+
+msgid "Combat and movement"
+msgstr "Combattimento e movimento"
+
+msgid "This weapon"
+msgstr "Quest'arma"
+
+msgid "%(name)s score (bonus)"
+msgstr "Punteggio di %(name)s (bonus)"
+
+msgid "%(name)s score (at least)"
+msgstr "Punteggio di %(name)s (almeno)"
+
+msgid "Saving throws"
+msgstr "Tiri salvezza"
+
+msgid "Custom"
+msgstr "Personalizzato"
+
+msgid "Effects"
+msgstr "Effetti"
+
+msgid "Edit %(name)s"
+msgstr "Modifica %(name)s"
+
+msgid "Weapon"
+msgstr "Arma"
+
+msgid "Fill in the damage to be able to equip it. Without one it is only a keepsake."
+msgstr "Indica il danno per poterla equipaggiare. Senza, è solo un ricordo."
+
+msgid "Normal range (m)"
+msgstr "Gittata normale (m)"
+
+msgid "Normal range (ft)"
+msgstr "Gittata normale (piedi)"
+
+msgid "Long range (m)"
+msgstr "Gittata lunga (m)"
+
+msgid "Long range (ft)"
+msgstr "Gittata lunga (piedi)"
+
+msgid "Fill in the type and Armor Class to be able to equip it. A shield's AC is the bonus it adds."
+msgstr "Indica il tipo e la Classe Armatura per poterla equipaggiare. La CA di uno scudo è il bonus che aggiunge."
+
+msgid "Anything that is worn or held for what it does (a ring, a cloak, a talisman) can be equipped; give it effects below to change the sheet's numbers. An item with effects can always be equipped."
+msgstr "Ciò che si indossa o si impugna per i suoi poteri (un anello, un mantello, un talismano) può essere equipaggiato; dagli degli effetti qui sotto per cambiare i numeri della scheda. Un oggetto con effetti può sempre essere equipaggiato."
+
+msgid "Can be equipped"
+msgstr "Può essere equipaggiato"
+
+msgid "Add an effect"
+msgstr "Aggiungi un effetto"
+
+msgid "Remove this effect"
+msgstr "Rimuovi questo effetto"
+
+msgid "Value"
+msgstr "Valore"
+
+msgid "Effect"
+msgstr "Effetto"
+
+msgid "Always in force while the feature is on the sheet."
+msgstr "Sempre attivi finché il privilegio è sulla scheda."
+
+msgid "Edit feature"
+msgstr "Modifica privilegio"
+
+msgid "Item"
+msgstr "Oggetto"
+
+msgid "What the item does to the sheet while it is equipped."
+msgstr "Cosa fa l'oggetto alla scheda finché è equipaggiato."
+
+msgid "Custom feature"
+msgstr "Privilegio personalizzato"
+
+msgid "A feature of your own: a trait, a boon, a house rule. Its effects are always in force while it is on the sheet."
+msgstr "Un privilegio tutto tuo: un tratto, un dono, una regola della casa. I suoi effetti sono sempre attivi finché è sulla scheda."
+
+msgid "Changes to the numbers on the sheet."
+msgstr "Modifiche ai numeri della scheda."
+
+msgid "Add to features"
+msgstr "Aggiungi ai privilegi"

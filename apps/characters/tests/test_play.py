@@ -711,9 +711,65 @@ def test_only_one_body_armor_is_worn_across_catalog_and_custom(hero):
     assert not hero.custom_items.get(pk=robe.pk).equipped
 
 
-def test_a_whole_set_is_added_at_once(hero):
-    play.add_items(hero, ["torch", "rope", "torch"], quantity=3)
-    assert hero.inventory_items.get(equipment_id="torch").quantity == 3
-    assert hero.inventory_items.count() == 2
+def test_effects_are_validated_and_weapon_effects_stay_on_weapons(hero):
+    ring = play.add_custom_item(
+        hero,
+        name="Ring",
+        section="misc",
+        effects='[{"target": "ac", "value": 1}, {"target": "weapon_attack", "value": 1}]',
+    )
+    assert ring.effects == [{"target": "ac", "value": 1}]
+    sword = play.add_custom_item(
+        hero,
+        name="Sword",
+        section="weapons",
+        effects=[{"target": "weapon_attack", "value": 1}],
+    )
+    assert sword.effects == [{"target": "weapon_attack", "value": 1}]
+    for bad in (
+        '[{"target": "nonsense", "value": 1}]',
+        '[{"target": "ac", "value": "many"}]',
+        '[{"target": "skill:underwater-basket-weaving", "value": 1}]',
+        '[{"target": "ability_min:str", "value": 99}]',
+        "not json",
+    ):
+        with pytest.raises(ValueError):
+            play.add_custom_item(hero, name="Bad", effects=bad)
+
+
+def test_an_item_that_is_not_a_weapon_or_armor_can_be_equipped_for_its_effects(hero):
+    plain = play.add_custom_item(hero, name="Keepsake")
     with pytest.raises(ValueError):
-        play.add_items(hero, [])
+        play.set_equipped(hero, plain.pk, True, "custom")
+    cloak = play.add_custom_item(hero, name="Cloak", wearable=True)
+    play.set_equipped(hero, cloak.pk, True, "custom")
+    ring = play.add_custom_item(hero, name="Ring", effects=[{"target": "speed", "value": 5}])
+    play.set_equipped(hero, ring.pk, True, "custom")
+    assert hero.custom_items.filter(equipped=True).count() == 2
+    play.update_custom_item(hero, ring.pk, name="Ring", effects=[])
+    assert not hero.custom_items.get(pk=ring.pk).equipped  # nothing left to wear it for
+
+
+def test_a_ranged_weapon_keeps_its_range_and_others_do_not(hero):
+    bow = play.add_custom_item(
+        hero, name="Bow", section="weapons", ranged=True, range="80/320", damage_dice="1d8"
+    )
+    assert bow.range == "80/320"
+    sword = play.add_custom_item(hero, name="Sword", section="weapons", range="80/320")
+    assert sword.range == ""
+    with pytest.raises(ValueError):
+        play.add_custom_item(hero, name="Bow", section="weapons", ranged=True, range="far")
+
+
+def test_custom_features_can_be_added_changed_and_removed(hero):
+    feature = play.add_custom_feature(
+        hero, name=" Blessed ", description="Luck", effects=[{"target": "ac", "value": 1}]
+    )
+    assert feature.name == "Blessed" and feature.effects == [{"target": "ac", "value": 1}]
+    play.update_custom_feature(hero, feature.pk, name="Blessed+", effects=[])
+    feature.refresh_from_db()
+    assert feature.name == "Blessed+" and feature.effects == []
+    with pytest.raises(ValueError):
+        play.add_custom_feature(hero, name=" ")
+    play.remove_custom_feature(hero, feature.pk)
+    assert not hero.custom_features.exists()

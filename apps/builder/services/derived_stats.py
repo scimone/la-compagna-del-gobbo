@@ -9,7 +9,7 @@ character sheet both read this. All formulas are the SRD's: see
 from dataclasses import dataclass, field
 from types import SimpleNamespace
 
-from apps.characters import conditions
+from apps.characters import conditions, custom_effects
 from apps.characters.models import Character, CharacterChoice
 from apps.rules.models import ClassLevel, Skill
 
@@ -167,6 +167,19 @@ def compute(character: Character) -> Derived:
         "wis": character.wisdom,
         "cha": character.charisma,
     }
+    # What the player's own features and worn items do (`custom_effects`): bonuses add up, a flag
+    # (proficiency, expertise) is there or not.
+    custom = custom_effects.collect(character)
+
+    def bonus(target: str) -> int:
+        return sum(e["value"] for e, _owner in custom if e["target"] == target)
+
+    def flagged(target: str) -> bool:
+        return any(e["target"] == target for e, _owner in custom)
+
+    for ability in tables.ABILITIES:
+        scores[ability] += bonus(f"ability:{ability}")
+        scores[ability] = max(scores[ability], bonus(f"ability_min:{ability}"))
     # Drained scores (until a Long Rest) count as lowered everywhere they are used.
     for ability, lost in (character.ability_reductions or {}).items():
         if ability in scores:
@@ -179,13 +192,16 @@ def compute(character: Character) -> Derived:
     feature_names = set(character.features.values_list("feature__name_en", flat=True))
     feat_names = {f.feat.name_en for f in character.feats.select_related("feat")}
 
-    saves = {
-        a: {
-            "modifier": mods[a] + (pb if ("saving_throw", a) in held else 0),
-            "proficient": ("saving_throw", a) in held,
+    saves = {}
+    for a in tables.ABILITIES:
+        proficient = ("saving_throw", a) in held or flagged(f"prof_save:{a}")
+        saves[a] = {
+            "modifier": mods[a]
+            + (pb if proficient else 0)
+            + bonus(f"save:{a}")
+            + bonus("save_all"),
+            "proficient": proficient,
         }
-        for a in tables.ABILITIES
-    }
 
     order_feature = next(
         (o for o in _ORDER_SKILL_BONUS if _order_slug(o) == choices.get("class.order")), None
@@ -194,6 +210,10 @@ def compute(character: Character) -> Derived:
     skills = {}
     for skill in Skill.objects.select_related("ability").order_by("name"):
         state = held.get(("skill", skill.id))
+        if flagged(f"expert_skill:{skill.id}"):
+            state = "expertise"
+        elif not state and flagged(f"prof_skill:{skill.id}"):
+            state = "proficient"
         extra = max(1, mods["wis"]) if skill.id in bonus_skills and skill.ability_id == "int" else 0
         jack = pb // 2 if not state and "Jack of All Trades" in feature_names else 0
         skills[skill.id] = {
@@ -202,7 +222,9 @@ def compute(character: Character) -> Derived:
             "modifier": mods[skill.ability_id]
             + pb * _LEVEL_MULTIPLIER.get(state, 0)
             + extra
-            + jack,
+            + jack
+            + bonus(f"skill:{skill.id}")
+            + bonus("skill_all"),
             "bonus": extra,
         }
 
@@ -224,6 +246,7 @@ def compute(character: Character) -> Derived:
         return "Unarmored Defense" in feature_names and any(c.klass_id == class_id for c in classes)
 
     ac = _armor_class(mods, worn_armor, worn_shield, has_feature, feat_names, feature_names)
+    ac["value"] += bonus("ac")
 
     item_warnings: dict[str, list[str]] = {}
 
@@ -231,7 +254,7 @@ def compute(character: Character) -> Derived:
         warnings.append(code)
         item_warnings.setdefault(piece.id, []).append(code)
 
-    speed = _speed(character, choices)
+    speed = _speed(character, choices) + bonus("speed")
     heavy = bool(worn_armor and worn_armor.type_id == "ha")
     if "Speedy" in feat_names:
         speed += 10
@@ -272,6 +295,14 @@ def compute(character: Character) -> Derived:
         for i in custom_items
         if i.section == "weapons" and i.damage_dice
     ]
+    # A weapon's own bonuses (a +1 sword) count whether or not it is wielded right now.
+    own = {
+        f"custom:{i.pk}": i.effects for i in custom_items if i.section == "weapons" and i.effects
+    }
+
+    def weapon_bonus(target: str, equipment_id) -> int:
+        return sum(e["value"] for e in own.get(equipment_id, []) if e["target"] == target)
+
     attacks = []
     for eq, equipment_id in candidates:
         if eq.weapon_category not in ("simple", "martial") or eq.type_id not in ("m", "r"):
@@ -285,12 +316,14 @@ def compute(character: Character) -> Derived:
         else:
             ability = "str"
         proficient = weapons.covers(eq)
-        hit_extra = 2 if "Archery" in feat_names and eq.type_id == "r" else 0
+        hit_extra = (2 if "Archery" in feat_names and eq.type_id == "r" else 0) + bonus("attack")
+        hit_extra += weapon_bonus("weapon_attack", equipment_id)
+        damage_extra = bonus("damage") + weapon_bonus("weapon_damage", equipment_id)
         # Dueling: a melee weapon held in one hand (not Two-Handed; the other hand free).
         dueling = "Dueling" in feat_names and eq.type_id == "m" and "2h" not in props
-        dmg = mods[ability] + (2 if dueling else 0)
+        dmg = mods[ability] + (2 if dueling else 0) + damage_extra
         # Two hands on a Versatile weapon: the bigger die, and no Dueling (that is one hand).
-        two_hand_dmg = mods[ability]
+        two_hand_dmg = mods[ability] + damage_extra
         others = [w for w in wielded if w.id != equipment_id]
         attacks.append(
             {
@@ -321,11 +354,11 @@ def compute(character: Character) -> Derived:
         entry["total"] += c.level
         entry["spent"] += c.hit_dice_spent
 
-    initiative_bonus = 0
+    initiative_bonus = bonus("initiative")
     if "Alert" in feat_names:
-        initiative_bonus = pb
+        initiative_bonus += pb
     elif "Jack of All Trades" in feature_names:
-        initiative_bonus = pb // 2
+        initiative_bonus += pb // 2
 
     # Conditions: Exhaustion lowers every D20 Test (not a spell's save DC) and the Speed; some
     # conditions hold the Speed at 0. Ability checks are rolled from the plain modifiers, so the
@@ -338,6 +371,9 @@ def compute(character: Character) -> Derived:
             attack["attack_bonus"] -= fx.d20_penalty
     speed = 0 if fx.speed_zero else max(0, speed - fx.speed_penalty)
     spellcasting = _spellcasting(classes, choices, mods, pb)
+    for entry in spellcasting:
+        entry["save_dc"] += bonus("spell_dc")
+        entry["attack_bonus"] += bonus("spell_attack")
     if fx.d20_penalty:
         for entry in spellcasting:
             if "attack_bonus" in entry:
@@ -349,7 +385,7 @@ def compute(character: Character) -> Derived:
         abilities={a: {"score": scores[a], "modifier": mods[a]} for a in tables.ABILITIES},
         saving_throws=saves,
         skills=skills,
-        passive_perception=10 + skills["perception"]["modifier"],
+        passive_perception=10 + skills["perception"]["modifier"] + bonus("passive_perception"),
         initiative=mods["dex"] + initiative_bonus - fx.d20_penalty,
         speed=speed,
         armor_class=ac,

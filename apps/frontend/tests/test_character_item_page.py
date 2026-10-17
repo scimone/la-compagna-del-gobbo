@@ -167,6 +167,8 @@ def test_a_custom_item_can_be_edited_and_given_stats_to_be_equipped(signed_in, c
     url = f"/characters/{cleric.pk}/inventory/custom/{item.pk}/"
 
     page = signed_in.get(url).content.decode()
+    assert "?edit=1" in page and 'name="damage_dice"' not in page  # the form is a page of its own
+    page = signed_in.get(f"{url}?edit=1").content.decode()
     assert 'value="custom_edit"' in page and 'name="damage_dice"' in page
 
     signed_in.post(
@@ -194,15 +196,79 @@ def test_a_custom_item_can_be_edited_and_given_stats_to_be_equipped(signed_in, c
     assert "1d8 slashing (1d10 two-handed)" in page
 
 
-def test_adding_many_and_a_set_through_the_sheet_endpoint(signed_in, cleric):
+def test_adding_many_through_the_sheet_endpoint(signed_in, cleric):
     act = f"/characters/{cleric.pk}/act/"
     signed_in.post(act, {"action": "item_add", "equipment": "torch", "quantity": "10"})
     assert (
         sum(cleric.inventory_items.filter(equipment_id="torch").values_list("quantity", flat=True))
         >= 10
     )
+
+
+def test_editing_an_item_shows_only_the_fields_of_its_category(signed_in, cleric):
+    armor = play.add_custom_item(cleric, name="Robe", section="armor", armor_kind="light", ac=11)
+    page = signed_in.get(
+        f"/characters/{cleric.pk}/inventory/custom/{armor.pk}/?edit=1"
+    ).content.decode()
+    assert 'name="armor_kind"' in page and 'name="ac"' in page
+    assert 'name="damage_dice"' not in page and 'name="weapon_category"' not in page
+    assert 'name="effects"' in page
+
+
+def test_a_ranged_custom_weapon_is_given_a_range_and_a_plain_item_effects(signed_in, cleric):
+    bow = play.add_custom_item(
+        cleric, name="Bow", section="weapons", damage_dice="1d8", ranged=True
+    )
+    url = f"/characters/{cleric.pk}/inventory/custom/{bow.pk}/"
+    signed_in.post(
+        url,
+        {
+            "action": "custom_edit",
+            "name": "Bow",
+            "damage_dice": "1d8",
+            "ranged": "1",
+            "range_normal": "24",
+            "range_long": "96",
+        },
+    )
+    bow.refresh_from_db()
+    assert bow.range == "80/320"
+    assert "24/96 m" in signed_in.get(url).content.decode()  # typed and shown in metres
+    ring = play.add_custom_item(cleric, name="Ring")
+    ring_url = f"/characters/{cleric.pk}/inventory/custom/{ring.pk}/"
+    signed_in.post(
+        ring_url,
+        {
+            "action": "custom_edit",
+            "name": "Ring",
+            "effects": '[{"target": "ac", "value": 2}]',
+        },
+    )
+    page = signed_in.get(ring_url).content.decode()
+    assert "+2 Armor Class" in page and 'value="equip"' in page
+
+
+def test_custom_features_are_added_listed_edited_and_removed(signed_in, cleric):
+    act = f"/characters/{cleric.pk}/act/"
     response = signed_in.post(
-        act, {"action": "item_add_many", "equipment": ["rope", "tinderbox"], "quantity": "2"}
+        act,
+        {
+            "action": "custom_feature_add",
+            "name": "Fey touched",
+            "description": "Seen by the Fey.",
+            "effects": '[{"target": "prof_skill:persuasion", "value": 1}]',
+        },
     )
     assert response.json()["ok"]
-    assert cleric.inventory_items.get(equipment_id="rope").quantity >= 2
+    feature = cleric.custom_features.get()
+    sheet = signed_in.get(f"/characters/{cleric.pk}/?tab=features").content.decode()
+    assert "Fey touched" in sheet
+    url = f"/characters/{cleric.pk}/features/custom/{feature.pk}/"
+    page = signed_in.get(url).content.decode()
+    assert "Seen by the Fey." in page and "Proficiency: Persuasion" in page
+    assert 'name="effects"' in signed_in.get(f"{url}?edit=1").content.decode()
+    signed_in.post(url, {"action": "custom_feature_edit", "name": "Fey kissed"})
+    feature.refresh_from_db()
+    assert feature.name == "Fey kissed" and feature.effects == []
+    signed_in.post(url, {"action": "custom_feature_remove"})
+    assert not cleric.custom_features.exists()

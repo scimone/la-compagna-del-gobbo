@@ -19,13 +19,18 @@
     .item-tools .item-buttons .quiet { color: var(--muted); }
     .item-tools .qty-add { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--muted); }
     .item-tools .qty-add input { width: 4rem; padding: 0.3rem; text-align: center; }
-    .item-edit summary { cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--accent); }
-    .item-form { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.6rem; }
+    .item-tools .item-buttons a, .item-form .item-buttons a { padding: 0.4rem 0.9rem; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; font-size: 0.85rem; font-weight: 600; color: var(--text); text-decoration: none; }
+    .item-tools .item-buttons a.edit-link { border-color: var(--accent); color: var(--accent); }
+    .item-form { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1rem; }
     .item-form label { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.8rem; color: var(--muted); }
     .item-form label.check { flex-direction: row; align-items: center; gap: 0.4rem; }
     .item-form input[type=text], .item-form input[type=number], .item-form select, .item-form textarea { width: 100%; box-sizing: border-box; padding: 0.4rem 0.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; color: var(--text); font: inherit; }
     .item-form .cs-form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
     .item-form .cs-form-row > label { flex: 1 1 7rem; }
-    .item-form .custom-stats { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.6rem; border: 1px solid var(--border); border-radius: 0.6rem; }
+    .item-form .custom-stats, .item-form .item-group { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.7rem; border: 1px solid var(--border); border-radius: 0.6rem; }
+    .item-form .fx-title { margin: 0; font-size: 0.9rem; font-weight: 600; color: var(--text); }
     .item-form .hint, .item-tools .hint { margin: 0; font-size: 0.8rem; color: var(--muted); }
+    .item-form .form-buttons { display: flex; gap: 0.5rem; align-items: center; }
+    .item-form .form-buttons button { padding: 0.5rem 1.2rem; background: var(--accent); border: 1px solid var(--accent); border-radius: 1rem; font-weight: 600; color: var(--accent-text); cursor: pointer; }
+    {% include "frontend/characters/_effects_style.html" %}
 {% endblock %}

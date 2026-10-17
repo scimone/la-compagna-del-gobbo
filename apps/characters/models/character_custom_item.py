@@ -68,8 +68,14 @@ class CharacterCustomItem(models.Model):
     damage_type = models.CharField(max_length=20, blank=True, default="")
     versatile_damage_dice = models.CharField(max_length=20, blank=True, default="")
     ranged = models.BooleanField(default=False)
+    #: A ranged weapon's range in feet, as the catalog writes it: `"80/320"`.
+    range = models.CharField(max_length=20, blank=True, default="")
     finesse = models.BooleanField(default=False)
     two_handed = models.BooleanField(default=False)
+    #: Worn like gear without being a weapon or armor (a ring, a cloak): such an item has no stats
+    #: of its own, only `effects` - see `characters.custom_effects` for their shape.
+    wearable = models.BooleanField(default=False)
+    effects = models.JSONField(default=list, blank=True)
 
     class Meta:
         ordering = ["character", "name"]

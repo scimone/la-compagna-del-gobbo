@@ -48,6 +48,11 @@ urlpatterns = [
         character_sheet.character_features,
         name="character-features",
     ),
+    path(
+        "characters/<int:pk>/features/custom/<int:ref>/",
+        character_sheet.character_custom_feature,
+        name="character-custom-feature",
+    ),
     # One item's page: what a row of the inventory (a stack of catalog gear, or a custom item) or
     # of the "add an item" list opens - the third has no row of the character's yet, just the
     # catalog entry, with the Add/Buy buttons.

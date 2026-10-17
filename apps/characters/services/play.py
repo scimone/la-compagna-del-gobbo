@@ -15,11 +15,12 @@ from django.db import models, transaction
 
 from apps.builder.class_spec import CLASS_SPEC
 from apps.builder.services import derived_stats
-from apps.characters import conditions
+from apps.characters import conditions, custom_effects
 from apps.characters.models import (
     Character,
     CharacterChoice,
     CharacterCurrency,
+    CharacterCustomFeature,
     CharacterCustomItem,
     CharacterFeat,
     CharacterFeature,
@@ -46,8 +47,11 @@ CUSTOM_ARMOR_KINDS = tuple(key for key, _label in CharacterCustomItem.ARMOR_KIND
 #: The `rules.EquipmentType` a custom armor kind counts as (Dex cap, proficiency, its slot).
 CUSTOM_ARMOR_TYPE = {"light": "la", "medium": "ma", "heavy": "ha", "shield": SHIELD_TYPE}
 CUSTOM_DAMAGE_TYPES = ("slashing", "piercing", "bludgeoning")
+#: What `custom_wear_type` returns for an item worn for its effects alone (no weapon/armor stats).
+CUSTOM_WORN = "worn"
 MAX_QUANTITY = 9999
 _DICE = re.compile(r"^\d{1,2}d\d{1,3}$")
+_RANGE = re.compile(r"^\d{1,4}(/\d{1,4})?$")
 #: `CharacterSpell.source` of a spell the player added from the sheet. The builder's grants carry
 #: their own source, and only these can be taken away again from the sheet.
 SPELL_SOURCE = "sheet"
@@ -287,7 +291,7 @@ def set_equipped(character: Character, item_id: int, equipped: bool, kind: str =
     else:
         item = character.inventory_items.select_related("equipment").get(pk=item_id)
         type_id = item.equipment.type_id
-    if type_id not in WEARABLE_TYPES:
+    if type_id not in (*WEARABLE_TYPES, CUSTOM_WORN):
         raise ValueError("this item cannot be worn or wielded")
     if equipped and type_id in (*BODY_ARMOR_TYPES, SHIELD_TYPE):
         same_slot = BODY_ARMOR_TYPES if type_id in BODY_ARMOR_TYPES else (SHIELD_TYPE,)
@@ -306,11 +310,14 @@ def set_equipped(character: Character, item_id: int, equipped: bool, kind: str =
 
 def custom_wear_type(item: CharacterCustomItem) -> str:
     """The `EquipmentType` id a custom item is worn as, `""` when it cannot be worn: armor needs a
-    kind and an AC, a weapon needs damage dice (melee `m`, or ranged `r`)."""
+    kind and an AC, a weapon needs damage dice (melee `m`, or ranged `r`). Anything else is worn
+    (`CUSTOM_WORN`) when it was made wearable or carries effects - it takes no slot."""
     if item.section == "armor" and item.armor_kind and item.ac:
         return CUSTOM_ARMOR_TYPE[item.armor_kind]
     if item.section == "weapons" and item.damage_dice:
         return "r" if item.ranged else "m"
+    if item.section not in ("weapons", "armor") and (item.wearable or item.effects):
+        return CUSTOM_WORN
     return ""
 
 
@@ -424,6 +431,9 @@ def _clean_custom(
     ranged: bool = False,
     finesse: bool = False,
     two_handed: bool = False,
+    range: str = "",  # noqa: A002 - the model's own field name
+    wearable: bool = False,
+    effects=None,
 ) -> dict:
     """Validate a custom item's fields and return them as model fields. A stat that does not belong
     to the section (damage on a potion) is dropped rather than trusted, like `weapon_category`."""
@@ -444,6 +454,9 @@ def _clean_custom(
         strength_requirement is not None and not 0 <= strength_requirement <= 30
     ):
         raise ValueError("armor class and strength must be between 0 and 30")
+    range = (range or "").strip().replace(" ", "")  # noqa: A001
+    if range and not _RANGE.match(range):
+        raise ValueError("range must look like 80/320")
     field = CharacterCustomItem._meta.get_field
     weapon = section == "weapons"
     armor = section == "armor"
@@ -466,6 +479,9 @@ def _clean_custom(
         "ranged": ranged if weapon else False,
         "finesse": finesse if weapon else False,
         "two_handed": two_handed if weapon else False,
+        "range": range if weapon and ranged else "",
+        "wearable": wearable if section not in ("weapons", "armor") else False,
+        "effects": custom_effects.clean(effects, weapon=weapon),
     }
 
 
@@ -501,17 +517,6 @@ def update_custom_item(character: Character, item_id: int, **fields) -> Characte
         item.equipped = False
     item.save()
     return item
-
-
-@transaction.atomic
-def add_items(character: Character, equipment_ids: list[str], quantity: int = 1) -> int:
-    """Add several catalog items at once (a whole set), `quantity` of each. Returns how many."""
-    ids = list(dict.fromkeys(equipment_ids))
-    if not ids:
-        raise ValueError("nothing to add")
-    for equipment_id in ids:
-        add_item(character, equipment_id, quantity)
-    return len(ids)
 
 
 def set_item_quantity(character: Character, kind: str, item_id: int, quantity: int) -> None:
@@ -888,6 +893,39 @@ def remove_feature(character: Character, kind: str, ref: str) -> None:
     rows.filter(source=FEATURE_SOURCE).delete()
     if kind == "feat":  # the spells it granted go with it (skills and tools it gave stay)
         character.spells.filter(source=f"feat:{ref}").delete()
+
+
+def _clean_custom_feature(name: str, description: str = "", effects=None) -> dict:
+    name = name.strip()
+    if not name:
+        raise ValueError("name is empty")
+    return {
+        "name": name[: CharacterCustomFeature._meta.get_field("name").max_length],
+        "description": (description or "").strip(),
+        "effects": custom_effects.clean(effects),
+    }
+
+
+def add_custom_feature(character: Character, **fields) -> CharacterCustomFeature:
+    """Give the character a feature of the player's own: a name, a description and the `effects`
+    that are always in force (see `characters.custom_effects`)."""
+    return CharacterCustomFeature.objects.create(
+        character=character, **_clean_custom_feature(**fields)
+    )
+
+
+def update_custom_feature(
+    character: Character, feature_id: int, **fields
+) -> CharacterCustomFeature:
+    feature = character.custom_features.get(pk=feature_id)
+    for key, value in _clean_custom_feature(**fields).items():
+        setattr(feature, key, value)
+    feature.save()
+    return feature
+
+
+def remove_custom_feature(character: Character, feature_id: int) -> None:
+    character.custom_features.get(pk=feature_id).delete()
 
 
 # --- resources ---------------------------------------------------------------------------------

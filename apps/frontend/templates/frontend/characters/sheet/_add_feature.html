@@ -2,15 +2,19 @@
 {# The "add a feature" sheet (fetched into the overlay on first use): every feature, feat and   #}
 {# option as a filterable list in the World's list design - the same search box and filter      #}
 {# buttons as the World's Features list, over one Type pill and the Class / Species filters      #}
-{# that go with it.                                                                              #}
+{# that go with it - and a small form for a feature of the player's own, with the effects it has. #}
 <div class="cs-sticky">
-  <div data-filter-list="cs-feature-catalog" data-filter-empty="cs-feature-catalog-empty">
+  <div class="cs-seg" role="tablist">
+    <button type="button" role="tab" data-add-tab="catalog" aria-selected="true" class="active">{% translate "Catalog" %}</button>
+    <button type="button" role="tab" data-add-tab="custom" aria-selected="false">{% translate "Custom feature" %}</button>
+  </div>
+  <div data-add-pane="catalog" data-filter-list="cs-feature-catalog" data-filter-empty="cs-feature-catalog-empty">
     {% translate "Search features" as search_placeholder %}
     {% include "frontend/_search_form.html" with search_query="" search_placeholder=search_placeholder %}
   </div>
 </div>
 
-<div class="cs-scroll">
+<div class="cs-scroll" data-add-pane="catalog">
   <ul class="cs-list" id="cs-feature-catalog">
     {% for f in features %}
       <li data-search="{{ f.search }}" data-type="{{ f.type }}" data-class="{{ f.klass }}" data-species="{{ f.species }}">
@@ -33,4 +37,17 @@
     {% endfor %}
   </ul>
   <p class="cs-empty" id="cs-feature-catalog-empty" hidden>{% translate "No features match." %}</p>
+</div>
+
+<div class="cs-scroll" data-add-pane="custom" hidden>
+  <p class="hint">{% translate "A feature of your own: a trait, a boon, a house rule. Its effects are always in force while it is on the sheet." %}</p>
+  <div class="cs-form" data-custom-form>
+    <label>{% translate "Name" %}<input type="text" name="name" maxlength="200" autocomplete="off"></label>
+    <label>{% translate "Description" %}<textarea name="description" rows="4"></textarea></label>
+    {% translate "Changes to the numbers on the sheet." as effects_hint %}
+    {% include "frontend/characters/_effects_editor.html" with hint=effects_hint %}
+    <div class="cs-form-actions">
+      <button type="button" class="btn-primary" data-custom-add data-custom-action="custom_feature_add">{% translate "Add to features" %}</button>
+    </div>
+  </div>
 </div>

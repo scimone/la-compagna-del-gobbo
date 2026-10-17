@@ -1,0 +1,39 @@
+{% load i18n %}
+{# The page that edits a custom item (`character_item()` with ?edit=1): a form of its own, in #}
+{# groups, instead of a toggle on the item's page. Only what the item's Category has is here -  #}
+{# an armor has no weapon fields. Saving or cancelling goes back to the item's page.            #}
+{% for message in messages %}<p class="item-note {{ message.tags }}">{{ message }}</p>{% endfor %}
+<form method="post" class="item-form">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="custom_edit">
+  <section class="item-group">
+    <p class="fx-title">{% translate "Item" %}</p>
+    <label>{% translate "Name" %}<input type="text" name="name" maxlength="200" required value="{{ form.row.name }}"></label>
+    <div class="cs-form-row">
+      <label>{% translate "Type" %}<input type="text" name="type" maxlength="60" value="{{ form.row.type_label }}"></label>
+      {% if form.row.section == "weapons" %}
+        <label>{% translate "Weapon category" %}
+          <select name="weapon_category">
+            <option value="">—</option>
+            {% for key, label in form.weapon_categories %}<option value="{{ key }}"{% if form.row.weapon_category == key %} selected{% endif %}>{{ label }}</option>{% endfor %}
+          </select>
+        </label>
+      {% endif %}
+    </div>
+    <div class="cs-form-row">
+      <label>{% if form.weight_unit == "kg" %}{% translate "Weight (kg)" %}{% else %}{% translate "Weight (lb)" %}{% endif %}<input type="number" name="weight" min="0" step="any" inputmode="decimal" value="{{ form.weight_value }}"></label>
+      <label>{% translate "Cost (gp)" %}<input type="number" name="cost" min="0" step="any" inputmode="decimal" value="{{ form.cost_value }}"></label>
+    </div>
+    <label class="check"><input type="checkbox" name="valuable" value="1"{% if form.row.valuable %} checked{% endif %}> {% translate "Trade good or valuable (sells for its full value)" %}</label>
+  </section>
+  {% include "frontend/characters/_custom_stats.html" with row=form.row damage_types=form.damage_types armor_kinds=form.armor_kinds weight_unit=form.weight_unit range_normal=form.range_normal range_long=form.range_long %}
+  {% translate "What the item does to the sheet while it is equipped." as effects_hint %}
+  {% include "frontend/characters/_effects_editor.html" with hint=effects_hint effects_json=form.effects_json effect_options=form.effect_options weapon=form.is_weapon %}
+  <section class="item-group">
+    <label>{% translate "Description" %}<textarea name="description" rows="4">{{ form.row.description }}</textarea></label>
+  </section>
+  <div class="item-buttons form-buttons">
+    <button type="submit" class="primary">{% translate "Save" %}</button>
+    <a href="{{ cancel_url }}">{% translate "Cancel" %}</a>
+  </div>
+</form>

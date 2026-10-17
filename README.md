@@ -572,7 +572,8 @@ inventory item, currency, a resource — with no constraint violations).
 | `CharacterProficiency` | Armor/weapon/tool/skill/saving-throw proficiency. Not exclusively FK'd to `rules.Proficiency` (that catalog misses species/feat-granted proficiencies entirely) — `category`/`name` are stored directly, with an optional provenance link back to the catalog row when there is one |
 | `CharacterSense` | A `rules.Sense` grant with its range in feet (the range varies by source, e.g. a species trait vs. a feat, so it lives on the grant, not on `rules.Sense` itself) |
 | `CharacterInventoryItem` | An `Equipment` stack a `Character` owns, with `equipped`/`attuned`/`quantity` |
-| `CharacterCustomItem` | **New** - an item the player made up (name, quantity, weight, cost in copper, "trade good or valuable" flag, inventory section, a free-text finer type within it, description); sheet-only, see the character sheet section |
+| `CharacterCustomItem` | **New** - an item the player made up (name, quantity, weight, cost in copper, "trade good or valuable" flag, inventory section, a free-text finer type within it, description, optional weapon/armor stats, a ranged weapon's range, `wearable` and `effects`); sheet-only, see the character sheet section |
+| `CharacterCustomFeature` | **New** - a feature the player made up (name, description, `effects`); sheet-only, listed on the Features tab |
 | `CharacterCurrency` | The coin purse — a true 1:1 with `Character` (`character` is both the FK and the primary key) |
 | `CharacterSpell` | A spell a `Character` knows/has access to, with `prepared`/`always_prepared` flags |
 | `CharacterResource` | A limited-use resource (Rage, Sorcery Points, Superiority Dice, ...) with `max_uses`/`current_uses`/`reset_on` |
@@ -879,8 +880,7 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
       Category, Properties and Mastery for the weapons (a `filter` with `only` in
       `_search_form.html`; the filters of a pill that is left are cleared; everything is filtered in
       the browser), a **Quantity** box that Add and Buy follow (bulk add), an always-visible **Set** filter over every
-      kind of gear (Adventuring Gear, Ammunition, ...) with an **Add all (N)** button once a filter narrows
-      the list (`item_add_many`), each row with an Add pill (adds one for free, onto the loose stack of the same
+      kind of gear (Adventuring Gear, Ammunition, ...), each row with an Add pill (adds one for free, onto the loose stack of the same
       item if there is one), a **Buy** pill beside it when the item has a price (pays for it out of
       the purse - `play.buy_item` - after a confirmation with the price and what will be left; that
       arithmetic runs in `character_sheet.js` against the live purse, not a string rendered once at
@@ -893,12 +893,23 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
       typed in kilograms. Custom items are `characters.CharacterCustomItem` rows (a separate model:
       the catalog is `rules` data, read-only and wiped by `import_rules_data`, so they cannot be
       `Equipment` rows). They are listed, counted, weighed and sold, and **can be edited afterwards** (an
-      *Edit item* form on the item's own page, action `custom_edit`). A weapon with damage dice (plus
-      damage type, optional two-handed/Versatile damage, Finesse / Two-Handed / Ranged) or armor with a kind
+      *Edit item* page of its own, `?edit=1` on the item's page, action `custom_edit`, which shows only the fields of the item's category - an armor has no weapon fields). A weapon with damage dice (plus
+      damage type, optional two-handed/Versatile damage, Finesse / Two-Handed / Ranged, and for a ranged weapon its normal/long range, stored in feet as `"80/320"` like the catalog's) or armor with a kind
       and AC (light/medium/heavy/shield, Strength requirement, stealth disadvantage) can be **equipped** like
       catalog gear: `derived_stats` counts it for Armor Class and the attack list, and it shares the
-      armor/shield slots with catalog pieces (`play.set_equipped(..., kind="custom")`). Like the rest of the
-      sheet's play-state, they are not exposed over any API. This overlay (and *Add
+      armor/shield slots with catalog pieces (`play.set_equipped(..., kind="custom")`). Any other item can be **equipped** too
+      once it is marked *Can be equipped* or carries **effects** (`play.CUSTOM_WORN`, no slot).
+      *Effects* (`characters/custom_effects.py`; a JSON list on `CharacterCustomItem.effects` and
+      `CharacterCustomFeature.effects`, edited with `static/js/item_form.js`) are `{"target", "value"}`
+      pairs that `derived_stats.compute()` applies - while the item is equipped, or always for a
+      feature: Armor Class, Speed, Initiative, Passive Perception, every attack/damage roll, spell save DC /
+      attack, a weapon's own attack/damage (a +1 sword), saves and skills (a bonus, all of them, or
+      proficiency / expertise), and ability scores (a bonus, or "at least" - Gauntlets of Ogre Power).
+      Not covered: maximum hit points, resistances, senses. **Custom features** are added from the
+      *Custom feature* tab of the Add feature overlay (`custom_feature_add`), listed on the Features tab as
+      *Custom* rows, and have a page of their own to edit or remove
+      (`/characters/<id>/features/custom/<id>/`, `custom_feature_edit` / `custom_feature_remove`).
+      Like the rest of the sheet's play-state, they are not exposed over any API. This overlay (and *Add
       spell*'s) covers the page's own header, so each carries its own language switch; switching
       language there is a real page reload (`?overlay=item|spell`, set by `character_sheet.js` the
       moment the overlay opens and read back on load), so it lands you back in the overlay rather
@@ -926,7 +937,7 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
   - **`POST /characters/<id>/act/`** is the one endpoint the sheet posts to (form fields `action` +
     parameters; owner only, completed characters only). Actions: `name`, `xp`, `hp_delta`, `hp_set`,
     `temp_hp`, `death_toggle`, `inspiration`, `hit_dice`, `slots`, `coin`, `equip`, `text` (backstory only),
-    `item_add`, `item_buy`, `custom_add`, `item_qty`, `item_remove`, `item_sell`, `spell_add`, `spell_remove`, `feature_add`, `feature_remove` (the picture has its own
+    `item_add`, `item_buy`, `custom_add`, `custom_edit`, `item_qty`, `item_remove`, `item_sell`, `spell_add`, `spell_remove`, `feature_add`, `feature_remove`, `custom_feature_add`, `custom_feature_edit`, `custom_feature_remove` (the picture has its own
     endpoint, above). It answers
     `{ok, refresh, message, state}` (`message` is a note for a toast, e.g. "Sold for 2 gp 5 sp"); the script redraws from `state`, or - when `refresh` is true because
     something derived changed (`equip`: AC, warnings; the item actions: the lists) - re-fetches the page and swaps

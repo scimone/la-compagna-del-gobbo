@@ -1,0 +1,32 @@
+{% load i18n %}
+{# A custom feature's page (`character_custom_feature()`): a note about what just happened, then #}
+{# its description - and, for an editor, either the buttons (Edit, Remove) or, with ?edit=1, the #}
+{# form. Plain forms posting back to the page.                                                    #}
+{% for message in messages %}<p class="item-note {{ message.tags }}">{{ message }}</p>{% endfor %}
+{% if editing %}
+  <form method="post" class="item-form">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="custom_feature_edit">
+    <section class="item-group">
+      <label>{% translate "Name" %}<input type="text" name="name" maxlength="200" required value="{{ row.name }}"></label>
+      <label>{% translate "Description" %}<textarea name="description" rows="5">{{ row.description }}</textarea></label>
+    </section>
+    {% translate "Always in force while the feature is on the sheet." as effects_hint %}
+    {% include "frontend/characters/_effects_editor.html" with hint=effects_hint %}
+    <div class="item-buttons form-buttons">
+      <button type="submit" class="primary">{% translate "Save" %}</button>
+      <a href="{{ cancel_url }}">{% translate "Cancel" %}</a>
+    </div>
+  </form>
+{% else %}
+  {% if can_edit %}
+    <div class="item-tools">
+      <div class="item-buttons">
+        <a class="edit-link" href="?edit=1">{% translate "Edit feature" %}</a>
+        <form method="post" data-app-confirm="{% translate 'Remove this feature?' %}">{% csrf_token %}<input type="hidden" name="action" value="custom_feature_remove">
+          <button type="submit" class="quiet">{% translate "Remove" %}</button></form>
+      </div>
+    </div>
+  {% endif %}
+  {% if row.description %}<p>{{ row.description|linebreaksbr }}</p>{% endif %}
+{% endif %}

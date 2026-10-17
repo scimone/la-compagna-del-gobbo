@@ -1,0 +1,16 @@
+{% load i18n %}
+{# The effects of a custom item or a custom feature: a list of rows, each a target (Armor Class, a #}
+{# skill, ...) and a number, built by `static/js/item_form.js`. The rows are kept in the hidden   #}
+{# `effects` field as JSON, so the form posts them like any other field. `effects_json` is what   #}
+{# the field starts with; `effect_options` the choices the rows offer. A weapon's own rolls are   #}
+{# offered only where the form is for a weapon: `weapon` here, or the Category picked in the add #}
+{# sheet.                                                                                          #}
+<div class="fx-editor" data-effects{% if weapon %} data-weapon="1"{% endif %}>
+  <p class="fx-title">{% translate "Effects" %}</p>
+  <p class="hint">{{ hint }}</p>
+  <input type="hidden" name="effects" value="{{ effects_json }}">
+  <div class="fx-rows" data-effects-rows></div>
+  <button type="button" class="fx-add" data-effects-add>+ {% translate "Add an effect" %}</button>
+  <script type="application/json" data-effects-options>{{ effect_options|safe }}</script>
+  <span hidden data-effects-labels data-remove="{% translate 'Remove this effect' %}" data-value="{% translate 'Value' %}" data-target="{% translate 'Effect' %}"></span>
+</div>
