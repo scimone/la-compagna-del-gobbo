@@ -15,7 +15,7 @@ from ..resolvers import class_ as class_resolver
 from ..resolvers import feat as feat_resolver
 from ..resolvers import held as held_resolver
 from ..resolvers.proficiency import tool_options
-from ..resolvers.spell import max_spell_level
+from ..resolvers.spell import max_spell_level, option_spell_grant, spell_pool
 from . import effects
 from .store import Draft, Issue, Picker, picker_issues, set_choice
 
@@ -140,7 +140,23 @@ def pickers(draft: Draft) -> list[Picker]:
             spec.invocations,
             _eligible_invocations(draft),
             kind="invocation",
+            refresh=True,  # an invocation that grants spells (Pact of the Tome) asks for them
         )
+        taken = set(draft.get("class.cantrips", [])) | set(draft.get("class.spells", []))
+        for option in OptionalFeature.objects.filter(id__in=draft.get("class.invocations", [])):
+            grant = option_spell_grant(option)
+            for pick in grant.picks if grant else ():
+                add(
+                    f"class.opt.{option.id}.{pick.key}",
+                    f"{option.name}: " + (_("Rituals") if pick.key == "rituals" else _("Cantrips")),
+                    pick.count,
+                    [
+                        (s.id, s.name)
+                        for s in spell_pool(pick.class_name, pick.level, pick.schools, pick.ritual)
+                        if s.id not in taken
+                    ],
+                    kind="spell",
+                )
     if spec.extra_languages:
         add(
             "class.language",

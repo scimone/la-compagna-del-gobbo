@@ -3234,3 +3234,18 @@ msgstr "Modifiche ai numeri della scheda."
 
 msgid "Add to features"
 msgstr "Aggiungi ai privilegi"
+
+msgid "Rules, conditions and senses, A to Z"
+msgstr "Regole, condizioni e sensi, dalla A alla Z"
+
+msgid "Sense"
+msgstr "Senso"
+
+msgid "Rituals"
+msgstr "Rituali"
+
+msgid "Ritual Caster"
+msgstr "Incantatore rituale"
+
+msgid "Ritual Caster: a ritual spell"
+msgstr "Incantatore rituale: un incantesimo rituale"

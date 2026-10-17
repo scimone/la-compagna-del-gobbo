@@ -42,6 +42,7 @@ from apps.frontend.views import (
     _format_casting_time,
     _format_components,
     _format_duration,
+    _format_feat_ability,
     _format_feat_category,
     _format_option_prerequisite,
     _format_prerequisite,
@@ -617,6 +618,8 @@ def _describe_feat(pk):
     facts = [(_("Category"), _format_feat_category(feat.category))]
     if feat.prerequisite:
         facts.append((_("Prerequisite"), _format_prerequisite(feat.prerequisite)))
+    if ability := _format_feat_ability(feat.ability):
+        facts.append((_("Ability Score Increase"), ability))
     return facts, [render_entries(feat.entries)]
 
 

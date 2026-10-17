@@ -72,6 +72,7 @@ _LINKABLE_TAGS = {
     "spell": ("rules.Spell", "world-spell-detail"),
     "feat": ("rules.Feat", "world-feat-detail"),
     "optfeature": ("rules.OptionalFeature", "world-option-detail"),
+    "sense": ("rules.Sense", "world-sense-detail"),
     # Only the alternatives of a choice (`Feature.choice_option`, e.g. each land of Circle of the
     # Land): they have unique names, unlike the many "Spellcasting"/"Rage" features.
     "feature": ("rules.Feature", "world-feature-detail"),

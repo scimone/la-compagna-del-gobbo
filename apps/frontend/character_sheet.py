@@ -663,6 +663,7 @@ def _spellbook_rows(character: Character, can_edit: bool, limits: dict | None = 
                 "slot": cs.spell.level > 0 and prepared,
                 "free": (
                     (cs.free_cast and not cs.free_cast_used and cs.spell.level > 0)
+                    or (cs.free_cast_unlimited and cs.spell.level > 0)
                     or (natural_free and play.is_circle_spell(cs))
                 ),
                 "concentration": cs.spell.concentration,

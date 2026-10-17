@@ -738,7 +738,7 @@
     </div>
   </header>
 
-  {% if world_tabs or handbook_tabs or searchable %}
+  {% if world_tabs or searchable %}
     {% if world_tabs %}
     <nav class="world-tabs">
       <a
@@ -771,19 +771,6 @@
         href="{% url 'world-items' %}"
         class="{% if '/world/items/' in request.path %}active{% endif %}"
       >{% translate "Equipment" %}</a>
-    </nav>
-    {% elif handbook_tabs %}
-    <nav class="world-tabs">
-      <a
-        data-nav="replace"
-        href="{% url 'handbook-overview' %}"
-        class="{% if '/handbook/rules-glossary/' not in request.path %}active{% endif %}"
-      >{% translate "Chapters" %}</a>
-      <a
-        data-nav="replace"
-        href="{% url 'handbook-rules-glossary' %}"
-        class="{% if '/handbook/rules-glossary/' in request.path %}active{% endif %}"
-      >{% translate "Glossary" %}</a>
     </nav>
     {% endif %}
     {% include "frontend/_search_form.html" %}

@@ -22,7 +22,9 @@ class CharacterSpell(models.Model):
 
     `free_cast` marks a spell that can be cast once without a spell slot (Magic Initiate's level 1
     spell: "you regain the ability to cast it in that way when you finish a Long Rest"); the slot
-    can still be used as usual. `free_cast_used` is that one use, spent.
+    can still be used as usual. `free_cast_used` is that one use, spent. `free_cast_unlimited` is a
+    spell the character can cast without a slot as often as they like (an Eldritch Invocation's
+    "You can cast Mage Armor on yourself without expending a spell slot"); it never runs out.
     """
 
     character = models.ForeignKey(
@@ -38,6 +40,7 @@ class CharacterSpell(models.Model):
     source = models.CharField(max_length=100, blank=True, default="")
     free_cast = models.BooleanField(default=False)
     free_cast_used = models.BooleanField(default=False)
+    free_cast_unlimited = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["character", "spell"]

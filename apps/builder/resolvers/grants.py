@@ -21,6 +21,7 @@ class SpellRow:
     always_prepared: bool = False
     in_spellbook: bool = False
     free_cast: bool = False  # castable once per long rest without a slot
+    free_cast_unlimited: bool = False  # castable without a slot as often as you like
 
 
 @dataclass
@@ -53,6 +54,7 @@ class Grants:
             existing.always_prepared |= row.always_prepared
             existing.in_spellbook |= row.in_spellbook
             existing.free_cast |= row.free_cast
+            existing.free_cast_unlimited |= row.free_cast_unlimited
             existing.klass_id = existing.klass_id or row.klass_id
         else:
             self.spells[row.spell_id] = row

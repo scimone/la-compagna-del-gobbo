@@ -30,6 +30,8 @@ class Pick:
     options: list[str] = field(default_factory=list)
     level: int = 0
     class_name: str = ""
+    schools: tuple[str, ...] = ()
+    ritual: bool = False
     tool_kinds: list[str] = field(default_factory=list)
 
 
@@ -56,9 +58,9 @@ def _variant_entry(feat: Feat, variant: str) -> dict | None:
     return None
 
 
-def spell_grant_for(feat: Feat, variant: str) -> SpellGrant | None:
+def spell_grant_for(feat: Feat, variant: str, character_level: int = 1) -> SpellGrant | None:
     entry = _variant_entry(feat, variant)
-    return spell_grant(entry) if entry else None
+    return spell_grant(entry, character_level) if entry else None
 
 
 def _tool_options_by_name(names: list[str]) -> list[str]:
@@ -66,12 +68,14 @@ def _tool_options_by_name(names: list[str]) -> list[str]:
     return [by_name[n] for n in names if n in by_name]
 
 
-def picks(feat: Feat, variant: str = "") -> list[Pick]:
+def picks(feat: Feat, variant: str = "", character_level: int = 1) -> list[Pick]:
     """Everything the player has to decide for `feat`, in the order a screen should ask."""
     result: list[Pick] = []
     if variants(feat):
         result.append(Pick("variant", "variant", options=variants(feat)))
-    grant = spell_grant_for(feat, variant) if (variant or not variants(feat)) else None
+    grant = (
+        spell_grant_for(feat, variant, character_level) if (variant or not variants(feat)) else None
+    )
     if grant:
         if grant.ability_options:
             result.append(Pick("spell_ability", "ability", options=grant.ability_options))
@@ -83,6 +87,8 @@ def picks(feat: Feat, variant: str = "") -> list[Pick]:
                     count=spell_pick.count,
                     level=spell_pick.level,
                     class_name=spell_pick.class_name,
+                    schools=spell_pick.schools,
+                    ritual=spell_pick.ritual,
                 )
             )
     for entry in feat.grants.get("toolProficiencies", []):
@@ -120,16 +126,25 @@ def fighting_style_feats():
     return Feat.objects.filter(Q(category="Fighting Style")).order_by("name")
 
 
-def apply_feat(grants, feat: Feat, chosen: dict, source: str, variant: str = "") -> None:
+def apply_feat(
+    grants, feat: Feat, chosen: dict, source: str, variant: str = "", character_level: int = 1
+) -> None:
     """Add `feat` and the grants its picks (`chosen`) resolve to onto `grants`."""
     from .grants import SpellRow  # local: grants imports rules models only, avoid a cycle on reload
 
     grants.feats.append((feat, source))
     variant = variant or chosen.get("variant", "")
-    spell = spell_grant_for(feat, variant)
+    spell = spell_grant_for(feat, variant, character_level)
     if spell:
+        for spell_id in chosen.get("rituals", []):  # Ritual Caster: always prepared
+            grants.add_spell(SpellRow(spell_id, f"feat:{feat.id}", always_prepared=True))
         for spell_id in [*spell.fixed, *chosen.get("cantrips", [])]:
-            grants.add_spell(SpellRow(spell_id, f"feat:{feat.id}"))
+            if spell_id in spell.free_fixed:  # Fey-/Shadow-Touched's Misty Step / Invisibility
+                grants.add_spell(
+                    SpellRow(spell_id, f"feat:{feat.id}", always_prepared=True, free_cast=True)
+                )
+            else:
+                grants.add_spell(SpellRow(spell_id, f"feat:{feat.id}"))
         for spell_id in [chosen.get("spell")] if chosen.get("spell") else []:
             grants.add_spell(
                 SpellRow(spell_id, f"feat:{feat.id}", always_prepared=True, free_cast=True)

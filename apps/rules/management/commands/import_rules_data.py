@@ -883,6 +883,7 @@ class Command(BaseCommand):
                 ),
                 prerequisite=it.get("prerequisite", []),
                 consumes_resource_name=(it.get("consumes") or {}).get("name", ""),
+                additional_spells=it.get("additionalSpells", []),
                 entries=it.get("entries", []),
             )
             for it in _load("optionalfeatures.json")["optionalfeature"]

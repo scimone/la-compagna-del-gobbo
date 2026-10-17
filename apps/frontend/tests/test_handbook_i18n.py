@@ -59,13 +59,17 @@ def test_handbook_overview_lists_the_same_sections_in_both_languages(client, han
         assert "Player or DM?" not in html
 
 
-def test_handbook_chapters_and_glossary_sit_in_tabs_and_sections_show_their_page(client, handbook):
+def test_handbook_glossary_button_precedes_the_chapters_and_sections_show_their_page(
+    client, handbook
+):
     for language, name in (("it", "Glossario"), ("en", "Glossary")):
         html = _get(client, "/handbook/", language)
         before_main, main = html.split("<main>", 1)
-        # Chapters/Glossary sit in a tab strip above the results, not a button in the contents
-        assert "world-tabs" in before_main and name in before_main
-        _before, chapters = main.split('<details class="chapter-group"', 1)
+        # no tab strip: the Glossary is a standout button right before the first chapter
+        assert '<nav class="world-tabs">' not in before_main
+        before_chapters, chapters = main.split('<details class="chapter-group"', 1)
+        assert 'class="glossary-button"' in before_chapters and name in before_chapters
+        assert 'href="/handbook/rules-glossary/"' in before_chapters
         # every section has a "Page N" line and no icon
         assert "page-icon" not in chapters
         assert re.search(r'<div class="item-detail">(Page|Pagina) \d+</div>', chapters)

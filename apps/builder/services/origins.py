@@ -19,7 +19,7 @@ from ..resolvers import feat as feat_resolver
 from ..resolvers import held as held_resolver
 from ..resolvers import species as species_resolver
 from ..resolvers.proficiency import background_tool_grant, tool_options
-from ..resolvers.spell import class_spell_list
+from ..resolvers.spell import class_spell_list, spell_pool
 from . import effects
 from .store import Draft, Issue, Picker, clear_choices, picker_issues, set_choice, stored
 
@@ -151,7 +151,10 @@ def feat_pickers(draft: Draft, feat: Feat, path: str, *, fixed_variant: str = ""
             names = _ability_names()
             candidates = [(a, names.get(a, a)) for a in pick.options]
         elif pick.kind == "spell":
-            candidates = [(s.id, s.name) for s in class_spell_list(pick.class_name, pick.level)]
+            candidates = [
+                (s.id, s.name)
+                for s in spell_pool(pick.class_name, pick.level, pick.schools, pick.ritual)
+            ]
         elif pick.kind == "tool":
             pool = (
                 Equipment.objects.filter(id__in=pick.options)

@@ -44,6 +44,7 @@ from apps.rules.services import feature as feature_service
 from apps.rules.services import handbook as handbook_service
 from apps.rules.services import optional_feature as optional_feature_service
 from apps.rules.services import rule as rule_service
+from apps.rules.services import sense as sense_service
 from apps.rules.services import species as species_service
 from apps.rules.services import spell as spell_service
 
@@ -632,7 +633,7 @@ def _list_page(
     items,
     back_url_name: str | None = None,
     world_tabs=False,
-    handbook_tabs=False,
+    glossary_link=None,
     image_vignette=False,
     compact_thumbs=False,
     search_query: str | None = None,
@@ -643,11 +644,11 @@ def _list_page(
     bookmark_kind: str | None = None,
     groups=(),
 ):
-    """A list page is a root of its navigation menu (a World tab, the Handbook's Chapters/Glossary
-    tabs), so it has no back button unless `back_url_name` names a parent. `searchable` shows the
-    search box (and `filters` under it) without the category tabs that `world_tabs`/`handbook_tabs`
-    also bring with it. `alphabet` adds the right-hand A-Z jump strip (each item then needs a
-    `letter`, see `_index_letter()`). `bookmark_kind` (a `BOOKMARK_MODELS` key) gives every item
+    """A list page is a root of its navigation menu (a World tab, the Handbook's contents), so it
+    has no back button unless `back_url_name` names a parent. `searchable` shows the search box
+    (and `filters` under it) without the category tabs that `world_tabs` also brings with it.
+    `alphabet` adds the right-hand A-Z jump strip (each item then needs a `letter`, see
+    `_index_letter()`). `bookmark_kind` (a `BOOKMARK_MODELS` key) gives every item
     with a `pk` a bookmark button, and moves the bookmarked ones out of `items` into
     `bookmarked_items`, shown as a highlighted block at the top of the list (only while signed in -
     see `account()`). An item on a page mixing more than one kind of row (e.g. the Features list's
@@ -655,9 +656,10 @@ def _list_page(
     its own `"kind"` - `_list_item.html` then also renders a per-item hidden `kind` input (`form`-
     associated to the shared bookmark form, placed after it in the DOM) so both a plain submit and
     `new FormData(form)` pick up that override instead of the page's shared default, per the HTML
-    forms spec collecting listed/associated elements in tree order. `groups` (the Handbook's
-    chapters, each `{"key", "name", "items"}`) replaces the plain list with one toggle heading per
-    group over that group's buttons.
+    forms spec collecting listed/associated elements in tree order. `glossary_link` (the
+    Handbook's contents) puts a prominent Glossary button above the chapters. `groups` (the
+    Handbook's chapters, each `{"key", "name", "items"}`) replaces the plain list with one toggle
+    heading per group over that group's buttons.
     """
     # Letters (and their jump targets) come from every entry, bookmarked or not.
     alphabet_letters = list(dict.fromkeys(item["letter"] for item in items)) if alphabet else []
@@ -678,14 +680,14 @@ def _list_page(
         "bookmark_hint": bool(bookmark_kind)
         and not Bookmark.objects.filter(user=request.user).exists(),
         "world_tabs": world_tabs,
-        "handbook_tabs": handbook_tabs,
+        "glossary_link": glossary_link,
         "searchable": searchable,
         "image_vignette": image_vignette,
         "compact_thumbs": compact_thumbs,
         "alphabet": alphabet,
         "alphabet_letters": alphabet_letters,
     }
-    if world_tabs or handbook_tabs or searchable:
+    if world_tabs or searchable:
         context["search_query"] = search_query or ""
         context["search_placeholder"] = search_placeholder
         context["filters"] = filters
@@ -1035,7 +1037,7 @@ def handbook_overview(request):
         "Handbook",
         [],
         groups=groups,
-        handbook_tabs=True,
+        glossary_link=reverse("handbook-rules-glossary"),
         searchable=True,
         search_placeholder=_("Search the handbook"),
     )
@@ -1086,6 +1088,17 @@ def _handbook_search(request, q: str):
                     "url": reverse("world-rule-detail", args=[rule.pk]),
                 }
             )
+    for sense in sense_service.list_senses():
+        snippets, _total = find_hits(sense.entries, pattern, limit=1)
+        if snippets or name_matches(sense, pattern):
+            rule_items.append(
+                {
+                    "name": _badged_heading(sense.name, _self_translated(sense, "name")),
+                    "page": sense.page,
+                    "detail": mark_safe("".join(snippets)),
+                    "url": reverse("world-sense-detail", args=[sense.pk]),
+                }
+            )
     if rule_items:
         groups.append({"key": "search-glossary", "name": _("Glossary"), "items": rule_items})
 
@@ -1094,7 +1107,6 @@ def _handbook_search(request, q: str):
         "Handbook",
         [],
         groups=groups,
-        handbook_tabs=True,
         searchable=True,
         search_query=q,
         search_placeholder=_("Search the handbook"),
@@ -1105,9 +1117,11 @@ def handbook_rules_glossary(request):
     q = _search_query(request)
     rules = rule_service.list_rules()
     conditions = rule_service.list_conditions()
+    senses = sense_service.list_senses()
     if q:
         rules = _by_name(rules, q)
         conditions = _by_name(conditions, q)
+        senses = _by_name(senses, q)
     items = [
         {
             "pk": rule.pk,
@@ -1136,17 +1150,32 @@ def handbook_rules_glossary(request):
         }
         for condition in conditions
     ]
+    # Senses (Darkvision, Tremorsense, ...) are glossary entries of the book too, marked "[Sense]".
+    items += [
+        {
+            "name": format_html(
+                "{} [{}]",
+                _badged_heading(sense.name, _self_translated(sense, "name")),
+                _("Sense"),
+            ),
+            "page": sense.page,
+            "url": reverse("world-sense-detail", args=[sense.pk]),
+            "letter": _index_letter(sense.name),
+            "sort": sense.name,
+        }
+        for sense in senses
+    ]
     items.sort(key=lambda item: item["sort"].casefold())
     return _list_page(
         request,
         "Glossary",
         items,
-        handbook_tabs=True,
         searchable=True,
         search_query=q,
         search_placeholder=_("Search glossary"),
         alphabet=True,
         bookmark_kind="rule",
+        back_url_name="handbook-overview",
     )
 
 
@@ -2183,6 +2212,22 @@ def world_condition_detail(request, pk):
             "{} [{}]",
             _badged_heading(condition.name, _self_translated(condition, "name")),
             _condition_kind_label(condition),
+        ),
+        "world-overview",
+        facts,
+        plain_sections=plain_sections,
+    )
+
+
+def world_sense_detail(request, pk):
+    sense = rule_service.get_sense(pk)
+    facts = [(_("Page"), sense.page)]
+    description_heading = _badged_heading(_("Description"), _self_translated(sense, "entries"))
+    plain_sections = [(description_heading, render_entries(sense.entries))]
+    return _detail_page(
+        request,
+        format_html(
+            "{} [{}]", _badged_heading(sense.name, _self_translated(sense, "name")), _("Sense")
         ),
         "world-overview",
         facts,

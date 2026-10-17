@@ -64,7 +64,15 @@ from ..class_spec import spec_for
 from ..resolvers import feat as feat_resolver
 from ..resolvers import species as species_resolver
 from ..resolvers.proficiency import WeaponProficiency, tool_options
-from ..resolvers.spell import class_spell_list, max_spell_level, spell_id
+from ..resolvers.spell import (
+    class_spell_list,
+    max_spell_level,
+    option_source,
+    option_spell_flags,
+    option_spell_grant,
+    spell_id,
+    spell_pool,
+)
 from . import feature_resources
 from .store import Issue, Picker, picker_issues
 
@@ -422,7 +430,7 @@ def _feat_pickers(ctx: _Ctx, feat: Feat, prefix: str) -> list[Picker]:
             ),
         )
         variant = ctx.one(f"{prefix}.variant")
-    for pick in feat_resolver.picks(feat, variant):
+    for pick in feat_resolver.picks(feat, variant, ctx.total_after):
         if pick.kind == "variant":
             continue
         if pick.kind == "ability":
@@ -444,7 +452,7 @@ def _feat_pickers(ctx: _Ctx, feat: Feat, prefix: str) -> list[Picker]:
                     pick.count,
                     [
                         (s.id, s.name)
-                        for s in class_spell_list(pick.class_name, pick.level)
+                        for s in spell_pool(pick.class_name, pick.level, pick.schools, pick.ritual)
                         if s.id not in owned
                     ],
                     single=pick.key == "spell",
@@ -838,6 +846,7 @@ def _class_sections(ctx: _Ctx) -> list[Section]:
                     now - before,
                     _invocation_candidates(ctx, new, set()),
                     kind="invocation",
+                    refresh=True,
                 )
             )
         held = [
@@ -862,14 +871,58 @@ def _class_sections(ctx: _Ctx) -> list[Section]:
                     _invocation_candidates(ctx, new, {ctx.one("lu.invocation_out")}),
                     single=True,
                     optional=True,
+                    refresh=True,
                 )
             )
+        # An invocation that grants spells asks for them (Pact of the Tome: cantrips and rituals).
+        taken = set(ctx.spells) | set(ctx.get("lu.cantrips")) | set(ctx.get("lu.spells"))
+        new_ids = [*ctx.get("lu.invocations"), *ctx.get("lu.invocation_in")]
+        for option in OptionalFeature.objects.filter(id__in=new_ids).order_by("name"):
+            grant = option_spell_grant(option)
+            for pick in grant.picks if grant else ():
+                options.append(
+                    ctx.picker(
+                        f"lu.opt.{option.id}.{pick.key}",
+                        f"{option.name}: "
+                        + (_("Rituals") if pick.key == "rituals" else _("Cantrips")),
+                        pick.count,
+                        [
+                            (s.id, s.name)
+                            for s in spell_pool(
+                                pick.class_name, pick.level, pick.schools, pick.ritual
+                            )
+                            if s.id not in taken
+                        ],
+                        kind="spell",
+                    )
+                )
     if options:
         sections.append(Section("options", _("Class options"), pickers=options))
     return sections
 
 
 # ---- spells ----------------------------------------------------------------------------------
+
+#: The levels at which the proficiency bonus rises (Ritual Caster adds a ritual spell at each).
+_PROFICIENCY_RISES = (5, 9, 13, 17)
+
+
+def _ritual_caster_sections(ctx: _Ctx) -> list[Section]:
+    """Ritual Caster: when the proficiency bonus increases, one more level 1 ritual spell is
+    always prepared."""
+    if ctx.total_after not in _PROFICIENCY_RISES or "ritual-caster" not in ctx.feat_ids:
+        return []
+    owned = set(ctx.spells)
+    picker = ctx.picker(
+        "lu.ritual_caster",
+        _("Ritual Caster: a ritual spell"),
+        1,
+        [(s.id, s.name) for s in spell_pool("", 1, ritual=True) if s.id not in owned],
+        single=True,
+        kind="spell",
+        optional=True,
+    )
+    return [Section("ritual_caster", _("Ritual Caster"), pickers=[picker])]
 
 
 def _casting(ctx: _Ctx) -> dict | None:
@@ -1194,6 +1247,7 @@ def plan(character: Character, class_id: str, values: Values | None = None) -> P
         sections += _entry_sections(ctx)
     sections += _class_sections(ctx)
     sections += _spell_sections(ctx)
+    sections += _ritual_caster_sections(ctx)
 
     # hit points come first on the page
     hp = _hp_plan(ctx, new_con, old_con, subclass)
@@ -1377,11 +1431,41 @@ def _add_feat(character: Character, feat: Feat, level: int, source: str) -> None
 
 
 def _add_spell(character, spell_id_, klass_id, source, **flags) -> None:
+    existing = CharacterSpell.objects.filter(character=character, spell_id=spell_id_).first()
+    if existing:
+        if existing.always_prepared and not flags.get("always_prepared"):
+            # Already given outright (a feat's ritual, an invocation's spell): a second source
+            # that picked the same spell only adds the spellbook / class, never replaces it.
+            existing.in_spellbook |= bool(flags.get("in_spellbook"))
+            existing.klass_id = existing.klass_id or klass_id
+            existing.save(update_fields=["in_spellbook", "klass"])
+            return
+        klass_id = klass_id or existing.klass_id
     CharacterSpell.objects.update_or_create(
         character=character,
         spell_id=spell_id_,
         defaults={"klass_id": klass_id, "source": source, **flags},
     )
+
+
+def _grant_option_spells(ctx: _Ctx, option: OptionalFeature, klass_id: str) -> None:
+    """The spells an optional feature gives (see `option_spell_grant`) onto the character."""
+    grant = option_spell_grant(option)
+    if not grant:
+        return
+    source = option_source(option.id)
+    for spell in grant.fixed:
+        _add_spell(ctx.character, spell, klass_id, source, **option_spell_flags(grant, spell))
+    for pick in grant.picks:
+        for spell in ctx.get(f"lu.opt.{option.id}.{pick.key}"):
+            _add_spell(
+                ctx.character,
+                spell,
+                klass_id,
+                source,
+                prepared=True,
+                always_prepared=pick.key == "rituals",
+            )
 
 
 def _apply_feat_picks(ctx: _Ctx, feat: Feat, prefix: str, level: int) -> None:
@@ -1404,13 +1488,23 @@ def _apply_feat_picks(ctx: _Ctx, feat: Feat, prefix: str, level: int) -> None:
             key=key if not taken else f"{key}.{taken + 1}",
             defaults={"value": {"spell_ability": spell_ability}},
         )
-    grant = feat_resolver.spell_grant_for(feat, ctx.one(f"{prefix}.variant"))
+    grant = feat_resolver.spell_grant_for(feat, ctx.one(f"{prefix}.variant"), level)
     source = f"feat:{feat.id}"
     if grant:
         for fixed in grant.fixed:
-            _add_spell(character, fixed, None, source, prepared=True, always_prepared=True)
+            _add_spell(
+                character,
+                fixed,
+                None,
+                source,
+                prepared=True,
+                always_prepared=True,
+                free_cast=fixed in grant.free_fixed,
+            )
         for cantrip in ctx.get(f"{prefix}.cantrips"):
             _add_spell(character, cantrip, None, source, prepared=True)
+        for ritual in ctx.get(f"{prefix}.rituals"):  # Ritual Caster
+            _add_spell(character, ritual, None, source, prepared=True, always_prepared=True)
         if ctx.one(f"{prefix}.spell"):
             _add_spell(
                 character,
@@ -1749,11 +1843,16 @@ def commit(character: Character, class_id: str, values: Values) -> Plan:
             CharacterOptionalFeature.objects.filter(
                 character=character, optional_feature_id=ctx.one(out_key)
             ).delete()
+            # the spells it gave go with it
+            character.spells.filter(source=option_source(ctx.one(out_key))).delete()
             CharacterOptionalFeature.objects.get_or_create(
                 character=character,
                 optional_feature_id=ctx.one(in_key),
                 defaults={"granted_at_level": new},
             )
+    if klass.id == "warlock":
+        for option_id in [*ctx.get("lu.invocations"), *ctx.get("lu.invocation_in")]:
+            _grant_option_spells(ctx, OptionalFeature.objects.get(id=option_id), klass.id)
 
     # spells
     source = f"class:{klass.id}"
@@ -1782,6 +1881,15 @@ def commit(character: Character, class_id: str, values: Values) -> Plan:
             character=character, spell_id=ctx.one("lu.spell_out")
         ).delete()
         _add_spell(character, ctx.one("lu.spell_in"), klass.id, source, prepared=True)
+    if ctx.one("lu.ritual_caster"):
+        _add_spell(
+            character,
+            ctx.one("lu.ritual_caster"),
+            None,
+            "feat:ritual-caster",
+            prepared=True,
+            always_prepared=True,
+        )
     if ctx.one("lu.arcanum"):
         _add_spell(
             character,

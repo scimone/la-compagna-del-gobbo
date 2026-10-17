@@ -1,8 +1,8 @@
-"""Named Rule lookups (list_rules, get_rule) and the glossary's conditions."""
+"""Named Rule lookups (list_rules, get_rule) and the glossary's conditions and senses."""
 
 from django.shortcuts import get_object_or_404
 
-from apps.rules.models import Condition, Rule
+from apps.rules.models import Condition, Rule, Sense
 
 
 def list_rules():
@@ -19,3 +19,7 @@ def list_conditions():
 
 def get_condition(condition_id: str) -> Condition:
     return get_object_or_404(Condition, pk=condition_id)
+
+
+def get_sense(sense_id: str) -> Sense:
+    return get_object_or_404(Sense, pk=sense_id)

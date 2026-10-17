@@ -7,6 +7,7 @@ from ..services.store import Draft
 from . import abilities
 from .grants import Grants, SpellRow
 from .proficiency import class_armor_categories, class_weapon_proficiency, named_tool_ids
+from .spell import option_source, option_spell_flags, option_spell_grant
 
 _SPELLS_AT_LEVEL_1 = 1
 
@@ -119,6 +120,31 @@ def class_grants(draft: Draft, grants: Grants) -> None:
         grants.add_spell(SpellRow(spell_id, source, klass.id))
     for spell_id in spec.always_prepared:
         grants.add_spell(SpellRow(spell_id, source, klass.id, always_prepared=True))
+
+    # Invocations that give spells (Pact of the Chain, Armor of Shadows, Pact of the Tome...).
+    for option in grants.optional_features:
+        grant = option_spell_grant(option)
+        if not grant:
+            continue
+        for spell_id in grant.fixed:
+            grants.add_spell(
+                SpellRow(
+                    spell_id,
+                    option_source(option.id),
+                    klass.id,
+                    **option_spell_flags(grant, spell_id),
+                )
+            )
+        for pick in grant.picks:
+            for spell_id in draft.get(f"class.opt.{option.id}.{pick.key}", []):
+                grants.add_spell(
+                    SpellRow(
+                        spell_id,
+                        option_source(option.id),
+                        klass.id,
+                        always_prepared=pick.key == "rituals",
+                    )
+                )
 
 
 def language_options(draft: Draft):

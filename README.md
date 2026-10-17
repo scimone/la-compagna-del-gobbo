@@ -170,7 +170,7 @@ kept on `db/handbook.json` copied verbatim from the old dump).
 | `SubclassLevel` | Defined | `db/classes.json` (`subclassFeature`) | A pure level marker - no `features` field of its own; its features are the `Feature` rows FK'd back to it |
 | `Spell` | Defined | `db/spells.json` | `casting_time`/`range`/`duration`/`components` are structured `JSONField`s now (the source gives nested objects, not display strings). `saving_throw_abilities` is new (a M2M - up to 3 spells name more than one ability, verified against all 391). `classes`/`subclasses` are a deliberate exception: the new source dropped this data with no replacement anywhere, so these two fields are still populated from `db_old/spells.json` by exact name match — see `docs/data_migration_2025.md` §2/§3.4 |
 | `Language` | Defined | `db/languages.json` | |
-| `OptionalFeature` | Defined | `db/optionalfeatures.json` | `prerequisite` is structured JSON now, same treatment as `Feat.prerequisite`. `consumes_resource_name` is new (names the resource a pick spends, e.g. "Superiority Die" - relevant to spending a resource, see `characters.services.play` and CLAUDE.md "Where spending lives") |
+| `OptionalFeature` | Defined | `db/optionalfeatures.json` | `additional_spells` (the source's `additionalSpells`) is what gives an invocation its spells - Pact of the Chain's Find Familiar, Armor of Shadows' Mage Armor, ..., Pact of the Tome's picks; they land as `CharacterSpell` rows with `source="option:<id>"` and `free_cast_unlimited`, and go when the invocation is replaced. `prerequisite` is structured JSON now, same treatment as `Feat.prerequisite`. `consumes_resource_name` is new (names the resource a pick spends, e.g. "Superiority Die" - relevant to spending a resource, see `characters.services.play` and CLAUDE.md "Where spending lives") |
 | `Proficiency` | Defined | `db/classes.json`, `db/backgrounds.json` | 47 rows - `Background.skills` moved off this model entirely (a real M2M now, see `Background`). `choice_data` is new: the two previously-excluded tool-proficiency choices (Bard's/Monk's) are now included, since the source gives them as real JSON instead of unparseable "Choose N ..." prose |
 | `Feature` | Defined | `db/classes.json`, `db/species.json`, `db/feats.json` | 723 rows (271 class, 265 subclass, 65 species - 24 of them one-per-lineage cuts, see `rules/lineage_features.py` -, 122 feat). Class/subclass feature resolution now walks `refClassFeature`/`refSubclassFeature` pointers recursively (a class/subclass's own feature-list field doesn't always enumerate every feature - some are only reachable via a pointer inside a sibling feature's `entries`, e.g. Cleric's Divine Order choice or a subclass's granting-level wrapper) rather than reading one flat list - see `docs/data_migration_2025.md` §3.6. A pointer target marked with a `header` field (5etools' own "this is a sub-entry, not standalone" marker) is inlined into whichever feature points at it instead of becoming its own row - see [Known data-import issues](#known-data-import-issues) Issue 6. `consumes_resource_name` is new, same as `OptionalFeature`'s |
 | `Effect` | Partly defined | derived from `Feature.entries` | 2094 rows (independently cross-checked against the pre-migration verified-correct count) |
@@ -715,7 +715,7 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
   (entries are `{u: url, p: static parent, y: scroll offset}`):
   - **Back** - the header arrow *and* the phone's back button - goes one step back inside the
     active menu, never into another menu visited on the way. At a menu's root nothing happens
-    (root pages - World's five tabs, the Handbook's Chapters/Glossary tabs - have no arrow). A deep
+    (root pages - World's five tabs, the Handbook's contents - have no arrow). A deep
     link with an otherwise empty stack falls back to the page's static parent (the arrow's `href`).
     Scroll position is restored on the way back.
   - **The active menu changes only through the bottom nav** (which resumes another menu on the page
@@ -944,9 +944,11 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     `#cs-swap`. Requests are sent one at a time, in order. The rules for each live in
     `characters.services.play`.
   Trinkets are not in the wizard yet (see the plan's TODO).
-- The Handbook menu has two root tabs, **Chapters** and **Glossary** (`handbook_tabs=True`, same
-  look and spot as World's own tab strip - `_list_page`/`base.html`; no back button on either).
-  - `GET /handbook/` (`handbook_overview`, the Chapters tab) shows one toggle heading per
+- The Handbook menu is one root page, its contents (no back button), headed by a **Glossary**
+  button that stands out from the section rows (accent-coloured card with an open book marked
+  A-Z, `_list_page(glossary_link=...)`/`list.html`) - the glossary reads as the book's first
+  chapter, before "Playing the Game". The glossary page itself links back to the contents.
+  - `GET /handbook/` (`handbook_overview`) shows the Glossary button, then one toggle heading per
     `rules.HandbookChapter` ("Playing the Game", "Character Origins", "Feats", "Equipment",
     "Spells") over the buttons of its `HandbookSection`s - 22 in all (see
     [Internationalization](#internationalization-i18n) for what is left out). The headings are
@@ -957,9 +959,9 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     blocks as toggle headings. A section or block hand-translated for this project shows the
     "Traduzione" badge (Italian only), on the button, the page title and the block heading.
     The tab has a live search box (same `?q=` form as the World lists, drawn under the tab strip -
-    `_list_page(handbook_tabs=True)`) that searches the **whole handbook** - every section's text,
-    not just its name, plus the Glossary's `Rule`s (name and text). While a query is set the tabs
-    and search box stay put and the chapter toggles below hold only the matching sections (a
+    `_list_page(searchable=True)`) that searches the **whole handbook** - every section's text,
+    not just its name, plus the Glossary's `Rule`s (name and text). While a query is set the search
+    box stays put and the chapter toggles below hold only the matching sections (a
     "Glossary" toggle last, for matching rules), each button with up to three snippets (rules: one)
     of where it matched - the enclosing headings as a bold breadcrumb, the match highlighted - and
     "+N more" for the rest. Matching is a case- and **accent-insensitive** substring ("opportunita"
@@ -991,8 +993,7 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
   - **Search** (World tabs and the Glossary) is live from the first typed letter: the
     plain GET form is enhanced by a script in `base.html` that re-fetches the page and swaps
     just `#search-results`. `_list_page(searchable=True)` shows the search box without any tab
-    strip (`world_tabs=True`/`handbook_tabs=True` show one above it) - the Handbook's Chapters and
-    Glossary tabs both use it.
+    strip (`world_tabs=True` shows one above it) - the Handbook contents and the Glossary both use it.
   - **Clear filters**: every search form that has filters (`_search_form.html` - the World lists,
     the sheet's Features/Spellbook lists and its three "add" overlays) ends its filter row with a
     "Clear filters" button. It shows only while a filter is set (CSS `:has()` on the form: a

@@ -651,7 +651,9 @@ def cast_spell(
     if not is_prepared:
         raise ValueError(f"{spell.name} is not prepared")
     if free:
-        if row.free_cast and not row.free_cast_used:
+        if row.free_cast_unlimited:
+            pass  # an invocation's spell: never spent
+        elif row.free_cast and not row.free_cast_used:
             row.free_cast_used = True
             row.save(update_fields=["free_cast_used"])
         elif is_circle_spell(row) and natural_free_cast_left(character):

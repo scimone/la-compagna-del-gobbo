@@ -31,6 +31,9 @@ class OptionalFeature(models.Model):
     feature_type = models.CharField(max_length=30)
     prerequisite = models.JSONField(default=list, blank=True)
     consumes_resource_name = models.CharField(max_length=100, blank=True, default="")
+    #: The source's `additionalSpells` (an invocation that gives a spell, Pact of the Tome's picks),
+    #: same shape as `Feat.additional_spells`.
+    additional_spells = models.JSONField(default=list, blank=True)
     entries = models.JSONField(default=list, blank=True)
 
     class Meta:

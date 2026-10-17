@@ -153,6 +153,7 @@ def apply(character: Character) -> None:
             always_prepared=row.always_prepared,
             in_spellbook=row.in_spellbook,
             free_cast=row.free_cast,
+            free_cast_unlimited=row.free_cast_unlimited,
             source=row.source,
         )
         for row in grants.spells.values()

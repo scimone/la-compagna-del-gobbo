@@ -179,13 +179,13 @@ def test_search_finds_accented_italian_text_typed_without_accents(client, handbo
     assert "<mark>opportunità</mark>" in html
 
 
-def test_the_search_box_sits_under_the_tabs_and_above_the_results(client, handbook):
+def test_the_search_box_sits_under_the_header_and_above_the_results(client, handbook):
     for q in ("", "death"):
         html = _search(client, q)
 
         before_main, main = html.split("<main>", 1)
-        # under the header, alongside the Chapters/Glossary tabs - not swapped by live search
-        assert "world-tabs" in before_main and 'class="world-search"' in before_main
+        # under the header - not swapped by live search
+        assert 'class="world-search"' in before_main
         assert 'class="world-search"' not in main
         assert 'id="search-results"' in main
 
