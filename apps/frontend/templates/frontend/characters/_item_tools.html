@@ -12,6 +12,11 @@
           {% blocktranslate with left=left asvar buy_left %}You will have {{ left }} left.{% endblocktranslate %}
           <button type="submit" name="action" value="item_buy" class="outline" data-app-confirm="{{ buy_confirm }}&#10;{{ buy_left }}">{% translate "Buy" %} · {{ cost }}</button>
         {% endif %}
+      </form>
+      {# Buying is one at a time (the confirmation names the price of one); Add takes a number. #}
+      <form method="post" class="item-buttons">
+        {% csrf_token %}
+        <label class="qty-add">{% translate "Quantity" %} <input type="number" name="quantity" min="1" max="9999" value="1" inputmode="numeric"></label>
         <button type="submit" name="action" value="item_add" class="primary">{% translate "Add" %}</button>
       </form>
     {% else %}
@@ -37,6 +42,38 @@
         <form method="post" data-app-confirm="{% translate 'Remove this item?' %}">{% csrf_token %}<input type="hidden" name="action" value="item_remove">
           <button type="submit" class="quiet">{% translate "Remove" %}</button></form>
       </div>
+      {% if form %}
+        <details class="item-edit">
+          <summary>{% translate "Edit item" %}</summary>
+          <form method="post" class="item-form">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="custom_edit">
+            <label>{% translate "Name" %}<input type="text" name="name" maxlength="200" required value="{{ form.row.name }}"></label>
+            <div class="cs-form-row">
+              <label>{% translate "Category" %}
+                <select name="section">
+                  {% for key, label in form.sections %}<option value="{{ key }}"{% if form.row.section == key %} selected{% endif %}>{{ label }}</option>{% endfor %}
+                </select>
+              </label>
+              <label>{% translate "Type" %}<input type="text" name="type" maxlength="60" value="{{ form.row.type_label }}"></label>
+              <label>{% translate "Weapon category" %}
+                <select name="weapon_category">
+                  <option value="">—</option>
+                  {% for key, label in form.weapon_categories %}<option value="{{ key }}"{% if form.row.weapon_category == key %} selected{% endif %}>{{ label }}</option>{% endfor %}
+                </select>
+              </label>
+            </div>
+            <div class="cs-form-row">
+              <label>{% if form.weight_unit == "kg" %}{% translate "Weight (kg)" %}{% else %}{% translate "Weight (lb)" %}{% endif %}<input type="number" name="weight" min="0" step="any" inputmode="decimal" value="{{ form.weight_value }}"></label>
+              <label>{% translate "Cost (gp)" %}<input type="number" name="cost" min="0" step="any" inputmode="decimal" value="{{ form.cost_value }}"></label>
+            </div>
+            <label class="check"><input type="checkbox" name="valuable" value="1"{% if form.row.valuable %} checked{% endif %}> {% translate "Trade good or valuable (sells for its full value)" %}</label>
+            {% include "frontend/characters/_custom_stats.html" with row=form.row damage_types=form.damage_types armor_kinds=form.armor_kinds %}
+            <label>{% translate "Description" %}<textarea name="description" rows="3">{{ form.row.description }}</textarea></label>
+            <button type="submit" class="primary">{% translate "Save" %}</button>
+          </form>
+        </details>
+      {% endif %}
       {% if card.sell_one %}
         <p class="hint">{% if card.full_value %}{% translate "Trade goods and valuables sell for their full value." %}{% else %}{% translate "Equipment sells for half its cost." %}{% endif %}</p>
       {% endif %}

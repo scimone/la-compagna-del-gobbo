@@ -1,0 +1,34 @@
+{% load i18n %}
+{# The numbers that let a custom weapon, armor or shield be worn. Shared by the "add an item" sheet #}
+{# (where `character_sheet.js` shows the block of the picked Category - `hidden` until then) and   #}
+{# the item page's edit form (where both blocks always show). `row` is the item being edited.     #}
+<div class="custom-stats" data-custom-for="weapons"{% if not row %} hidden{% endif %}>
+  <p class="hint">{% translate "Weapon: fill in the damage to be able to equip it. Without one it is only a keepsake." %}</p>
+  <div class="cs-form-row">
+    <label>{% translate "Damage" %}<input type="text" name="damage_dice" maxlength="20" placeholder="1d8" autocomplete="off" value="{{ row.damage_dice }}"></label>
+    <label>{% translate "Damage type" %}
+      <select name="damage_type">
+        <option value="">—</option>
+        {% for key, label in damage_types %}<option value="{{ key }}"{% if row.damage_type == key %} selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>{% translate "Two-handed damage" %}<input type="text" name="versatile_damage_dice" maxlength="20" placeholder="1d10" autocomplete="off" value="{{ row.versatile_damage_dice }}"></label>
+  </div>
+  <label class="check"><input type="checkbox" name="finesse" value="1"{% if row.finesse %} checked{% endif %}> {% translate "Finesse (Strength or Dexterity)" %}</label>
+  <label class="check"><input type="checkbox" name="two_handed" value="1"{% if row.two_handed %} checked{% endif %}> {% translate "Two-Handed" %}</label>
+  <label class="check"><input type="checkbox" name="ranged" value="1"{% if row.ranged %} checked{% endif %}> {% translate "Ranged (uses Dexterity)" %}</label>
+</div>
+<div class="custom-stats" data-custom-for="armor"{% if not row %} hidden{% endif %}>
+  <p class="hint">{% translate "Armor or shield: fill in the type and Armor Class to be able to equip it. A shield's AC is the bonus it adds." %}</p>
+  <div class="cs-form-row">
+    <label>{% translate "Armor type" %}
+      <select name="armor_kind">
+        <option value="">—</option>
+        {% for key, label in armor_kinds %}<option value="{{ key }}"{% if row.armor_kind == key %} selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>{% translate "Armor Class" %}<input type="number" name="ac" min="0" max="30" inputmode="numeric" value="{{ row.ac|default_if_none:'' }}"></label>
+    <label>{% translate "Strength required" %}<input type="number" name="strength_requirement" min="0" max="30" inputmode="numeric" value="{{ row.strength_requirement|default_if_none:'' }}"></label>
+  </div>
+  <label class="check"><input type="checkbox" name="stealth_disadvantage" value="1"{% if row.stealth_disadvantage %} checked{% endif %}> {% translate "Stealth disadvantage" %}</label>
+</div>

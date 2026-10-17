@@ -297,7 +297,10 @@ def _damage(attack: dict) -> str:
         if attack["damage_type"]
         else ""
     )
-    return f"{attack['damage']} {kind}".strip()
+    text = f"{attack['damage']} {kind}".strip()
+    if attack["damage_two_handed"]:  # Versatile: the bigger die with both hands on it
+        text += f" ({attack['damage_two_handed']} {_('two-handed')})"
+    return text
 
 
 def _bullets(lines: list[str]) -> str:
@@ -375,7 +378,9 @@ def _page_one(character: Character, stats, classes) -> tuple[dict[str, str], set
     }
     mastery_names = {m.id: m.name for m in Mastery.objects.all()}
     for attack, (name, bonus, damage, notes) in zip(stats.attacks, _WEAPON_ROWS, strict=False):
-        text[name] = names.get(attack["equipment_id"], attack["equipment_id"])
+        text[name] = attack["custom_name"] or names.get(
+            attack["equipment_id"], attack["equipment_id"]
+        )
         text[bonus] = _signed(attack["attack_bonus"])
         text[damage] = _damage(attack)
         text[notes] = ", ".join(mastery_names.get(m, m) for m in attack["masteries"])

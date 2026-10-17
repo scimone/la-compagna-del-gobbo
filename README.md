@@ -878,7 +878,9 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
       than All is picked, the filter buttons that mean something for it: Type for each, plus
       Category, Properties and Mastery for the weapons (a `filter` with `only` in
       `_search_form.html`; the filters of a pill that is left are cleared; everything is filtered in
-      the browser), each row with an Add pill (adds one for free, onto the loose stack of the same
+      the browser), a **Quantity** box that Add and Buy follow (bulk add), an always-visible **Set** filter over every
+      kind of gear (Adventuring Gear, Ammunition, ...) with an **Add all (N)** button once a filter narrows
+      the list (`item_add_many`), each row with an Add pill (adds one for free, onto the loose stack of the same
       item if there is one), a **Buy** pill beside it when the item has a price (pays for it out of
       the purse - `play.buy_item` - after a confirmation with the price and what will be left; that
       arithmetic runs in `character_sheet.js` against the live purse, not a string rendered once at
@@ -890,8 +892,13 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
       field). On the Italian site the weight is
       typed in kilograms. Custom items are `characters.CharacterCustomItem` rows (a separate model:
       the catalog is `rules` data, read-only and wiped by `import_rules_data`, so they cannot be
-      `Equipment` rows). They have no game rules - they are listed, counted, weighed and sold - and,
-      like the rest of the sheet's play-state, are not exposed over any API. This overlay (and *Add
+      `Equipment` rows). They are listed, counted, weighed and sold, and **can be edited afterwards** (an
+      *Edit item* form on the item's own page, action `custom_edit`). A weapon with damage dice (plus
+      damage type, optional two-handed/Versatile damage, Finesse / Two-Handed / Ranged) or armor with a kind
+      and AC (light/medium/heavy/shield, Strength requirement, stealth disadvantage) can be **equipped** like
+      catalog gear: `derived_stats` counts it for Armor Class and the attack list, and it shares the
+      armor/shield slots with catalog pieces (`play.set_equipped(..., kind="custom")`). Like the rest of the
+      sheet's play-state, they are not exposed over any API. This overlay (and *Add
       spell*'s) covers the page's own header, so each carries its own language switch; switching
       language there is a real page reload (`?overlay=item|spell`, set by `character_sheet.js` the
       moment the overlay opens and read back on load), so it lands you back in the overlay rather
@@ -1325,3 +1332,11 @@ above are sourced from — see [Model status](#model-status). `db/spell_classes.
 `Spell.classes`/`subclasses` lists, which the current dump dropped; see
 [docs/data_migration_2025.md](docs/data_migration_2025.md). `IT_SRD_CC_v5.2.1.md` is the Italian SRD
 the Italian translations were taken from.
+
+### Versatile weapons
+
+`Equipment.versatile_damage_dice` (the dataset's `dmg2`) is the two-handed damage of a Versatile weapon
+(longsword 1d8 / 1d10, not a left/right hand difference). It shows next to the damage everywhere, and
+`derived_stats` attacks carry `damage_two_handed` and `two_hands_free` (no shield worn and no other weapon
+wielded - the SRD needs both hands for it); the inventory row of a wielded one says which die applies.
+Dueling's +2 stays on the one-handed damage only.

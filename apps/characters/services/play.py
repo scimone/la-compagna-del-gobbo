@@ -9,6 +9,8 @@ An item row is one of two kinds, named `kind` in the functions that take a row i
 `CharacterInventoryItem`) or `"custom"` (a `CharacterCustomItem`).
 """
 
+import re
+
 from django.db import models, transaction
 
 from apps.builder.class_spec import CLASS_SPEC
@@ -40,7 +42,12 @@ WEARABLE_TYPES = (*BODY_ARMOR_TYPES, SHIELD_TYPE, "m", "r")
 FULL_VALUE_TYPES = ("c",)
 CUSTOM_SECTIONS = tuple(key for key, _label in CharacterCustomItem.SECTION_CHOICES)
 CUSTOM_WEAPON_CATEGORIES = tuple(key for key, _label in CharacterCustomItem.WEAPON_CATEGORY_CHOICES)
+CUSTOM_ARMOR_KINDS = tuple(key for key, _label in CharacterCustomItem.ARMOR_KIND_CHOICES)
+#: The `rules.EquipmentType` a custom armor kind counts as (Dex cap, proficiency, its slot).
+CUSTOM_ARMOR_TYPE = {"light": "la", "medium": "ma", "heavy": "ha", "shield": SHIELD_TYPE}
+CUSTOM_DAMAGE_TYPES = ("slashing", "piercing", "bludgeoning")
 MAX_QUANTITY = 9999
+_DICE = re.compile(r"^\d{1,2}d\d{1,3}$")
 #: `CharacterSpell.source` of a spell the player added from the sheet. The builder's grants carry
 #: their own source, and only these can be taken away again from the sheet.
 SPELL_SOURCE = "sheet"
@@ -270,20 +277,41 @@ def _set_purse_copper(purse: CharacterCurrency, total: int) -> None:
 
 
 @transaction.atomic
-def set_equipped(character: Character, item_id: int, equipped: bool) -> None:
+def set_equipped(character: Character, item_id: int, equipped: bool, kind: str = "catalog") -> None:
     """Wear or take off one item. Wearing body armor takes off the armor already worn, and a shield
-    likewise - otherwise the sheet would silently pick one of two worn armors."""
-    item = character.inventory_items.select_related("equipment").get(pk=item_id)
-    type_id = item.equipment.type_id
+    likewise - otherwise the sheet would silently pick one of two worn armors. Catalog gear and
+    custom items (`kind`) share those slots."""
+    if kind == "custom":
+        item = character.custom_items.get(pk=item_id)
+        type_id = custom_wear_type(item)
+    else:
+        item = character.inventory_items.select_related("equipment").get(pk=item_id)
+        type_id = item.equipment.type_id
     if type_id not in WEARABLE_TYPES:
         raise ValueError("this item cannot be worn or wielded")
     if equipped and type_id in (*BODY_ARMOR_TYPES, SHIELD_TYPE):
         same_slot = BODY_ARMOR_TYPES if type_id in BODY_ARMOR_TYPES else (SHIELD_TYPE,)
         CharacterInventoryItem.objects.filter(
             character=character, equipment__type_id__in=same_slot, equipped=True
-        ).exclude(pk=item.pk).update(equipped=False)
+        ).exclude(pk=item.pk if kind == "catalog" else None).update(equipped=False)
+        for other in character.custom_items.filter(equipped=True).exclude(
+            pk=item.pk if kind == "custom" else None
+        ):
+            if custom_wear_type(other) in same_slot:
+                other.equipped = False
+                other.save(update_fields=["equipped"])
     item.equipped = equipped
     item.save(update_fields=["equipped"])
+
+
+def custom_wear_type(item: CharacterCustomItem) -> str:
+    """The `EquipmentType` id a custom item is worn as, `""` when it cannot be worn: armor needs a
+    kind and an AC, a weapon needs damage dice (melee `m`, or ranged `r`)."""
+    if item.section == "armor" and item.armor_kind and item.ac:
+        return CUSTOM_ARMOR_TYPE[item.armor_kind]
+    if item.section == "weapons" and item.damage_dice:
+        return "r" if item.ranged else "m"
+    return ""
 
 
 # --- items: add, count, remove, sell -----------------------------------------------------------
@@ -369,24 +397,36 @@ def buy_item(
     return add_item(character, equipment_id, quantity), price
 
 
-@transaction.atomic
-def add_custom_item(
-    character: Character,
+def _dice(text: str, label: str) -> str:
+    text = (text or "").strip().lower()
+    if text and not _DICE.match(text):
+        raise ValueError(f"{label} must look like 1d8")
+    return text
+
+
+def _clean_custom(
     *,
     name: str,
     section: str = "misc",
     type_label: str = "",
     weapon_category: str = "",
-    quantity: int = 1,
     weight: float | None = None,
     value: int | None = None,
     valuable: bool = False,
     description: str = "",
-    buy: bool = False,
-) -> CharacterCustomItem:
-    """List an item of the player's own. With `buy`, its cost (`value` per unit, in copper) is
-    also paid out of the coin purse - an item with no cost, or a purse that cannot afford it,
-    refuses (nothing is charged or added); without, it is simply added (a gift, say)."""
+    armor_kind: str = "",
+    ac: int | None = None,
+    strength_requirement: int | None = None,
+    stealth_disadvantage: bool = False,
+    damage_dice: str = "",
+    damage_type: str = "",
+    versatile_damage_dice: str = "",
+    ranged: bool = False,
+    finesse: bool = False,
+    two_handed: bool = False,
+) -> dict:
+    """Validate a custom item's fields and return them as model fields. A stat that does not belong
+    to the section (damage on a potion) is dropped rather than trusted, like `weapon_category`."""
     name = name.strip()
     if not name:
         raise ValueError("name is empty")
@@ -394,31 +434,84 @@ def add_custom_item(
         raise ValueError(f"unknown section {section!r}")
     if weapon_category and weapon_category not in CUSTOM_WEAPON_CATEGORIES:
         raise ValueError(f"unknown weapon category {weapon_category!r}")
+    if armor_kind and armor_kind not in CUSTOM_ARMOR_KINDS:
+        raise ValueError(f"unknown armor kind {armor_kind!r}")
+    if damage_type and damage_type not in CUSTOM_DAMAGE_TYPES:
+        raise ValueError(f"unknown damage type {damage_type!r}")
     if (weight is not None and weight < 0) or (value is not None and value < 0):
         raise ValueError("weight and cost cannot be negative")
+    if (ac is not None and not 0 <= ac <= 30) or (
+        strength_requirement is not None and not 0 <= strength_requirement <= 30
+    ):
+        raise ValueError("armor class and strength must be between 0 and 30")
+    field = CharacterCustomItem._meta.get_field
+    weapon = section == "weapons"
+    armor = section == "armor"
+    return {
+        "name": name[: field("name").max_length],
+        "section": section,
+        "type_label": type_label.strip()[: field("type_label").max_length],
+        "weapon_category": weapon_category if weapon else "",
+        "weight": weight or None,
+        "value": value or None,
+        "valuable": valuable,
+        "description": description.strip(),
+        "armor_kind": armor_kind if armor else "",
+        "ac": (ac or None) if armor else None,
+        "strength_requirement": (strength_requirement or None) if armor else None,
+        "stealth_disadvantage": stealth_disadvantage if armor else False,
+        "damage_dice": _dice(damage_dice, "damage") if weapon else "",
+        "damage_type": damage_type if weapon else "",
+        "versatile_damage_dice": _dice(versatile_damage_dice, "versatile damage") if weapon else "",
+        "ranged": ranged if weapon else False,
+        "finesse": finesse if weapon else False,
+        "two_handed": two_handed if weapon else False,
+    }
+
+
+@transaction.atomic
+def add_custom_item(
+    character: Character, *, quantity: int = 1, buy: bool = False, **fields
+) -> CharacterCustomItem:
+    """List an item of the player's own (`fields`: see `_clean_custom`). With `buy`, its cost
+    (`value` per unit, in copper) is also paid out of the coin purse - an item with no cost, or a
+    purse that cannot afford it, refuses (nothing is charged or added); without, it is simply
+    added (a gift, say)."""
+    clean = _clean_custom(**fields)
     quantity = _clamp(quantity, 1, MAX_QUANTITY)
     if buy:
+        value = clean["value"]
         if not value:
             raise ValueError("this item has no price to buy it at")
         purse, _created = CharacterCurrency.objects.get_or_create(character=character)
         if value * quantity > _purse_copper(purse):
             raise ValueError("not enough money to buy this")
         _set_purse_copper(purse, _purse_copper(purse) - value * quantity)
-    type_max = CharacterCustomItem._meta.get_field("type_label").max_length
-    return CharacterCustomItem.objects.create(
-        character=character,
-        name=name[: CharacterCustomItem._meta.get_field("name").max_length],
-        section=section,
-        type_label=type_label.strip()[:type_max],
-        # Only weapons have one - a stray value from the client for any other section is dropped
-        # rather than trusted, same spirit as `section` above.
-        weapon_category=weapon_category if section == "weapons" else "",
-        quantity=quantity,
-        weight=weight or None,
-        value=value or None,
-        valuable=valuable,
-        description=description.strip(),
-    )
+    return CharacterCustomItem.objects.create(character=character, quantity=quantity, **clean)
+
+
+def update_custom_item(character: Character, item_id: int, **fields) -> CharacterCustomItem:
+    """Change a custom item after it was made (the same fields as when it was added; quantity has
+    its own control). An item that can no longer be worn - its section or stats changed - is taken
+    off."""
+    item = character.custom_items.get(pk=item_id)
+    for key, value in _clean_custom(**fields).items():
+        setattr(item, key, value)
+    if item.equipped and not custom_wear_type(item):
+        item.equipped = False
+    item.save()
+    return item
+
+
+@transaction.atomic
+def add_items(character: Character, equipment_ids: list[str], quantity: int = 1) -> int:
+    """Add several catalog items at once (a whole set), `quantity` of each. Returns how many."""
+    ids = list(dict.fromkeys(equipment_ids))
+    if not ids:
+        raise ValueError("nothing to add")
+    for equipment_id in ids:
+        add_item(character, equipment_id, quantity)
+    return len(ids)
 
 
 def set_item_quantity(character: Character, kind: str, item_id: int, quantity: int) -> None:

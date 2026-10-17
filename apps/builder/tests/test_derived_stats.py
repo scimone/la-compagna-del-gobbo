@@ -274,3 +274,68 @@ def test_boon_of_speed_adds_thirty_feet(owner):
     before = derived_stats.compute(c).speed
     give_feat(c, "Boon of Speed")
     assert derived_stats.compute(c).speed == before + 30
+
+
+def test_a_worn_custom_armor_and_shield_count_for_armor_class(owner):
+    from apps.characters.models import CharacterCustomItem
+
+    fighter = build_character(owner, "fighter")
+    set_scores(fighter, str=10, dex=14)
+    no_feats(fighter)
+    wear(fighter)  # nothing from the catalog
+    CharacterCustomItem.objects.create(
+        character=fighter,
+        name="Dragonscale",
+        section="armor",
+        armor_kind="medium",
+        ac=15,
+        equipped=True,
+    )
+    CharacterCustomItem.objects.create(
+        character=fighter,
+        name="Oak buckler",
+        section="armor",
+        armor_kind="shield",
+        ac=1,
+        equipped=True,
+    )
+    ac = derived_stats.compute(fighter).armor_class
+    assert ac["value"] == 15 + 2 + 1  # medium caps Dex at +2, plus the shield's bonus
+    assert ac["armor_name"] == "Dragonscale" and ac["shield"]
+
+
+def test_a_custom_weapon_attacks_and_a_versatile_one_has_two_damages(owner):
+    from apps.characters.models import CharacterCustomItem
+
+    fighter = build_character(owner, "fighter")
+    set_scores(fighter, str=16, dex=12)
+    no_feats(fighter)
+    wear(fighter, "longsword")
+    CharacterCustomItem.objects.create(
+        character=fighter,
+        name="Moonblade",
+        section="weapons",
+        weapon_category="martial",
+        damage_dice="1d6",
+        damage_type="slashing",
+        finesse=True,
+        equipped=True,
+    )
+    attacks = {a["equipment_id"]: a for a in derived_stats.compute(fighter).attacks}
+    moon = next(a for k, a in attacks.items() if k.startswith("custom:"))
+    assert moon["custom_name"] == "Moonblade" and moon["damage"] == "1d6+3"
+    longsword = attacks["longsword"]
+    assert longsword["damage"] == "1d8+3" and longsword["damage_two_handed"] == "1d10+3"
+    assert not longsword["two_hands_free"]  # the Moonblade is wielded too
+
+
+def test_versatile_two_hands_need_a_free_off_hand(owner):
+    fighter = build_character(owner, "fighter")
+    set_scores(fighter, str=16)
+    no_feats(fighter)
+    wear(fighter, "longsword")
+    assert derived_stats.compute(fighter).attacks[0]["two_hands_free"]
+    wear(fighter, "longsword", "shield")
+    assert not derived_stats.compute(fighter).attacks[0]["two_hands_free"]
+    wear(fighter, "mace")
+    assert derived_stats.compute(fighter).attacks[0]["damage_two_handed"] == ""

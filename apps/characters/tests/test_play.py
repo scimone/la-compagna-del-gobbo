@@ -673,3 +673,47 @@ def test_natural_recovery_lets_one_circle_spell_be_cast_free_once_per_long_rest(
     play.long_rest(hero)
     hero.refresh_from_db()
     assert play.natural_free_cast_left(hero)
+
+
+# --- custom items with stats, editing, adding a whole set ---------------------------------------
+
+
+def test_custom_weapon_and_armor_need_their_stats_to_be_worn(hero):
+    keepsake = play.add_custom_item(hero, name="Rusty sword", section="weapons")
+    with pytest.raises(ValueError):
+        play.set_equipped(hero, keepsake.pk, True, "custom")  # no damage: not a weapon yet
+    sword = play.update_custom_item(
+        hero,
+        keepsake.pk,
+        name="Rusty sword",
+        section="weapons",
+        damage_dice="1D8",
+        damage_type="slashing",
+        versatile_damage_dice="1d10",
+    )
+    assert sword.damage_dice == "1d8"
+    play.set_equipped(hero, sword.pk, True, "custom")
+    assert hero.custom_items.get(pk=sword.pk).equipped
+    # Changing it into something unwearable takes it off again.
+    play.update_custom_item(hero, sword.pk, name="Rusty sword", section="misc")
+    assert not hero.custom_items.get(pk=sword.pk).equipped
+    with pytest.raises(ValueError):
+        play.update_custom_item(hero, sword.pk, name="x", section="weapons", damage_dice="lots")
+
+
+def test_only_one_body_armor_is_worn_across_catalog_and_custom(hero):
+    chain = give(hero, "chain-mail", equipped=True)
+    robe = play.add_custom_item(hero, name="Robe", section="armor", armor_kind="light", ac=11)
+    play.set_equipped(hero, robe.pk, True, "custom")
+    chain.refresh_from_db()
+    assert not chain.equipped
+    play.set_equipped(hero, chain.pk, True)
+    assert not hero.custom_items.get(pk=robe.pk).equipped
+
+
+def test_a_whole_set_is_added_at_once(hero):
+    play.add_items(hero, ["torch", "rope", "torch"], quantity=3)
+    assert hero.inventory_items.get(equipment_id="torch").quantity == 3
+    assert hero.inventory_items.count() == 2
+    with pytest.raises(ValueError):
+        play.add_items(hero, [])

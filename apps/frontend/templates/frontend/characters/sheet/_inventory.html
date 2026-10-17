@@ -37,12 +37,13 @@
                   <span class="item-text">
                     <span class="item-name">{{ c.name }}{% if c.quantity > 1 %} <span class="qty">×{{ c.quantity }}</span>{% endif %}</span>
                     {% if c.detail %}<span class="item-detail">{{ c.detail }}</span>{% endif %}
+                    {% if c.wield %}<span class="item-detail">{{ c.wield }}</span>{% endif %}
                   </span>
                 </a>
                 {% if c.wearable or c.quick_sell and can_edit %}
                   <div class="cs-actions">
                     {% if c.wearable %}
-                      <button type="button" class="equip{% if c.equipped %} on{% endif %}" data-act="equip" data-item="{{ c.id }}"
+                      <button type="button" class="equip{% if c.equipped %} on{% endif %}" data-act="equip" data-kind="{{ c.kind }}" data-item="{{ c.id }}"
                               data-value="{% if c.equipped %}0{% else %}1{% endif %}" aria-pressed="{% if c.equipped %}true{% else %}false{% endif %}"
                               {% if not can_edit %} disabled{% endif %}>{% if c.equipped %}{% translate "Equipped" %}{% else %}{% translate "Equip" %}{% endif %}</button>
                     {% endif %}

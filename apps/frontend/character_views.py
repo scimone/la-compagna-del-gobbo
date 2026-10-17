@@ -521,9 +521,14 @@ _CARD_MODELS = {
 }
 
 
-def _damage_text(item: Equipment) -> str:
+def _damage_text(item) -> str:
+    """`1d8 slashing`, and for a Versatile weapon `1d8 slashing (1d10 two-handed)`. Works on an
+    `Equipment` row and a `CharacterCustomItem` alike."""
     kind = _pick_translation(_DAMAGE_TYPE_LABELS, item.damage_type) if item.damage_type else ""
-    return f"{item.damage_dice} {kind}".strip()
+    text = f"{item.damage_dice} {kind}".strip()
+    if item.versatile_damage_dice:
+        text += f" ({item.versatile_damage_dice} {_('two-handed')})"
+    return text
 
 
 def _card_line(kind: str, obj) -> str:
@@ -943,7 +948,7 @@ def _review_context(character: Character) -> dict:
             children.setdefault(item.parent_id, []).append(item)
     ac = stats.armor_class
     if ac["armor_id"]:
-        ac_label = equipment_names.get(ac["armor_id"], "")
+        ac_label = ac["armor_name"] or equipment_names.get(ac["armor_id"], "")
     elif ac["formula"].startswith("unarmored defense"):
         ac_label = _("Unarmored Defense")
     else:
@@ -974,7 +979,11 @@ def _review_context(character: Character) -> dict:
             for s in Skill.objects.select_related("ability").order_by("name")
         ],
         "attack_rows": [
-            {**a, "name": equipment_names.get(a["equipment_id"], a["equipment_id"])}
+            {
+                **a,
+                "name": a["custom_name"]
+                or equipment_names.get(a["equipment_id"], a["equipment_id"]),
+            }
             for a in stats.attacks
         ],
         "outstanding": validation.validate(draft),

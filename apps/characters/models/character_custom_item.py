@@ -17,7 +17,12 @@ class CharacterCustomItem(models.Model):
     section (e.g. "Light Armor", "Potion") - a label only, purely for the item's own detail line;
     it carries no rules, unlike a catalog item's real `EquipmentType`. `weapon_category` is the
     same idea for a weapon's Simple/Martial split - only ever shown, like `type_label`, never
-    checked against a proficiency (that stays catalog-only, see `_weapon_groups()`).
+    checked against a proficiency in the proficiencies list (`_weapon_groups()`).
+
+    A custom item *can* be worn, though, once it carries stats: armor with an `armor_kind` and `ac`
+    counts for Armor Class (`derived_stats`), a weapon with `damage_dice` is an attack (its
+    `weapon_category` decides the proficiency). `damage_type` is one of the catalog's own words
+    (`slashing`, `piercing`, `bludgeoning`). `equipped` is the "worn / wielded" flag.
     """
 
     SECTION_CHOICES = [
@@ -29,6 +34,13 @@ class CharacterCustomItem(models.Model):
     WEAPON_CATEGORY_CHOICES = [
         ("simple", "Simple"),
         ("martial", "Martial"),
+    ]
+
+    ARMOR_KIND_CHOICES = [
+        ("light", "Light"),
+        ("medium", "Medium"),
+        ("heavy", "Heavy"),
+        ("shield", "Shield"),
     ]
 
     character = models.ForeignKey(
@@ -45,6 +57,19 @@ class CharacterCustomItem(models.Model):
         max_length=10, choices=WEAPON_CATEGORY_CHOICES, blank=True, default=""
     )
     description = models.TextField(blank=True, default="")
+    # What lets a custom weapon/armor/shield be worn: the same few numbers a catalog row has. All
+    # optional - an item without them stays a plain, unwearable keepsake.
+    equipped = models.BooleanField(default=False)
+    armor_kind = models.CharField(max_length=10, choices=ARMOR_KIND_CHOICES, blank=True, default="")
+    ac = models.PositiveSmallIntegerField(null=True, blank=True)
+    strength_requirement = models.PositiveSmallIntegerField(null=True, blank=True)
+    stealth_disadvantage = models.BooleanField(default=False)
+    damage_dice = models.CharField(max_length=20, blank=True, default="")
+    damage_type = models.CharField(max_length=20, blank=True, default="")
+    versatile_damage_dice = models.CharField(max_length=20, blank=True, default="")
+    ranged = models.BooleanField(default=False)
+    finesse = models.BooleanField(default=False)
+    two_handed = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["character", "name"]

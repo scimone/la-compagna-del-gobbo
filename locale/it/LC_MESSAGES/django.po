@@ -3042,3 +3042,69 @@ msgstr "Copia in una campagna"
 
 msgid "Move to another campaign"
 msgstr "Sposta in un'altra campagna"
+
+msgid "Add %(n)s items to the inventory?"
+msgstr "Aggiungere %(n)s oggetti all'inventario?"
+
+msgid "Add all (%(n)s)"
+msgstr "Aggiungi tutti (%(n)s)"
+
+msgid "Added %(count)s items"
+msgstr "Aggiunti %(count)s oggetti"
+
+msgid "Armor type"
+msgstr "Tipo di armatura"
+
+msgid "Damage type"
+msgstr "Tipo di danno"
+
+msgid "Edit item"
+msgstr "Modifica oggetto"
+
+msgid "Finesse (Strength or Dexterity)"
+msgstr "Accurata (Forza o Destrezza)"
+
+msgid "Other hand busy: %(damage)s with one hand"
+msgstr "Altra mano occupata: %(damage)s a una mano"
+
+msgid "Quantity to add"
+msgstr "Quantità da aggiungere"
+
+msgid "Ranged (uses Dexterity)"
+msgstr "A distanza (usa Destrezza)"
+
+msgid "Saved %(name)s"
+msgstr "Salvato %(name)s"
+
+msgid "Set"
+msgstr "Gruppo"
+
+msgid "Stealth disadvantage"
+msgstr "Svantaggio alla furtività"
+
+msgid "Strength required"
+msgstr "Forza richiesta"
+
+msgid "Two hands free: %(damage)s with both hands"
+msgstr "Due mani libere: %(damage)s a due mani"
+
+msgid "Two-handed damage"
+msgstr "Danno a due mani"
+
+msgid "two-handed"
+msgstr "a due mani"
+
+msgid "Weapon: fill in the damage to be able to equip it. Without one it is only a keepsake."
+msgstr "Arma: indica il danno per poterla equipaggiare. Senza, è solo un cimelio."
+
+msgid "Armor or shield: fill in the type and Armor Class to be able to equip it. A shield's AC is the bonus it adds."
+msgstr "Armatura o scudo: indica il tipo e la Classe Armatura per poterli equipaggiare. La CA di uno scudo è il bonus che aggiunge."
+
+msgid "Finesse"
+msgstr "Accurata"
+
+msgid "Ranged"
+msgstr "A distanza"
+
+msgid "Two-Handed"
+msgstr "A due mani"

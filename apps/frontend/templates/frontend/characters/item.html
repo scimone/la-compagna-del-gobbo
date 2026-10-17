@@ -17,5 +17,15 @@
     .item-tools .item-buttons .outline { border-color: var(--accent); color: var(--accent); }
     .item-tools .item-buttons .on { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
     .item-tools .item-buttons .quiet { color: var(--muted); }
-    .item-tools .hint { margin: 0; font-size: 0.8rem; color: var(--muted); }
+    .item-tools .qty-add { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--muted); }
+    .item-tools .qty-add input { width: 4rem; padding: 0.3rem; text-align: center; }
+    .item-edit summary { cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--accent); }
+    .item-form { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.6rem; }
+    .item-form label { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.8rem; color: var(--muted); }
+    .item-form label.check { flex-direction: row; align-items: center; gap: 0.4rem; }
+    .item-form input[type=text], .item-form input[type=number], .item-form select, .item-form textarea { width: 100%; box-sizing: border-box; padding: 0.4rem 0.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; color: var(--text); font: inherit; }
+    .item-form .cs-form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .item-form .cs-form-row > label { flex: 1 1 7rem; }
+    .item-form .custom-stats { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.6rem; border: 1px solid var(--border); border-radius: 0.6rem; }
+    .item-form .hint, .item-tools .hint { margin: 0; font-size: 0.8rem; color: var(--muted); }
 {% endblock %}

@@ -7,6 +7,7 @@ character sheet both read this. All formulas are the SRD's: see
 """
 
 from dataclasses import dataclass, field
+from types import SimpleNamespace
 
 from apps.characters import conditions
 from apps.characters.models import Character, CharacterChoice
@@ -45,6 +46,40 @@ class Derived:
     warnings: list[str] = field(default_factory=list)
     #: The same warnings, by the equipment id of the worn piece they belong to.
     item_warnings: dict[str, list[str]] = field(default_factory=dict)
+
+
+#: What a custom armor kind counts as (the `rules.EquipmentType` ids the AC formula knows).
+_CUSTOM_ARMOR_TYPE = {"light": "la", "medium": "ma", "heavy": "ha", "shield": tables.SHIELD_TYPE_ID}
+_NO_MASTERIES = SimpleNamespace(all=lambda: [])
+
+
+def _custom_piece(item) -> SimpleNamespace:
+    """A worn custom armor/shield, shaped like the `Equipment` fields the AC code reads."""
+    return SimpleNamespace(
+        id=f"custom:{item.pk}",
+        name_en=item.name,
+        custom_name=item.name,
+        type_id=_CUSTOM_ARMOR_TYPE[item.armor_kind],
+        ac=item.ac,
+        strength_requirement=item.strength_requirement,
+        stealth_disadvantage=item.stealth_disadvantage,
+    )
+
+
+def _custom_weapon(item) -> SimpleNamespace:
+    """A custom weapon, shaped like the `Equipment` fields the attack code reads."""
+    props = [pid for pid, on in (("f", item.finesse), ("2h", item.two_handed)) if on]
+    return SimpleNamespace(
+        id=f"custom:{item.pk}",
+        custom_name=item.name,
+        type_id="r" if item.ranged else "m",
+        weapon_category=item.weapon_category,
+        damage_dice=item.damage_dice,
+        damage_type=item.damage_type,
+        versatile_damage_dice=item.versatile_damage_dice,
+        properties=SimpleNamespace(all=lambda: [SimpleNamespace(id=pid) for pid in props]),
+        masteries=_NO_MASTERIES,
+    )
 
 
 def weapon_proficiency(names) -> WeaponProficiency:
@@ -87,6 +122,8 @@ def _armor_class(mods, worn_armor, worn_shield, has_feature, feats=frozenset(), 
         "formula": formula,
         "shield": bool(worn_shield),
         "armor_id": worn_armor.id if worn_armor else None,
+        # A custom armor has no catalog row to look the name up in.
+        "armor_name": getattr(worn_armor, "custom_name", ""),
     }
     if not worn_armor:
         if "Draconic Resilience" in names:  # Draconic Sorcerer: 10 + Dex + Cha, shield allowed
@@ -97,6 +134,7 @@ def _armor_class(mods, worn_armor, worn_shield, has_feature, feats=frozenset(), 
                     "formula": "draconic resilience",
                     "shield": bool(worn_shield),
                     "armor_id": None,
+                    "armor_name": "",
                 }
         for class_id, spec in CLASS_SPEC.items():
             if not spec.unarmored_defense or not has_feature(class_id):
@@ -112,6 +150,7 @@ def _armor_class(mods, worn_armor, worn_shield, has_feature, feats=frozenset(), 
                     "formula": f"unarmored defense ({ability})",
                     "shield": bool(worn_shield),
                     "armor_id": None,
+                    "armor_name": "",
                 }
     return best
 
@@ -172,7 +211,12 @@ def compute(character: Character) -> Derived:
             "equipment__properties"
         )
     )
-    worn = [i.equipment for i in items if i.equipped]
+    custom_items = list(character.custom_items.all())
+    worn = [i.equipment for i in items if i.equipped] + [
+        _custom_piece(i)
+        for i in custom_items
+        if i.equipped and i.section == "armor" and i.armor_kind and i.ac
+    ]
     worn_armor = next((e for e in worn if e.type_id in _ARMOR_CATEGORY), None)
     worn_shield = next((e for e in worn if e.type_id == tables.SHIELD_TYPE_ID), None)
 
@@ -219,9 +263,17 @@ def compute(character: Character) -> Derived:
         warn(worn_armor, "stealth_disadvantage")
 
     weapons = weapon_proficiency(n for c, n in held if c == "weapon")
+    # Versatile: the two-handed damage needs both hands, so no shield and no other weapon wielded.
+    wielded = [i.equipment for i in items if i.equipped and i.equipment.type_id in ("m", "r")] + [
+        _custom_weapon(i) for i in custom_items if i.equipped and i.section == "weapons"
+    ]
+    candidates = [(i.equipment, i.equipment_id) for i in items] + [
+        (_custom_weapon(i), f"custom:{i.pk}")
+        for i in custom_items
+        if i.section == "weapons" and i.damage_dice
+    ]
     attacks = []
-    for item in items:
-        eq = item.equipment
+    for eq, equipment_id in candidates:
         if eq.weapon_category not in ("simple", "martial") or eq.type_id not in ("m", "r"):
             continue
         props = {p.id for p in eq.properties.all()}
@@ -237,16 +289,28 @@ def compute(character: Character) -> Derived:
         # Dueling: a melee weapon held in one hand (not Two-Handed; the other hand free).
         dueling = "Dueling" in feat_names and eq.type_id == "m" and "2h" not in props
         dmg = mods[ability] + (2 if dueling else 0)
+        # Two hands on a Versatile weapon: the bigger die, and no Dueling (that is one hand).
+        two_hand_dmg = mods[ability]
+        others = [w for w in wielded if w.id != equipment_id]
         attacks.append(
             {
-                "equipment_id": eq.id,
+                "equipment_id": equipment_id,
+                "custom_name": getattr(eq, "custom_name", ""),
                 "ability": ability,
                 "proficient": proficient,
                 "attack_bonus": mods[ability] + (pb if proficient else 0) + hit_extra,
                 "damage": f"{eq.damage_dice}{dmg:+d}" if dmg else eq.damage_dice,
                 "damage_type": eq.damage_type,
+                "damage_two_handed": (
+                    f"{eq.versatile_damage_dice}{two_hand_dmg:+d}"
+                    if two_hand_dmg
+                    else eq.versatile_damage_dice
+                )
+                if eq.versatile_damage_dice
+                else "",
+                "two_hands_free": not worn_shield and not others,
                 "masteries": [m.id for m in eq.masteries.all()]
-                if eq.id in (choices.get("class.weapon_mastery") or [])
+                if equipment_id in (choices.get("class.weapon_mastery") or [])
                 else [],
             }
         )

@@ -886,7 +886,7 @@ def _weight_text(pounds: float) -> str:
     return units.metricize_text(f"{pounds:g} lb.")
 
 
-def _item_card(kind: str, row, pack_name: str = "") -> dict:
+def _item_card(kind: str, row, pack_name: str = "", stats=None) -> dict:
     """One line of the inventory: a catalog stack (`CharacterInventoryItem`) or a custom item."""
     custom = kind == "custom"
     if custom:
@@ -903,6 +903,13 @@ def _item_card(kind: str, row, pack_name: str = "") -> dict:
         detail.append(_pick_translation(_WEAPON_CATEGORY_LABELS, row.weapon_category))
     if custom and row.type_label:
         detail.append(row.type_label)
+    if custom:
+        if row.damage_dice:
+            detail.append(_damage_text(row))
+        if row.armor_kind == "shield" and row.ac:
+            detail.append(f"{_('AC')} +{row.ac}")
+        elif row.armor_kind and row.ac:
+            detail.append(f"{_('AC')} {row.ac}")
     if not custom:
         if eq.damage_dice:
             detail.append(_damage_text(eq))
@@ -931,7 +938,26 @@ def _item_card(kind: str, row, pack_name: str = "") -> dict:
         quick_sell = {"quantity": row.quantity, "price": _gold_label(everything)}
     else:
         quick_sell = None
+    # How a wielded Versatile weapon is being held right now (the bigger die needs both hands).
+    wield = ""
+    versatile = row.versatile_damage_dice if custom else eq.versatile_damage_dice
+    if stats is not None and row.equipped and versatile:
+        attack = next(
+            (
+                a
+                for a in stats.attacks
+                if a["equipment_id"] == (f"custom:{row.pk}" if custom else eq.pk)
+            ),
+            None,
+        )
+        if attack and attack["two_hands_free"]:
+            wield = _("Two hands free: %(damage)s with both hands") % {
+                "damage": attack["damage_two_handed"]
+            }
+        elif attack:
+            wield = _("Other hand busy: %(damage)s with one hand") % {"damage": attack["damage"]}
     return {
+        "wield": wield,
         "key": f"{kind}-{row.pk}",
         "kind": kind,
         "id": row.pk,
@@ -939,8 +965,10 @@ def _item_card(kind: str, row, pack_name: str = "") -> dict:
         "quantity": row.quantity,
         "detail": " · ".join(detail),
         "weight": weight,
-        "equipped": not custom and row.equipped,
-        "wearable": not custom and eq.type_id in play.WEARABLE_TYPES,
+        "equipped": row.equipped,
+        "wearable": bool(play.custom_wear_type(row))
+        if custom
+        else eq.type_id in play.WEARABLE_TYPES,
         "section": row.section if custom else "",
         # The row opens the item's own page (`character_item()`): its description, and what the
         # player can do with it - quantity, sell, remove.
@@ -972,7 +1000,7 @@ def _inventory(character: Character, stats) -> dict:
         if row.pk in packs:
             continue
         pack_name = row.parent.equipment.name if row.parent_id else ""
-        card = _item_card("catalog", row, pack_name)
+        card = _item_card("catalog", row, pack_name, stats)
         total_weight += card["weight"]
         card["warnings"] = (
             [_warning_text(w) for w in stats.item_warnings.get(row.equipment_id, [])]
@@ -981,7 +1009,12 @@ def _inventory(character: Character, stats) -> dict:
         )
         sections[section_of.get(row.equipment.type_id, "misc")]["cards"].append(card)
     for row in character.custom_items.all():
-        card = _item_card("custom", row)
+        card = _item_card("custom", row, stats=stats)
+        card["warnings"] = (
+            [_warning_text(w) for w in stats.item_warnings.get(f"custom:{row.pk}", [])]
+            if row.equipped
+            else []
+        )
         total_weight += card["weight"]
         sections[card["section"]]["cards"].append(card)
     for section in sections.values():
@@ -1461,7 +1494,9 @@ def _act_feature_remove(character, post):
 
 
 def _act_equip(character, post):
-    play.set_equipped(character, _int(post, "item"), post.get("value") == "1")
+    play.set_equipped(
+        character, _int(post, "item"), post.get("value") == "1", post.get("kind", "catalog")
+    )
     return True
 
 
@@ -1482,6 +1517,13 @@ def _act_item_add(character, post):
     return {"refresh": True, "message": _("Added %(name)s") % {"name": item.equipment.name}}
 
 
+def _act_item_add_many(character, post):
+    """A whole set at once: `equipment` is a list of catalog ids, `quantity` of each."""
+    quantity = int(_number(post, "quantity") or 1)
+    count = play.add_items(character, post.getlist("equipment"), quantity)
+    return {"refresh": True, "message": _("Added %(count)s items") % {"count": count}}
+
+
 def _act_item_buy(character, post):
     quantity = int(_number(post, "quantity") or 1)
     item, price = play.buy_item(character, post.get("equipment", ""), quantity)
@@ -1492,24 +1534,46 @@ def _act_item_buy(character, post):
     }
 
 
-def _act_custom_add(character, post):
+def _int_or_none(post, name: str) -> int | None:
+    number = _number(post, name)
+    return None if number is None else int(number)
+
+
+def _custom_fields(post) -> dict:
+    """The custom item's own fields from a form (add and edit send the same ones)."""
     weight = _number(post, "weight")
     if weight is not None and units.is_metric():  # typed in kilograms, stored in pounds
         weight /= units.POUNDS_TO_KG
     cost = _number(post, "cost")  # in gold pieces
+    return {
+        "name": post.get("name", ""),
+        "section": post.get("section", "misc"),
+        "type_label": post.get("type", ""),
+        "weapon_category": post.get("weapon_category", ""),
+        "weight": weight,
+        "value": round(cost * 100) if cost is not None else None,
+        "valuable": post.get("valuable") == "1",
+        "description": post.get("description", ""),
+        "armor_kind": post.get("armor_kind", ""),
+        "ac": _int_or_none(post, "ac"),
+        "strength_requirement": _int_or_none(post, "strength_requirement"),
+        "stealth_disadvantage": post.get("stealth_disadvantage") == "1",
+        "damage_dice": post.get("damage_dice", ""),
+        "damage_type": post.get("damage_type", ""),
+        "versatile_damage_dice": post.get("versatile_damage_dice", ""),
+        "ranged": post.get("ranged") == "1",
+        "finesse": post.get("finesse") == "1",
+        "two_handed": post.get("two_handed") == "1",
+    }
+
+
+def _act_custom_add(character, post):
     bought = post.get("buy") == "1"  # paid for out of the purse, rather than just added
     item = play.add_custom_item(
         character,
-        name=post.get("name", ""),
-        section=post.get("section", "misc"),
-        type_label=post.get("type", ""),
-        weapon_category=post.get("weapon_category", ""),
         quantity=int(_number(post, "quantity") or 1),
-        weight=weight,
-        value=round(cost * 100) if cost is not None else None,
-        valuable=post.get("valuable") == "1",
-        description=post.get("description", ""),
         buy=bought,
+        **_custom_fields(post),
     )
     if bought:
         message = _("Bought %(name)s for %(price)s") % {
@@ -1519,6 +1583,11 @@ def _act_custom_add(character, post):
     else:
         message = _("Added %(name)s") % {"name": item.name}
     return {"refresh": True, "message": message}
+
+
+def _act_custom_edit(character, post):
+    item = play.update_custom_item(character, _int(post, "item"), **_custom_fields(post))
+    return {"refresh": True, "message": _("Saved %(name)s") % {"name": item.name}}
 
 
 def _act_item_qty(character, post):
@@ -1546,6 +1615,8 @@ _ACTIONS["equip"] = _act_equip
 _ACTIONS["item_add"] = _act_item_add
 _ACTIONS["item_buy"] = _act_item_buy
 _ACTIONS["custom_add"] = _act_custom_add
+_ACTIONS["custom_edit"] = _act_custom_edit
+_ACTIONS["item_add_many"] = _act_item_add_many
 _ACTIONS["item_qty"] = _act_item_qty
 _ACTIONS["item_remove"] = _act_item_remove
 _ACTIONS["item_sell"] = _act_item_sell
@@ -1785,7 +1856,9 @@ def character_features(request, pk):
     )
 
 
-def inventory_filters(request=None, used_types: dict | None = None) -> list[dict]:
+def inventory_filters(
+    request=None, used_types: dict | None = None, all_types: bool = False
+) -> list[dict]:
     """The item filters shared by the character's "add an item" sheet and the World > Items list.
 
     The main type comes first, as a row of pills (`section`). The other filters only appear once
@@ -1826,19 +1899,35 @@ def inventory_filters(request=None, used_types: dict | None = None) -> list[dict
             "only": only,
         }
 
-    for key, _label, _types in _INVENTORY_SECTIONS:
+    if all_types:
+        # The character's "add an item" sheet: one "Set" filter, always there, over every kind of
+        # gear (Adventuring Gear, Ammunition, ...), instead of one Type filter per pill.
         filters.append(
             checkbox(
                 "type",
-                _("Type"),
+                _("Set"),
                 [
                     (pk, type_names[pk])
                     for pk in sorted(type_names, key=type_names.get)
-                    if used_types.get(pk) == key
+                    if pk in used_types
                 ],
-                key,
+                "",
             )
         )
+    for key, _label, _types in _INVENTORY_SECTIONS:
+        if not all_types:
+            filters.append(
+                checkbox(
+                    "type",
+                    _("Type"),
+                    [
+                        (pk, type_names[pk])
+                        for pk in sorted(type_names, key=type_names.get)
+                        if used_types.get(pk) == key
+                    ],
+                    key,
+                )
+            )
         if key == "weapons":
             filters += [
                 checkbox(
@@ -1899,14 +1988,16 @@ def character_items(request, pk):
     ]
     used_types = {r["type"]: r["section"] for r in rows}
     type_names = {t.pk: t.name for t in EquipmentType.objects.order_by("name")}
-    filters = inventory_filters(used_types=used_types)
+    filters = inventory_filters(used_types=used_types, all_types=True)
     return render(
         request,
         "frontend/characters/sheet/_add_item.html",
         {
+            **_custom_form_context(),
+            "add_all_label": _("Add all (%(n)s)"),
+            "add_all_confirm": _("Add %(n)s items to the inventory?"),
             "items": rows,
             "filters": filters,
-            "sections": [(key, label) for key, label, _types in _INVENTORY_SECTIONS],
             # Suggestions for the custom item's free-text Type field - the catalog's own type
             # names, so a homebrew item can be labelled "Light Armor" or "Potion" like a real one.
             # One list per section - `character_sheet.js` swaps in the right one as the player
@@ -1915,20 +2006,51 @@ def character_items(request, pk):
                 key: sorted({type_names[pk] for pk in type_names if used_types.get(pk) == key})
                 for key, _label, _types in _INVENTORY_SECTIONS
             },
-            # Only shown once Category is "weapons" (`character_sheet.js`).
-            "weapon_categories": [
-                (c, _pick_translation(_WEAPON_CATEGORY_LABELS, c)) for c in ("simple", "martial")
-            ],
-            "weight_unit": "kg" if units.is_metric() else "lb",
             "coins": _coins(character),
         },
     )
 
 
+_ARMOR_KIND_LABELS = {
+    "light": ("Light", "Leggera"),
+    "medium": ("Medium", "Media"),
+    "heavy": ("Heavy", "Pesante"),
+    "shield": ("Shield", "Scudo"),
+}
+_CUSTOM_DAMAGE_LABELS = {
+    "slashing": ("Slashing", "Tagliente"),
+    "piercing": ("Piercing", "Perforante"),
+    "bludgeoning": ("Bludgeoning", "Contundente"),
+}
+
+
+def _custom_form_context(row=None) -> dict:
+    """What the custom item form needs (the "add" sheet's and the item page's edit form alike):
+    its choices, and - given a `row` - the values to start from, in the units the player types."""
+    weight = ""
+    if row is not None and row.weight:
+        weight = round(row.weight * (units.POUNDS_TO_KG if units.is_metric() else 1), 2)
+        weight = f"{weight:g}"
+    return {
+        "row": row,
+        "sections": [(key, label) for key, label, _types in _INVENTORY_SECTIONS],
+        "weapon_categories": [
+            (c, _pick_translation(_WEAPON_CATEGORY_LABELS, c)) for c in ("simple", "martial")
+        ],
+        "armor_kinds": [(k, _pick_translation(_ARMOR_KIND_LABELS, k)) for k in _ARMOR_KIND_LABELS],
+        "damage_types": [
+            (k, _pick_translation(_CUSTOM_DAMAGE_LABELS, k)) for k in _CUSTOM_DAMAGE_LABELS
+        ],
+        "weight_unit": "kg" if units.is_metric() else "lb",
+        "weight_value": weight,
+        "cost_value": f"{row.value / 100:g}" if row is not None and row.value else "",
+    }
+
+
 #: What each kind of item page lets the player do (see `character_item()`).
 _ITEM_PAGE_ACTIONS = {
     "stack": ("equip", "item_qty", "item_sell", "item_remove"),
-    "custom": ("item_qty", "item_sell", "item_remove"),
+    "custom": ("equip", "custom_edit", "item_qty", "item_sell", "item_remove"),
     "catalog": ("item_add", "item_buy"),
 }
 
@@ -1947,6 +2069,26 @@ def _item_page_facts(kind: str, row) -> tuple[list, list]:
         facts.append(
             (_("Weapon category"), _pick_translation(_WEAPON_CATEGORY_LABELS, row.weapon_category))
         )
+    if row.damage_dice:
+        facts.append((_("Damage"), _damage_text(row)))
+    if row.armor_kind:
+        facts.append((_("Armor type"), _pick_translation(_ARMOR_KIND_LABELS, row.armor_kind)))
+    if row.ac:
+        facts.append((_("Armor Class"), f"+{row.ac}" if row.armor_kind == "shield" else row.ac))
+    properties = [
+        label
+        for on, label in (
+            (row.finesse, _("Finesse")),
+            (row.two_handed, _("Two-Handed")),
+            (row.ranged, _("Ranged")),
+            (row.stealth_disadvantage, _("Stealth disadvantage")),
+        )
+        if on
+    ]
+    if properties:
+        facts.append((_("Properties"), ", ".join(properties)))
+    if row.strength_requirement:
+        facts.append((_("Strength required"), row.strength_requirement))
     if row.value:
         facts.append((_("Cost"), _gold_label(row.value)))
     if row.weight:
@@ -2028,6 +2170,7 @@ def character_item(request, pk, kind, ref):
             "can_afford": bool(cost) and cost <= purse,
             "left": _gold_label(max(0, purse - cost)) if cost else "",
             "messages": messages.get_messages(request),
+            "form": _custom_form_context(row) if kind == "custom" and can_edit else None,
         },
         request=request,
     )

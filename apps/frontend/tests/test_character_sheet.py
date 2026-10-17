@@ -1159,16 +1159,20 @@ def test_the_add_item_sheet_starts_with_pills_for_the_main_type_and_the_rest_wai
     pills = re.findall(r'<input\s+type="radio"\s+name="section"\s+value="(\w*)"([^>]*)>', catalog)
     assert [value for value, _checked in pills] == ["", "weapons", "armor", "tools", "misc"]
     assert ["checked" in checked for _value, checked in pills] == [True, False, False, False, False]
-    # Every other filter belongs to one pill and is hidden until it is picked...
+    # The "Set" filter (Adventuring Gear, Ammunition, ...) is always there, whatever pill...
     filters = re.findall(r'<details class="filter-popover"([^>]*)>', catalog)
-    assert filters and all("data-only=" in f and "hidden" in f for f in filters)
-    # ...and only the weapons have the weapon-only ones.
+    always = [f for f in filters if "data-only=" not in f]
+    assert len(always) == 1 and "hidden" not in always[0]
+    assert "Adventuring Gear" in catalog.split("<summary")[1]
+    # ...every other filter belongs to one pill and is hidden until it is picked,
+    assert all("hidden" in f for f in filters if "data-only=" in f)
+    # and only the weapons have the weapon-only ones.
     only = {
         label: re.findall(r'data-only="(\w+)"[^>]*>\s*<summary[^>]*>\s*' + label, catalog)
         for label in ("Category", "Properties", "Mastery", "Type")
     }
     assert only["Category"] == only["Properties"] == only["Mastery"] == ["weapons"]
-    assert only["Type"] == ["weapons", "armor", "tools", "misc"]
+    assert only["Type"] == []
     # Every row says which pill it belongs to (not the custom form's own markup: an item's own
     # `data-section` isn't the same attribute as a radio's `name="section"` above).
     assert 'data-section="weapons"' in html and 'data-section="armor"' in html
@@ -1180,6 +1184,8 @@ def test_the_types_offered_under_a_pill_are_that_pills_own(signed_in, alice):
 
     html = signed_in.get(f"/characters/{cleric.pk}/items/").content.decode()
 
+    # The World's own list (not the sheet) keeps one Type filter per pill.
+    html = signed_in.get("/world/items/").content.decode()
     armor = html.split('data-only="armor"')[1].split("</details>")[0]
     assert "Light Armor" in armor and "Heavy Armor" in armor and "Shield" in armor
     assert "Melee Weapon" not in armor and "Adventuring Gear" not in armor

@@ -35,6 +35,6 @@
   <h3>{% translate "Weapons" %}</h3>
   <table class="tbl">
     <tr><th></th><th>{% translate "Attack" %}</th><th>{% translate "Damage" %}</th></tr>
-    {% for a in attack_rows %}<tr><td>{{ a.name }}</td><td>{{ a.attack_bonus|stringformat:"+d" }}</td><td>{{ a.damage }} {{ a.damage_type }}</td></tr>{% endfor %}
+    {% for a in attack_rows %}<tr><td>{{ a.name }}</td><td>{{ a.attack_bonus|stringformat:"+d" }}</td><td>{{ a.damage }} {{ a.damage_type }}{% if a.damage_two_handed %} ({{ a.damage_two_handed }} {% translate "two-handed" %}){% endif %}</td></tr>{% endfor %}
   </table>
 {% endif %}

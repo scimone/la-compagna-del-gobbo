@@ -19,13 +19,20 @@
   <div data-add-pane="catalog" data-filter-list="cs-catalog" data-filter-empty="cs-catalog-empty">
     {% translate "Search items" as search_placeholder %}
     {% include "frontend/_search_form.html" with search_query="" search_placeholder=search_placeholder %}
+    {# One quantity for every Add / Buy below; "Add all" appears once a filter narrows the list to a set. #}
+    <div class="cs-add-extras">
+      <label class="cs-add-qty">{% translate "Quantity" %}
+        <input type="number" data-add-qty min="1" max="9999" value="1" inputmode="numeric" aria-label="{% translate 'Quantity to add' %}">
+      </label>
+      <button type="button" class="equip add" data-add-all hidden data-label="{{ add_all_label }}" data-confirm="{{ add_all_confirm }}"></button>
+    </div>
   </div>
 </div>
 
 <div class="cs-scroll" data-add-pane="catalog">
   <ul class="cs-list" id="cs-catalog">
     {% for e in items %}
-      <li data-search="{{ e.search }}" data-section="{{ e.section }}" data-type="{{ e.type }}" data-category="{{ e.category }}" data-property="{{ e.property }}" data-mastery="{{ e.mastery }}">
+      <li data-id="{{ e.id }}" data-search="{{ e.search }}" data-section="{{ e.section }}" data-type="{{ e.type }}" data-category="{{ e.category }}" data-property="{{ e.property }}" data-mastery="{{ e.mastery }}">
         <div class="cs-line linked">
           <a class="cs-row has-buy" href="{{ e.url }}">
             <span class="item-text">
@@ -85,6 +92,7 @@
       <label>{% translate "Cost (gp)" %}<input type="number" name="cost" min="0" step="any" inputmode="decimal"></label>
     </div>
     <label class="check"><input type="checkbox" name="valuable" value="1"> {% translate "Trade good or valuable (sells for its full value)" %}</label>
+    {% include "frontend/characters/_custom_stats.html" with row=None %}
     <label>{% translate "Description" %}<textarea name="description" rows="3"></textarea></label>
     {# Two ways in: just add it (a gift, loot), or pay its cost out of the purse. The Buy button #}
     {# only shows while a cost is filled in that the purse can cover (`character_sheet.js`).    #}

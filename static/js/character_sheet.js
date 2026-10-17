@@ -83,6 +83,12 @@
     notify(message || root.dataset.error);
   }
 
+  // The "add an item" sheet has one quantity box that Add and Buy follow (10 torches at once).
+  function addQuantity(el) {
+    var box = el.closest(".cs-overlay") && el.closest(".cs-overlay").querySelector("[data-add-qty]");
+    return box ? Math.max(1, Math.min(9999, Math.floor(Number(box.value) || 1))) : 1;
+  }
+
   function paramsOf(el) {
     var params = { action: el.dataset.act };
     var skip = ["act", "bind", "describe", "label", "toggle", "tab", "confirm", "done", "again", "buy", "cost", "picksUrl"];
@@ -90,6 +96,7 @@
       if (skip.indexOf(key) === -1) params[key] = el.dataset[key];
     });
     if (el.matches("input, textarea, select")) params.value = el.value;
+    if (el.dataset.act === "item_add" || el.dataset.act === "item_buy") params.quantity = String(addQuantity(el));
     return params;
   }
 
@@ -361,7 +368,7 @@
         // The price and what is left afterwards, both worked out from the purse as it stands right
         // now (this sheet is fetched once and never refreshed, so a static confirmation could go
         // stale after an earlier buy).
-        var cost = Number(button.dataset.cost) || 0;
+        var cost = (Number(button.dataset.cost) || 0) * addQuantity(button);
         var confirmText =
           root.dataset.fmtBuyConfirm.replace("%(price)s", copperLabel(cost)) +
           "\n" +
@@ -571,6 +578,13 @@
     });
     var empty = document.getElementById(scope.dataset.filterEmpty);
     if (empty) empty.hidden = shown > 0;
+    // "Add all": offered once something narrows the catalog down to a set (but not for all of it).
+    var addAll = scope.querySelector("[data-add-all]");
+    if (addAll) {
+      var total = list.querySelectorAll("li").length;
+      addAll.hidden = !(shown > 1 && shown < total);
+      addAll.textContent = addAll.dataset.label.replace("%(n)s", shown);
+    }
     // The World's filter buttons show how many boxes are ticked.
     form.querySelectorAll(".filter-popover").forEach(function (popover) {
       var button = popover.querySelector(".filter-button");
@@ -1064,6 +1078,10 @@
         weaponSelect.value = "";
         syncSelect(weaponSelect);
       }
+      // The stat blocks (damage for a weapon, AC for armor) of the picked Category only.
+      body.querySelectorAll("[data-custom-for]").forEach(function (block) {
+        block.hidden = !section || block.dataset.customFor !== section.value;
+      });
     }
 
     sectionGroup.addEventListener("change", rebuild);
@@ -1138,6 +1156,24 @@
     var tab = event.target.closest("[data-add-tab]");
     if (tab) return showAddPane(tab.closest(".cs-overlay"), tab.dataset.addTab);
 
+    var addAll = event.target.closest("[data-add-all]");
+    if (addAll) {
+      var scope = addAll.closest("[data-filter-list]");
+      var ids = [];
+      document.getElementById(scope.dataset.filterList).querySelectorAll("li").forEach(function (li) {
+        if (!li.hidden && li.dataset.id) ids.push(li.dataset.id);
+      });
+      if (!ids.length) return;
+      var body = new URLSearchParams();
+      body.append("action", "item_add_many");
+      body.append("quantity", String(addQuantity(addAll)));
+      ids.forEach(function (id) { body.append("equipment", id); });
+      window.appConfirm(addAll.dataset.confirm.replace("%(n)s", ids.length)).then(function (ok) {
+        if (ok) send(body);
+      });
+      return;
+    }
+
     var add = event.target.closest("[data-custom-add]");
     if (add) {
       // Not a <form>: a submit would reach navigation.js, which treats every submit as a page change.
@@ -1173,6 +1209,7 @@
           else if (field.type === "radio") field.checked = field.defaultChecked;
           else if (field.name === "quantity") field.value = "1";
           else if (field.tagName !== "SELECT") field.value = "";
+          else if (field.name === "damage_type" || field.name === "armor_kind") field.value = "";
         });
         updateCustomBuy();
         // Radios reset above, but the Category pill, weapon-category pill and Type popover also
@@ -1187,6 +1224,15 @@
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape") closeAdd();
   });
+  // Back (the arrow and the phone's button) closes an open overlay - landing on the tab it was
+  // opened from - instead of leaving the sheet.
+  if (window.appNav && window.appNav.onBack) {
+    window.appNav.onBack(function () {
+      var open = Array.prototype.some.call(root.querySelectorAll(".cs-overlay"), function (o) { return !o.hidden; });
+      if (open) closeAdd();
+      return open;
+    });
+  }
 
   // ---- the portrait ------------------------------------------------------------------------
 

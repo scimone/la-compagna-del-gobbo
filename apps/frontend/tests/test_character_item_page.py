@@ -160,3 +160,49 @@ def test_the_add_item_list_rows_link_to_the_items_page_without_a_toggle(signed_i
 
     assert f'href="/characters/{cleric.pk}/catalog/mace/"' in html
     assert 'class="chev"' not in html and "data-describe=" not in html
+
+
+def test_a_custom_item_can_be_edited_and_given_stats_to_be_equipped(signed_in, cleric):
+    item = play.add_custom_item(cleric, name="Old blade", section="weapons")
+    url = f"/characters/{cleric.pk}/inventory/custom/{item.pk}/"
+
+    page = signed_in.get(url).content.decode()
+    assert 'value="custom_edit"' in page and 'name="damage_dice"' in page
+
+    signed_in.post(
+        url,
+        {
+            "action": "custom_edit",
+            "name": "Moon blade",
+            "section": "weapons",
+            "weapon_category": "martial",
+            "damage_dice": "1d8",
+            "damage_type": "slashing",
+            "versatile_damage_dice": "1d10",
+            "cost": "50",
+            "weight": "3",
+        },
+    )
+    item.refresh_from_db()
+    assert item.name == "Moon blade" and item.versatile_damage_dice == "1d10"
+    assert item.value == 5000
+
+    signed_in.post(url, {"action": "equip", "value": "1"})
+    item.refresh_from_db()
+    assert item.equipped
+    page = signed_in.get(url).content.decode()
+    assert "1d8 slashing (1d10 two-handed)" in page
+
+
+def test_adding_many_and_a_set_through_the_sheet_endpoint(signed_in, cleric):
+    act = f"/characters/{cleric.pk}/act/"
+    signed_in.post(act, {"action": "item_add", "equipment": "torch", "quantity": "10"})
+    assert (
+        sum(cleric.inventory_items.filter(equipment_id="torch").values_list("quantity", flat=True))
+        >= 10
+    )
+    response = signed_in.post(
+        act, {"action": "item_add_many", "equipment": ["rope", "tinderbox"], "quantity": "2"}
+    )
+    assert response.json()["ok"]
+    assert cleric.inventory_items.get(equipment_id="rope").quantity >= 2

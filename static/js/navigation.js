@@ -153,7 +153,21 @@
     else stack[stack.length - 1] = { u: plan.url };
   }
 
+  // Full-screen overlays on a page (the character sheet's "add an item") are not pages: Back
+  // closes them first. A handler returns true when it used the press up.
+  var backHandlers = [];
+  var refreshUrlOnTop = false;
+
   function goBack(viaHistory) {
+    if (backHandlers.some(function (handler) { return handler(); })) {
+      if (viaHistory) {
+        // Back onto the guard's `top` entry, as at a root - whose address may be older than what
+        // the handler just changed (the overlay's `?overlay=`), so it is rewritten on arrival.
+        refreshUrlOnTop = true;
+        window.history.go(1);
+      }
+      return;
+    }
     var state = read();
     saveScroll(state);
     var stack = state.active && state.stacks[state.active];
@@ -265,6 +279,13 @@
   }
 
   window.addEventListener("popstate", function (event) {
+    if (refreshUrlOnTop && event.state && event.state.nav === "top") {
+      refreshUrlOnTop = false;
+      var state = read();
+      var stack = state.active && state.stacks[state.active];
+      var entry = stack && top(stack);
+      if (entry) window.history.replaceState(window.history.state, "", entry.u);
+    }
     if (event.state && event.state.nav === "base") goBack(true);
   });
 
@@ -391,6 +412,9 @@
     },
     back: function () {
       goBack(false);
+    },
+    onBack: function (handler) {
+      backHandlers.push(handler);
     },
   };
 
