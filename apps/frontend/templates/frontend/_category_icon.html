@@ -1,0 +1,18 @@
+{# Line icon for one Handbook category (`key` as in `views._handbook_categories()`). #}
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  {% if key == "rules" %}
+    <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z"></path><path d="M4 21.5V4.5"></path><path d="M9 7h6M9 11h6"></path>
+  {% elif key == "backgrounds" %}
+    <path d="m3 9 9-6 9 6v11H3z"></path><path d="M9 20v-6h6v6"></path>
+  {% elif key == "classes" %}
+    <path d="M14.5 17.5 3 6V3h3l11.5 11.5"></path><path d="m13 19 6-6"></path><path d="m16 16 4 4"></path><path d="m19 21 2-2"></path>
+  {% elif key == "species" %}
+    <circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
+  {% elif key == "features" %}
+    <path d="m12 3 2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"></path>
+  {% elif key == "spells" %}
+    <path d="m5 19 9-9"></path><path d="m13 6 1-3 1 3 3 1-3 1-1 3-1-3-3-1z"></path><path d="m18 14 .7-2 .7 2 2 .7-2 .7-.7 2-.7-2-2-.7z"></path>
+  {% elif key == "items" %}
+    <path d="M6 8h12l1 12H5z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path>
+  {% endif %}
+</svg>

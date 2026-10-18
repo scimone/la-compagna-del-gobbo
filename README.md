@@ -711,11 +711,11 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
 
 - **Navigation model** (`static/js/navigation.js`, loaded by `base.html`). The pages are
   server-rendered, so the browser's history is one linear list; this script gives each bottom-nav
-  menu (Characters / Logbook / World) its own history stack instead, kept in `sessionStorage`
+  menu (Characters / Logbook / Handbook) its own history stack instead, kept in `sessionStorage`
   (entries are `{u: url, p: static parent, y: scroll offset}`):
   - **Back** - the header arrow *and* the phone's back button - goes one step back inside the
     active menu, never into another menu visited on the way. At a menu's root nothing happens
-    (root pages - World's six tabs, Handbook first - have no arrow). A deep
+    (root pages - the Handbook home and its category tabs - have no arrow). A deep
     link with an otherwise empty stack falls back to the page's static parent (the arrow's `href`).
     Scroll position is restored on the way back.
   - **The active menu changes only through the bottom nav** (which resumes another menu on the page
@@ -723,8 +723,8 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     back from there returns to the Glossary. The bottom nav highlights the active menu, not the
     URL prefix.
   - **Tapping the bottom-nav item of the menu you are already in** returns to that menu's root
-    (`data-root`; World's is the first tab, Backgrounds) and resets its stack - so from a class
-    page opened earlier, tapping World shows the tab strip again. Tapping *another* menu resumes
+    (`data-root`; the Handbook's is its home, `/world/`) and resets its stack - so from a class
+    page opened earlier, tapping Handbook shows the search home again. Tapping *another* menu resumes
     it where it was left.
   - **Not steps**: World's category tabs, a detail page's `?tab=` tabs, live search and the
     language switch *replace* the current entry (`data-nav="replace"` on the link/form). The
@@ -751,7 +751,12 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
   (with a warning listing the characters that leaving deletes). A character's 3-dot menu has
   **Copy to a campaign** and, for its editors, **Move to another campaign** (`/characters/<id>/move/`).
 - `GET /` (`index`) — redirects to **Characters** (`/characters/`); the bottom nav also has
-  **Logbook** and **World** → `/world/` (whose first tab is the **Handbook**, `/handbook/`).
+  **Logbook** and **Handbook** (the open-book icon) → `/world/`: the Handbook home, a search box over every
+  category at once (rules, backgrounds, classes and subclasses, species, features, spells, equipment;
+  `views._global_search()`, live, results grouped by category with jump chips and a "Show more" fold) and,
+  until something is typed, a tile per category. Its tab strip (`All` = this home, then **Rules**, the old
+  Handbook at `/handbook/`, Backgrounds, ...) is on every category page, each with its own scoped search
+  whose empty result offers the global one.
 - **Characters** (`character_views.py` for the list and the wizard, `character_sheet.py` for the finished character's page; templates under `frontend/characters/`): `GET /characters/`
   lists every finished character of the current campaign (with its owner) plus the viewer's own
   unfinished ones under "In creation" (the DM and admins see everyone's); the **`+`** button

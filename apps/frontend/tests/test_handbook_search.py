@@ -128,7 +128,7 @@ def test_the_contents_page_has_the_search_box(client, handbook):
     client.cookies["django_language"] = "it"
     html = client.get("/handbook/").content.decode()
 
-    assert 'class="world-search"' in html and 'placeholder="Cerca nel manuale"' in html
+    assert 'class="world-search"' in html and 'placeholder="Cerca nelle regole"' in html
 
 
 def test_a_hit_is_headed_by_the_breadcrumb_of_its_headings():

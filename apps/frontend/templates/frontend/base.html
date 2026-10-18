@@ -327,6 +327,18 @@
       touch-action: manipulation;
     }
 
+    .world-tabs a.tab-search {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: var(--accent);
+    }
+
+    .world-tabs a.tab-search svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
     .world-tabs a.active {
       color: var(--accent);
       border-bottom-color: var(--accent);
@@ -741,11 +753,18 @@
   {% if world_tabs or searchable %}
     {% if world_tabs %}
     <nav class="world-tabs">
+      {# The Handbook's home: the search over every category (and the category tiles). #}
+      <a
+        data-nav="replace"
+        href="{% url 'world-overview' %}"
+        class="tab-search"
+        aria-label="{% translate 'Search the whole Handbook' %}"
+      ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>{% translate "Search" %}</a>
       <a
         data-nav="replace"
         href="{% url 'handbook-overview' %}"
         class="{% if '/handbook/' in request.path %}active{% endif %}"
-      >{% translate "Handbook" %}</a>
+      >{% translate "Rules" %}</a>
       <a
         data-nav="replace"
         href="{% url 'world-backgrounds' %}"
@@ -834,15 +853,15 @@
     <a
       href="{{ last_world_url }}"
       data-menu="world"
-      data-root="{% url 'world-backgrounds' %}"
+      data-root="{% url 'world-overview' %}"
       class="bottom-nav-item{% if '/world/' in request.path or '/handbook/' in request.path %} active{% endif %}"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"></circle>
-        <path d="M2 12h20"></path>
-        <path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20Z"></path>
+        {# An open book. #}
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
       </svg>
-      <span>{% translate "World" %}</span>
+      <span>{% translate "Handbook" %}</span>
     </a>
   </nav>
 

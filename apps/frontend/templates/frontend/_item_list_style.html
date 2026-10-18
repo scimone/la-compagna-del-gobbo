@@ -224,3 +224,23 @@
     background: var(--bg);
     color: var(--accent);
   }
+
+  /* Handbook search: where the query was found - a few snippets under the section's name, the
+     match itself highlighted. */
+  .item-list .item-detail .hit {
+    display: block;
+    margin-top: 0.2rem;
+    overflow-wrap: anywhere;
+  }
+
+  .item-list .item-detail .hit b {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .item-list .item-detail mark {
+    padding: 0 0.1em;
+    border-radius: 0.2em;
+    background: var(--accent);
+    color: var(--accent-text);
+  }

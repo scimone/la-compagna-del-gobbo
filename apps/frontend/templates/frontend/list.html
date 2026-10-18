@@ -36,26 +36,6 @@
     padding: 0.55rem 0.9rem 0.55rem 0.9rem;
   }
 
-  /* Handbook search: where the query was found - a few snippets under the section's name, the
-     match itself highlighted. */
-  .item-list .item-detail .hit {
-    display: block;
-    margin-top: 0.2rem;
-    overflow-wrap: anywhere;
-  }
-
-  .item-list .item-detail .hit b {
-    color: var(--text);
-    font-weight: 600;
-  }
-
-  .item-list .item-detail mark {
-    padding: 0 0.1em;
-    border-radius: 0.2em;
-    background: var(--accent);
-    color: var(--accent-text);
-  }
-
   /* A Handbook chapter: a toggle heading (open by default; see the script below) over the buttons
      of its sections. */
   .chapter-group {
@@ -180,6 +160,8 @@
     transform: translate(-50%, -50%) scale(1);
   }
 
+  .empty-link { display: inline-block; margin-top: 0.4rem; color: var(--accent); font-weight: 600; text-decoration: none; }
+
   .empty-state {
     flex: 1;
     display: flex;
@@ -278,7 +260,12 @@
     {% else %}
       <div class="empty-state">
         {% if search_query %}
-          <p class="subtitle">{% blocktranslate %}No results for "{{ search_query }}".{% endblocktranslate %}</p>
+          <div>
+            <p class="subtitle">{% blocktranslate %}No results for "{{ search_query }}".{% endblocktranslate %}</p>
+            {% if world_tabs %}
+              <a class="empty-link" href="{% url 'world-overview' %}?q={{ search_query|urlencode }}">{% blocktranslate %}Search the whole Handbook for "{{ search_query }}"{% endblocktranslate %}</a>
+            {% endif %}
+          </div>
         {% else %}
           <p class="subtitle">{% translate "No entries in the current dataset." %}</p>
         {% endif %}

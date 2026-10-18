@@ -89,12 +89,12 @@ def test_handbook_links_to_the_glossary(client, db):
     assert re.search(r'<a class="glossary-button" href="/handbook/rules-glossary/"', chapters)
 
 
-def test_handbook_is_the_first_world_tab_and_not_in_the_bottom_nav(client, db):
+def test_rules_is_the_tab_after_the_search_home_and_not_in_the_bottom_nav(client, db):
     html = _html(client, "/handbook/")
     assert 'data-menu="handbook"' not in html
     tabs = re.search(r'<nav class="world-tabs">(.*?)</nav>', html, re.S).group(1)
-    first = re.search(r'<a\s+data-nav="replace"\s+href="([^"]+)"\s+class="([^"]*)"', tabs)
-    assert first.groups() == ("/handbook/", "active")
+    links = re.findall(r'<a\s+data-nav="replace"\s+href="([^"]+)"\s+class="([^"]*)"', tabs)
+    assert links[:2] == [("/world/", "tab-search"), ("/handbook/", "active")]
     other = re.search(
         r'<nav class="world-tabs">(.*?)</nav>', _html(client, "/world/backgrounds/"), re.S
     )
@@ -106,10 +106,10 @@ def test_bottom_nav_items_declare_their_menu_and_the_script_is_loaded(client, db
     roots = {
         "characters": "/characters/",
         "logbook": "/logbook/",
-        "world": "/world/backgrounds/",
+        "world": "/world/",
     }
     for menu, root in roots.items():
-        # `data-root` is where tapping the menu you are already in leads: World's first tab.
+        # `data-root` is where tapping the menu you are already in leads: the Handbook home.
         pattern = rf'<a\s+href="[^"]+"\s+data-menu="{menu}"\s+data-root="{root}"'
         assert re.search(pattern, html), menu
     assert re.search(r'<script src="/static/js/navigation\.js\?v=\d+"></script>', html)

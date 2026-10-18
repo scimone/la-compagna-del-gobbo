@@ -3249,3 +3249,82 @@ msgstr "Incantatore rituale"
 
 msgid "Ritual Caster: a ritual spell"
 msgstr "Incantatore rituale: un incantesimo rituale"
+
+#: apps/frontend/views.py apps/frontend/templates/frontend/base.html
+msgid "Rules"
+msgstr "Regole"
+
+#: apps/frontend/views.py
+msgid "Search the rules"
+msgstr "Cerca nelle regole"
+
+#: apps/frontend/views.py
+msgid "Search rules, spells, classes, items…"
+msgstr "Cerca regole, incantesimi, classi, oggetti…"
+
+#: apps/frontend/views.py
+msgid "Chapters, glossary and conditions"
+msgstr "Capitoli, glossario e condizioni"
+
+#: apps/frontend/views.py
+msgid "Where your character comes from"
+msgstr "Da dove viene il tuo personaggio"
+
+#: apps/frontend/views.py
+msgid "Classes and their subclasses"
+msgstr "Classi e relative sottoclassi"
+
+#: apps/frontend/views.py
+msgid "Species, lineages and traits"
+msgstr "Specie, lignaggi e tratti"
+
+#: apps/frontend/views.py
+msgid "Feats, class features and options"
+msgstr "Talenti, privilegi di classe e opzioni"
+
+#: apps/frontend/views.py
+msgid "Every spell, filterable"
+msgstr "Ogni incantesimo, filtrabile"
+
+#: apps/frontend/views.py
+msgid "Weapons, armor, gear and tools"
+msgstr "Armi, armature, equipaggiamento e strumenti"
+
+#: apps/frontend/templates/frontend/base.html
+msgid "Search"
+msgstr "Cerca"
+
+#: apps/frontend/templates/frontend/base.html
+msgid "Search the whole Handbook"
+msgstr "Cerca in tutto il manuale"
+
+#: apps/frontend/templates/frontend/list.html
+#, python-format
+msgid "Search the whole Handbook for \"%(search_query)s\""
+msgstr "Cerca \"%(search_query)s\" in tutto il manuale"
+
+#: apps/frontend/templates/frontend/world_home.html
+msgid "Browse"
+msgstr "Sfoglia"
+
+#: apps/frontend/templates/frontend/world_home.html
+#, python-format
+msgid "Show %(n)s more"
+msgstr "Mostra altri %(n)s"
+
+#: apps/frontend/templates/frontend/world_home.html
+#, python-format
+msgid "%(n)s more not shown - narrow your search."
+msgstr "Altri %(n)s non mostrati: restringi la ricerca."
+
+#: apps/frontend/templates/frontend/world_home.html
+msgid "Type at least two letters to search."
+msgstr "Scrivi almeno due lettere per cercare."
+
+#: apps/frontend/templates/frontend/world_home.html
+msgid "Search everything at once, or pick a category to browse."
+msgstr "Cerca in tutto in una volta, oppure scegli una categoria da sfogliare."
+
+#: apps/frontend/templates/frontend/world_home.html
+msgid "Jump to"
+msgstr "Vai a"

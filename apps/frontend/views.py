@@ -584,11 +584,6 @@ def index(request):
     return redirect("characters-overview")
 
 
-def world(request):
-    # No standalone hub screen - land directly on the leftmost World tab.
-    return redirect("world-backgrounds")
-
-
 def _index_letter(name: str) -> str:
     """The alphabet-index letter a list item files under: its first letter, accents stripped and
     uppercased ("Àmbito" -> "A"), or "#" for a name that doesn't start with a letter/digit.
@@ -1034,18 +1029,18 @@ def handbook_overview(request):
     ]
     return _list_page(
         request,
-        "Handbook",
+        "Rules",
         [],
         groups=groups,
         glossary_link=reverse("handbook-rules-glossary"),
         world_tabs=True,
         searchable=True,
-        search_placeholder=_("Search the handbook"),
+        search_placeholder=_("Search the rules"),
     )
 
 
 def _handbook_search(request, q: str):
-    """The Handbook's Chapters tab while searching: the same chapter toggles, but holding only the
+    """The Rules tab while searching: the same chapter toggles, but holding only the
     sections whose name or text contains `q` (each with snippets of where), followed by the
     Glossary rules that match - under the same tabs and search box. See `handbook_search`.
     """
@@ -1105,13 +1100,13 @@ def _handbook_search(request, q: str):
 
     return _list_page(
         request,
-        "Handbook",
+        "Rules",
         [],
         groups=groups,
         world_tabs=True,
         searchable=True,
         search_query=q,
-        search_placeholder=_("Search the handbook"),
+        search_placeholder=_("Search the rules"),
     )
 
 
@@ -1187,6 +1182,264 @@ def handbook_section_detail(request, pk):
     body = render_handbook_section(section.entries)
     title = _badged_heading(section.name, _self_translated(section, "name"))
     return _detail_page(request, title, "handbook-overview", facts, body=body)
+
+
+# --- Handbook home: one search over everything ---------------------------------------------
+
+# Shortest query the home page searches for (one letter matches nearly every row).
+_GLOBAL_MIN_QUERY = 2
+# Results kept per category, and how many of them show before the "Show more" fold.
+_GLOBAL_GROUP_CAP = 30
+_GLOBAL_PREVIEW = 5
+
+
+# The Handbook's categories, in the tab strip's order: (key, label, url name, hint). The home
+# page shows them as tiles while nothing is searched for; `icon` in the template is the key.
+def _handbook_categories():
+    return [
+        ("rules", _("Rules"), "handbook-overview", _("Chapters, glossary and conditions")),
+        (
+            "backgrounds",
+            _("Backgrounds"),
+            "world-backgrounds",
+            _("Where your character comes from"),
+        ),
+        ("classes", _("Classes"), "world-classes", _("Classes and their subclasses")),
+        ("species", _("Species"), "world-species", _("Species, lineages and traits")),
+        ("features", _("Features"), "world-feats", _("Feats, class features and options")),
+        ("spells", _("Spells"), "world-spells", _("Every spell, filterable")),
+        ("items", _("Equipment"), "world-items", _("Weapons, armor, gear and tools")),
+    ]
+
+
+def world(request):
+    """The Handbook's home (the bottom nav's destination): a search box over every category at
+    once, and - until something is typed - a tile per category to browse instead."""
+    q = _search_query(request)
+    searching = len(q) >= _GLOBAL_MIN_QUERY
+    categories = [
+        {"key": key, "label": label, "url": reverse(url_name), "hint": hint}
+        for key, label, url_name, hint in _handbook_categories()
+    ]
+    context = {
+        "page_title": _("Handbook"),
+        "searchable": True,
+        "search_query": q,
+        "search_placeholder": _("Search rules, spells, classes, items…"),
+        "filters": (),
+        "categories": categories,
+        "searching": searching,
+        "too_short": bool(q) and not searching,
+        "result_groups": _global_search(q) if searching else [],
+    }
+    response = render(request, "frontend/world_home.html", context)
+    add_never_cache_headers(response)
+    return response
+
+
+def _global_search(q: str) -> list[dict]:
+    """The Handbook home's results: one `{key, label, url, items, extra}` group per category with
+    a match, each holding its first `_GLOBAL_GROUP_CAP` rows (name matches before text-only
+    ones, then alphabetical; `extra` counts the rows cut). Every row is `{name, url, detail}`
+    where `detail` says what the row is, then holds the snippets of where the query was found.
+    Categories overlap as little as possible: a class's features are under Features only.
+    """
+    pattern = query_pattern(q)
+    labels = {key: (label, url_name) for key, label, url_name, _hint in _handbook_categories()}
+
+    def row(obj, name, url, context, hits):
+        return {
+            "name": name,
+            "url": url,
+            "detail": _hit_detail(context, hits),
+            "rank": 0 if name_matches(obj, pattern) else 1,
+        }
+
+    def heading(obj):
+        return _badged_heading(obj.name, _self_translated(obj, "name"))
+
+    def found(rows, *fields):
+        return _text_matches(rows, q, fields)
+
+    sources: dict[str, list[dict]] = {key: [] for key in labels}
+
+    # Rules: the handbook's sections, then the glossary's rules, conditions and senses.
+    rules = sources["rules"]
+    for chapter in handbook_service.list_chapters():
+        for section, hits in found(chapter.sections.all(), "entries"):
+            rules.append(
+                row(
+                    section,
+                    heading(section),
+                    reverse("handbook-section-detail", args=[section.pk]),
+                    f"{chapter.name} · {_('Page')} {section.page}",
+                    hits,
+                )
+            )
+    for rule, hits in found(rule_service.list_rules(), "entries"):
+        rules.append(
+            row(
+                rule,
+                heading(rule),
+                reverse("world-rule-detail", args=[rule.pk]),
+                f"{_('Glossary')} · {_('Page')} {rule.page}",
+                hits,
+            )
+        )
+    for condition, hits in found(rule_service.list_conditions(), "entries"):
+        rules.append(
+            row(
+                condition,
+                heading(condition),
+                reverse("world-condition-detail", args=[condition.pk]),
+                _condition_kind_label(condition),
+                hits,
+            )
+        )
+    for sense, hits in found(sense_service.list_senses(), "entries"):
+        rules.append(
+            row(
+                sense,
+                heading(sense),
+                reverse("world-sense-detail", args=[sense.pk]),
+                _("Sense"),
+                hits,
+            )
+        )
+
+    for background, hits in found(background_service.list_backgrounds(), "lore", "entries"):
+        sources["backgrounds"].append(
+            row(
+                background,
+                heading(background),
+                reverse("world-background-detail", args=[background.pk]),
+                background.short_description,
+                hits,
+            )
+        )
+
+    for klass, hits in found(class_service.list_classes(), "lore"):
+        sources["classes"].append(
+            row(
+                klass,
+                heading(klass),
+                reverse("world-class-detail", args=[klass.pk]),
+                klass.short_description,
+                hits,
+            )
+        )
+    for subclass, hits in found(Subclass.objects.select_related("klass"), "description"):
+        sources["classes"].append(
+            row(
+                subclass,
+                heading(subclass),
+                f"{reverse('world-class-detail', args=[subclass.klass_id])}?tab=subclasses",
+                _("Subclass of %(klass)s") % {"klass": subclass.klass.name},
+                hits,
+            )
+        )
+
+    for species, hits in found(species_service.list_species(), "lore", "entries"):
+        sources["species"].append(
+            row(
+                species,
+                _species_heading(species),
+                reverse("world-species-detail", args=[species.pk]),
+                species.short_description,
+                hits,
+            )
+        )
+
+    features = sources["features"]
+    for feat, hits in found(feat_service.list_feats(), "entries"):
+        features.append(
+            row(
+                feat,
+                heading(feat),
+                reverse("world-feat-detail", args=[feat.pk]),
+                f"{_('Feat')} · {_format_feat_category(feat.category)}",
+                hits,
+            )
+        )
+    feature_rows = (
+        Feature.objects.exclude(name_en="Ability Score Improvement")
+        .exclude(name_en__in=_OPTION_LIST_FEATURES.values())
+        .select_related("class_level__klass", "subclass_level__subclass", "species")
+    )
+    for feature, hits in found(feature_rows, "entries"):
+        if feature.class_level_id:
+            context = f"{feature.class_level.klass.name} · {_('Level')} {feature.class_level.level}"
+        elif feature.subclass_level_id:
+            context = (
+                f"{feature.subclass_level.subclass.name} · "
+                f"{_('Level')} {feature.subclass_level.level}"
+            )
+        elif feature.species_id:
+            context = _("Trait of %(species)s") % {"species": feature.species.name}
+        else:
+            continue
+        features.append(
+            row(
+                feature,
+                heading(feature),
+                reverse("world-feature-detail", args=[feature.pk]),
+                context,
+                hits,
+            )
+        )
+    for option, hits in found(optional_feature_service.list_optional_features(), "entries"):
+        features.append(
+            row(
+                option,
+                heading(option),
+                reverse("world-option-detail", args=[option.pk]),
+                _option_type_label(option.feature_type),
+                hits,
+            )
+        )
+
+    for spell, hits in found(spell_service.list_spells(), "entries", "entries_higher_level"):
+        level = _("Cantrip") if spell.level == 0 else f"{_('Level')} {spell.level}"
+        sources["spells"].append(
+            row(
+                spell,
+                heading(spell),
+                reverse("world-spell-detail", args=[spell.pk]),
+                f"{level} · {_pick_translation(_SCHOOL_LABELS, spell.school)}",
+                hits,
+            )
+        )
+
+    from apps.frontend.character_views import _card_line
+
+    for item, hits in found(equipment_service.list_equipment().select_related("type"), "entries"):
+        sources["items"].append(
+            row(
+                item,
+                heading(item),
+                reverse("world-item-detail", args=[item.pk]),
+                _card_line("equipment", item),
+                hits,
+            )
+        )
+
+    groups = []
+    for key, rows in sources.items():
+        if not rows:
+            continue
+        rows.sort(key=lambda r: (r["rank"], str(r["name"]).casefold()))
+        label, url_name = labels[key]
+        groups.append(
+            {
+                "key": key,
+                "label": label,
+                "url": reverse(url_name),
+                "total": len(rows),
+                "items": rows[:_GLOBAL_GROUP_CAP],
+                "extra": max(0, len(rows) - _GLOBAL_GROUP_CAP),
+            }
+        )
+    return groups
 
 
 # --- Backgrounds --------------------------------------------------------------------------
@@ -2215,7 +2468,7 @@ def world_condition_detail(request, pk):
             _badged_heading(condition.name, _self_translated(condition, "name")),
             _condition_kind_label(condition),
         ),
-        "world-overview",
+        "handbook-rules-glossary",
         facts,
         plain_sections=plain_sections,
     )
@@ -2231,7 +2484,7 @@ def world_sense_detail(request, pk):
         format_html(
             "{} [{}]", _badged_heading(sense.name, _self_translated(sense, "name")), _("Sense")
         ),
-        "world-overview",
+        "handbook-rules-glossary",
         facts,
         plain_sections=plain_sections,
     )
@@ -2245,7 +2498,7 @@ def world_rule_detail(request, pk):
     return _detail_page(
         request,
         _badged_heading(rule.name, _self_translated(rule, "name")),
-        "world-overview",
+        "handbook-rules-glossary",
         facts,
         plain_sections=plain_sections,
         bookmark=("rule", rule.pk),

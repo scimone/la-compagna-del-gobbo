@@ -10,7 +10,7 @@ from django.utils import timezone
 # that section's landing page, discarding whatever the user had drilled into.
 _TRACKED_SECTIONS = {
     "/characters/": "last_characters_url",
-    "/handbook/": "last_world_url",  # the Handbook is World's first tab
+    "/handbook/": "last_world_url",  # the Rules tab of the Handbook
     "/world/": "last_world_url",
 }
 
@@ -26,8 +26,7 @@ class TrackLastSectionUrlMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        # Only plain page loads, not redirects (e.g. `/world/` itself bounces to `/world/
-        # backgrounds/` - storing the bounce-page's own URL would just recreate the loop).
+        # Only plain page loads, not redirects.
         if request.method == "GET" and response.status_code == 200:
             for prefix, session_key in _TRACKED_SECTIONS.items():
                 if request.path.startswith(prefix):

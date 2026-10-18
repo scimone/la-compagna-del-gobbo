@@ -1,5 +1,5 @@
 /*
- * In-app navigation: one history stack per bottom-nav menu (Characters / Logbook / World (Handbook is World's first tab)).
+ * In-app navigation: one history stack per bottom-nav menu (Characters / Logbook / Handbook).
  *
  * The pages are server-rendered, so the browser's own history is a single linear list that
  * knows nothing about menus. That is wrong for this app in three ways this file fixes:
