@@ -711,11 +711,11 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
 
 - **Navigation model** (`static/js/navigation.js`, loaded by `base.html`). The pages are
   server-rendered, so the browser's history is one linear list; this script gives each bottom-nav
-  menu (Characters / Handbook / World) its own history stack instead, kept in `sessionStorage`
+  menu (Characters / Logbook / World) its own history stack instead, kept in `sessionStorage`
   (entries are `{u: url, p: static parent, y: scroll offset}`):
   - **Back** - the header arrow *and* the phone's back button - goes one step back inside the
     active menu, never into another menu visited on the way. At a menu's root nothing happens
-    (root pages - World's five tabs, the Handbook's contents - have no arrow). A deep
+    (root pages - World's six tabs, Handbook first - have no arrow). A deep
     link with an otherwise empty stack falls back to the page's static parent (the arrow's `href`).
     Scroll position is restored on the way back.
   - **The active menu changes only through the bottom nav** (which resumes another menu on the page
@@ -751,7 +751,7 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
   (with a warning listing the characters that leaving deletes). A character's 3-dot menu has
   **Copy to a campaign** and, for its editors, **Move to another campaign** (`/characters/<id>/move/`).
 - `GET /` (`index`) — redirects to **Characters** (`/characters/`); the bottom nav also has
-  **Handbook** → `/handbook/` and **World** → `/world/`. **All three menus are built out.**
+  **Logbook** and **World** → `/world/` (whose first tab is the **Handbook**, `/handbook/`).
 - **Characters** (`character_views.py` for the list and the wizard, `character_sheet.py` for the finished character's page; templates under `frontend/characters/`): `GET /characters/`
   lists every finished character of the current campaign (with its owner) plus the viewer's own
   unfinished ones under "In creation" (the DM and admins see everyone's); the **`+`** button
@@ -944,7 +944,7 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     `#cs-swap`. Requests are sent one at a time, in order. The rules for each live in
     `characters.services.play`.
   Trinkets are not in the wizard yet (see the plan's TODO).
-- The Handbook menu is one root page, its contents (no back button), headed by a **Glossary**
+- The Handbook is World's first tab (`/handbook/`, no separate bottom-nav item; its pages belong to World's navigation stack): its contents are one root page (no back button), headed by a **Glossary**
   button that stands out from the section rows (accent-coloured card with an open book marked
   A-Z, `_list_page(glossary_link=...)`/`list.html`) - the glossary reads as the book's first
   chapter, before "Playing the Game". The glossary page itself links back to the contents.
@@ -970,7 +970,7 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     both languages, like the other lists. It is a plain Python scan over the (small) `entries` JSON
     in `apps/frontend/handbook_search.py` (`fold()` is the length-preserving accent stripper), not
     a database query. The other lists' searches are still plain case-insensitive `icontains`.
-  - `GET /handbook/rules-glossary/` (`handbook_rules_glossary`, the Glossary tab) is the `Rule`
+  - `GET /handbook/rules-glossary/` (`handbook_rules_glossary`, the Glossary) is the `Rule`
     catalog index - its label is just "Glossary", not the source book's "Rules Glossary" section,
     which stays dropped (see [Internationalization](#internationalization-i18n)) - every `Rule`
     linking to `world-rule-detail`. See **Bookmarks**/**Alphabet index** below.

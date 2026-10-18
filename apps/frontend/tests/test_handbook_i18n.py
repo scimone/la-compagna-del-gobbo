@@ -65,8 +65,7 @@ def test_handbook_glossary_button_precedes_the_chapters_and_sections_show_their_
     for language, name in (("it", "Glossario"), ("en", "Glossary")):
         html = _get(client, "/handbook/", language)
         before_main, main = html.split("<main>", 1)
-        # no tab strip: the Glossary is a standout button right before the first chapter
-        assert '<nav class="world-tabs">' not in before_main
+        # the Glossary is a standout button right before the first chapter
         before_chapters, chapters = main.split('<details class="chapter-group"', 1)
         assert 'class="glossary-button"' in before_chapters and name in before_chapters
         assert 'href="/handbook/rules-glossary/"' in before_chapters

@@ -4,13 +4,13 @@ from datetime import timedelta
 
 from django.utils import timezone
 
-# Path prefix -> session key. The bottom nav's three destinations (Characters/Handbook/World)
+# Path prefix -> session key. The bottom nav's destinations (Characters/Logbook/World)
 # each have their own sub-navigation (World's category tabs and detail pages, Handbook's section
 # detail pages) - without this, switching to another bottom-nav tab and back always resets to
 # that section's landing page, discarding whatever the user had drilled into.
 _TRACKED_SECTIONS = {
     "/characters/": "last_characters_url",
-    "/handbook/": "last_handbook_url",
+    "/handbook/": "last_world_url",  # the Handbook is World's first tab
     "/world/": "last_world_url",
 }
 

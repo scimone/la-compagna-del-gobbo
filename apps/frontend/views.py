@@ -1038,6 +1038,7 @@ def handbook_overview(request):
         [],
         groups=groups,
         glossary_link=reverse("handbook-rules-glossary"),
+        world_tabs=True,
         searchable=True,
         search_placeholder=_("Search the handbook"),
     )
@@ -1107,6 +1108,7 @@ def _handbook_search(request, q: str):
         "Handbook",
         [],
         groups=groups,
+        world_tabs=True,
         searchable=True,
         search_query=q,
         search_placeholder=_("Search the handbook"),

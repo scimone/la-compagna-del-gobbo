@@ -84,17 +84,27 @@ def test_tab_switches_and_search_replace_the_history_entry(client, feats):
     assert re.search(r'<form class="world-search"[^>]*data-nav="replace"', html)
 
 
-def test_handbook_links_to_the_glossary_instead_of_tabs(client, db):
+def test_handbook_links_to_the_glossary(client, db):
     chapters = _html(client, "/handbook/")
-    assert '<nav class="world-tabs">' not in chapters
     assert re.search(r'<a class="glossary-button" href="/handbook/rules-glossary/"', chapters)
+
+
+def test_handbook_is_the_first_world_tab_and_not_in_the_bottom_nav(client, db):
+    html = _html(client, "/handbook/")
+    assert 'data-menu="handbook"' not in html
+    tabs = re.search(r'<nav class="world-tabs">(.*?)</nav>', html, re.S).group(1)
+    first = re.search(r'<a\s+data-nav="replace"\s+href="([^"]+)"\s+class="([^"]*)"', tabs)
+    assert first.groups() == ("/handbook/", "active")
+    other = re.search(
+        r'<nav class="world-tabs">(.*?)</nav>', _html(client, "/world/backgrounds/"), re.S
+    )
+    assert 'href="/handbook/"' in other.group(1)
 
 
 def test_bottom_nav_items_declare_their_menu_and_the_script_is_loaded(client, db):
     html = _html(client, "/handbook/")
     roots = {
         "characters": "/characters/",
-        "handbook": "/handbook/",
         "logbook": "/logbook/",
         "world": "/world/backgrounds/",
     }

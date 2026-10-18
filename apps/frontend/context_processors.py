@@ -4,7 +4,6 @@ from django.urls import reverse
 # landing page to fall back on the first visit (before the middleware has stored anything).
 _SECTION_DEFAULTS = {
     "last_characters_url": "characters-overview",
-    "last_handbook_url": "handbook-overview",
     "last_world_url": "world-overview",
 }
 

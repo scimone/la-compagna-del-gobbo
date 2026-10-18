@@ -1,5 +1,5 @@
 /*
- * In-app navigation: one history stack per bottom-nav menu (Characters / Handbook / Logbook / World).
+ * In-app navigation: one history stack per bottom-nav menu (Characters / Logbook / World (Handbook is World's first tab)).
  *
  * The pages are server-rendered, so the browser's own history is a single linear list that
  * knows nothing about menus. That is wrong for this app in three ways this file fixes:
@@ -18,8 +18,8 @@
  *    link click or form submit (`data-nav="replace"|"pop"`, `data-menu`, default "push").
  *  - Tapping the bottom-nav item of the menu you are already in returns to that menu's root.
  *  - The active menu only changes through the bottom nav (or a cold entry by URL). So a link
- *    from the Handbook's Rules Glossary into `/world/rules/...` stays inside the Handbook's
- *    stack and back returns to the Glossary.
+ *    from the Handbook's Glossary into `/world/rules/...` stays inside World's stack (the
+ *    Handbook is World's first tab) and back returns to the Glossary.
  *  - The phone's back button is a browser history traversal the page cannot cancel, so every
  *    page keeps a two-entry guard of its own: [base, top]. Back from `top` lands on `base` in
  *    the *same* document and fires `popstate`, which runs the very function the header arrow
@@ -32,7 +32,7 @@
   "use strict";
 
   var STORAGE_KEY = "dnd.navigation.v1";
-  var MENUS = ["characters", "handbook", "logbook", "world"];
+  var MENUS = ["characters", "logbook", "world"];
   // Pages that are a detour from wherever they were opened, not a place of their own: leaving
   // the menu for another one must not park the account form on top of that menu's stack.
   var TRANSIENT_PATHS = ["/account/", "/privacy/", "/admin-panel/", "/welcome/", "/campaigns/", "/join/"];
@@ -42,7 +42,7 @@
   // --- state --------------------------------------------------------------------------------
 
   function freshState() {
-    return { active: null, pending: null, stacks: { characters: [], handbook: [], logbook: [], world: [] } };
+    return { active: null, pending: null, stacks: { characters: [], logbook: [], world: [] } };
   }
 
   function read() {
@@ -69,6 +69,7 @@
   }
 
   function menuOf(path) {
+    if (path.indexOf("/handbook/") === 0) return "world"; // the Handbook is World's first tab
     for (var i = 0; i < MENUS.length; i++) {
       if (path.indexOf("/" + MENUS[i] + "/") === 0) return MENUS[i];
     }
