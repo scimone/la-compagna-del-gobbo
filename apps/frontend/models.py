@@ -82,6 +82,22 @@ class LogEntry(models.Model):
         return f"{self.date} {self.title or self.text[:40]}".strip()
 
 
+class LogEntryImage(models.Model):
+    """A picture attached to a Logbook entry (any kind). Stored like the character gallery's:
+    re-encoded by `logbook.encode_image` before it is saved, and served only by a view that
+    checks the viewer is in the entry's campaign."""
+
+    entry = models.ForeignKey(LogEntry, on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to="logbook/")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at", "pk"]
+
+    def __str__(self) -> str:
+        return f"{self.entry_id}: {self.image.name}"
+
+
 class TranslationJob(models.Model):
     """One piece of player-written text waiting for, or holding, its machine translation
     between the site's two languages (Logbook entries, character backstories).

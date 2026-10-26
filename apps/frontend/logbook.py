@@ -1,13 +1,17 @@
 """The Logbook's rules: who may change an entry, and the list a page shows."""
 
+from secrets import token_hex
+
 from django.contrib.staticfiles import finders
+from django.core.files.base import ContentFile
 from django.templatetags.static import static
 from django.urls import reverse
 
 from apps.campaigns.services import membership
+from apps.characters.services.portrait import _encode
 from apps.frontend import translations
 from apps.frontend.handbook_search import fold, query_pattern
-from apps.frontend.models import LogEntry
+from apps.frontend.models import LogEntry, LogEntryImage
 
 
 def _order(entry: LogEntry) -> tuple:
@@ -20,7 +24,11 @@ def list_entries(campaign) -> list[LogEntry]:
     """Oldest first, so the newest is at the bottom like in a chat. Within a day the personal
     messages come first and the objective entries follow under them, each in the order they were
     written. Only `campaign`'s journal."""
-    entries = LogEntry.objects.filter(campaign=campaign).select_related("author", "character")
+    entries = (
+        LogEntry.objects.filter(campaign=campaign)
+        .select_related("author", "character")
+        .prefetch_related("images")
+    )
     return sorted(entries, key=_order)
 
 
@@ -90,3 +98,42 @@ def search(entries: list[LogEntry], q: str) -> list[LogEntry]:
 def display(entries: list[LogEntry]) -> dict[int, dict[str, tuple[str, bool]]]:
     """`{entry pk: {field: (text to show, is it machine-translated)}}` in the active language."""
     return translations.translated_texts("logentry", {e.pk: texts(e) for e in entries})
+
+
+#: Pictures one entry can hold.
+MAX_IMAGES = 12
+
+
+def encode_images(uploads, already=0) -> list[bytes]:
+    """The uploads as shrunk WebPs, all or nothing. Raises `ValueError` for the first unusable one
+    or when the entry would hold more than `MAX_IMAGES`."""
+    from django.utils.translation import gettext as _
+
+    if already + len(uploads) > MAX_IMAGES:
+        raise ValueError(_("An entry can hold %(n)d pictures at most.") % {"n": MAX_IMAGES})
+    return [_encode(upload) for upload in uploads]
+
+
+def add_images(entry: LogEntry, encoded: list[bytes]) -> None:
+    for data in encoded:
+        image = LogEntryImage(entry=entry)
+        image.image.save(f"{entry.pk}-{token_hex(4)}.webp", ContentFile(data), save=False)
+        image.save()
+
+
+def remove_images(entry: LogEntry, ids) -> None:
+    """Delete the entry's pictures with these ids (and their files); other ids are ignored."""
+    for image in entry.images.filter(pk__in=ids):
+        delete_image(image)
+
+
+def delete_image(image: LogEntryImage) -> None:
+    name, storage = image.image.name, image.image.storage
+    image.delete()
+    storage.delete(name)
+
+
+def delete_entry(entry: LogEntry) -> None:
+    for image in list(entry.images.all()):
+        delete_image(image)
+    entry.delete()

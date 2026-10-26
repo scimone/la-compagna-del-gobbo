@@ -9,6 +9,10 @@
   .logform label { font-size: 0.85rem; font-weight: 600; }
   .logform input, .logform textarea { appearance: none; width: 100%; padding: 0.6rem 0.8rem; font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; }
   .logform textarea { resize: vertical; }
+  .logform-pics { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .logform-pic { display: flex; flex-direction: column; gap: 0.2rem; width: 6rem; font-weight: 400 !important; }
+  .logform-pic img { width: 6rem; height: 6rem; object-fit: cover; border-radius: 0.5rem; }
+  .logform-pic input { width: auto; }
   .logform .errorlist { margin: 0; padding: 0; list-style: none; color: #b3261e; font-size: 0.85rem; }
   /* The rich-text editor (`logbook_editor.js`); without JS the plain textarea (Markdown) stays. */
   .rte[hidden] { display: none; }
@@ -33,7 +37,7 @@
 {% endblock %}
 {% block content %}
   <div class="logform">
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
       {{ form.non_field_errors }}
       {% for field in form %}
@@ -58,6 +62,17 @@
           {{ field.errors }}
         </div>
       {% endfor %}
+      <div class="field">
+        <label for="id_images">{% translate "Pictures" %}</label>
+        {% if images %}
+          <div class="logform-pics">
+            {% for image in images %}
+              <label class="logform-pic"><img src="{% url 'logbook-image' image.pk %}" alt="" loading="lazy"><span><input type="checkbox" name="remove_image" value="{{ image.pk }}"> {% translate "Remove" %}</span></label>
+            {% endfor %}
+          </div>
+        {% endif %}
+        <input type="file" id="id_images" name="images" accept="image/*" multiple>
+      </div>
       <button type="submit">{% translate "Save" %}</button>
     </form>
   </div>

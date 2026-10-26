@@ -1,0 +1,3 @@
+{% load i18n %}{% if row.images %}
+<div class="log-pics">{% for url in row.images %}<button type="button" data-full="{{ url }}" aria-label="{% translate 'Enlarge picture' %}"><img src="{{ url }}" alt="" loading="lazy"></button>{% endfor %}</div>
+{% endif %}

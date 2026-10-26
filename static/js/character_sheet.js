@@ -91,11 +91,12 @@
 
   function paramsOf(el) {
     var params = { action: el.dataset.act };
-    var skip = ["act", "bind", "describe", "label", "toggle", "tab", "confirm", "done", "again", "buy", "cost", "picksUrl"];
+    var skip = ["act", "bind", "describe", "label", "toggle", "tab", "confirm", "done", "again", "buy", "cost", "picksUrl", "from"];
     Object.keys(el.dataset).forEach(function (key) {
       if (skip.indexOf(key) === -1) params[key] = el.dataset[key];
     });
     if (el.matches("input, textarea, select")) params.value = el.value;
+    if (el.dataset.from) params.value = document.getElementById(el.dataset.from).value; // a button reading a field
     if (el.dataset.act === "item_add" || el.dataset.act === "item_buy") params.quantity = String(addQuantity(el));
     return params;
   }
@@ -380,6 +381,7 @@
       (ask ? window.appConfirm(ask) : Promise.resolve(true)).then(function (ok) {
         if (!ok) return;
         send(paramsOf(button)).then(function (accepted) {
+          if (accepted && button.dataset.from) document.getElementById(button.dataset.from).value = "";
           if (accepted && button.dataset.done) {
             var before = button.textContent;
             button.textContent = button.dataset.done;

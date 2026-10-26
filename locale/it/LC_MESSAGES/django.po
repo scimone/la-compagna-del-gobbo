@@ -3328,3 +3328,10 @@ msgstr "Cerca in tutto in una volta, oppure scegli una categoria da sfogliare."
 #: apps/frontend/templates/frontend/world_home.html
 msgid "Jump to"
 msgstr "Vai a"
+
+msgid "Experience Points to add"
+msgstr "Punti Esperienza da aggiungere"
+
+#, python-format
+msgid "An entry can hold %(n)d pictures at most."
+msgstr "Una voce può contenere al massimo %(n)d immagini."

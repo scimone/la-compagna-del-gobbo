@@ -221,6 +221,12 @@
         {% endif %}
         {% if header.next_xp %}<span class="of">/ {{ header.next_xp }}</span>{% endif %}
       </span>
+      {% if can_edit %}
+        <span class="xp-add">
+          <input id="cs-xp-add" type="number" min="1" inputmode="numeric" placeholder="+" aria-label="{% translate 'Experience Points to add' %}">
+          <button type="button" data-act="xp_add" data-from="cs-xp-add">{% translate "Add" %}</button>
+        </span>
+      {% endif %}
     </div>
     {% if header.next_xp %}
       <div class="cs-bar" role="progressbar" aria-label="{% translate 'Progress to the next level' %}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ header.xp_progress }}" style="--pct: {{ header.xp_progress }}%"><i></i></div>

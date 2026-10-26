@@ -1436,11 +1436,20 @@ def _act_xp(character, post):
     return True  # the progress bar under it moves
 
 
+def _act_xp_add(character, post):
+    amount = _int(post, "value")
+    if amount < 1:
+        raise ValueError("nothing to add")
+    play.set_experience(character, character.experience_points + amount)
+    return True
+
+
 #: action name -> function(character, POST) -> True if the page must be redrawn afterwards
 #: (something derived - AC, attacks - changed, which the script cannot recompute itself).
 _ACTIONS = {
     "name": lambda c, p: play.rename(c, p.get("value", "")),
     "xp": _act_xp,
+    "xp_add": _act_xp_add,
     "hp_delta": lambda c, p: _act_hp(c, lambda: play.adjust_hit_points(c, _int(p, "delta"))),
     "hp_set": lambda c, p: _act_hp(c, lambda: play.set_hit_points(c, _int(p, "value"))),
     # The sheet is redrawn: the lowered numbers show on the abilities, saves, skills and so on.

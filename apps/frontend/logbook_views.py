@@ -12,7 +12,7 @@ from apps.campaigns.services import membership
 from apps.frontend import campaign_context, campaign_views, logbook, logbook_markup
 from apps.frontend.forms import ObjectiveEntryForm, PersonalEntryForm
 from apps.frontend.handbook_search import highlight, query_pattern
-from apps.frontend.models import LogEntry
+from apps.frontend.models import LogEntry, LogEntryImage
 
 
 def _sign_in_redirect(request):
@@ -49,6 +49,7 @@ def logbook_list(request):
             "dm": entry.as_dm,
             "avatar": logbook.avatar_url(entry),
             "full": logbook.full_url(entry),
+            "images": [reverse("logbook-image", args=[i.pk]) for i in entry.images.all()],
             "fields": {
                 name: logbook_markup.render(text, pattern) if name == "text" else mark(text)
                 for name, (text, _t) in shown[entry.pk].items()
@@ -80,11 +81,21 @@ def _editable_entry(request, pk):
     return entry
 
 
-def _form_page(request, form, title):
+def _uploads(request, form, already=0):
+    """The pictures chosen in the form, encoded; a bad one becomes a form error (None then)."""
+    try:
+        return logbook.encode_images(request.FILES.getlist("images"), already)
+    except ValueError as error:
+        form.add_error(None, str(error))
+        return None
+
+
+def _form_page(request, form, title, entry=None):
     response = render(
         request,
         "frontend/logbook/form.html",
         {
+            "images": entry.images.all() if entry else [],
             "page_title": title,
             "back_url": reverse("logbook-list"),
             "form": form,
@@ -111,12 +122,17 @@ def logbook_new(request):
     form = _form_class(kind)(
         request.POST or None, initial=initial, user=request.user, campaign=campaign
     )
-    if request.method == "POST" and form.is_valid():
+    if (
+        request.method == "POST"
+        and form.is_valid()
+        and (pictures := _uploads(request, form)) is not None
+    ):
         entry = form.save(commit=False)
         entry.kind = kind
         entry.author = request.user
         entry.campaign = campaign
         entry.save()
+        logbook.add_images(entry, pictures)
         logbook.queue_translation(entry)
         return redirect(f"{reverse('logbook-list')}#entry-{entry.pk}")
     title = _("New entry") if kind == LogEntry.OBJECTIVE else _("New personal message")
@@ -144,18 +160,41 @@ def logbook_edit(request, pk):
         campaign=entry.campaign,
     )
     if request.method == "POST" and form.is_valid():
-        if form.has_changed():
-            form.save()
-            logbook.queue_translation(entry)
-        return redirect(f"{reverse('logbook-list')}#entry-{entry.pk}")
-    return _form_page(request, form, _("Edit entry"))
+        removed = [int(i) for i in request.POST.getlist("remove_image") if i.isdigit()]
+        kept = entry.images.exclude(pk__in=removed).count()
+        pictures = _uploads(request, form, kept)
+        if pictures is not None:
+            if form.has_changed():
+                form.save()
+                logbook.queue_translation(entry)
+            logbook.remove_images(entry, removed)
+            logbook.add_images(entry, pictures)
+            return redirect(f"{reverse('logbook-list')}#entry-{entry.pk}")
+    return _form_page(request, form, _("Edit entry"), entry)
+
+
+def logbook_image(request, pk):
+    """One attached picture, for members of the entry's campaign."""
+    image = get_object_or_404(LogEntryImage.objects.select_related("entry__campaign"), pk=pk)
+    if not request.user.is_authenticated or not membership.is_member(
+        request.user, image.entry.campaign
+    ):
+        raise Http404
+    try:
+        with image.image.open("rb") as file:
+            data = file.read()
+    except FileNotFoundError:
+        raise Http404 from None
+    response = HttpResponse(data, content_type="image/webp")
+    response["Cache-Control"] = "private, max-age=86400"
+    return response
 
 
 @require_POST
 def logbook_delete(request, pk):
     if not request.user.is_authenticated:
         return _sign_in_redirect(request)
-    _editable_entry(request, pk).delete()
+    logbook.delete_entry(_editable_entry(request, pk))
     return redirect("logbook-list")
 
 

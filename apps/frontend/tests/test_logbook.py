@@ -286,3 +286,59 @@ def test_only_the_dm_and_admins_can_post_as_dm(client, alice, bob, settings, tmp
 
     settings.ADMIN_ACCOUNTS = ["alice"]
     assert "DM</option>" in client.get("/logbook/new/?kind=personal").content.decode()
+
+
+def _png(color="red"):
+    from io import BytesIO
+
+    from django.core.files.uploadedfile import SimpleUploadedFile
+    from PIL import Image
+
+    out = BytesIO()
+    Image.new("RGB", (40, 30), color).save(out, "PNG")
+    return SimpleUploadedFile("p.png", out.getvalue(), content_type="image/png")
+
+
+def test_pictures_can_be_added_on_create_and_later_on_edit_and_removed(
+    client, alice, settings, tmp_path
+):
+    settings.MEDIA_ROOT = tmp_path
+    client.force_login(alice)
+    client.post(
+        "/logbook/new/",
+        {"date": "2026-09-01", "title": "T", "text": "x", "images": [_png(), _png("blue")]},
+    )
+    entry = LogEntry.objects.get()
+    assert entry.images.count() == 2
+
+    client.post(
+        f"/logbook/{entry.pk}/edit/",
+        {
+            "date": "2026-09-01",
+            "title": "T",
+            "text": "x",
+            "remove_image": [entry.images.first().pk],
+            "images": [_png("green")],
+        },
+    )
+    assert entry.images.count() == 2
+
+    html = client.get("/logbook/").content.decode()
+    first = entry.images.first()
+    assert f"/logbook/image/{first.pk}/" in html
+    assert client.get(f"/logbook/image/{first.pk}/")["Content-Type"] == "image/webp"
+
+    client.post(f"/logbook/{entry.pk}/delete/")
+    assert not LogEntry.objects.exists()
+
+
+def test_a_bad_picture_rejects_the_whole_entry(client, alice, settings, tmp_path):
+    settings.MEDIA_ROOT = tmp_path
+    from django.core.files.uploadedfile import SimpleUploadedFile
+
+    client.force_login(alice)
+    bad = SimpleUploadedFile("p.png", b"nope", content_type="image/png")
+    response = client.post("/logbook/new/", {"date": "2026-09-01", "title": "T", "images": [bad]})
+
+    assert response.status_code == 200
+    assert not LogEntry.objects.exists()

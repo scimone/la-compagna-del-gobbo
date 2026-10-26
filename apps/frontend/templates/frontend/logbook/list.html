@@ -62,6 +62,9 @@
   .log-entry.dm .log-bubble::before { border-width: 2px; }
   .log-entry.dm .log-char { padding: 0.05rem 0.55rem; border-radius: 1rem; background: var(--accent); color: var(--accent-text); font-size: 0.8rem; letter-spacing: 0.06em; }
   .log-entry.dm .log-field.log-text p, .log-entry.dm .log-field.log-text li { font-weight: 500; }
+  .log-pics { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .log-pics button { appearance: none; padding: 0; border: 0; background: none; cursor: zoom-in; }
+  .log-pics img { display: block; height: 9rem; max-width: 100%; width: auto; min-width: 5rem; object-fit: cover; border-radius: 0.5rem; border: 1px solid var(--border); }
   /* Pictures open full-size, unzoomed, in a lightbox. */
   button.log-avatar { appearance: none; padding: 0; border: 0; cursor: zoom-in; }
   dialog.pic-dialog { max-width: 94vw; max-height: 90vh; padding: 0; border: 0; background: transparent; overflow: visible; }
@@ -106,6 +109,7 @@
                 {% include "frontend/logbook/_actions.html" %}
               </div>
               <div class="log-field log-text">{{ row.fields.text }}</div>
+              {% include "frontend/logbook/_images.html" %}
             </div>
           </li>
           {% else %}
@@ -120,6 +124,7 @@
                 {% include "frontend/logbook/_actions.html" %}
               </div>
               {% if row.fields.text %}<div class="log-field log-text">{{ row.fields.text }}</div>{% endif %}
+              {% include "frontend/logbook/_images.html" %}
             </div>
           </li>
           {% endif %}

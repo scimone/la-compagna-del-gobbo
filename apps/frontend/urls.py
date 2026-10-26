@@ -125,6 +125,7 @@ urlpatterns = [
     path("logbook/", logbook_views.logbook_list, name="logbook-list"),
     path("logbook/preview/", logbook_views.logbook_preview, name="logbook-preview"),
     path("logbook/new/", logbook_views.logbook_new, name="logbook-new"),
+    path("logbook/image/<int:pk>/", logbook_views.logbook_image, name="logbook-image"),
     path("logbook/<int:pk>/edit/", logbook_views.logbook_edit, name="logbook-edit"),
     path("logbook/<int:pk>/delete/", logbook_views.logbook_delete, name="logbook-delete"),
     path("admin-panel/", admin_views.panel_home, name="admin-panel"),
