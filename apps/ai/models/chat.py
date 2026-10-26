@@ -31,6 +31,9 @@ class ChatMessage(models.Model):
     thread = models.ForeignKey(ChatThread, on_delete=models.CASCADE, related_name="messages")
     role = models.CharField(max_length=10, choices=Role.choices)
     content = models.TextField()
+    #: What the assistant looked up while answering (assistant messages): a list of
+    #: `{"kind": "search" | "read", "query" | "title", "url", "count", "hits": [...], "error"}`.
+    activity = models.JSONField(default=list, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

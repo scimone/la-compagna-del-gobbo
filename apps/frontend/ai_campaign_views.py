@@ -2,6 +2,7 @@
 its key, and per-user usage. For the campaign's DM and administrators; anyone else gets a 404."""
 
 from django.core.paginator import Paginator
+from django.db.models import Max
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -129,11 +130,12 @@ def ai_requests(request, pk):
     if status in AIRequestLog.Status.values:
         queryset = queryset.filter(status=status)
     page = Paginator(queryset, PAGE_SIZE).get_page(request.GET.get("page"))
-    users = (
+    people = (
         AIRequestLog.objects.filter(campaign=campaign)
-        .order_by("username")
-        .values_list("username", flat=True)
-        .distinct()
+        .exclude(username="")
+        .values("username")
+        .annotate(name=Max("display_name"))
+        .order_by("name", "username")
     )
     with timezone.override(TIME_ZONE):
         return _page(
@@ -145,7 +147,7 @@ def ai_requests(request, pk):
                 "page": page,
                 "selected": selected,
                 "status": status,
-                "users": [u for u in users if u],
+                "users": [(p["username"], p["name"] or p["username"]) for p in people],
             },
         )
 

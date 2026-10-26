@@ -2,6 +2,7 @@
 `search_handbook` finds pages, `read_page` returns one page's text. Both return plain text with
 the app's own page addresses, which the model is told to use as links in its answers."""
 
+import html
 import re
 
 from django.urls import Resolver404, resolve, reverse
@@ -12,6 +13,7 @@ from apps.rules import models as rules
 
 MAX_RESULT_CHARS = 7000
 MAX_SEARCH_HITS = 6
+MAX_UI_HITS = 8
 
 TOOLS = [
     {
@@ -96,46 +98,62 @@ _PAGES = {
 
 
 def _collapse(text: str) -> str:
-    return re.sub(r"\s+", " ", strip_tags(str(text))).strip()
+    return re.sub(r"\s+", " ", html.unescape(strip_tags(str(text)))).strip()
 
 
 def _clip(text: str, limit: int = MAX_RESULT_CHARS) -> str:
     return text if len(text) <= limit else text[:limit].rstrip() + "\n[…cut]"
 
 
-def search_handbook(query: str, category: str = "") -> str:
+def _search(query: str, category: str = "") -> tuple[str, dict]:
+    """(text for the model, what the page shows: query, total and the first few hits)."""
     from apps.frontend import views
 
     query = str(query).strip()
+    ui = {"kind": "search", "query": query, "count": 0, "hits": []}
     if len(query) < 2:
-        return "Query too short."
+        return "Query too short.", {**ui, "error": "too short"}
     groups = views._global_search(query)
     if category:
         groups = [g for g in groups if g["key"] == category]
     if not groups:
-        return "No pages found."
-    lines = []
+        return "No pages found.", ui
+    lines, picked = [], []
     for group in groups:
-        lines.append(f"## {_collapse(group['label'])} ({group['total']} found)")
+        label = _collapse(group["label"])
+        lines.append(f"## {label} ({group['total']} found)")
+        ui["count"] += group["total"]
+        rows = []
         for item in group["items"][:MAX_SEARCH_HITS]:
-            lines.append(
-                f"- {_collapse(item['name'])} — {item['url']} — {_collapse(item['detail'])[:260]}"
-            )
-    return _clip("\n".join(lines))
+            name = _collapse(item["name"])
+            lines.append(f"- {name} — {item['url']} — {_collapse(item['detail'])[:260]}")
+            rows.append({"name": name, "url": item["url"], "group": label})
+        picked.append(rows)
+    # The chips on the page: the best row of each category first, then the next best, ...
+    for rank in range(MAX_SEARCH_HITS):
+        for rows in picked:
+            if rank < len(rows) and len(ui["hits"]) < MAX_UI_HITS:
+                ui["hits"].append(rows[rank])
+    return _clip("\n".join(lines)), ui
 
 
-def read_page(path: str) -> str:
+def search_handbook(query: str, category: str = "") -> str:
+    return _search(query, category)[0]
+
+
+def _read(path: str) -> tuple[str, dict]:
+    ui = {"kind": "read", "title": str(path), "url": ""}
     try:
         match = resolve(str(path).split("?")[0])
     except Resolver404:
-        return "No such page."
+        return "No such page.", {**ui, "error": "not found"}
     spec = _PAGES.get(match.url_name)
     if spec is None:
-        return "That page cannot be read with this tool."
+        return "That page cannot be read with this tool.", {**ui, "error": "not readable"}
     model, facts, fields = spec
     obj = model.objects.filter(pk=match.kwargs.get("pk")).first()
     if obj is None:
-        return "No such page."
+        return "No such page.", {**ui, "error": "not found"}
     lines = [f"# {_collapse(obj.name)}  ({path})"]
     for name in facts:
         value = getattr(obj, name, None)
@@ -155,12 +173,22 @@ def read_page(path: str) -> str:
                 f"- Level {feature.class_level.level}: {feature.name} — "
                 f"{reverse('world-feature-detail', args=[feature.pk])}"
             )
-    return _clip("\n\n".join(lines))
+    ui.update(title=_collapse(obj.name), url=str(path).split("?")[0])
+    return _clip("\n\n".join(lines)), ui
+
+
+def read_page(path: str) -> str:
+    return _read(path)[0]
+
+
+def run_ui(name: str, arguments: dict) -> tuple[str, dict]:
+    """Run a tool: (text for the model, summary of what was looked up for the chat page)."""
+    if name == "search_handbook":
+        return _search(arguments.get("query", ""), arguments.get("category", ""))
+    if name == "read_page":
+        return _read(arguments.get("path", ""))
+    return f"Unknown tool {name}.", {"kind": "unknown", "error": name}
 
 
 def run(name: str, arguments: dict) -> str:
-    if name == "search_handbook":
-        return search_handbook(arguments.get("query", ""), arguments.get("category", ""))
-    if name == "read_page":
-        return read_page(arguments.get("path", ""))
-    return f"Unknown tool {name}."
+    return run_ui(name, arguments)[0]

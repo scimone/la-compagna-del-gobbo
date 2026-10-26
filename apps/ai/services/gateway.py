@@ -11,7 +11,7 @@ from django.utils.translation import gettext as _
 
 from apps.ai.models import AIRequestLog, AISettings
 from apps.ai.services import crypto, urlcheck
-from apps.frontend import llm
+from apps.frontend import accounts, llm
 
 log = logging.getLogger(__name__)
 
@@ -44,6 +44,9 @@ def log_failure(
     entry = AIRequestLog.objects.create(
         user=user if getattr(user, "is_authenticated", False) else None,
         username=getattr(user, "username", "") or "",
+        display_name=accounts.display_name(user)
+        if getattr(user, "is_authenticated", False)
+        else "",
         campaign=campaign,
         thread=thread,
         purpose=purpose,
@@ -58,7 +61,7 @@ def log_failure(
     return entry
 
 
-def ask(
+def converse(
     messages: list[dict],
     *,
     campaign,
@@ -68,9 +71,12 @@ def ask(
     tools: list[dict] | None = None,
     run_tool=None,
     allow_private: bool = False,
-) -> str:
-    """Send `messages`; if the model calls `tools`, run them with `run_tool(name, args) -> str`
-    and go on until it answers. Returns the reply text."""
+    stream: bool = False,
+):
+    """Talk to the model; a generator of events: ("ping",), ("delta", text) while the answer is
+    written (only with `stream`), ("tool_start", {id, name, args}) and ("tool_end", {id, name, ui})
+    around each tool the model calls (`run_tool(name, args)` -> text or (text, ui)), and finally
+    ("done", reply). Logs the ask in `AIRequestLog`; raises `AIUnavailable` when it fails."""
     config = AISettings.for_campaign(campaign)
     if purpose != AIRequestLog.Purpose.TEST and not config.enabled:
         raise AIUnavailable(_("The AI assistant is switched off."))
@@ -79,18 +85,16 @@ def ask(
         raise AIUnavailable(_("The AI assistant is not configured yet."))
     messages = list(messages)
     started = time.monotonic()
+    failed = {"campaign": campaign, "user": user, "thread": thread, "purpose": purpose}
     if not (config.allow_private_url or allow_private) and not urlcheck.is_public(base):
         log_failure(
-            campaign,
-            user=user,
-            thread=thread,
-            purpose=purpose,
             messages=messages,
             model=config.model,
             started=started,
             error="URL not allowed",
-            detail=f"{base} does not resolve to a public address, and an administrator has not "
-            "approved it.",
+            detail=f"{base} does not resolve to a public address, and an administrator has "
+            "not approved it.",
+            **failed,
         )
         raise AIUnavailable(_("The AI assistant could not answer right now."))
     key = crypto.decrypt(config.api_key_encrypted)
@@ -99,14 +103,10 @@ def ask(
     prompt_tokens = completion_tokens = total_tokens = 0
     reply = ""
     try:
-        for _round in range(MAX_TOOL_ROUNDS + 1):
-            message, usage = llm.chat_message(
-                base,
-                key,
-                config.model,
-                messages,
-                tools=tools if use_tools and _round < MAX_TOOL_ROUNDS else None,
-                timeout=TIMEOUT_SECONDS,
+        for round_ in range(MAX_TOOL_ROUNDS + 1):
+            offered = tools if use_tools and round_ < MAX_TOOL_ROUNDS else None
+            message, usage = yield from _model_round(
+                stream, base, key, config.model, messages, offered
             )
             prompt_tokens += _int(usage.get("prompt_tokens"))
             completion_tokens += _int(usage.get("completion_tokens"))
@@ -125,33 +125,39 @@ def ask(
                 {"role": "assistant", "content": message.get("content") or "", "tool_calls": calls}
             )
             for call in calls:
-                messages.append(_run_call(call, run_tool))
+                result = yield from _run_call(call, run_tool)
+                messages.append(result)
         else:  # pragma: no cover - the last round passes no tools, so the loop breaks
             raise llm.LLMError("too many tool rounds")
     except llm.LLMError as error:
         log_failure(
-            campaign,
-            user=user,
-            thread=thread,
-            purpose=purpose,
             messages=messages,
             model=config.model,
             started=started,
             error=str(error),
             detail=getattr(error, "detail", "") or "",
+            **failed,
         )
         raise AIUnavailable(_("The AI assistant could not answer right now.")) from None
+    except GeneratorExit:  # the reader went away mid-answer
+        log_failure(
+            messages=messages,
+            model=config.model,
+            started=started,
+            error="interrupted: the client closed the connection",
+            **failed,
+        )
+        raise
+    except AIUnavailable:
+        raise
     except Exception:
         log_failure(
-            campaign,
-            user=user,
-            thread=thread,
-            purpose=purpose,
             messages=messages,
             model=config.model,
             started=started,
             error="unexpected error",
             detail=traceback.format_exc(),
+            **failed,
         )
         raise AIUnavailable(_("The AI assistant could not answer right now.")) from None
 
@@ -162,6 +168,9 @@ def ask(
     AIRequestLog.objects.create(
         user=user if getattr(user, "is_authenticated", False) else None,
         username=getattr(user, "username", "") or "",
+        display_name=accounts.display_name(user)
+        if getattr(user, "is_authenticated", False)
+        else "",
         campaign=campaign,
         thread=thread,
         purpose=purpose,
@@ -174,21 +183,63 @@ def ask(
         total_tokens=total_tokens or prompt_tokens + completion_tokens,
         latency_ms=int((time.monotonic() - started) * 1000),
     )
+    yield ("done", reply)
+
+
+def _model_round(stream, base, key, model, messages, tools):
+    """One request to the model -> (message, usage); yields ping/delta events when streaming."""
+    if not stream:
+        return llm.chat_message(base, key, model, messages, tools=tools, timeout=TIMEOUT_SECONDS)
+    message, usage = None, {}
+    for kind, value in llm.chat_stream(
+        base, key, model, messages, tools=tools, timeout=TIMEOUT_SECONDS
+    ):
+        if kind == "message":
+            message = value
+        elif kind == "usage":
+            usage = value
+        else:
+            yield (kind, value)
+    if message is None:
+        raise llm.LLMError("unexpected LLM response", "the stream ended without a message")
+    return message, usage
+
+
+def ask(messages: list[dict], **kwargs) -> str:
+    """`converse`, not streamed, to its final reply."""
+    reply = ""
+    for kind, value in converse(messages, **kwargs):
+        if kind == "done":
+            reply = value
     return reply
 
 
-def _run_call(call, run_tool) -> dict:
-    """One tool call of the model -> the `tool` message answering it. Errors go back to the model
-    as text (it can recover) and into the log through the transcript."""
+def _run_call(call, run_tool):
+    """Run one tool call of the model, announcing it; returns the `tool` message answering it.
+    Errors go back to the model as text (it can recover) and show in the page as a failed step."""
     call_id = call.get("id", "") if isinstance(call, dict) else ""
     function = call.get("function", {}) if isinstance(call, dict) else {}
     name = function.get("name", "")
+    arguments = {}
     try:
         arguments = json.loads(function.get("arguments") or "{}")
         if not isinstance(arguments, dict):
+            arguments = {}
             raise ValueError("arguments are not an object")
-        result = run_tool(name, arguments)
-    except Exception as error:
-        log.warning("AI tool %s failed: %s", name, error, exc_info=True)
-        result = f"Error: {type(error).__name__}: {error}"
+    except ValueError as error:
+        yield ("tool_start", {"id": call_id, "name": name, "args": {}})
+        result, ui = (
+            f"Error: {type(error).__name__}: {error}",
+            {"kind": "unknown", "error": str(error)},
+        )
+    else:
+        yield ("tool_start", {"id": call_id, "name": name, "args": arguments})
+        try:
+            outcome = run_tool(name, arguments)
+            result, ui = outcome if isinstance(outcome, tuple) else (outcome, {})
+        except Exception as error:
+            log.warning("AI tool %s failed: %s", name, error, exc_info=True)
+            result = f"Error: {type(error).__name__}: {error}"
+            ui = {"kind": "unknown", "error": str(error)}
+    yield ("tool_end", {"id": call_id, "name": name, "args": arguments, "ui": ui})
     return {"role": "tool", "tool_call_id": call_id, "content": str(result)}

@@ -9,7 +9,7 @@ from apps.ai.models import AISettings
 from apps.builder.services import derived_stats
 from apps.characters.models import Character
 from apps.characters.services import access
-from apps.frontend import logbook
+from apps.frontend import accounts, logbook
 from apps.frontend.character_sheet import shown_backstory
 from apps.frontend.models import LogEntry
 
@@ -58,7 +58,7 @@ def _character_block(character: Character, *, is_player: bool) -> str:
     lines = [
         f"### {character.name}" + (" (the asking player's character)" if is_player else ""),
         f"Page: {reverse('character-detail', args=[character.pk])}",
-        f"Owner: {character.owner.get_username() if character.owner else 'none'}",
+        f"Owner: {accounts.display_name(character.owner) if character.owner else 'none'}",
         f"{character.species.name if character.species else '?'}"
         f" {classes or 'no class'}; background "
         f"{character.background.name if character.background else '?'}; "
@@ -224,7 +224,7 @@ def build(user, campaign, player: Character | None, language: str | None = None)
         if config.system_prompt_extra.strip()
         else "",
         player=(
-            f"The asking player is {user.get_username()}"
+            f"The asking player is {accounts.display_name(user)}"
             + (f", playing {player.name}." if player else ".")
         ),
     )

@@ -46,6 +46,7 @@ def per_user(queryset) -> list[dict]:
             completion_tokens=Sum("completion_tokens", default=0),
             tokens=Sum("total_tokens", default=0),
             last_used=Max("created_at"),
+            display_name=Max("display_name"),
         )
         .order_by("-tokens", "username")
     )

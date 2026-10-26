@@ -38,6 +38,9 @@ self.addEventListener("fetch", function (event) {
   // A character's PDF export is a large one-off download: straight to the network, never cached.
   if (requestUrl.pathname.endsWith("/export-pdf/")) return;
 
+  // The chat's streamed answers go straight to the network: nothing may sit between them and the page.
+  if (requestUrl.pathname.indexOf("/chat/send/") === 0) return;
+
   if (requestUrl.origin === location.origin) {
     // Network-first: every page here can depend on the language cookie/session, so a cached
     // response would silently ignore a language switch (this is exactly what happened when

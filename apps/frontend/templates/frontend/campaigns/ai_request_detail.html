@@ -6,7 +6,7 @@
 {% block content %}
   <div class="aipanel">
     <div class="card">
-      <div><b>{{ log.username|default:"-" }}</b> · {{ log.get_purpose_display }} · {{ log.created_at|date:"j M Y H:i:s" }}</div>
+      <div><b>{{ log.display_name|default:log.username|default:"-" }}</b> · {{ log.get_purpose_display }} · {{ log.created_at|date:"j M Y H:i:s" }}</div>
       <small>{{ log.model }} · {{ log.get_status_display }} · {{ log.prompt_tokens }} + {{ log.completion_tokens }} = {{ log.total_tokens }} {% translate "tokens" %} · {{ log.latency_ms }} ms{% if log.campaign %} · {{ log.campaign.name }}{% endif %}</small>
       {% if log.error %}<p class="error">{{ log.error }}</p>{% endif %}
     </div>

@@ -3587,3 +3587,52 @@ msgstr "modelli disponibili - clicca il campo per scegliere"
 
 msgid "tool call"
 msgstr "chiamata a strumento"
+
+msgid "Ask what your character could do next, how to play a turn of a fight, or anything about the rules. I know the logbook, the party's characters and the handbook."
+msgstr "Chiedi cosa potrebbe fare il tuo personaggio, come giocare un turno di combattimento o qualsiasi cosa sulle regole. Conosco il diario di bordo, i personaggi del gruppo e il manuale."
+
+msgid "Copied"
+msgstr "Copiato"
+
+msgid "Couldn't open that page"
+msgstr "Impossibile aprire quella pagina"
+
+msgid "Delete this chat for good?"
+msgstr "Eliminare questa chat per sempre?"
+
+msgid "New"
+msgstr "Nuova"
+
+msgid "No chats yet. Ask the assistant something and it will show up here."
+msgstr "Ancora nessuna chat. Fai una domanda all'assistente e comparirà qui."
+
+msgid "Nothing usable for “%(q)s”"
+msgstr "Niente di utile per “%(q)s”"
+
+msgid "Opening a handbook page…"
+msgstr "Apro una pagina del manuale…"
+
+msgid "Past chats"
+msgstr "Chat passate"
+
+msgid "Searched the handbook for “%(q)s”"
+msgstr "Cercato nel manuale “%(q)s”"
+
+msgid "Searching the handbook for “%(q)s”…"
+msgstr "Cerco nel manuale “%(q)s”…"
+
+msgid "open"
+msgstr "aperta"
+
+msgid "%(n)s message"
+msgid_plural "%(n)s messages"
+msgstr[0] "%(n)s messaggio"
+msgstr[1] "%(n)s messaggi"
+
+msgid "%(n)s page"
+msgid_plural "%(n)s pages"
+msgstr[0] "%(n)s pagina"
+msgstr[1] "%(n)s pagine"
+
+msgid "Playing as: nobody"
+msgstr "Interpreto: nessuno"

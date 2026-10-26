@@ -49,8 +49,36 @@ def replies(monkeypatch):
         sent.append(list(messages))
         return {"content": "You could **attack**."}, {"total_tokens": 20}
 
+    def fake_stream(base, key, model, messages, **kwargs):
+        sent.append(list(messages))
+        yield ("delta", "You could ")
+        yield ("delta", "**attack**.")
+        yield ("message", {"content": "You could **attack**."})
+        yield ("usage", {"total_tokens": 20})
+
     monkeypatch.setattr(llm, "chat_message", fake)
+    monkeypatch.setattr(llm, "chat_stream", fake_stream)
     return sent
+
+
+def stream(client, thread, message):
+    """POST a question; the server-sent events that come back as [(name, data)]."""
+    import json
+
+    response = client.post("/chat/send/", {"thread": thread.pk, "message": message})
+    assert response.status_code == 200, response.status_code
+    from asgiref.sync import async_to_sync
+
+    async def collect():
+        return [chunk async for chunk in response]
+
+    body = b"".join(async_to_sync(collect)()).decode()
+    events = []
+    for block in body.split("\n\n"):
+        lines = block.strip().split("\n")
+        if lines and lines[0].startswith("event:"):
+            events.append((lines[0][6:].strip(), json.loads(lines[1][5:])))
+    return response, events
 
 
 def test_context_holds_the_logbook_and_the_character_sheet(alice, hero):
@@ -170,14 +198,24 @@ def test_the_chat_menu(client, alice, hero, configured, replies):
     client.force_login(alice)
     page = client.get("/chat/").content.decode()
     assert 'data-menu="chat"' in page and "Brienne" in page
+    thread = chat.current_thread(alice, hero.campaign)
 
-    response = client.post("/chat/send/", {"message": "<b>hi</b>"})
-    assert response.status_code == 200
-    assert "<strong>attack</strong>" in response.json()["html"]
-    assert "&lt;b&gt;hi" in client.get("/chat/").content.decode()  # the question is escaped
+    response, events = stream(client, thread, "<b>hi</b>")
+    assert response["Content-Type"].startswith("text/event-stream")
+    assert (
+        response["Content-Encoding"] == "identity" and "no-transform" in response["Cache-Control"]
+    )
+    names = [name for name, _data in events]
+    assert names[-1] == "done" and "error" not in names
+    assert "<strong>attack</strong>" in events[-1][1]["html"]
+    page = client.get("/chat/").content.decode()
+    assert "&lt;b&gt;hi" in page  # the question is escaped
+    assert page.count("data-copy-button") == 2 + 1  # two bubbles + the template for new ones
 
-    assert client.post("/chat/send/", {"message": ""}).status_code == 400
-    assert client.post("/chat/character/", {"character": ""}).status_code == 200
+    _r, events = stream(client, thread, "")
+    assert events == [("error", {"message": "Write a question first."})]
+    data = {"thread": thread.pk, "character": ""}
+    assert client.post("/chat/character/", data).status_code == 204
     assert client.post("/chat/new/").status_code == 302
     assert client.get("/chat/").content.decode().count('class="bubble') == 0
 
@@ -185,7 +223,7 @@ def test_the_chat_menu(client, alice, hero, configured, replies):
 def test_the_menu_is_hidden_until_the_assistant_is_on(client, alice, hero):
     client.force_login(alice)
     assert client.get("/chat/").status_code == 404
-    assert client.post("/chat/send/", {"message": "hi"}).status_code == 404
+    assert client.post("/chat/send/", {"thread": 1, "message": "hi"}).status_code == 404
     assert 'data-menu="chat"' not in client.get("/characters/").content.decode()
 
 
@@ -237,40 +275,51 @@ def test_the_tools_search_and_read_the_handbook(db):
     assert len(handbook_tools.run("read_page", {"path": "/world/classes/fighter/"})) <= 7100
 
 
-def test_a_chat_can_use_tools_and_link_to_what_it_found(
+def test_a_chat_shows_its_lookups_and_links_to_what_it_found(
     client, alice, hero, configured, monkeypatch
 ):
+    calls = {
+        "content": None,
+        "tool_calls": [
+            {
+                "id": "1",
+                "function": {"name": "search_handbook", "arguments": '{"query": "fireball"}'},
+            }
+        ],
+    }
     answers = [
-        (
-            {
-                "content": None,
-                "tool_calls": [
-                    {
-                        "id": "1",
-                        "function": {
-                            "name": "search_handbook",
-                            "arguments": '{"query": "fireball"}',
-                        },
-                    }
-                ],
-            },
-            {},
-        ),
-        (
-            {
-                "content": "Try [Fireball](/world/spells/fireball/) or [a fake](https://evil.example/).",
-            },
-            {},
-        ),
+        calls,
+        {"content": "Try [Fireball](/world/spells/fireball/) or [a fake](https://evil.example/)."},
     ]
-    monkeypatch.setattr(llm, "chat_message", lambda *a, **k: answers.pop(0))
+
+    def fake_stream(*args, **kwargs):
+        message = answers.pop(0)
+        if message["content"]:
+            yield ("delta", message["content"])
+        yield ("message", message)
+
+    monkeypatch.setattr(llm, "chat_stream", fake_stream)
     client.force_login(alice)
-    html = client.post("/chat/send/", {"message": "Any good spells?"}).json()["html"]
+    thread = chat.new_thread(alice, hero.campaign)
+    _r, events = stream(client, thread, "Any good spells?")
+    names = [name for name, _data in events]
+    assert names[0] == "step_start" and "step_end" in names and names[-1] == "done"
+    start, end = events[0][1], events[names.index("step_end")][1]
+    assert start["id"] == end["id"] == "1"
+    assert "step-running" in start["html"] and "fireball" in start["html"]
+    assert "step-done" in end["html"] and "/world/spells/fireball/" in end["html"]
+    html = events[-1][1]["html"]
     assert '<a href="/world/spells/fireball/"' in html
     assert "evil.example" not in html and "a fake" in html
+
+    answer = thread.messages.last()
+    assert answer.activity[0]["kind"] == "search" and answer.activity[0]["query"] == "fireball"
+    assert any(h["url"] == "/world/spells/fireball/" for h in answer.activity[0]["hits"])
     log = AIRequestLog.objects.get()
     assert [m["role"] for m in log.request_json][-2:] == ["assistant", "tool"]
-    assert "/world/spells/fireball/" in log.request_json[-1]["content"]
+    # the lookups are shown again when the chat is reopened
+    page = client.get(f"/chat/t/{thread.pk}/").content.decode()
+    assert "step-done" in page and "Searched the handbook for" in page
 
 
 def test_a_crash_while_building_the_context_is_logged_with_its_traceback(

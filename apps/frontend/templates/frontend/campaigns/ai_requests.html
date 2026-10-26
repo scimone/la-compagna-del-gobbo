@@ -8,7 +8,7 @@
     <form method="get" class="row" data-nav="replace">
       <select name="user" aria-label="{% translate 'User' %}" onchange="this.form.submit()" style="flex:1">
         <option value="">{% translate "Everyone" %}</option>
-        {% for u in users %}<option value="{{ u }}" {% if u == selected %}selected{% endif %}>{{ u }}</option>{% endfor %}
+        {% for username, name in users %}<option value="{{ username }}" {% if username == selected %}selected{% endif %}>{{ name }}</option>{% endfor %}
       </select>
       <select name="status" aria-label="{% translate 'Status' %}" onchange="this.form.submit()" style="flex:1">
         <option value="">{% translate "All" %}</option>
@@ -19,7 +19,7 @@
     </form>
     {% for r in page %}
       <a class="item{% if r.status == 'error' %} failed{% endif %}" href="{% url 'campaign-ai-request' campaign.pk r.pk %}">
-        <b>{{ r.username|default:"-" }}</b> · {{ r.get_purpose_display }} · {{ r.created_at|date:"j M H:i:s" }}
+        <b>{{ r.display_name|default:r.username|default:"-" }}</b> · {{ r.get_purpose_display }} · {{ r.created_at|date:"j M H:i:s" }}
         <small>{{ r.total_tokens }} {% translate "tokens" %} · {{ r.latency_ms }} ms{% if r.error %} · {{ r.error }}{% endif %}</small>
         <small>{{ r.response_text|truncatechars:140 }}</small>
       </a>

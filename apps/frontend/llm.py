@@ -12,7 +12,9 @@ it is stored - same keys, plain strings, a bounded length - and is only ever dis
 
 import json
 import os
+import queue
 import re
+import threading
 import urllib.error
 import urllib.request
 from urllib.parse import urlparse
@@ -85,6 +87,32 @@ def _scrub(text: str, key: str) -> str:
     return text.replace(key, "***") if key else text
 
 
+def _transport_error(os_error, request, key: str, error):
+    """The `error` to raise for a failed request: an HTTP status (with the provider's response
+    body in `detail`) or an unreachable host. The key is scrubbed from the detail."""
+    url, method = request.full_url, request.get_method()
+    if isinstance(os_error, urllib.error.HTTPError):
+        try:
+            body = os_error.read(4000).decode("utf-8", "replace")
+        except Exception:
+            body = ""
+        where = (
+            os_error.headers.get("Location", "")
+            if os_error.code in (301, 302, 303, 307, 308)
+            else ""
+        )
+        detail = f"{method} {url}\nHTTP {os_error.code} {os_error.reason}"
+        detail += f"\nRedirect to: {where}" if where else ""
+        detail += f"\nResponse body: {body}" if body else ""
+        failure = error(f"LLM returned HTTP {os_error.code}", _scrub(detail, key))
+        failure.status = os_error.code
+        failure.body = body
+        return failure
+    reason = getattr(os_error, "reason", os_error)
+    detail = f"{method} {url}\n{type(os_error).__name__}: {reason}"
+    return error("LLM is unreachable", _scrub(detail, key))
+
+
 def _post_json(url: str, payload: dict | None, key: str, timeout: int, error) -> dict:
     """GET (no `payload`) or POST JSON to `url`; returns the decoded JSON object. Never follows
     redirects; raises `error` with a safe message and a detailed, key-free `detail`."""
@@ -98,24 +126,8 @@ def _post_json(url: str, payload: dict | None, key: str, timeout: int, error) ->
     try:
         with opener.open(request, timeout=timeout) as response:
             raw = response.read(MAX_RESPONSE_BYTES + 1)
-    except urllib.error.HTTPError as http_error:
-        try:
-            body = http_error.read(4000).decode("utf-8", "replace")
-        except Exception:
-            body = ""
-        where = (
-            http_error.headers.get("Location", "")
-            if http_error.code in (301, 302, 303, 307, 308)
-            else ""
-        )
-        detail = f"{request.method} {url}\nHTTP {http_error.code} {http_error.reason}"
-        detail += f"\nRedirect to: {where}" if where else ""
-        detail += f"\nResponse body: {body}" if body else ""
-        raise error(f"LLM returned HTTP {http_error.code}", _scrub(detail, key)) from None
     except (urllib.error.URLError, OSError) as os_error:
-        reason = getattr(os_error, "reason", os_error)
-        detail = f"{request.method} {url}\n{type(os_error).__name__}: {reason}"
-        raise error("LLM is unreachable", _scrub(detail, key)) from None
+        raise _transport_error(os_error, request, key, error) from None
     if len(raw) > MAX_RESPONSE_BYTES:
         raise error(
             "LLM response too large",
@@ -164,6 +176,152 @@ def chat_message(
         raise error("unexpected LLM response", f"POST {url}\nmessage is not an object")
     usage = data.get("usage")
     return message, usage if isinstance(usage, dict) else {}
+
+
+#: Seconds without a byte from the model before `chat_stream` yields a ping, so the page's
+#: connection (and Cloudflare's 100 s idle limit) stays alive while a slow model thinks.
+PING_SECONDS = 10
+
+
+def _read_stream(request, key, timeout, error, out: queue.Queue, stop: threading.Event):
+    """Reader thread: parse the server-sent events of `request` into `out` (no Django here)."""
+    opener = urllib.request.build_opener(_NoRedirect)
+    try:
+        with opener.open(request, timeout=timeout) as response:
+            if "json" in (response.headers.get("Content-Type") or "") and "event-stream" not in (
+                response.headers.get("Content-Type") or ""
+            ):
+                # The provider ignored `stream`: one ordinary JSON answer.
+                out.put(("whole", json.loads(response.read(MAX_RESPONSE_BYTES + 1))))
+                return
+            received = 0
+            for raw in response:
+                if stop.is_set():
+                    return
+                received += len(raw)
+                if received > 20 * MAX_RESPONSE_BYTES:
+                    raise error("LLM response too large", "stream exceeded the size limit")
+                line = raw.decode("utf-8", "replace").strip()
+                if not line.startswith("data:"):
+                    continue
+                data = line[5:].strip()
+                if data == "[DONE]":
+                    return
+                try:
+                    out.put(("chunk", json.loads(data)))
+                except ValueError:
+                    raise error(
+                        "unexpected LLM response", _scrub(f"Bad stream line: {data[:500]}", key)
+                    ) from None
+    except (urllib.error.URLError, OSError) as os_error:
+        out.put(("error", _transport_error(os_error, request, key, error)))
+    except Exception as failure:  # reported to the consumer, never lost in the thread
+        out.put(("error", failure))
+    finally:
+        out.put(("end", None))
+
+
+def chat_stream(
+    base: str,
+    key: str,
+    model: str,
+    messages: list[dict],
+    *,
+    tools: list[dict] | None = None,
+    timeout: int = TIMEOUT_SECONDS,
+    error=LLMError,
+):
+    """Stream a chat completion. Yields ("delta", text) as the answer is written, ("ping", None)
+    while the model is silent, then once ("message", {"content", "tool_calls"}) with the complete
+    reply and ("usage", {...}) if the provider reports it. Closing the generator stops the read."""
+    payload = {
+        "model": model,
+        "messages": messages,
+        "stream": True,
+        "stream_options": {"include_usage": True},
+    }
+    if tools:
+        payload["tools"] = tools
+    url = f"{base.rstrip('/')}/chat/completions"
+    for attempt in (1, 2):
+        request = urllib.request.Request(
+            url,
+            data=json.dumps(payload).encode(),
+            method="POST",
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {key}"},
+        )
+        out: queue.Queue = queue.Queue()
+        stop = threading.Event()
+        thread = threading.Thread(
+            target=_read_stream, args=(request, key, timeout, error, out, stop), daemon=True
+        )
+        thread.start()
+        content, calls, usage = [], {}, {}
+        failure = None
+        try:
+            while True:
+                try:
+                    kind, value = out.get(timeout=PING_SECONDS)
+                except queue.Empty:
+                    yield ("ping", None)
+                    continue
+                if kind == "end":
+                    break
+                if kind == "error":
+                    failure = value
+                    continue
+                chunks = [value] if kind == "chunk" else _whole_as_chunks(value)
+                for chunk in chunks:
+                    if isinstance(chunk.get("usage"), dict):
+                        usage = chunk["usage"]
+                    for choice in chunk.get("choices") or []:
+                        part = choice.get("delta") or choice.get("message") or {}
+                        if isinstance(part.get("content"), str) and part["content"]:
+                            content.append(part["content"])
+                            yield ("delta", part["content"])
+                        for call in part.get("tool_calls") or []:
+                            _merge_call(calls, call)
+        finally:
+            stop.set()
+        if failure is not None:
+            # Some providers reject `stream_options`: try once more without it.
+            if (
+                attempt == 1
+                and getattr(failure, "status", 0) == 400
+                and "stream_options" in (getattr(failure, "body", ""))
+            ):
+                payload.pop("stream_options")
+                continue
+            raise failure
+        message = {"content": "".join(content) or None}
+        if calls:
+            message["tool_calls"] = [calls[i] for i in sorted(calls)]
+        yield ("message", message)
+        if usage:
+            yield ("usage", usage)
+        return
+
+
+def _whole_as_chunks(data: dict) -> list[dict]:
+    """A non-streamed answer as the one chunk a stream would have carried."""
+    if not isinstance(data, dict):
+        return []
+    return [data]
+
+
+def _merge_call(calls: dict, delta: dict) -> None:
+    """Fold one streamed `tool_calls` fragment into `calls` (keyed by its index)."""
+    index = delta.get("index", len(calls))
+    call = calls.setdefault(
+        index, {"id": "", "type": "function", "function": {"name": "", "arguments": ""}}
+    )
+    if delta.get("id"):
+        call["id"] = delta["id"]
+    function = delta.get("function") or {}
+    if function.get("name"):
+        call["function"]["name"] += function["name"]
+    if function.get("arguments"):
+        call["function"]["arguments"] += function["arguments"]
 
 
 def chat_completion(

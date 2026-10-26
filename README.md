@@ -1380,7 +1380,39 @@ app itself is the client of an OpenAI-compatible `/chat/completions` endpoint.
   campaign's daily cap per user, the last 20 messages of the thread sent back. Threads
   (`ChatThread`, `ChatMessage`) are per user and campaign; *New chat* starts another.
 - Questions and campaign text go to whatever provider the DM configured; the settings page says so.
-- `POST /chat/send/` is a same-origin JSON action endpoint like `character_act`, not a public API.
+- **Streaming.** `POST /chat/send/` answers with server-sent events (`chat_views.py`, read by
+  `static/js/chat.js` through `fetch` + `ReadableStream`): `step_start`/`step_end` when the assistant
+  searches or reads the handbook (a quiet rail of steps above the answer: shimmering while it works,
+  a check and clickable chips for the pages found afterwards, kept with the message in
+  `ChatMessage.activity` and shown again when the chat is reopened), `text` (the answer so far,
+  already rendered and link-checked by the server, at most every 60 ms), `done` and `error`.
+  The provider is read with `llm.chat_stream` (a reader thread that also sends a ping every 10 s of
+  silence). The view returns an *async* generator that steps the sync one in the request's own
+  thread - a plain sync generator would be collected whole before ASGI sent a byte. Leaving the page
+  mid-answer logs an "interrupted" error and stores nothing. The test connection is not streamed.
+- **Past chats.** `/chat/history/` lists the user's chats in the campaign (first question, date,
+  messages, character), `/chat/t/<id>/` reopens one and continues it, a chat can be deleted; *New*
+  reuses a still-empty chat instead of piling up empty ones. Chats are private to their user.
+- Every message has a **Copy** button (the bubble's text). Logs and the AI pages name people by
+  their first name (`accounts.display_name`), not the e-mail used as username.
+- `POST /chat/send/` is a same-origin action endpoint like `character_act`, not a public API.
+
+##### Streaming behind Cloudflare
+
+The response carries `Content-Type: text/event-stream`, `Cache-Control: no-cache, no-transform`,
+`Content-Encoding: identity` (so `GZipMiddleware` and Cloudflare leave it alone) and
+`X-Accel-Buffering: no`, and the first bytes are sent at once; Cloudflare then passes the stream
+through (Tunnel and proxied DNS alike). If the answer still only appears all at once:
+1. Cloudflare dashboard -> *Rules -> Configuration/Compression Rules* (or *Speed -> Optimization*):
+   make sure nothing compresses or rewrites `/chat/send/` (Rocket Loader, Auto Minify and
+   "Brotli" must not apply to it); add a rule that disables them for URI path `/chat/send/`.
+2. A *Cache Rule* "Bypass cache" for `/chat/send/` (the `no-cache` header is normally enough).
+3. Free/Pro plans close a connection after 100 s with no byte (error 524); the 10 s ping keeps it
+   open, but a Cloudflare *Worker* or *Page Rule* in front must not buffer either.
+4. Behind a Tunnel nothing extra is needed; behind another reverse proxy (nginx, Traefik) turn
+   buffering off for that path (`proxy_buffering off;`, or keep the `X-Accel-Buffering: no`
+   header) and give it a read timeout above the longest answer.
+5. Cloudflare Access only has to let the signed-in session cookie through, as for every page.
 
 ## Not in scope (per the architecture doc)
 

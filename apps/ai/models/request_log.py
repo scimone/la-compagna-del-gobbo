@@ -19,6 +19,8 @@ class AIRequestLog(models.Model):
         settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
     )
     username = models.CharField(max_length=150, blank=True)
+    #: What to call them on screen (their first name, else the username), as of the request.
+    display_name = models.CharField(max_length=150, blank=True)
     campaign = models.ForeignKey(
         "campaigns.Campaign", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
     )
