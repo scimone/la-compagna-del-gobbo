@@ -1,0 +1,37 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+
+{% block extra_style %}{% include "frontend/admin/_ai_style.html" %}{% endblock %}
+
+{% block content %}
+  <div class="aipanel">
+    <form method="get" class="row" data-nav="replace">
+      <select name="user" aria-label="{% translate 'User' %}" onchange="this.form.submit()" style="flex:1">
+        <option value="">{% translate "Everyone" %}</option>
+        {% for u in users %}<option value="{{ u }}" {% if u == selected %}selected{% endif %}>{{ u }}</option>{% endfor %}
+      </select>
+      <select name="status" aria-label="{% translate 'Status' %}" onchange="this.form.submit()" style="flex:1">
+        <option value="">{% translate "All" %}</option>
+        <option value="ok" {% if status == "ok" %}selected{% endif %}>{% translate "Succeeded" %}</option>
+        <option value="error" {% if status == "error" %}selected{% endif %}>{% translate "Failed" %}</option>
+      </select>
+      <noscript><button type="submit">{% translate "Filter" %}</button></noscript>
+    </form>
+    {% for r in page %}
+      <a class="item{% if r.status == 'error' %} failed{% endif %}" href="{% url 'admin-ai-request' r.pk %}">
+        <b>{{ r.username|default:"-" }}</b> · {{ r.get_purpose_display }} · {{ r.created_at|date:"j M H:i:s" }}
+        <small>{{ r.total_tokens }} {% translate "tokens" %} · {{ r.latency_ms }} ms{% if r.error %} · {{ r.error }}{% endif %}</small>
+        <small>{{ r.response_text|truncatechars:140 }}</small>
+      </a>
+    {% empty %}
+      <p class="hint">{% translate "Nothing recorded yet." %}</p>
+    {% endfor %}
+    {% if page.has_other_pages %}
+      <div class="row" style="justify-content: space-between">
+        {% if page.has_previous %}<a href="?user={{ selected|urlencode }}&status={{ status }}&page={{ page.previous_page_number }}">&larr; {% translate "Newer" %}</a>{% else %}<span></span>{% endif %}
+        <small>{{ page.number }} / {{ page.paginator.num_pages }}</small>
+        {% if page.has_next %}<a href="?user={{ selected|urlencode }}&status={{ status }}&page={{ page.next_page_number }}">{% translate "Older" %} &rarr;</a>{% else %}<span></span>{% endif %}
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

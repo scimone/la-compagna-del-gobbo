@@ -3347,3 +3347,207 @@ msgstr "Cambia"
 
 msgid "Drag the picture to choose what the frame shows."
 msgstr "Trascina l'immagine per scegliere cosa mostra l'inquadratura."
+
+msgid "%(field)s must be a number."
+msgstr "%(field)s deve essere un numero."
+
+msgid "A key is saved - type to replace it"
+msgstr "Una chiave è salvata - scrivine una per sostituirla"
+
+msgid "AI chat"
+msgstr "Chat IA"
+
+msgid "AI chat switched on"
+msgstr "Chat IA attiva"
+
+msgid "AI request"
+msgstr "Richiesta IA"
+
+msgid "AI requests"
+msgstr "Richieste IA"
+
+msgid "AI settings"
+msgstr "Impostazioni IA"
+
+msgid "AI usage"
+msgstr "Uso dell'IA"
+
+msgid "API key"
+msgstr "Chiave API"
+
+msgid "API key, endpoint and model for the assistant."
+msgstr "Chiave API, indirizzo e modello dell'assistente."
+
+msgid "Ask the assistant…"
+msgstr "Chiedi all'assistente…"
+
+msgid "Ask what your character could do next, how to play a turn of a fight, or anything about the rules. I know the logbook and the party's characters."
+msgstr "Chiedi cosa potrebbe fare il tuo personaggio, come giocare un turno di combattimento o qualsiasi cosa sulle regole. Conosco il diario di bordo e i personaggi del gruppo."
+
+msgid "Average latency (ms)"
+msgstr "Latenza media (ms)"
+
+msgid "Base URL (OpenAI-compatible)"
+msgstr "URL di base (compatibile OpenAI)"
+
+msgid "Chat"
+msgstr "Chat"
+
+msgid "Connection failed: %(error)s"
+msgstr "Connessione fallita: %(error)s"
+
+msgid "Connection works. The model said: %(reply)s"
+msgstr "La connessione funziona. Il modello ha risposto: %(reply)s"
+
+msgid "Err."
+msgstr "Err."
+
+msgid "Errors"
+msgstr "Errori"
+
+msgid "Every request and response made with the key."
+msgstr "Ogni richiesta e risposta fatta con la chiave."
+
+msgid "Everything players ask, together with the campaign's logbook and characters, is sent to this provider and recorded in the request log."
+msgstr "Tutto ciò che i giocatori chiedono, insieme al diario di bordo e ai personaggi della campagna, viene inviato a questo provider e registrato nel registro delle richieste."
+
+msgid "Extra instructions for the assistant (optional)"
+msgstr "Istruzioni aggiuntive per l'assistente (facoltative)"
+
+msgid "Failed"
+msgstr "Fallite"
+
+msgid "Help me play my turn in this fight. What are my best options?"
+msgstr "Aiutami a giocare il mio turno in questo combattimento. Quali sono le mie opzioni migliori?"
+
+msgid "Help with my turn"
+msgstr "Aiuto per il mio turno"
+
+msgid "In"
+msgstr "Entrata"
+
+msgid "Keep request logs for (days, 0 = forever)"
+msgstr "Conserva i registri delle richieste per (giorni, 0 = per sempre)"
+
+msgid "Last"
+msgstr "Ultima"
+
+msgid "Maximum campaign text sent per question (characters)"
+msgstr "Testo massimo della campagna inviato per domanda (caratteri)"
+
+msgid "Message"
+msgstr "Messaggio"
+
+msgid "Messages per user per day (0 = unlimited)"
+msgstr "Messaggi per utente al giorno (0 = illimitati)"
+
+msgid "Model"
+msgstr "Modello"
+
+msgid "New chat"
+msgstr "Nuova chat"
+
+msgid "Out"
+msgstr "Uscita"
+
+msgid "Per day (tokens)"
+msgstr "Per giorno (token)"
+
+msgid "Per user"
+msgstr "Per utente"
+
+msgid "Playing as"
+msgstr "Interpreto"
+
+msgid "Playing as: nobody in particular"
+msgstr "Interpreto: nessuno in particolare"
+
+msgid "Recap"
+msgstr "Riassunto"
+
+msgid "Recap the story so far, briefly."
+msgstr "Riassumi brevemente la storia finora."
+
+msgid "Remove the saved key"
+msgstr "Rimuovi la chiave salvata"
+
+msgid "Req."
+msgstr "Rich."
+
+msgid "Request"
+msgstr "Richiesta"
+
+msgid "Requests"
+msgstr "Richieste"
+
+msgid "Requests and tokens per user and per day."
+msgstr "Richieste e token per utente e per giorno."
+
+msgid "Response"
+msgstr "Risposta"
+
+msgid "Send"
+msgstr "Invia"
+
+msgid "Something went wrong. Try again."
+msgstr "Qualcosa è andato storto. Riprova."
+
+msgid "Succeeded"
+msgstr "Riuscite"
+
+msgid "Test the saved connection"
+msgstr "Prova la connessione salvata"
+
+msgid "That character is not available."
+msgstr "Quel personaggio non è disponibile."
+
+msgid "The AI assistant could not answer right now."
+msgstr "L'assistente IA non può rispondere in questo momento."
+
+msgid "The AI assistant is not available."
+msgstr "L'assistente IA non è disponibile."
+
+msgid "The AI assistant is not configured yet."
+msgstr "L'assistente IA non è ancora configurato."
+
+msgid "The AI assistant is switched off."
+msgstr "L'assistente IA è disattivato."
+
+msgid "The base URL must start with http:// or https://."
+msgstr "L'URL di base deve iniziare con http:// o https://."
+
+msgid "The context size must be at least 2000 characters."
+msgstr "La dimensione del contesto deve essere di almeno 2000 caratteri."
+
+msgid "The question is too long."
+msgstr "La domanda è troppo lunga."
+
+msgid "Thinking…"
+msgstr "Sto pensando…"
+
+msgid "Tokens"
+msgstr "Token"
+
+msgid "Too many questions in a row - wait a moment."
+msgstr "Troppe domande di fila - aspetta un momento."
+
+msgid "Usage"
+msgstr "Uso"
+
+msgid "What could my character do next?"
+msgstr "Cosa potrebbe fare il mio personaggio adesso?"
+
+msgid "What next?"
+msgstr "E adesso?"
+
+msgid "Write a question first."
+msgstr "Scrivi prima una domanda."
+
+msgid "You are not in this campaign."
+msgstr "Non fai parte di questa campagna."
+
+msgid "You have reached today's limit of questions."
+msgstr "Hai raggiunto il limite di domande di oggi."
+
+msgid "tokens"
+msgstr "token"

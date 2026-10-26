@@ -1,8 +1,9 @@
-"""Client for the site's OpenAI-compatible chat completions endpoint - used only by the
+"""Client for OpenAI-compatible chat completions endpoints. `translate` is used only by the
 `translate_worker` process, the one container that is given `LLM_BASE_URL`/`LLM_API_KEY`/
 `LLM_MODEL` (docker-compose blanks them for the web container, so a compromise of the web app
-does not reveal the key). The values are read from the environment at call time and never
-stored, logged or put in an exception message.
+does not reveal that key); the values are read from the environment at call time and never
+stored, logged or put in an exception message. `chat_completion` is the shared HTTP call; the
+AI chat (`apps/ai`) uses it with the administrator's own key, kept encrypted in the database.
 
 Everything a job carries is untrusted, user-written text: it goes to the model as JSON *data*
 under a system prompt that says so, and what comes back is validated hard (`translate`) before
@@ -35,8 +36,12 @@ SYSTEM_PROMPT = (
 )
 
 
-class TranslationError(Exception):
-    """A failed translation. The message is safe to store and show: never a response body."""
+class LLMError(Exception):
+    """A failed call. The message is safe to store and show: never a response body or the key."""
+
+
+class TranslationError(LLMError):
+    """A failed translation."""
 
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -70,46 +75,63 @@ def _clean(text: str) -> str:
     return re.sub(r"[\x00-\x08\x0b-\x1f\x7f]", "", text).strip()
 
 
-def translate(fields: dict[str, str], source_lang: str, target_lang: str) -> dict[str, str]:
-    base, key, model = _config()
-    body = json.dumps(
-        {
-            "model": model,
-            "temperature": 0,
-            "messages": [
-                {
-                    "role": "system",
-                    "content": SYSTEM_PROMPT.format(
-                        source=LANGUAGE_NAMES.get(source_lang, source_lang),
-                        target=LANGUAGE_NAMES.get(target_lang, target_lang),
-                    ),
-                },
-                {"role": "user", "content": json.dumps(fields, ensure_ascii=False)},
-            ],
-        }
-    ).encode()
+def chat_completion(
+    base: str,
+    key: str,
+    model: str,
+    messages: list[dict],
+    *,
+    temperature: float | None = None,
+    timeout: int = TIMEOUT_SECONDS,
+    error=LLMError,
+) -> tuple[str, dict]:
+    """POST `messages` to `{base}/chat/completions`; returns (reply text, the API's `usage`
+    object or {}). Never follows redirects; raises `error` with a safe message."""
+    payload = {"model": model, "messages": messages}
+    if temperature is not None:
+        payload["temperature"] = temperature
     request = urllib.request.Request(
-        f"{base}/chat/completions",
-        data=body,
+        f"{base.rstrip('/')}/chat/completions",
+        data=json.dumps(payload).encode(),
         method="POST",
         headers={"Content-Type": "application/json", "Authorization": f"Bearer {key}"},
     )
     opener = urllib.request.build_opener(_NoRedirect)
     try:
-        with opener.open(request, timeout=TIMEOUT_SECONDS) as response:
+        with opener.open(request, timeout=timeout) as response:
             raw = response.read(MAX_RESPONSE_BYTES + 1)
-    except urllib.error.HTTPError as error:
-        raise TranslationError(f"LLM returned HTTP {error.code}") from None
+    except urllib.error.HTTPError as http_error:
+        raise error(f"LLM returned HTTP {http_error.code}") from None
     except (urllib.error.URLError, OSError):
-        raise TranslationError("LLM is unreachable") from None
+        raise error("LLM is unreachable") from None
     if len(raw) > MAX_RESPONSE_BYTES:
-        raise TranslationError("LLM response too large")
+        raise error("LLM response too large")
     try:
-        content = json.loads(raw)["choices"][0]["message"]["content"]
+        data = json.loads(raw)
+        content = data["choices"][0]["message"]["content"]
     except (ValueError, KeyError, IndexError, TypeError):
-        raise TranslationError("unexpected LLM response") from None
+        raise error("unexpected LLM response") from None
     if not isinstance(content, str):
-        raise TranslationError("unexpected LLM response")
+        raise error("unexpected LLM response")
+    usage = data.get("usage") if isinstance(data, dict) else None
+    return content, usage if isinstance(usage, dict) else {}
+
+
+def translate(fields: dict[str, str], source_lang: str, target_lang: str) -> dict[str, str]:
+    base, key, model = _config()
+    messages = [
+        {
+            "role": "system",
+            "content": SYSTEM_PROMPT.format(
+                source=LANGUAGE_NAMES.get(source_lang, source_lang),
+                target=LANGUAGE_NAMES.get(target_lang, target_lang),
+            ),
+        },
+        {"role": "user", "content": json.dumps(fields, ensure_ascii=False)},
+    ]
+    content, _usage = chat_completion(
+        base, key, model, messages, temperature=0, error=TranslationError
+    )
 
     data = _parse_object(content)
     result = {}

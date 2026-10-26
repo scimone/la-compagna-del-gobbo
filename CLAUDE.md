@@ -68,7 +68,8 @@ Three Django apps form a strict dependency chain — `rules` (static game conten
 populated only via `import_rules_data`) → `characters` (persisted character state, FKs into
 `rules`, no auth/ownership) → `builder` (creation/leveling engine, called directly by
 the frontend; partly docstring-only services). A fourth
-app, `frontend`, is the server-rendered PWA UI shell and sits outside this chain. Full detail —
+app, `frontend`, is the server-rendered PWA UI shell and sits outside this chain; `ai` (the
+assistant chat: admin-managed LLM settings, request log, context builder) sits beside it. Full detail —
 every model, per-app service/resolver breakdown — is in the README's "App
 boundaries" section; don't re-derive it here, read that.
 
@@ -77,7 +78,8 @@ Two structural conventions apply across `rules`/`characters`/`builder`:
 - **Models**: one file per model under `models/`, re-exported from `models/__init__.py`.
 - **No API**: the app is deliberately a pure server-rendered frontend, exposed to the internet —
   there are no REST/JSON endpoints, no Django Ninja, no OpenAPI docs, and none should be added.
-  The only HTTP surface is `apps/frontend/` views (plus `/i18n/`, PWA files); the Django admin is not installed. Views
+  The only HTTP surface is `apps/frontend/` views (plus `/i18n/`, PWA files; the few same-origin
+  JSON action endpoints the UI's JS posts to, like `character_act` and the AI chat's `/chat/send/`, are not a public API); the Django admin is not installed. Views
   never contain business logic — that lives in `services/` (plain functions over
   querysets/instances, including any 404/validity checks), one file per domain.
 

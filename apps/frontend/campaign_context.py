@@ -45,4 +45,16 @@ def context(request):
             return None
         return current(request)
 
-    return {"current_campaign": campaign, "pending_invite_count": pending}
+    def ai_chat_available() -> bool:
+        user = getattr(request, "user", None)
+        if user is None or not user.is_authenticated:
+            return False
+        from apps.ai.services import chat
+
+        return chat.is_available()
+
+    return {
+        "current_campaign": campaign,
+        "pending_invite_count": pending,
+        "ai_chat_available": ai_chat_available,
+    }

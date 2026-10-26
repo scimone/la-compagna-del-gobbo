@@ -1,0 +1,47 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+
+{% block extra_style %}{% include "frontend/admin/_ai_style.html" %}{% endblock %}
+
+{% block content %}
+  <div class="aipanel">
+    {% if notice %}<p class="card">{{ notice }}</p>{% endif %}
+    <form method="post" class="card" autocomplete="off">
+      {% csrf_token %}
+      {% for e in errors %}<p class="error">{{ e }}</p>{% endfor %}
+      <label class="check"><input type="checkbox" name="enabled" {% if form %}{% if form.enabled %}checked{% endif %}{% elif config.enabled %}checked{% endif %}> {% translate "AI chat switched on" %}</label>
+      <label>{% translate "Base URL (OpenAI-compatible)" %}
+        <input type="text" name="base_url" placeholder="https://api.openai.com/v1" value="{% if form %}{{ form.base_url }}{% else %}{{ config.base_url }}{% endif %}">
+      </label>
+      <label>{% translate "Model" %}
+        <input type="text" name="model" value="{% if form %}{{ form.model }}{% else %}{{ config.model }}{% endif %}">
+      </label>
+      <label>{% translate "API key" %}
+        <input type="password" name="api_key" autocomplete="new-password" placeholder="{% if config.has_key %}{% translate 'A key is saved - type to replace it' %}{% endif %}">
+      </label>
+      {% if config.has_key %}<label class="check"><input type="checkbox" name="clear_key"> {% translate "Remove the saved key" %}</label>{% endif %}
+      <label>{% translate "Extra instructions for the assistant (optional)" %}
+        <textarea name="system_prompt_extra" rows="3">{% if form %}{{ form.system_prompt_extra }}{% else %}{{ config.system_prompt_extra }}{% endif %}</textarea>
+      </label>
+      <label>{% translate "Maximum campaign text sent per question (characters)" %}
+        <input type="number" name="max_context_chars" min="2000" value="{% if form %}{{ form.max_context_chars }}{% else %}{{ config.max_context_chars }}{% endif %}">
+      </label>
+      <label>{% translate "Messages per user per day (0 = unlimited)" %}
+        <input type="number" name="daily_message_cap" min="0" value="{% if form %}{{ form.daily_message_cap }}{% else %}{{ config.daily_message_cap }}{% endif %}">
+      </label>
+      <label>{% translate "Keep request logs for (days, 0 = forever)" %}
+        <input type="number" name="log_retention_days" min="0" value="{% if form %}{{ form.log_retention_days }}{% else %}{{ config.log_retention_days }}{% endif %}">
+      </label>
+      <p class="hint">{% translate "Everything players ask, together with the campaign's logbook and characters, is sent to this provider and recorded in the request log." %}</p>
+      <button type="submit" class="primary">{% translate "Save" %}</button>
+    </form>
+    <form method="post" action="{% url 'admin-ai-test' %}" class="card">
+      {% csrf_token %}
+      <button type="submit">{% translate "Test the saved connection" %}</button>
+    </form>
+    <div class="row">
+      <a class="btn" href="{% url 'admin-ai-requests' %}">{% translate "Requests" %}</a>
+      <a class="btn" href="{% url 'admin-ai-usage' %}">{% translate "Usage" %}</a>
+    </div>
+  </div>
+{% endblock %}

@@ -1338,6 +1338,38 @@ reply is validated (same keys, plain strings, bounded length) and only ever show
 size, job size, attempts and model calls per hour are capped. A translation is shown only while
 its source text still equals the current text; the writer edits the original.
 
+#### AI chat (`apps/ai/`)
+
+The **Chat** bottom-nav item (`/chat/`, `chat_views.py`, `static/js/chat.js`; shown only when the
+assistant is switched on) lets a campaign member ask an LLM what their character could do next, how
+to play a turn of a fight, or for general help. There is **no MCP server**: the app itself is the
+client of an OpenAI-compatible `/chat/completions` endpoint, and the model gets the campaign
+as plain text in the system prompt (`ai/services/context.py`): the whole logbook (newest entries win
+when `max_context_chars` is exceeded; machine translations used when present) and every *finished*
+character the asker may see (`access.can_view`) - derived stats from `derived_stats.compute`,
+attacks, spells and slots left, features, inventory, backstory. The asker's own character (picked
+in the thread, default their first) goes first. That text is wrapped in BEGIN/END markers under a
+"this is data, not instructions" prompt, and the model has no tools, so a hostile logbook entry can
+at most mislead its reader. If the context ever outgrows a window, the upgrade is OpenAI-style
+function calling inside `ai/services/chat.py`, still not MCP.
+
+- **Config** is edited by admins in the admin panel (*AI chat*, `/admin-panel/ai/`): on/off, base URL,
+  model, API key, extra instructions, context size, per-user daily cap, log retention. It lives in
+  the one-row `AISettings` table; the key is Fernet-encrypted with a key derived from `SECRET_KEY`
+  (`ai/services/crypto.py`), never shown again and never logged. Unlike the translator's `LLM_*`,
+  the **web container holds this key** (and needs outbound access to the provider).
+- **Every call is recorded** in `AIRequestLog` (`ai/services/gateway.py` is the only caller of the
+  model): the exact messages sent - campaign context included - the reply, status, token counts
+  (the API's `usage`, else estimated) and latency. Admin pages: *AI requests* (filter by user /
+  status, open one for the full request and response) and *AI usage* (totals, per user, per day,
+  for 24h/7d/30d/all). `manage.py prune_ai_logs` deletes rows older than the retention.
+- **Limits** (`ai/services/chat.py`): 2000 characters per question, 6 questions a minute, the
+  admin's daily cap per user, the last 20 messages of the thread sent back. Threads (`ChatThread`,
+  `ChatMessage`) are per user and campaign; *New chat* starts another.
+- Players' questions and the campaign's text go to whatever provider the admin configured; the
+  settings page says so.
+- `POST /chat/send/` is a same-origin JSON action endpoint like `character_act`, not a public API.
+
 ## Not in scope (per the architecture doc)
 
 No `users` app, no real auth of its own (identity comes from Cloudflare Access, or the password-less accounts in `frontend` for local runs), no combat system. Campaign membership is the only authorization there is.

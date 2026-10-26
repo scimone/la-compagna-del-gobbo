@@ -32,7 +32,7 @@
   "use strict";
 
   var STORAGE_KEY = "dnd.navigation.v1";
-  var MENUS = ["characters", "logbook", "world"];
+  var MENUS = ["characters", "logbook", "chat", "world"];
   // Pages that are a detour from wherever they were opened, not a place of their own: leaving
   // the menu for another one must not park the account form on top of that menu's stack.
   var TRANSIENT_PATHS = ["/account/", "/privacy/", "/admin-panel/", "/welcome/", "/campaigns/", "/join/"];
@@ -42,7 +42,7 @@
   // --- state --------------------------------------------------------------------------------
 
   function freshState() {
-    return { active: null, pending: null, stacks: { characters: [], logbook: [], world: [] } };
+    return { active: null, pending: null, stacks: { characters: [], logbook: [], chat: [], world: [] } };
   }
 
   function read() {

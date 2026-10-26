@@ -850,6 +850,20 @@
       </svg>
       <span>{% translate "Logbook" %}</span>
     </a>
+    {% if ai_chat_available %}
+      <a
+        href="{% url 'chat' %}"
+        data-menu="chat"
+        data-root="{% url 'chat' %}"
+        class="bottom-nav-item{% if '/chat/' in request.path %} active{% endif %}"
+      >
+        {# A speech bubble. #}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a8 8 0 0 1-11.8 7L3 21l2-5.4A8 8 0 1 1 21 12z"></path>
+        </svg>
+        <span>{% translate "Chat" %}</span>
+      </a>
+    {% endif %}
     <a
       href="{{ last_world_url }}"
       data-menu="world"

@@ -1,0 +1,22 @@
+  .aipanel { flex: 1; min-height: 0; overflow-y: auto; max-width: 48rem; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 0.8rem; padding-bottom: 1rem; }
+  .aipanel .card { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; padding: 0.8rem 0.9rem; display: flex; flex-direction: column; gap: 0.6rem; }
+  .aipanel label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.85rem; color: var(--muted); }
+  .aipanel label.check { flex-direction: row; align-items: center; gap: 0.5rem; color: var(--text); }
+  .aipanel input[type=text], .aipanel input[type=password], .aipanel input[type=number], .aipanel textarea, .aipanel select {
+    width: 100%; padding: 0.55rem 0.7rem; font: inherit; color: var(--text); background: var(--bg);
+    border: 1px solid var(--border); border-radius: 0.5rem;
+  }
+  .aipanel button, .aipanel .btn { padding: 0.6rem 0.9rem; font: inherit; font-weight: 600; border-radius: 0.6rem; border: 1px solid var(--border); background: var(--surface); color: var(--text); text-decoration: none; cursor: pointer; text-align: center; }
+  .aipanel button.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  .aipanel .hint, .aipanel small { color: var(--muted); font-size: 0.8rem; }
+  .aipanel .error { color: var(--accent); font-weight: 600; margin: 0; }
+  .aipanel .row { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+  .aipanel table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .aipanel th, .aipanel td { text-align: left; padding: 0.35rem 0.4rem; border-bottom: 1px solid var(--border); }
+  .aipanel td.n, .aipanel th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  .aipanel pre { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; font-size: 0.8rem; background: var(--bg); padding: 0.6rem; border-radius: 0.5rem; border: 1px solid var(--border); max-height: 24rem; overflow-y: auto; }
+  .aipanel .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+  .aipanel .stat b { display: block; font-size: 1.3rem; }
+  .aipanel .bar { height: 0.7rem; background: var(--accent); border-radius: 0.35rem; min-width: 2px; }
+  .aipanel a.item { display: block; padding: 0.6rem 0.75rem; background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--border); border-radius: 0.6rem; color: var(--text); text-decoration: none; }
+  .aipanel a.item.failed { border-left-color: var(--accent); }

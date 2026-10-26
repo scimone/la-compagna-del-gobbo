@@ -133,6 +133,7 @@ INSTALLED_APPS = [
     "apps.characters",
     "apps.builder",
     "apps.frontend",
+    "apps.ai",
 ]
 
 MIDDLEWARE = [

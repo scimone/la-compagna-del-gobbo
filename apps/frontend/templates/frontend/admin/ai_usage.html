@@ -1,0 +1,37 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+
+{% block extra_style %}{% include "frontend/admin/_ai_style.html" %}{% endblock %}
+
+{% block content %}
+  <div class="aipanel">
+    <form method="get" class="row" data-nav="replace">
+      {% for p in periods %}<a class="btn" href="?period={{ p }}" {% if p == period %}style="border-color: var(--accent)"{% endif %}>{{ p }}</a>{% endfor %}
+    </form>
+    <div class="stats">
+      <div class="card stat"><small>{% translate "Requests" %}</small><b>{{ totals.requests }}</b></div>
+      <div class="card stat"><small>{% translate "Errors" %}</small><b>{{ totals.errors }}</b></div>
+      <div class="card stat"><small>{% translate "Tokens" %}</small><b>{{ totals.tokens }}</b></div>
+      <div class="card stat"><small>{% translate "Average latency (ms)" %}</small><b>{{ totals.latency_ms|floatformat:0 }}</b></div>
+    </div>
+    <div class="card">
+      <b>{% translate "Per user" %}</b>
+      <table>
+        <tr><th>{% translate "User" %}</th><th class="n">{% translate "Req." %}</th><th class="n">{% translate "In" %}</th><th class="n">{% translate "Out" %}</th><th class="n">{% translate "Err." %}</th><th>{% translate "Last" %}</th></tr>
+        {% for u in users %}
+          <tr><td><a href="{% url 'admin-ai-requests' %}?user={{ u.username|urlencode }}">{{ u.username|default:"-" }}</a></td>
+            <td class="n">{{ u.requests }}</td><td class="n">{{ u.prompt_tokens }}</td><td class="n">{{ u.completion_tokens }}</td><td class="n">{{ u.errors }}</td>
+            <td>{{ u.last_used|date:"j M H:i" }}</td></tr>
+        {% empty %}<tr><td colspan="6">{% translate "Nothing recorded yet." %}</td></tr>{% endfor %}
+      </table>
+    </div>
+    <div class="card">
+      <b>{% translate "Per day (tokens)" %}</b>
+      <table>
+        {% for d in days %}
+          <tr><td>{{ d.day|date:"j M" }}</td><td style="width:100%"><div class="bar" style="width: {{ d.percent }}%"></div></td><td class="n">{{ d.tokens }}</td><td class="n">{{ d.requests }}×</td></tr>
+        {% empty %}<tr><td>{% translate "Nothing recorded yet." %}</td></tr>{% endfor %}
+      </table>
+    </div>
+  </div>
+{% endblock %}
