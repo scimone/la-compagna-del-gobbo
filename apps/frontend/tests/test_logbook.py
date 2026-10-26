@@ -342,3 +342,28 @@ def test_a_bad_picture_rejects_the_whole_entry(client, alice, settings, tmp_path
 
     assert response.status_code == 200
     assert not LogEntry.objects.exists()
+
+
+def test_a_banner_is_set_shown_replaced_and_removed(client, alice, settings, tmp_path):
+    settings.MEDIA_ROOT = tmp_path
+    client.force_login(alice)
+    client.post(
+        "/logbook/new/", {"date": "2026-09-01", "title": "T", "text": "x", "banner": _png()}
+    )
+    entry = LogEntry.objects.get()
+    assert entry.banner
+
+    html = client.get("/logbook/").content.decode()
+    assert f"/logbook/banner/{entry.pk}/" in html and 'class="log-banner"' in html
+    assert client.get(f"/logbook/banner/{entry.pk}/")["Content-Type"] == "image/webp"
+
+    old = entry.banner.name
+    base = {"date": "2026-09-01", "title": "T", "text": "x"}
+    client.post(f"/logbook/{entry.pk}/edit/", {**base, "banner": _png("blue")})
+    entry.refresh_from_db()
+    assert entry.banner and entry.banner.name != old and not (tmp_path / old).exists()
+
+    client.post(f"/logbook/{entry.pk}/edit/", {**base, "remove_banner": "1"})
+    entry.refresh_from_db()
+    assert not entry.banner
+    assert 'class="log-banner"' not in client.get("/logbook/").content.decode()

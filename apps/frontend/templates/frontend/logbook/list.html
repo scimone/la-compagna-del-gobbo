@@ -62,6 +62,12 @@
   .log-entry.dm .log-bubble::before { border-width: 2px; }
   .log-entry.dm .log-char { padding: 0.05rem 0.55rem; border-radius: 1rem; background: var(--accent); color: var(--accent-text); font-size: 0.8rem; letter-spacing: 0.06em; }
   .log-entry.dm .log-field.log-text p, .log-entry.dm .log-field.log-text li { font-weight: 500; }
+  /* The banner runs edge to edge across the top of its card or bubble (the padding is undone with
+     negative margins; the card's rounded corners are matched), 21:9 and cropped to fit. */
+  .log-banner { appearance: none; display: block; width: auto; padding: 0; border: 0; cursor: zoom-in; overflow: hidden; background: var(--bg); aspect-ratio: 21 / 9; margin: -0.6rem -0.9rem 0.1rem; border-radius: 0.55rem 0.55rem 0 0; }
+  .log-bubble:has(.log-banner)::before { display: none; }
+  .log-bubble .log-banner { margin: -0.55rem -0.9rem 0.3rem; border-radius: 1.05rem 1.05rem 0 0; }
+  .log-banner img { display: block; width: 100%; height: 100%; object-fit: cover; }
   .log-pics { display: flex; flex-wrap: wrap; gap: 0.5rem; }
   .log-pics button { appearance: none; padding: 0; border: 0; background: none; cursor: zoom-in; }
   .log-pics img { display: block; height: 9rem; max-width: 100%; width: auto; min-width: 5rem; object-fit: cover; border-radius: 0.5rem; border: 1px solid var(--border); }
@@ -104,6 +110,7 @@
             </span>
             {% endif %}
             <div class="log-bubble">
+              {% include "frontend/logbook/_banner.html" %}
               <div class="log-head">
                 <div class="who"><span class="log-char">{% if row.dm %}{% translate "DM" %}{% else %}{{ e.character.name|default:"—" }}{% endif %}</span><span class="log-date">{{ e.date|date:"j M Y" }}</span></div>
                 {% include "frontend/logbook/_actions.html" %}
@@ -116,6 +123,7 @@
           <li class="log-entry" id="entry-{{ e.pk }}">
             <span class="log-dot" aria-hidden="true"></span>
             <div class="log-card">
+              {% include "frontend/logbook/_banner.html" %}
               <div class="log-head">
                 <div class="who">
                   <div class="log-date">{% blocktranslate with day=e.date|date:"j M Y" %}Adventure Log of {{ day }}{% endblocktranslate %}</div>

@@ -2635,9 +2635,6 @@ msgstr "Arma da sostituire"
 msgid "New weapon"
 msgstr "Nuova arma"
 
-msgid "Change"
-msgstr "Cambia"
-
 msgid "%(name)s: recover spent spell slots with a combined level of up to %(budget)s (none of level 6 or higher). Once until a long rest."
 msgstr "%(name)s: recupera slot incantesimo spesi con un livello combinato fino a %(budget)s (nessuno di livello 6 o superiore). Una volta fino a un riposo lungo."
 
@@ -3335,3 +3332,15 @@ msgstr "Punti Esperienza da aggiungere"
 #, python-format
 msgid "An entry can hold %(n)d pictures at most."
 msgstr "Una voce può contenere al massimo %(n)d immagini."
+
+msgid "Banner image"
+msgstr "Immagine di copertina"
+
+msgid "A wide picture shown across the top of the entry. Landscape photos work best."
+msgstr "Un'immagine larga mostrata in cima alla voce. Le foto orizzontali funzionano meglio."
+
+msgid "Add a banner"
+msgstr "Aggiungi una copertina"
+
+msgid "Change"
+msgstr "Cambia"

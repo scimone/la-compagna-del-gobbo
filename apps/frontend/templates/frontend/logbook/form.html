@@ -13,6 +13,19 @@
   .logform-pic { display: flex; flex-direction: column; gap: 0.2rem; width: 6rem; font-weight: 400 !important; }
   .logform-pic img { width: 6rem; height: 6rem; object-fit: cover; border-radius: 0.5rem; }
   .logform-pic input { width: auto; }
+  .logform .hint { margin: 0; font-size: 0.8rem; color: var(--muted); }
+  /* The banner picker: a 21:9 frame, the same shape the logbook shows it in. Empty it is one big
+     dashed "add" target; with a picture it is the picture, with Change / Remove on top. */
+  .banner-pick { position: relative; aspect-ratio: 21 / 9; border-radius: 0.8rem; overflow: hidden; background: var(--surface); border: 2px dashed var(--border); }
+  .banner-pick.has { border-style: solid; }
+  .banner-preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .banner-preview[hidden] { display: none; }
+  .banner-empty { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; color: var(--muted); font-weight: 600; cursor: pointer; }
+  .banner-empty svg { width: 2rem; height: 2rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .banner-pick.has .banner-empty { display: none; }
+  .banner-tools { position: absolute; right: 0.5rem; bottom: 0.5rem; display: none; gap: 0.4rem; }
+  .banner-pick.has .banner-tools { display: flex; }
+  .banner-btn { appearance: none; padding: 0.35rem 0.8rem; border: 0; border-radius: 1rem; background: rgba(0,0,0,.65); color: #fff; font: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
   .logform .errorlist { margin: 0; padding: 0; list-style: none; color: #b3261e; font-size: 0.85rem; }
   /* The rich-text editor (`logbook_editor.js`); without JS the plain textarea (Markdown) stays. */
   .rte[hidden] { display: none; }
@@ -63,6 +76,23 @@
         </div>
       {% endfor %}
       <div class="field">
+        <label for="id_banner">{% translate "Banner image" %}</label>
+        <p class="hint">{% translate "A wide picture shown across the top of the entry. Landscape photos work best." %}</p>
+        <div class="banner-pick{% if banner %} has{% endif %}" data-banner-pick>
+          <img class="banner-preview" src="{{ banner }}" alt="" {% if not banner %}hidden{% endif %}>
+          <label class="banner-empty" for="id_banner">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="m21 16-5-5-8 8"/></svg>
+            <span>{% translate "Add a banner" %}</span>
+          </label>
+          <div class="banner-tools">
+            <label class="banner-btn" for="id_banner">{% translate "Change" %}</label>
+            <button type="button" class="banner-btn" data-banner-clear>{% translate "Remove" %}</button>
+          </div>
+          <input type="hidden" name="remove_banner" value="" data-banner-remove>
+        </div>
+        <input type="file" id="id_banner" name="banner" accept="image/*" hidden>
+      </div>
+      <div class="field">
         <label for="id_images">{% translate "Pictures" %}</label>
         {% if images %}
           <div class="logform-pics">
@@ -77,4 +107,28 @@
     </form>
   </div>
   <script src="{% static_v 'js/logbook_editor.js' %}" defer></script>
+  <script>
+    (function () {
+      var box = document.querySelector("[data-banner-pick]");
+      var input = document.getElementById("id_banner");
+      if (!box || !input) return;
+      var img = box.querySelector(".banner-preview");
+      var flag = box.querySelector("[data-banner-remove]");
+      input.addEventListener("change", function () {
+        var file = input.files && input.files[0];
+        if (!file) return;
+        img.src = URL.createObjectURL(file);
+        img.hidden = false;
+        flag.value = "";
+        box.classList.add("has");
+      });
+      box.querySelector("[data-banner-clear]").addEventListener("click", function () {
+        input.value = "";
+        img.hidden = true;
+        img.removeAttribute("src");
+        flag.value = "1";
+        box.classList.remove("has");
+      });
+    })();
+  </script>
 {% endblock %}

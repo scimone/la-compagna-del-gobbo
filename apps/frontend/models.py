@@ -73,6 +73,9 @@ class LogEntry(models.Model):
     date = models.DateField()
     title = models.CharField(max_length=150, blank=True)  # objective entries only
     text = models.TextField(blank=True)
+    #: One wide picture that stands for the whole entry, shown across the top of it (the extra
+    #: pictures, `images`, sit at the bottom). Re-encoded by `logbook.encode_image` like them.
+    banner = models.ImageField(upload_to="logbook/banners/", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

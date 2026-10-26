@@ -49,6 +49,7 @@ def logbook_list(request):
             "dm": entry.as_dm,
             "avatar": logbook.avatar_url(entry),
             "full": logbook.full_url(entry),
+            "banner": logbook.banner_url(entry),
             "images": [reverse("logbook-image", args=[i.pk]) for i in entry.images.all()],
             "fields": {
                 name: logbook_markup.render(text, pattern) if name == "text" else mark(text)
@@ -82,9 +83,13 @@ def _editable_entry(request, pk):
 
 
 def _uploads(request, form, already=0):
-    """The pictures chosen in the form, encoded; a bad one becomes a form error (None then)."""
+    """The banner and pictures chosen in the form, encoded; a bad one becomes a form error (None
+    then)."""
     try:
-        return logbook.encode_images(request.FILES.getlist("images"), already)
+        return {
+            "images": logbook.encode_images(request.FILES.getlist("images"), already),
+            "banner": logbook.encode_banner(request.FILES.get("banner")),
+        }
     except ValueError as error:
         form.add_error(None, str(error))
         return None
@@ -96,6 +101,7 @@ def _form_page(request, form, title, entry=None):
         "frontend/logbook/form.html",
         {
             "images": entry.images.all() if entry else [],
+            "banner": logbook.banner_url(entry) if entry else "",
             "page_title": title,
             "back_url": reverse("logbook-list"),
             "form": form,
@@ -132,7 +138,8 @@ def logbook_new(request):
         entry.author = request.user
         entry.campaign = campaign
         entry.save()
-        logbook.add_images(entry, pictures)
+        logbook.add_images(entry, pictures["images"])
+        logbook.set_banner(entry, pictures["banner"])
         logbook.queue_translation(entry)
         return redirect(f"{reverse('logbook-list')}#entry-{entry.pk}")
     title = _("New entry") if kind == LogEntry.OBJECTIVE else _("New personal message")
@@ -168,9 +175,29 @@ def logbook_edit(request, pk):
                 form.save()
                 logbook.queue_translation(entry)
             logbook.remove_images(entry, removed)
-            logbook.add_images(entry, pictures)
+            logbook.add_images(entry, pictures["images"])
+            logbook.set_banner(
+                entry, pictures["banner"], remove=bool(request.POST.get("remove_banner"))
+            )
             return redirect(f"{reverse('logbook-list')}#entry-{entry.pk}")
     return _form_page(request, form, _("Edit entry"), entry)
+
+
+def logbook_banner(request, pk):
+    """An entry's banner, for members of its campaign."""
+    entry = get_object_or_404(LogEntry.objects.select_related("campaign"), pk=pk)
+    if not entry.banner or not request.user.is_authenticated:
+        raise Http404
+    if not membership.is_member(request.user, entry.campaign):
+        raise Http404
+    try:
+        with entry.banner.open("rb") as file:
+            data = file.read()
+    except FileNotFoundError:
+        raise Http404 from None
+    response = HttpResponse(data, content_type="image/webp")
+    response["Cache-Control"] = "private, max-age=86400"
+    return response
 
 
 def logbook_image(request, pk):

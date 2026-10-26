@@ -134,6 +134,34 @@ def delete_image(image: LogEntryImage) -> None:
 
 
 def delete_entry(entry: LogEntry) -> None:
+    set_banner(entry, None, remove=True)
     for image in list(entry.images.all()):
         delete_image(image)
     entry.delete()
+
+
+def banner_url(entry: LogEntry) -> str:
+    """Where the entry's banner is served from, or "" (the name in the query busts the cache)."""
+    if not entry.banner:
+        return ""
+    return f"{reverse('logbook-banner', args=[entry.pk])}?v={entry.banner.name}"
+
+
+def encode_banner(upload) -> bytes | None:
+    """The banner upload as a shrunk WebP (`ValueError` if unusable), None when none was sent."""
+    return _encode(upload) if upload else None
+
+
+def set_banner(entry: LogEntry, data: bytes | None, remove: bool = False) -> None:
+    """Replace the banner with the encoded `data`, or drop it (`remove`); neither leaves it."""
+    if data is None and not remove:
+        return
+    old = entry.banner.name
+    storage = entry.banner.storage
+    if data is None:
+        entry.banner = ""
+    else:
+        entry.banner.save(f"{entry.pk}-{token_hex(4)}.webp", ContentFile(data), save=False)
+    entry.save(update_fields=["banner"])
+    if old:
+        storage.delete(old)
