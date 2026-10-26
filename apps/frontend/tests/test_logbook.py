@@ -367,3 +367,39 @@ def test_a_banner_is_set_shown_replaced_and_removed(client, alice, settings, tmp
     entry.refresh_from_db()
     assert not entry.banner
     assert 'class="log-banner"' not in client.get("/logbook/").content.decode()
+
+
+def test_the_banner_frame_is_saved_clamped_shown_and_reset_by_a_new_banner(
+    client, alice, settings, tmp_path
+):
+    settings.MEDIA_ROOT = tmp_path
+    client.force_login(alice)
+    base = {"date": "2026-09-01", "title": "T", "text": "x"}
+    client.post(
+        "/logbook/new/",
+        {**base, "banner": _png(), "banner_x": "0.2", "banner_y": "0.9", "banner_zoom": "9"},
+    )
+    entry = LogEntry.objects.get()
+    assert (entry.banner_x, entry.banner_y, entry.banner_zoom) == (0.2, 0.9, 3.0)
+    html = client.get("/logbook/").content.decode()
+    assert "object-position: 20.0% 90.0%" in html and "scale(3.000)" in html
+
+    # Only the frame changes: same picture, new focus.
+    name = entry.banner.name
+    client.post(
+        f"/logbook/{entry.pk}/edit/",
+        {**base, "banner_x": "0.5", "banner_y": "0.1", "banner_zoom": "1"},
+    )
+    entry.refresh_from_db()
+    assert entry.banner.name == name and entry.banner_y == 0.1
+
+    # A different picture starts centred again, unless the editor sent a frame for it.
+    client.post(f"/logbook/{entry.pk}/edit/", {**base, "banner": _png("blue")})
+    entry.refresh_from_db()
+    assert (entry.banner_x, entry.banner_y, entry.banner_zoom) == (0.5, 0.5, 1.0)
+    client.post(
+        f"/logbook/{entry.pk}/edit/",
+        {**base, "banner_x": "junk", "banner_y": "0", "banner_zoom": "1"},
+    )
+    entry.refresh_from_db()
+    assert entry.banner_x == 0.5

@@ -76,6 +76,11 @@ class LogEntry(models.Model):
     #: One wide picture that stands for the whole entry, shown across the top of it (the extra
     #: pictures, `images`, sit at the bottom). Re-encoded by `logbook.encode_image` like them.
     banner = models.ImageField(upload_to="logbook/banners/", blank=True)
+    #: Which part of the banner the wide frame shows: the focus point (0-1 across and down the
+    #: picture) and a zoom (1 = the picture just covers the frame). See `logbook.banner_style`.
+    banner_x = models.FloatField(default=0.5)
+    banner_y = models.FloatField(default=0.5)
+    banner_zoom = models.FloatField(default=1.0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

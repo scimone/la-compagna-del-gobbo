@@ -3344,3 +3344,6 @@ msgstr "Aggiungi una copertina"
 
 msgid "Change"
 msgstr "Cambia"
+
+msgid "Drag the picture to choose what the frame shows."
+msgstr "Trascina l'immagine per scegliere cosa mostra l'inquadratura."

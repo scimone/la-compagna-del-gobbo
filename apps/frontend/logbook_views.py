@@ -50,6 +50,7 @@ def logbook_list(request):
             "avatar": logbook.avatar_url(entry),
             "full": logbook.full_url(entry),
             "banner": logbook.banner_url(entry),
+            "banner_style": logbook.banner_style(entry),
             "images": [reverse("logbook-image", args=[i.pk]) for i in entry.images.all()],
             "fields": {
                 name: logbook_markup.render(text, pattern) if name == "text" else mark(text)
@@ -95,6 +96,15 @@ def _uploads(request, form, already=0):
         return None
 
 
+def _save_frame(request, entry):
+    """Store the banner's frame as the editor left it (a new banner starts centred)."""
+    if entry.banner and "banner_x" in request.POST:
+        post = request.POST
+        logbook.set_banner_frame(
+            entry, post.get("banner_x"), post.get("banner_y"), post.get("banner_zoom")
+        )
+
+
 def _form_page(request, form, title, entry=None):
     response = render(
         request,
@@ -102,6 +112,8 @@ def _form_page(request, form, title, entry=None):
         {
             "images": entry.images.all() if entry else [],
             "banner": logbook.banner_url(entry) if entry else "",
+            "banner_style": logbook.banner_style(entry) if entry else "",
+            "frame": entry,
             "page_title": title,
             "back_url": reverse("logbook-list"),
             "form": form,
@@ -140,6 +152,7 @@ def logbook_new(request):
         entry.save()
         logbook.add_images(entry, pictures["images"])
         logbook.set_banner(entry, pictures["banner"])
+        _save_frame(request, entry)
         logbook.queue_translation(entry)
         return redirect(f"{reverse('logbook-list')}#entry-{entry.pk}")
     title = _("New entry") if kind == LogEntry.OBJECTIVE else _("New personal message")
@@ -179,6 +192,7 @@ def logbook_edit(request, pk):
             logbook.set_banner(
                 entry, pictures["banner"], remove=bool(request.POST.get("remove_banner"))
             )
+            _save_frame(request, entry)
             return redirect(f"{reverse('logbook-list')}#entry-{entry.pk}")
     return _form_page(request, form, _("Edit entry"), entry)
 

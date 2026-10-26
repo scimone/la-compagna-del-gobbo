@@ -10,21 +10,36 @@
   .logform input, .logform textarea { appearance: none; width: 100%; padding: 0.6rem 0.8rem; font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; }
   .logform textarea { resize: vertical; }
   .logform-pics { display: flex; flex-wrap: wrap; gap: 0.6rem; }
-  .logform-pic { display: flex; flex-direction: column; gap: 0.2rem; width: 6rem; font-weight: 400 !important; }
-  .logform-pic img { width: 6rem; height: 6rem; object-fit: cover; border-radius: 0.5rem; }
-  .logform-pic input { width: auto; }
+  /* Each existing picture is a tile; its (visually hidden - `.logform input` would blank a checkbox)
+     checkbox marks it for removal: the x turns into an undo arrow and the picture fades. */
+  .logform-pic { position: relative; width: 6rem; height: 6rem; border-radius: 0.5rem; overflow: hidden; cursor: pointer; background: var(--surface); }
+  .logform-pic img { display: block; width: 100%; height: 100%; object-fit: cover; transition: opacity .15s, filter .15s; }
+  .logform .logform-pic input { position: absolute; width: 1px; height: 1px; padding: 0; border: 0; opacity: 0; }
+  .logform-pic .x { position: absolute; top: 0.3rem; right: 0.3rem; width: 1.7rem; height: 1.7rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.7); color: #fff; font-size: 1.1rem; line-height: 1; }
+  .logform-pic .x::before { content: "\00d7"; }
+  .logform-pic input:checked ~ img { opacity: .3; filter: grayscale(1); }
+  .logform-pic input:checked ~ .x { background: #b3261e; }
+  .logform-pic input:checked ~ .x::before { content: "\21ba"; }
+  .logform-pic input:focus-visible ~ img { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .logform-pic.new { cursor: default; }
+  .logform-pic.new .x { display: none; }
   .logform .hint { margin: 0; font-size: 0.8rem; color: var(--muted); }
   /* The banner picker: a 21:9 frame, the same shape the logbook shows it in. Empty it is one big
      dashed "add" target; with a picture it is the picture, with Change / Remove on top. */
-  .banner-pick { position: relative; aspect-ratio: 21 / 9; border-radius: 0.8rem; overflow: hidden; background: var(--surface); border: 2px dashed var(--border); }
+  .banner-pick { position: relative; touch-action: none; aspect-ratio: 21 / 9; border-radius: 0.8rem; overflow: hidden; background: var(--surface); border: 2px dashed var(--border); }
   .banner-pick.has { border-style: solid; }
-  .banner-preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .banner-pick.has { cursor: grab; }
+  .banner-pick.dragging { cursor: grabbing; }
+  .banner-preview { user-select: none; -webkit-user-drag: none; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .banner-preview[hidden] { display: none; }
   .banner-empty { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; color: var(--muted); font-weight: 600; cursor: pointer; }
   .banner-empty svg { width: 2rem; height: 2rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
   .banner-pick.has .banner-empty { display: none; }
   .banner-tools { position: absolute; right: 0.5rem; bottom: 0.5rem; display: none; gap: 0.4rem; }
   .banner-pick.has .banner-tools { display: flex; }
+  .banner-zoom { display: none; align-items: center; gap: 0.6rem; margin-top: 0.4rem; font-size: 0.85rem; color: var(--muted); }
+  .banner-zoom.on { display: flex; }
+  .logform .banner-zoom input { padding: 0; border: 0; accent-color: var(--accent); }
   .banner-btn { appearance: none; padding: 0.35rem 0.8rem; border: 0; border-radius: 1rem; background: rgba(0,0,0,.65); color: #fff; font: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
   .logform .errorlist { margin: 0; padding: 0; list-style: none; color: #b3261e; font-size: 0.85rem; }
   /* The rich-text editor (`logbook_editor.js`); without JS the plain textarea (Markdown) stays. */
@@ -89,7 +104,14 @@
             <button type="button" class="banner-btn" data-banner-clear>{% translate "Remove" %}</button>
           </div>
           <input type="hidden" name="remove_banner" value="" data-banner-remove>
+          <input type="hidden" name="banner_x" value="{{ frame.banner_x|default:0.5|stringformat:'s' }}">
+          <input type="hidden" name="banner_y" value="{{ frame.banner_y|default:0.5|stringformat:'s' }}">
+          <input type="hidden" name="banner_zoom" value="{{ frame.banner_zoom|default:1|stringformat:'s' }}">
         </div>
+        <label class="banner-zoom{% if banner %} on{% endif %}" data-banner-zoom-row>{% translate "Zoom" %}
+          <input type="range" min="1" max="3" step="0.05" value="{{ frame.banner_zoom|default:1|stringformat:'s' }}" data-banner-zoom aria-label="{% translate 'Zoom' %}">
+        </label>
+        <p class="hint" data-banner-drag-hint {% if not banner %}hidden{% endif %}>{% translate "Drag the picture to choose what the frame shows." %}</p>
         <input type="file" id="id_banner" name="banner" accept="image/*" hidden>
       </div>
       <div class="field">
@@ -97,10 +119,11 @@
         {% if images %}
           <div class="logform-pics">
             {% for image in images %}
-              <label class="logform-pic"><img src="{% url 'logbook-image' image.pk %}" alt="" loading="lazy"><span><input type="checkbox" name="remove_image" value="{{ image.pk }}"> {% translate "Remove" %}</span></label>
+              <label class="logform-pic" title="{% translate 'Remove' %}"><input type="checkbox" name="remove_image" value="{{ image.pk }}" aria-label="{% translate 'Remove' %}"><img src="{% url 'logbook-image' image.pk %}" alt="" loading="lazy"><span class="x" aria-hidden="true"></span></label>
             {% endfor %}
           </div>
         {% endif %}
+        <div class="logform-pics" data-new-pics></div>
         <input type="file" id="id_images" name="images" accept="image/*" multiple>
       </div>
       <button type="submit">{% translate "Save" %}</button>
@@ -114,20 +137,87 @@
       if (!box || !input) return;
       var img = box.querySelector(".banner-preview");
       var flag = box.querySelector("[data-banner-remove]");
+      var fx = box.querySelector('[name="banner_x"]');
+      var fy = box.querySelector('[name="banner_y"]');
+      var fz = box.querySelector('[name="banner_zoom"]');
+      var slider = document.querySelector("[data-banner-zoom]");
+      var zoomRow = document.querySelector("[data-banner-zoom-row]");
+      var hint = document.querySelector("[data-banner-drag-hint]");
+      var clamp = function (v, lo, hi) { return Math.min(hi, Math.max(lo, v)); };
+
+      // The same two properties the logbook sets (logbook.banner_style), so this is what it shows.
+      function draw() {
+        var x = fx.value * 100 + "%", y = fy.value * 100 + "%", z = Number(fz.value) || 1;
+        img.style.objectPosition = x + " " + y;
+        img.style.transformOrigin = x + " " + y;
+        img.style.transform = z > 1 ? "scale(" + z + ")" : "";
+        slider.value = z;
+      }
+      function show(on) {
+        box.classList.toggle("has", on);
+        zoomRow.classList.toggle("on", on);
+        hint.hidden = !on;
+      }
+      function reset() { fx.value = fy.value = "0.5"; fz.value = "1"; draw(); }
+      draw();
+
       input.addEventListener("change", function () {
         var file = input.files && input.files[0];
         if (!file) return;
         img.src = URL.createObjectURL(file);
         img.hidden = false;
         flag.value = "";
-        box.classList.add("has");
+        reset();
+        show(true);
       });
       box.querySelector("[data-banner-clear]").addEventListener("click", function () {
         input.value = "";
         img.hidden = true;
         img.removeAttribute("src");
         flag.value = "1";
-        box.classList.remove("has");
+        reset();
+        show(false);
+      });
+      slider.addEventListener("input", function () { fz.value = slider.value; draw(); });
+
+      // Dragging moves the picture under the frame: the focus point shifts the opposite way, by
+      // the share of the (zoomed) picture that sticks out of the frame.
+      var drag = null;
+      box.addEventListener("pointerdown", function (e) {
+        if (!box.classList.contains("has") || e.target.closest(".banner-tools")) return;
+        drag = { px: e.clientX, py: e.clientY, x: Number(fx.value), y: Number(fy.value) };
+        box.setPointerCapture(e.pointerId);
+        box.classList.add("dragging");
+      });
+      box.addEventListener("pointermove", function (e) {
+        if (!drag || !img.naturalWidth) return;
+        var w = box.clientWidth, h = box.clientHeight, z = Number(fz.value) || 1;
+        var cover = Math.max(w / img.naturalWidth, h / img.naturalHeight);
+        var spanX = img.naturalWidth * cover * z - w, spanY = img.naturalHeight * cover * z - h;
+        if (spanX > 1) fx.value = clamp(drag.x - (e.clientX - drag.px) / spanX, 0, 1).toFixed(4);
+        if (spanY > 1) fy.value = clamp(drag.y - (e.clientY - drag.py) / spanY, 0, 1).toFixed(4);
+        draw();
+      });
+      var end = function () { drag = null; box.classList.remove("dragging"); };
+      box.addEventListener("pointerup", end);
+      box.addEventListener("pointercancel", end);
+    })();
+    (function () {
+      // Thumbnails of the pictures just chosen, so a wrong pick is seen before saving.
+      var input = document.getElementById("id_images");
+      var strip = document.querySelector("[data-new-pics]");
+      if (!input || !strip) return;
+      input.addEventListener("change", function () {
+        strip.textContent = "";
+        Array.prototype.forEach.call(input.files, function (file) {
+          var tile = document.createElement("span");
+          tile.className = "logform-pic new";
+          var img = document.createElement("img");
+          img.alt = "";
+          img.src = URL.createObjectURL(file);
+          tile.appendChild(img);
+          strip.appendChild(tile);
+        });
       });
     })();
   </script>

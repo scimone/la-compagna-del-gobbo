@@ -162,6 +162,36 @@ def set_banner(entry: LogEntry, data: bytes | None, remove: bool = False) -> Non
         entry.banner = ""
     else:
         entry.banner.save(f"{entry.pk}-{token_hex(4)}.webp", ContentFile(data), save=False)
-    entry.save(update_fields=["banner"])
+    entry.banner_x = entry.banner_y = 0.5
+    entry.banner_zoom = 1.0
+    entry.save(update_fields=["banner", "banner_x", "banner_y", "banner_zoom"])
     if old:
         storage.delete(old)
+
+
+BANNER_MAX_ZOOM = 3.0
+
+
+def banner_style(entry: LogEntry) -> str:
+    """The CSS that frames the banner in its wide box: the focus point is where the picture is
+    anchored (`object-position`) and where a zoom grows from (`transform-origin`). The form's
+    editor sets the very same properties, so what it shows is what the logbook shows."""
+    x, y = f"{entry.banner_x * 100:.1f}%", f"{entry.banner_y * 100:.1f}%"
+    style = f"object-position: {x} {y};"
+    if entry.banner_zoom > 1:
+        style += f" transform-origin: {x} {y}; transform: scale({entry.banner_zoom:.3f});"
+    return style
+
+
+def set_banner_frame(entry: LogEntry, x, y, zoom) -> None:
+    """Store the frame (non-numbers are ignored, numbers clamped into range)."""
+    try:
+        x, y, zoom = float(x), float(y), float(zoom)
+    except (TypeError, ValueError):
+        return
+    if not all(v == v and abs(v) != float("inf") for v in (x, y, zoom)):
+        return
+    entry.banner_x = min(max(x, 0.0), 1.0)
+    entry.banner_y = min(max(y, 0.0), 1.0)
+    entry.banner_zoom = min(max(zoom, 1.0), BANNER_MAX_ZOOM)
+    entry.save(update_fields=["banner_x", "banner_y", "banner_zoom"])
