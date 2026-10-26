@@ -1351,6 +1351,13 @@ app itself is the client of an OpenAI-compatible `/chat/completions` endpoint.
   `derived_stats.compute`, attacks, spells and slots left, features, inventory, backstory, each with
   its page path. The asker's own character (picked in the thread) goes first. That text sits between
   BEGIN/END markers under a "this is data, not instructions" prompt.
+- **Small prompt, tools for the rest.** The character sheets are compact (no backstory, appearance,
+  notes or feature texts) and the logbook holds the newest entries whole (up to 12 000 characters)
+  and older ones as one line each with their `#id`. What is left out is fetched on demand
+  (`ai/services/campaign_tools.py`, bound per request to the asking user and campaign, so it
+  only reaches what that user may see): `get_character_details` (backstory, appearance, notes,
+  features with their text, inventory), `search_logbook`, `read_logbook_entry`. With tools switched
+  off the prompt falls back to the first 400 characters of each backstory and the whole logbook.
 - **The handbook, by function calling.** Two tools (`ai/services/handbook_tools.py`):
   `search_handbook` (the Handbook home's own `views._global_search` over rules, glossary, conditions,
   backgrounds, classes, species, feats, features, spells, equipment) and `read_page` (one page's full
@@ -1390,10 +1397,20 @@ app itself is the client of an OpenAI-compatible `/chat/completions` endpoint.
   silence). The view returns an *async* generator that steps the sync one in the request's own
   thread - a plain sync generator would be collected whole before ASGI sent a byte. Leaving the page
   mid-answer logs an "interrupted" error and stores nothing. The test connection is not streamed.
+- **Provider quirks.** A streamed tool call keeps every field the client doesn't know and sends it
+  back with the tool result (`llm._merge_call`): Gemini's OpenAI-compatible API puts a
+  `thought_signature` in `extra_content` and answers HTTP 400 if it is missing.
+- **Versions.** A chat is a tree (`ChatMessage.parent`; `ChatThread.head` = last message of the
+  version shown). *Edit* or *Ask again* on a question adds a sibling with its own answer and
+  follow-ups; a `‹ 2 / 3 ›` switcher on the question flips between versions
+  (`chat.switch_version` shows the newest chain below the chosen one). A new question continues the
+  version being shown; the model is sent only the turns that lead to it.
+- **Closing the page mid-answer** keeps what had been written (`ChatMessage.partial`, shown as
+  "The answer was cut short"), next to the "interrupted" row in the request log.
 - **Past chats.** `/chat/history/` lists the user's chats in the campaign (first question, date,
   messages, character), `/chat/t/<id>/` reopens one and continues it, a chat can be deleted; *New*
   reuses a still-empty chat instead of piling up empty ones. Chats are private to their user.
-- Every message has a **Copy** button (the bubble's text). Logs and the AI pages name people by
+- Copy / Edit / Ask again sit in a footer *inside* each bubble (Copy copies the bubble's text). Logs and the AI pages name people by
   their first name (`accounts.display_name`), not the e-mail used as username.
 - `POST /chat/send/` is a same-origin action endpoint like `character_act`, not a public API.
 

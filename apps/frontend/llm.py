@@ -310,7 +310,9 @@ def _whole_as_chunks(data: dict) -> list[dict]:
 
 
 def _merge_call(calls: dict, delta: dict) -> None:
-    """Fold one streamed `tool_calls` fragment into `calls` (keyed by its index)."""
+    """Fold one streamed `tool_calls` fragment into `calls` (keyed by its index). Fields this
+    client doesn't know are kept and sent back with the call: Gemini's OpenAI-compatible API puts
+    a `thought_signature` in `extra_content` and rejects the next request if it is missing."""
     index = delta.get("index", len(calls))
     call = calls.setdefault(
         index, {"id": "", "type": "function", "function": {"name": "", "arguments": ""}}
@@ -322,6 +324,26 @@ def _merge_call(calls: dict, delta: dict) -> None:
         call["function"]["name"] += function["name"]
     if function.get("arguments"):
         call["function"]["arguments"] += function["arguments"]
+    for name, value in delta.items():
+        if name in ("index", "id", "type", "function"):
+            continue
+        if isinstance(value, dict) and isinstance(call.get(name), dict):
+            _deep_update(call[name], value)
+        else:
+            call[name] = value
+    for name, value in function.items():
+        if name not in ("name", "arguments"):
+            call["function"][name] = value
+
+
+def _deep_update(target: dict, extra: dict) -> None:
+    for name, value in extra.items():
+        if isinstance(value, dict) and isinstance(target.get(name), dict):
+            _deep_update(target[name], value)
+        elif isinstance(value, str) and isinstance(target.get(name), str):
+            target[name] += value  # a value streamed in pieces
+        else:
+            target[name] = value
 
 
 def chat_completion(

@@ -1,0 +1,20 @@
+{% load i18n %}{% for m in log %}{% if m.role == "user" %}<div class="msg user" data-id="{{ m.id }}">
+  <div class="bubble">
+    <div class="bubble-body">{{ m.text }}</div>
+    {% include "frontend/chat/_tools.html" with editable=True %}
+  </div>
+  {% if m.versions.total > 1 %}
+    <div class="versions" role="group" aria-label="{% translate 'Versions of this message' %}">
+      <button type="button" data-switch="{{ m.versions.prev }}" {% if not m.versions.prev %}disabled{% endif %} aria-label="{% translate 'Previous version' %}">‹</button>
+      <span>{{ m.versions.index }} / {{ m.versions.total }}</span>
+      <button type="button" data-switch="{{ m.versions.next }}" {% if not m.versions.next %}disabled{% endif %} aria-label="{% translate 'Next version' %}">›</button>
+    </div>
+  {% endif %}
+</div>{% else %}<div class="msg assistant" data-id="{{ m.id }}">
+  <div class="steps">{% for s in m.steps %}{{ s|safe }}{% endfor %}</div>
+  <div class="bubble">
+    <div class="bubble-body">{{ m.html }}</div>
+    {% if m.partial %}<div class="interrupted">{% translate "The answer was cut short." %}</div>{% endif %}
+    {% include "frontend/chat/_tools.html" %}
+  </div>
+</div>{% endif %}{% empty %}<p class="chat-empty">{% translate "Ask what your character could do next, how to play a turn of a fight, or anything about the rules. I know the logbook, the party's characters and the handbook." %}</p>{% endfor %}

@@ -129,8 +129,9 @@ def test_context_keeps_the_newest_entries_when_too_long(alice, hero):
             text="x" * 600,
         )
     text = context.build(alice, hero.campaign, hero, language="en")
-    assert "Day 8" in text and "Day 1" not in text
-    assert "oldest entries are left out" in text
+    assert "Day 8" in text and "Older entries, one line each" in text
+    assert text.count("x" * 600) < 8  # the oldest ones are a line each, not whole
+    assert "read_logbook_entry" in text
 
 
 def test_sending_a_question_stores_both_sides_and_logs_the_call(alice, hero, configured, replies):
@@ -210,7 +211,7 @@ def test_the_chat_menu(client, alice, hero, configured, replies):
     assert "<strong>attack</strong>" in events[-1][1]["html"]
     page = client.get("/chat/").content.decode()
     assert "&lt;b&gt;hi" in page  # the question is escaped
-    assert page.count("data-copy-button") == 2 + 1  # two bubbles + the template for new ones
+    assert page.count("data-copy-button") == 2  # inside each of the two bubbles
 
     _r, events = stream(client, thread, "")
     assert events == [("error", {"message": "Write a question first."})]

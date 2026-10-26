@@ -3636,3 +3636,53 @@ msgstr[1] "%(n)s pagine"
 
 msgid "Playing as: nobody"
 msgstr "Interpreto: nessuno"
+
+msgid "Ask again"
+msgstr "Richiedi di nuovo"
+
+msgid "Couldn't find that character"
+msgstr "Personaggio non trovato"
+
+msgid "Couldn't open that entry"
+msgstr "Impossibile aprire quella voce"
+
+msgid "Edit"
+msgstr "Modifica"
+
+msgid "Looking up %(q)s…"
+msgstr "Cerco informazioni su %(q)s…"
+
+msgid "Next version"
+msgstr "Versione successiva"
+
+msgid "Nothing usable in the logbook for “%(q)s”"
+msgstr "Niente di utile nel diario per “%(q)s”"
+
+msgid "Opening a logbook entry…"
+msgstr "Apro una voce del diario…"
+
+msgid "Previous version"
+msgstr "Versione precedente"
+
+msgid "Read about"
+msgstr "Letto di"
+
+msgid "Searched the logbook for “%(q)s”"
+msgstr "Cercato nel diario “%(q)s”"
+
+msgid "Searching the logbook for “%(q)s”…"
+msgstr "Cerco nel diario “%(q)s”…"
+
+msgid "That message is not in this chat."
+msgstr "Questo messaggio non è in questa chat."
+
+msgid "The answer was cut short."
+msgstr "La risposta è stata interrotta."
+
+msgid "Versions of this message"
+msgstr "Versioni di questo messaggio"
+
+msgid "%(n)s entry"
+msgid_plural "%(n)s entries"
+msgstr[0] "%(n)s voce"
+msgstr[1] "%(n)s voci"

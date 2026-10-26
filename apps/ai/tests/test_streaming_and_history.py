@@ -231,8 +231,14 @@ def ready(campaign):
 
 def talk(thread, *questions):
     for question in questions:
-        ChatMessage.objects.create(thread=thread, role="user", content=question)
-        ChatMessage.objects.create(thread=thread, role="assistant", content="answer to " + question)
+        asked = ChatMessage.objects.create(
+            thread=thread, parent=thread.head, role="user", content=question
+        )
+        answered = ChatMessage.objects.create(
+            thread=thread, parent=asked, role="assistant", content="answer to " + question
+        )
+        thread.head = answered
+        thread.save()
 
 
 def test_new_chat_reuses_an_empty_one_and_keeps_old_ones(named, campaign, ready):

@@ -10,7 +10,6 @@ from apps.builder.services import derived_stats
 from apps.characters.models import Character
 from apps.characters.services import access
 from apps.frontend import accounts, logbook
-from apps.frontend.character_sheet import shown_backstory
 from apps.frontend.models import LogEntry
 
 ABILITY_ORDER = ("str", "dex", "con", "int", "wis", "cha")
@@ -42,6 +41,10 @@ TOOLS_PROMPT = """\
 - You can look things up: `search_handbook` finds rules, spells, classes, species, feats, \
 equipment, conditions and more in the app's handbook, and `read_page` reads one page in full. \
 Check the rules there instead of trusting memory whenever a rule, a spell or an item matters.
+- The sheets below are compact. `get_character_details` gives a character's backstory, \
+appearance, notes, the full text of their features and their inventory; the logbook below keeps \
+only the newest entries in full - `search_logbook` and `read_logbook_entry` reach the older ones. \
+Ask for these only when the question needs them.
 """
 
 
@@ -49,7 +52,7 @@ def _mod(value: int) -> str:
     return f"{value:+d}"
 
 
-def _character_block(character: Character, *, is_player: bool) -> str:
+def _character_block(character: Character, *, is_player: bool, with_tools: bool) -> str:
     stats = derived_stats.compute(character)
     classes = ", ".join(
         f"{c.klass.name} {c.level}" + (f" ({c.subclass.name})" if c.subclass else "")
@@ -131,15 +134,11 @@ def _character_block(character: Character, *, is_player: bool) -> str:
     gear += [i.name for i in character.custom_items.all()]
     if gear:
         lines.append("Inventory: " + ", ".join(gear))
-    story, _translated = shown_backstory(character)
-    for label, text in (
-        ("Backstory", story),
-        ("Appearance", character.appearance),
-        ("Notes", character.notes),
-    ):
-        if text.strip():
-            lines.append(f"{label}: {text.strip()}")
-    return "\n".join(lines)
+    if with_tools:
+        lines.append("Backstory, appearance, notes, feature texts: use get_character_details.")
+    elif character.backstory.strip():
+        lines.append(f"Backstory (start): {' '.join(character.backstory.split())[:400]}")
+    return "\n".join(line for line in lines if line)
 
 
 def _spell_lines(character: Character, stats) -> list[str]:
@@ -167,34 +166,67 @@ def _spell_lines(character: Character, stats) -> list[str]:
     return lines
 
 
-def _entry_block(entry: LogEntry, shown: dict) -> str:
+def entry_head(entry: LogEntry, shown: dict) -> str:
+    """`[#id date] who says` / `[#id date] Session log: title` - the id is what `read_logbook_entry`
+    takes."""
     if entry.kind == LogEntry.PERSONAL:
         who = (
             "the Dungeon Master"
             if entry.as_dm
             else (entry.character.name if entry.character else "?")
         )
-        head = f"[{entry.date}] {who} says"
+        return f"[#{entry.pk} {entry.date}] {who} says"
     else:
         title = shown["title"][0].strip()
-        head = f"[{entry.date}] Session log" + (f": {title}" if title else "")
-    return f"{head}\n{shown['text'][0].strip()}"
+    return f"[#{entry.pk} {entry.date}] Session log" + (f": {title}" if title else "")
 
 
-def _logbook_text(campaign, limit: int) -> str:
+def _entry_block(entry: LogEntry, shown: dict) -> str:
+    return f"{entry_head(entry, shown)}\n{shown['text'][0].strip()}"
+
+
+def _entry_line(entry: LogEntry, shown: dict) -> str:
+    text = " ".join(shown["text"][0].split())
+    return f"{entry_head(entry, shown)} {text[:90]}" + ("…" if len(text) > 90 else "")
+
+
+#: The newest logbook entries go in whole, up to this many characters; older ones are one line
+#: each (date, who, the first words) and are read on demand with the logbook tools.
+LOGBOOK_FULL_CHARS = 12000
+
+
+def _logbook_text(campaign, limit: int, with_tools: bool) -> str:
     entries = logbook.list_entries(campaign)
+    if not entries:
+        return "(The logbook is empty.)"
     texts = logbook.display(entries)
-    blocks = [_entry_block(e, texts[e.pk]) for e in entries]
-    kept, size = [], 0
-    for block in reversed(blocks):  # the newest entries matter most
-        if size + len(block) > limit and kept:
+    full_limit = min(limit, LOGBOOK_FULL_CHARS) if with_tools else limit
+    full, size = [], 0
+    for entry in reversed(entries):  # the newest entries matter most
+        block = _entry_block(entry, texts[entry.pk])
+        if size + len(block) > full_limit and full:
             break
-        kept.append(block)
+        full.append(entry)
         size += len(block) + 2
-    kept.reverse()
-    omitted = len(blocks) - len(kept)
-    note = f"(The {omitted} oldest entries are left out.)\n\n" if omitted else ""
-    return note + "\n\n".join(kept) if kept else "(The logbook is empty.)"
+    full.reverse()
+    older = entries[: len(entries) - len(full)]
+    parts = []
+    if older and with_tools:
+        lines = []
+        for entry in reversed(older):
+            line = _entry_line(entry, texts[entry.pk])
+            if sum(len(x) + 1 for x in lines) + len(line) > max(limit - size, 2000):
+                break
+            lines.append(line)
+        lines.reverse()
+        parts.append(
+            f"Older entries, one line each ({len(older)}; read one in full with "
+            "read_logbook_entry, or search with search_logbook):\n" + "\n".join(lines)
+        )
+    elif older:
+        parts.append(f"(The {len(older)} oldest entries are left out.)")
+    parts += [_entry_block(e, texts[e.pk]) for e in full]
+    return "\n\n".join(parts)
 
 
 def characters_for(user, campaign) -> list[Character]:
@@ -214,7 +246,10 @@ def build(user, campaign, player: Character | None, language: str | None = None)
     characters.sort(key=lambda c: player is None or c.pk != player.pk)  # the player's first
     budget = config.max_context_chars
     sheets = "\n\n".join(
-        _character_block(c, is_player=bool(player and c.pk == player.pk)) for c in characters
+        _character_block(
+            c, is_player=bool(player and c.pk == player.pk), with_tools=config.use_tools
+        )
+        for c in characters
     )
     sheets = sheets[:budget] or "(No characters yet.)"
     intro = SYSTEM_PROMPT.format(
@@ -228,7 +263,7 @@ def build(user, campaign, player: Character | None, language: str | None = None)
             + (f", playing {player.name}." if player else ".")
         ),
     )
-    story = _logbook_text(campaign, max(budget - len(sheets), budget // 4))
+    story = _logbook_text(campaign, max(budget - len(sheets), budget // 4), config.use_tools)
     return (
         f"{intro}\n\nCampaign: {campaign.name}\n\n"
         f"=== BEGIN CHARACTERS (data) ===\n{sheets}\n=== END CHARACTERS ===\n\n"

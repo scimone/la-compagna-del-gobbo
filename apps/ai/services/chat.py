@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from apps.ai.models import AIRequestLog, AISettings, ChatMessage, ChatThread
-from apps.ai.services import context, gateway, handbook_tools, links, usage
+from apps.ai.services import context, gateway, links, tools, usage
 from apps.campaigns.services import membership
 from apps.characters.models import Character
 from apps.characters.services import access
@@ -73,9 +73,94 @@ def _check_limits(user, campaign) -> None:
         raise ChatError(_("You have reached today's limit of questions."))
 
 
-def prepare(thread: ChatThread, text: str) -> tuple[str, list[dict]]:
-    """Validate a question and build the messages for the model (context + history + question).
-    Raises `ChatError` when it is refused."""
+def _chain(message: ChatMessage | None) -> list[ChatMessage]:
+    """`message` and everything it follows, first to last."""
+    messages = []
+    while message is not None:
+        messages.append(message)
+        message = message.parent
+    return messages[::-1]
+
+
+def path(thread: ChatThread) -> list[ChatMessage]:
+    """The messages of the version shown, first to last."""
+    return _chain(thread.head)
+
+
+def _deepest(message: ChatMessage) -> ChatMessage:
+    """The last message of the newest chain of follow-ups below `message` (or itself)."""
+    while True:
+        child = message.children.order_by("-pk").first()
+        if child is None:
+            return message
+        message = child
+
+
+def versions(message: ChatMessage) -> dict:
+    """Where `message` stands among its alternatives (the versions made by editing/resending):
+    `{"index", "total", "prev", "next"}` (ids), `total` 1 when there is only one."""
+    siblings = list(
+        ChatMessage.objects.filter(thread=message.thread, parent=message.parent, role=message.role)
+        .order_by("pk")
+        .values_list("pk", flat=True)
+    )
+    index = siblings.index(message.pk)
+    return {
+        "index": index + 1,
+        "total": len(siblings),
+        "prev": siblings[index - 1] if index > 0 else None,
+        "next": siblings[index + 1] if index + 1 < len(siblings) else None,
+    }
+
+
+def timeline(thread: ChatThread) -> list[dict]:
+    """What the chat page shows: `{message, versions}` for each message of the shown version."""
+    return [
+        {"message": m, "versions": versions(m) if m.role == ChatMessage.Role.USER else None}
+        for m in path(thread)
+    ]
+
+
+def switch_version(thread: ChatThread, message_id) -> None:
+    """Show another version: make `message_id` (an alternative of a message of this chat) the
+    thread's version, followed by its newest follow-ups."""
+    message = ChatMessage.objects.filter(pk=message_id or 0, thread=thread).first()
+    if message is None:
+        raise ChatError(_("That message is not in this chat."))
+    thread.head = _deepest(message)
+    thread.save(update_fields=["head"])
+
+
+def _history(parent: ChatMessage | None) -> list[dict]:
+    """The earlier turns for the model: the version leading to `parent`, empty ones dropped and
+    neighbours of one role joined (a cut-short answer can leave two questions in a row)."""
+    turns = []
+    for message in _chain(parent)[-HISTORY_MESSAGES:]:
+        if not message.content.strip():
+            continue
+        if turns and turns[-1]["role"] == message.role:
+            turns[-1]["content"] += "\n\n" + message.content
+        else:
+            turns.append({"role": message.role, "content": message.content})
+    return turns
+
+
+def prepare(
+    thread: ChatThread, text: str, replace=None
+) -> tuple[str, ChatMessage | None, list[dict]]:
+    """Validate a question and build what the model gets (context + history + question).
+    `replace` is a question of this chat being edited or resent: the new one becomes its
+    alternative, answering from the same earlier turns. Returns (text, the message the new
+    question follows, messages); raises `ChatError` when it is refused."""
+    parent = thread.head
+    if replace is not None:
+        original = ChatMessage.objects.filter(
+            pk=replace, thread=thread, role=ChatMessage.Role.USER
+        ).first()
+        if original is None:
+            raise ChatError(_("That message is not in this chat."))
+        parent = original.parent
+        text = text.strip() or original.content
     text = text.strip()
     if not text:
         raise ChatError(_("Write a question first."))
@@ -92,10 +177,9 @@ def prepare(thread: ChatThread, text: str) -> tuple[str, list[dict]]:
     started = time.monotonic()
     messages = [{"role": "user", "content": text}]
     try:
-        history = list(thread.messages.order_by("-created_at", "-pk")[:HISTORY_MESSAGES])[::-1]
         messages = [
             {"role": "system", "content": context.build(user, campaign, thread.character)},
-            *({"role": m.role, "content": m.content} for m in history),
+            *_history(parent),
             {"role": "user", "content": text},
         ]
     except Exception:
@@ -110,25 +194,45 @@ def prepare(thread: ChatThread, text: str) -> tuple[str, list[dict]]:
             detail=traceback.format_exc(),
         )
         raise ChatError(_("Something went wrong. Try again.")) from None
-    return text, messages
+    return text, parent, messages
 
 
-def send_events(thread: ChatThread, text: str, *, stream: bool = True):
+def _store(thread, parent, text, reply, steps, *, partial=False) -> ChatMessage:
+    """Save a question and its answer as the newest version, and show it."""
+    question = ChatMessage.objects.create(
+        thread=thread, parent=parent, role=ChatMessage.Role.USER, content=text
+    )
+    answer = ChatMessage.objects.create(
+        thread=thread,
+        parent=question,
+        role=ChatMessage.Role.ASSISTANT,
+        content=links.clean(reply.strip()),
+        activity=steps,
+        partial=partial,
+    )
+    thread.head = answer
+    thread.save(update_fields=["head"])
+    return answer
+
+
+def send_events(thread: ChatThread, text: str, *, stream: bool = True, replace=None):
     """Ask `text` in `thread`. A generator of events for the page: ("ping",), ("text", the
     answer so far) while it is written, ("step_start", step) / ("step_end", step) around each
     thing the assistant looks up, and finally ("done", the stored answer `ChatMessage`). The
-    question and answer are stored only when it completes. Raises `ChatError`."""
-    text, messages = prepare(thread, text)
+    question and answer are stored when it completes - or, if the reader goes away mid-answer,
+    with what had been written so far (marked `partial`). Raises `ChatError`."""
+    text, parent, messages = prepare(thread, text, replace)
     steps: list[dict] = []
     written = ""
+    reply = None
     try:
         for kind, value in gateway.converse(
             messages,
             campaign=thread.campaign,
             user=thread.user,
             thread=thread,
-            tools=handbook_tools.TOOLS,
-            run_tool=handbook_tools.run_ui,
+            tools=tools.TOOLS,
+            run_tool=tools.runner(thread.user, thread.campaign),
             stream=stream,
         ):
             if kind == "delta":
@@ -147,31 +251,36 @@ def send_events(thread: ChatThread, text: str, *, stream: bool = True):
                 reply = value
     except gateway.AIUnavailable as error:
         raise ChatError(str(error)) from None
-    ChatMessage.objects.create(thread=thread, role=ChatMessage.Role.USER, content=text)
-    answer = ChatMessage.objects.create(
-        thread=thread,
-        role=ChatMessage.Role.ASSISTANT,
-        content=links.clean(reply.strip()) or "…",
-        activity=steps,
-    )
-    yield ("done", answer)
+    except GeneratorExit:
+        _store(thread, parent, text, written, steps, partial=True)
+        raise
+    yield ("done", _store(thread, parent, text, reply, steps))
+
+
+STEP_KINDS = {
+    "search_handbook": "search",
+    "read_page": "read",
+    "get_character_details": "character",
+    "search_logbook": "logbook_search",
+    "read_logbook_entry": "logbook_read",
+}
 
 
 def _step(event: dict) -> dict:
-    """What the page needs to show a tool call: its id, kind and the words looked for."""
+    """What the page needs to show a tool call: its id, kind and what was asked for."""
     args = event.get("args") or {}
-    kind = "read" if event.get("name") == "read_page" else "search"
+    query = args.get("query") or args.get("path") or args.get("character") or args.get("id") or ""
     return {
         "id": event.get("id", ""),
-        "kind": kind,
-        "query": args.get("query") or args.get("path", ""),
+        "kind": STEP_KINDS.get(event.get("name"), "search"),
+        "query": str(query),
     }
 
 
-def send(thread: ChatThread, text: str, *, stream: bool = False) -> ChatMessage:
+def send(thread: ChatThread, text: str, *, stream: bool = False, replace=None) -> ChatMessage:
     """`send_events` to the end: the stored answer."""
     answer = None
-    for kind, value in send_events(thread, text, stream=stream):
+    for kind, value in send_events(thread, text, stream=stream, replace=replace):
         if kind == "done":
             answer = value
     return answer
@@ -186,24 +295,25 @@ def get_thread(user, campaign, pk) -> ChatThread | None:
 
 def history(user, campaign) -> list[dict]:
     """The user's chats in this campaign that hold at least one message, newest activity first:
-    `{thread, title, last, count}` where `title` is the first question."""
+    `{thread, title, last, count}` where `title` is the first question of the version shown."""
     rows = []
     threads = (
         ChatThread.objects.filter(user=user, campaign=campaign)
-        .select_related("character")
+        .select_related("character", "head")
         .prefetch_related("messages")
     )
     for thread in threads:
-        messages = list(thread.messages.all())
-        if not messages:
+        everything = list(thread.messages.all())
+        if not everything:
             continue
-        first_question = next((m for m in messages if m.role == ChatMessage.Role.USER), messages[0])
+        shown = path(thread) or everything[:1]
+        first_question = next((m for m in shown if m.role == ChatMessage.Role.USER), shown[0])
         rows.append(
             {
                 "thread": thread,
                 "title": first_question.content,
-                "last": messages[-1].created_at,
-                "count": len(messages),
+                "last": max(m.created_at for m in everything),
+                "count": len(shown),
             }
         )
     rows.sort(key=lambda r: r["last"], reverse=True)

@@ -47,22 +47,32 @@ def step_html(step: dict, state: str) -> str:
     )
 
 
-def _bubbles(thread) -> list[dict]:
-    return [
-        {
-            "role": m.role,
-            "html": answer_html(m.content) if m.role == "assistant" else None,
-            "text": m.content,
-            "steps": [step_html(s, "error" if s.get("error") else "done") for s in m.activity],
-        }
-        for m in thread.messages.all()
-    ]
+def _log(thread) -> list[dict]:
+    """The messages of the version shown, ready for `_log.html`."""
+    rows = []
+    for item in chat.timeline(thread):
+        message = item["message"]
+        user = message.role == "user"
+        rows.append(
+            {
+                "id": message.pk,
+                "role": message.role,
+                "text": message.content,
+                "html": None if user else answer_html(message.content),
+                "partial": message.partial,
+                "versions": item["versions"],
+                "steps": [
+                    step_html(s, "error" if s.get("error") else "done") for s in message.activity
+                ],
+            }
+        )
+    return rows
 
 
 def _context(request, campaign, thread):
     return {
         "thread": thread,
-        "bubbles": _bubbles(thread),
+        "log": _log(thread),
         "characters": context.characters_for(request.user, campaign),
     }
 
@@ -86,6 +96,19 @@ def chat_page(request, pk=None):
         "frontend/chat/chat.html",
         {"page_title": _("Chat"), **_context(request, campaign, thread)},
     )
+    add_never_cache_headers(response)
+    return response
+
+
+def chat_log(request, pk):
+    """Just the messages of a chat (the page swaps this in after an answer or a version switch)."""
+    campaign = _campaign_or_none(request)
+    if not request.user.is_authenticated or campaign is None or not chat.is_available(campaign):
+        raise Http404
+    thread = chat.get_thread(request.user, campaign, pk)
+    if thread is None:
+        raise Http404
+    response = render(request, "frontend/chat/_log.html", {"log": _log(thread)})
     add_never_cache_headers(response)
     return response
 
@@ -127,12 +150,12 @@ def _sse(event: str, data: dict) -> bytes:
     return f"event: {event}\ndata: {json.dumps(data)}\n\n".encode()
 
 
-def _events(thread, text):
+def _events(thread, text, replace=None):
     """The chat as server-sent events (a sync generator; `chat_send` makes it async-safe)."""
     yield b": open\n\n"  # response headers and first bytes out at once
     last_text = 0.0
     try:
-        for kind, value in chat.send_events(thread, text, stream=True):
+        for kind, value in chat.send_events(thread, text, stream=True, replace=replace):
             if kind == "ping":
                 yield b": ping\n\n"
             elif kind == "text":
@@ -154,11 +177,11 @@ def _events(thread, text):
         yield _sse("error", {"message": _("Something went wrong. Try again.")})
 
 
-async def _async_events(thread, text):
+async def _async_events(thread, text, replace=None):
     """`_events` for the ASGI server: each step runs in the request's own thread, so a slow model
     blocks nobody else and every event leaves as soon as it exists (a sync generator would be
     collected whole before sending)."""
-    events = iter(_events(thread, text))
+    events = iter(_events(thread, text, replace))
     end = object()
     step = sync_to_async(next, thread_sensitive=True)
     try:
@@ -175,7 +198,7 @@ async def _async_events(thread, text):
 def chat_send(request):
     thread = _thread_from_post(request)
     response = StreamingHttpResponse(
-        _async_events(thread, request.POST.get("message", "")),
+        _async_events(thread, request.POST.get("message", ""), request.POST.get("replace") or None),
         content_type="text/event-stream; charset=utf-8",
     )
     # Streaming only works if nothing between here and the browser holds the bytes back:
@@ -204,6 +227,17 @@ def chat_delete(request, pk):
         raise Http404
     thread.delete()
     return redirect("chat-history")
+
+
+@require_POST
+def chat_switch(request):
+    """Show another version of a message (and what followed it)."""
+    thread = _thread_from_post(request)
+    try:
+        chat.switch_version(thread, request.POST.get("message"))
+    except chat.ChatError as error:
+        return JsonResponse({"error": str(error)}, status=400)
+    return HttpResponse(status=204)
 
 
 @require_POST

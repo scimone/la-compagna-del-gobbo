@@ -15,7 +15,8 @@
   .msg.user { align-self: flex-end; align-items: flex-end; }
   .msg.assistant { align-self: flex-start; align-items: flex-start; }
   .bubble { padding: 0.55rem 0.8rem; border-radius: 0.9rem; border: 1px solid var(--border); background: var(--surface); overflow-wrap: anywhere; line-height: 1.45; }
-  .msg.user .bubble { background: var(--accent); color: var(--accent-text, var(--bg)); border-color: var(--accent); white-space: pre-wrap; border-bottom-right-radius: 0.3rem; }
+  .msg.user .bubble { background: var(--accent); color: var(--accent-text, var(--bg)); border-color: var(--accent); border-bottom-right-radius: 0.3rem; }
+  .msg.user .bubble-body { white-space: pre-wrap; }
   .msg.assistant .bubble { border-bottom-left-radius: 0.3rem; }
   .bubble p { margin: 0 0 0.5rem; } .bubble p:last-child { margin-bottom: 0; }
   .msg.assistant .bubble a { color: var(--accent); font-weight: 600; }
@@ -24,12 +25,24 @@
   .bubble .caret { display: inline-block; width: 0.5ch; height: 1em; margin-left: 1px; vertical-align: text-bottom; background: currentColor; opacity: 0.55; animation: caret 1s steps(2) infinite; }
   @keyframes caret { 50% { opacity: 0; } }
 
-  .msg-tools { display: flex; gap: 0.25rem; opacity: 0.75; }
-  .msg-tools button { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.45rem; font: inherit; font-size: 0.75rem; color: var(--muted); background: transparent; border: 0; border-radius: 0.45rem; cursor: pointer; }
-  .msg-tools button:hover, .msg-tools button:focus-visible { background: var(--surface); color: var(--text); }
-  .msg-tools svg { width: 0.95rem; height: 0.95rem; }
-  .msg-tools .done { color: var(--accent); }
-  .msg.working .msg-tools { visibility: hidden; }
+  /* Tools live inside the bubble, in a footer row on its right. */
+  .bubble-foot { display: flex; justify-content: flex-end; gap: 0.1rem; margin: 0.35rem -0.35rem -0.3rem 0; opacity: 0.7; }
+  .bubble-foot button { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.4rem; font: inherit; font-size: 0.74rem; color: inherit; background: transparent; border: 0; border-radius: 0.45rem; cursor: pointer; }
+  .bubble-foot button:hover, .bubble-foot button:focus-visible { background: color-mix(in srgb, currentColor 14%, transparent); opacity: 1; }
+  .bubble-foot svg { width: 0.9rem; height: 0.9rem; }
+  .bubble-foot .done { color: var(--accent); }
+  .msg.user .bubble-foot .done { color: inherit; font-weight: 700; }
+  .msg.working .bubble-foot { display: none; }
+  .interrupted { margin-top: 0.4rem; font-size: 0.75rem; color: var(--muted); font-style: italic; }
+  .versions { display: inline-flex; align-items: center; gap: 0.15rem; font-size: 0.78rem; color: var(--muted); }
+  .versions button { width: 1.6rem; height: 1.6rem; padding: 0; font: inherit; font-size: 1.1rem; line-height: 1; color: var(--text); background: transparent; border: 0; border-radius: 0.4rem; cursor: pointer; }
+  .versions button:disabled { opacity: 0.3; cursor: default; }
+  .versions button:not(:disabled):hover { background: var(--surface); }
+  .editing { display: flex; flex-direction: column; gap: 0.4rem; min-width: min(78vw, 24rem); }
+  .editing textarea { width: 100%; box-sizing: border-box; resize: none; padding: 0.5rem 0.6rem; font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 0.6rem; max-height: 10rem; }
+  .editing .row { display: flex; justify-content: flex-end; gap: 0.4rem; }
+  .editing button { padding: 0.35rem 0.8rem; font: inherit; font-size: 0.85rem; font-weight: 600; border-radius: 0.5rem; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
+  .editing button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text, var(--bg)); }
 
   /* What the assistant looks up: a quiet rail of steps above its answer. */
   .steps { display: flex; flex-direction: column; gap: 0.35rem; margin-left: 0.35rem; padding-left: 0.7rem; border-left: 2px solid var(--border); width: min(100%, 30rem); }
@@ -75,8 +88,9 @@
 {% endblock %}
 
 {% block content %}
-  <div class="chat" data-thread="{{ thread.pk }}" data-send-url="{% url 'chat-send' %}" data-character-url="{% url 'chat-character' %}"
-       data-failed="{% translate 'Something went wrong. Try again.' %}" data-copy="{% translate 'Copy' %}" data-copied="{% translate 'Copied' %}">
+  <div class="chat" data-thread="{{ thread.pk }}" data-log-url="{% url 'chat-log' thread.pk %}" data-switch-url="{% url 'chat-switch' %}" data-send-url="{% url 'chat-send' %}" data-character-url="{% url 'chat-character' %}"
+       data-failed="{% translate 'Something went wrong. Try again.' %}" data-copy="{% translate 'Copy' %}" data-copied="{% translate 'Copied' %}"
+       data-save="{% translate 'Send' %}" data-cancel="{% translate 'Cancel' %}">
     <div class="chat-top">
       <select id="chat-character" aria-label="{% translate 'Playing as' %}">
         <option value="">{% translate "Playing as: nobody" %}</option>
@@ -96,24 +110,7 @@
       </form>
     </div>
 
-    <div class="chat-log" id="chat-log" aria-live="polite">
-      {% for b in bubbles %}
-        {% if b.role == "user" %}
-          <div class="msg user">
-            <div class="bubble">{{ b.text }}</div>
-            {% include "frontend/chat/_tools.html" %}
-          </div>
-        {% else %}
-          <div class="msg assistant">
-            <div class="steps">{% for s in b.steps %}{{ s|safe }}{% endfor %}</div>
-            <div class="bubble">{{ b.html }}</div>
-            {% include "frontend/chat/_tools.html" %}
-          </div>
-        {% endif %}
-      {% empty %}
-        <p class="chat-empty">{% translate "Ask what your character could do next, how to play a turn of a fight, or anything about the rules. I know the logbook, the party's characters and the handbook." %}</p>
-      {% endfor %}
-    </div>
+    <div class="chat-log" id="chat-log" aria-live="polite">{% include "frontend/chat/_log.html" %}</div>
 
     <div class="chips">
       <button type="button" data-prompt="{% translate 'What could my character do next?' %}">{% translate "What next?" %}</button>
@@ -127,6 +124,5 @@
       <button type="submit">{% translate "Send" %}</button>
     </form>
   </div>
-  <template id="tools-template">{% include "frontend/chat/_tools.html" %}</template>
   <script src="{% static_v 'js/chat.js' %}" defer></script>
 {% endblock %}

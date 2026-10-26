@@ -3,18 +3,33 @@
     <span class="step-icon" aria-hidden="true">
       {% if step.kind == "read" %}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+      {% elif step.kind == "character" %}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path></svg>
+      {% elif step.kind == "logbook_search" or step.kind == "logbook_read" %}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="13" height="17" rx="2"></rect><path d="M6 6.5H3.8M6 9.8H3.8M6 13.1H3.8M6 16.4H3.8M6 19.7H3.8"></path></svg>
       {% else %}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
       {% endif %}
     </span>
     <span class="step-label">
       {% if state == "running" %}
-        {% if step.kind == "read" %}{% translate "Opening a handbook page…" %}{% else %}{% blocktranslate with q=step.query %}Searching the handbook for “{{ q }}”…{% endblocktranslate %}{% endif %}
+        {% if step.kind == "read" %}{% translate "Opening a handbook page…" %}
+        {% elif step.kind == "character" %}{% blocktranslate with q=step.query %}Looking up {{ q }}…{% endblocktranslate %}
+        {% elif step.kind == "logbook_search" %}{% blocktranslate with q=step.query %}Searching the logbook for “{{ q }}”…{% endblocktranslate %}
+        {% elif step.kind == "logbook_read" %}{% translate "Opening a logbook entry…" %}
+        {% else %}{% blocktranslate with q=step.query %}Searching the handbook for “{{ q }}”…{% endblocktranslate %}{% endif %}
       {% elif state == "error" %}
-        {% if step.kind == "read" %}{% translate "Couldn't open that page" %}{% else %}{% blocktranslate with q=step.query %}Nothing usable for “{{ q }}”{% endblocktranslate %}{% endif %}
+        {% if step.kind == "read" %}{% translate "Couldn't open that page" %}
+        {% elif step.kind == "character" %}{% translate "Couldn't find that character" %}
+        {% elif step.kind == "logbook_read" %}{% translate "Couldn't open that entry" %}
+        {% elif step.kind == "logbook_search" %}{% blocktranslate with q=step.query %}Nothing usable in the logbook for “{{ q }}”{% endblocktranslate %}
+        {% else %}{% blocktranslate with q=step.query %}Nothing usable for “{{ q }}”{% endblocktranslate %}{% endif %}
       {% else %}
-        {% if step.kind == "read" %}{% translate "Read" %}{% else %}{% blocktranslate with q=step.query %}Searched the handbook for “{{ q }}”{% endblocktranslate %}{% endif %}
-        {% if step.kind == "search" %}<span class="step-meta">· {% blocktranslate count n=step.count %}{{ n }} page{% plural %}{{ n }} pages{% endblocktranslate %}</span>{% endif %}
+        {% if step.kind == "read" %}{% translate "Read" %}
+        {% elif step.kind == "character" %}{% translate "Read about" %}
+        {% elif step.kind == "logbook_read" %}{% translate "Read" %}
+        {% elif step.kind == "logbook_search" %}{% blocktranslate with q=step.query %}Searched the logbook for “{{ q }}”{% endblocktranslate %}<span class="step-meta">· {% blocktranslate count n=step.count %}{{ n }} entry{% plural %}{{ n }} entries{% endblocktranslate %}</span>
+        {% else %}{% blocktranslate with q=step.query %}Searched the handbook for “{{ q }}”{% endblocktranslate %}<span class="step-meta">· {% blocktranslate count n=step.count %}{{ n }} page{% plural %}{{ n }} pages{% endblocktranslate %}</span>{% endif %}
       {% endif %}
     </span>
     <span class="step-state" aria-hidden="true">
@@ -24,7 +39,7 @@
     </span>
   </div>
   {% if state == "done" %}
-    {% if step.kind == "read" and step.url %}
+    {% if step.url and step.title %}
       <div class="step-hits"><a class="chip" href="{{ step.url }}">{{ step.title }}</a></div>
     {% elif step.hits %}
       <div class="step-hits">
