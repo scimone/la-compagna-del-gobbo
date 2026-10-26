@@ -51,7 +51,7 @@ def context(request):
             return False
         from apps.ai.services import chat
 
-        return chat.is_available()
+        return chat.is_available(current(request))
 
     return {
         "current_campaign": campaign,

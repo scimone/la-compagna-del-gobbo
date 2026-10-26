@@ -1,7 +1,7 @@
 {% extends "frontend/base.html" %}
 {% load i18n %}
 
-{% block extra_style %}{% include "frontend/admin/_ai_style.html" %}{% endblock %}
+{% block extra_style %}{% include "frontend/campaigns/_ai_style.html" %}{% endblock %}
 
 {% block content %}
   <div class="aipanel">
@@ -19,7 +19,7 @@
       <table>
         <tr><th>{% translate "User" %}</th><th class="n">{% translate "Req." %}</th><th class="n">{% translate "In" %}</th><th class="n">{% translate "Out" %}</th><th class="n">{% translate "Err." %}</th><th>{% translate "Last" %}</th></tr>
         {% for u in users %}
-          <tr><td><a href="{% url 'admin-ai-requests' %}?user={{ u.username|urlencode }}">{{ u.username|default:"-" }}</a></td>
+          <tr><td><a href="{% url 'campaign-ai-requests' campaign.pk %}?user={{ u.username|urlencode }}">{{ u.username|default:"-" }}</a></td>
             <td class="n">{{ u.requests }}</td><td class="n">{{ u.prompt_tokens }}</td><td class="n">{{ u.completion_tokens }}</td><td class="n">{{ u.errors }}</td>
             <td>{{ u.last_used|date:"j M H:i" }}</td></tr>
         {% empty %}<tr><td colspan="6">{% translate "Nothing recorded yet." %}</td></tr>{% endfor %}

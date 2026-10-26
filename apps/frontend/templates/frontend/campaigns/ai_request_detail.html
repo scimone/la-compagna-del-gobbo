@@ -1,7 +1,7 @@
 {% extends "frontend/base.html" %}
 {% load i18n %}
 
-{% block extra_style %}{% include "frontend/admin/_ai_style.html" %}{% endblock %}
+{% block extra_style %}{% include "frontend/campaigns/_ai_style.html" %}{% endblock %}
 
 {% block content %}
   <div class="aipanel">
@@ -10,9 +10,16 @@
       <small>{{ log.model }} · {{ log.get_status_display }} · {{ log.prompt_tokens }} + {{ log.completion_tokens }} = {{ log.total_tokens }} {% translate "tokens" %} · {{ log.latency_ms }} ms{% if log.campaign %} · {{ log.campaign.name }}{% endif %}</small>
       {% if log.error %}<p class="error">{{ log.error }}</p>{% endif %}
     </div>
+    {% if log.error_detail %}
+      <h2>{% translate "Error detail" %}</h2>
+      <div class="card"><pre>{{ log.error_detail }}</pre></div>
+    {% endif %}
     <h2>{% translate "Request" %}</h2>
-    {% for m in log.request_json %}
-      <div class="card"><small>{{ m.role }}</small><pre>{{ m.content }}</pre></div>
+    {% for m in transcript %}
+      <div class="card"><small>{{ m.role }}</small>
+        {% for c in m.calls %}<pre>{% translate "tool call" %}: {{ c }}</pre>{% endfor %}
+        {% if m.content %}<pre>{{ m.content }}</pre>{% endif %}
+      </div>
     {% endfor %}
     <h2>{% translate "Response" %}</h2>
     <div class="card"><pre>{{ log.response_text }}</pre></div>

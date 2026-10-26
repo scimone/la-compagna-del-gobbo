@@ -16,17 +16,5 @@
       {% translate "Activity" %}
       <small>{% translate "Every page opened and change made in the app, filterable by user." %}</small>
     </a>
-    <a href="{% url 'admin-ai-settings' %}">
-      {% translate "AI chat" %}
-      <small>{% translate "API key, endpoint and model for the assistant." %}</small>
-    </a>
-    <a href="{% url 'admin-ai-requests' %}">
-      {% translate "AI requests" %}
-      <small>{% translate "Every request and response made with the key." %}</small>
-    </a>
-    <a href="{% url 'admin-ai-usage' %}">
-      {% translate "AI usage" %}
-      <small>{% translate "Requests and tokens per user and per day." %}</small>
-    </a>
   </div>
 {% endblock %}

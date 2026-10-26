@@ -31,6 +31,8 @@ class AIRequestLog(models.Model):
     response_text = models.TextField(blank=True)
     status = models.CharField(max_length=10, choices=Status.choices)
     error = models.CharField(max_length=300, blank=True)
+    #: Everything known about a failure (status, response body, traceback) - never the key.
+    error_detail = models.TextField(blank=True)
     prompt_tokens = models.PositiveIntegerField(default=0)
     completion_tokens = models.PositiveIntegerField(default=0)
     total_tokens = models.PositiveIntegerField(default=0)

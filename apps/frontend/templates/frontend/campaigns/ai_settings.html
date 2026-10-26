@@ -1,7 +1,7 @@
 {% extends "frontend/base.html" %}
 {% load i18n %}
 
-{% block extra_style %}{% include "frontend/admin/_ai_style.html" %}{% endblock %}
+{% block extra_style %}{% include "frontend/campaigns/_ai_style.html" %}{% endblock %}
 
 {% block content %}
   <div class="aipanel">
@@ -14,12 +14,19 @@
         <input type="text" name="base_url" placeholder="https://api.openai.com/v1" value="{% if form %}{{ form.base_url }}{% else %}{{ config.base_url }}{% endif %}">
       </label>
       <label>{% translate "Model" %}
-        <input type="text" name="model" value="{% if form %}{{ form.model }}{% else %}{{ config.model }}{% endif %}">
+        <span class="row">
+          <input type="text" name="model" list="model-list" style="flex:1" autocomplete="off"
+                 value="{% if form %}{{ form.model }}{% else %}{{ config.model }}{% endif %}">
+          <button type="button" id="load-models" data-url="{% url 'campaign-ai-models' campaign.pk %}">{% translate "Load models" %}</button>
+        </span>
+        <datalist id="model-list"></datalist>
+        <small id="models-status" class="hint"></small>
       </label>
       <label>{% translate "API key" %}
         <input type="password" name="api_key" autocomplete="new-password" placeholder="{% if config.has_key %}{% translate 'A key is saved - type to replace it' %}{% endif %}">
       </label>
       {% if config.has_key %}<label class="check"><input type="checkbox" name="clear_key"> {% translate "Remove the saved key" %}</label>{% endif %}
+      <label class="check"><input type="checkbox" name="use_tools" {% if form %}{% if form.use_tools %}checked{% endif %}{% elif config.use_tools %}checked{% endif %}> {% translate "Let the assistant search and read the handbook (needs a model with tool support)" %}</label>
       <label>{% translate "Extra instructions for the assistant (optional)" %}
         <textarea name="system_prompt_extra" rows="3">{% if form %}{{ form.system_prompt_extra }}{% else %}{{ config.system_prompt_extra }}{% endif %}</textarea>
       </label>
@@ -35,13 +42,45 @@
       <p class="hint">{% translate "Everything players ask, together with the campaign's logbook and characters, is sent to this provider and recorded in the request log." %}</p>
       <button type="submit" class="primary">{% translate "Save" %}</button>
     </form>
-    <form method="post" action="{% url 'admin-ai-test' %}" class="card">
+    <form method="post" action="{% url 'campaign-ai-test' campaign.pk %}" class="card">
       {% csrf_token %}
       <button type="submit">{% translate "Test the saved connection" %}</button>
     </form>
     <div class="row">
-      <a class="btn" href="{% url 'admin-ai-requests' %}">{% translate "Requests" %}</a>
-      <a class="btn" href="{% url 'admin-ai-usage' %}">{% translate "Usage" %}</a>
+      <a class="btn" href="{% url 'campaign-ai-requests' campaign.pk %}">{% translate "Requests" %}</a>
+      <a class="btn" href="{% url 'campaign-ai-usage' campaign.pk %}">{% translate "Usage" %}</a>
     </div>
   </div>
+  <script>
+    (function () {
+      var button = document.getElementById("load-models");
+      var form = button && button.closest("form");
+      if (!button) return;
+      var status = document.getElementById("models-status");
+      var list = document.getElementById("model-list");
+      button.addEventListener("click", function () {
+        var body = new FormData();
+        body.append("base_url", form.elements.base_url.value);
+        body.append("api_key", form.elements.api_key.value);
+        status.textContent = "…";
+        fetch(button.dataset.url, {
+          method: "POST", body: body, credentials: "same-origin",
+          headers: { "X-CSRFToken": form.elements.csrfmiddlewaretoken.value, "X-Requested-With": "XMLHttpRequest" },
+        }).then(function (r) { return r.json().catch(function () { return {}; }); })
+          .then(function (data) {
+            list.textContent = "";
+            if (!data.models) { status.textContent = data.error || "?"; return; }
+            data.models.forEach(function (id) {
+              var option = document.createElement("option");
+              option.value = id;
+              list.appendChild(option);
+            });
+            status.textContent = data.models.length + " {% translate 'models available - click the field to choose' %}";
+            form.elements.model.focus();
+            form.elements.model.select();
+          })
+          .catch(function () { status.textContent = "?"; });
+      });
+    })();
+  </script>
 {% endblock %}

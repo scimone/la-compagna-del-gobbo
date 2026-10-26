@@ -37,7 +37,13 @@ SYSTEM_PROMPT = (
 
 
 class LLMError(Exception):
-    """A failed call. The message is safe to store and show: never a response body or the key."""
+    """A failed call. The message is safe to show to anyone: never a response body or the key.
+    `detail` is everything known about the failure (status, response body, parse problem) for
+    the AI request log, which only the campaign's DM and admins read; the key is scrubbed."""
+
+    def __init__(self, message: str, detail: str = ""):
+        super().__init__(message)
+        self.detail = detail
 
 
 class TranslationError(LLMError):
@@ -75,6 +81,91 @@ def _clean(text: str) -> str:
     return re.sub(r"[\x00-\x08\x0b-\x1f\x7f]", "", text).strip()
 
 
+def _scrub(text: str, key: str) -> str:
+    return text.replace(key, "***") if key else text
+
+
+def _post_json(url: str, payload: dict | None, key: str, timeout: int, error) -> dict:
+    """GET (no `payload`) or POST JSON to `url`; returns the decoded JSON object. Never follows
+    redirects; raises `error` with a safe message and a detailed, key-free `detail`."""
+    request = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode() if payload is not None else None,
+        method="POST" if payload is not None else "GET",
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {key}"},
+    )
+    opener = urllib.request.build_opener(_NoRedirect)
+    try:
+        with opener.open(request, timeout=timeout) as response:
+            raw = response.read(MAX_RESPONSE_BYTES + 1)
+    except urllib.error.HTTPError as http_error:
+        try:
+            body = http_error.read(4000).decode("utf-8", "replace")
+        except Exception:
+            body = ""
+        where = (
+            http_error.headers.get("Location", "")
+            if http_error.code in (301, 302, 303, 307, 308)
+            else ""
+        )
+        detail = f"{request.method} {url}\nHTTP {http_error.code} {http_error.reason}"
+        detail += f"\nRedirect to: {where}" if where else ""
+        detail += f"\nResponse body: {body}" if body else ""
+        raise error(f"LLM returned HTTP {http_error.code}", _scrub(detail, key)) from None
+    except (urllib.error.URLError, OSError) as os_error:
+        reason = getattr(os_error, "reason", os_error)
+        detail = f"{request.method} {url}\n{type(os_error).__name__}: {reason}"
+        raise error("LLM is unreachable", _scrub(detail, key)) from None
+    if len(raw) > MAX_RESPONSE_BYTES:
+        raise error(
+            "LLM response too large",
+            f"{request.method} {url}\nmore than {MAX_RESPONSE_BYTES} bytes",
+        )
+    try:
+        data = json.loads(raw)
+    except ValueError:
+        text = raw[:2000].decode("utf-8", "replace")
+        raise error(
+            "unexpected LLM response", _scrub(f"{request.method} {url}\nNot JSON: {text}", key)
+        ) from None
+    if not isinstance(data, dict):
+        raise error("unexpected LLM response", f"{request.method} {url}\nJSON is not an object")
+    return data
+
+
+def chat_message(
+    base: str,
+    key: str,
+    model: str,
+    messages: list[dict],
+    *,
+    tools: list[dict] | None = None,
+    temperature: float | None = None,
+    timeout: int = TIMEOUT_SECONDS,
+    error=LLMError,
+) -> tuple[dict, dict]:
+    """POST `messages` (and function `tools`) to `{base}/chat/completions`; returns the reply
+    message dict (`content`, maybe `tool_calls`) and the API's `usage` object (or {})."""
+    payload = {"model": model, "messages": messages}
+    if temperature is not None:
+        payload["temperature"] = temperature
+    if tools:
+        payload["tools"] = tools
+    url = f"{base.rstrip('/')}/chat/completions"
+    data = _post_json(url, payload, key, timeout, error)
+    try:
+        message = data["choices"][0]["message"]
+    except (KeyError, IndexError, TypeError):
+        raise error(
+            "unexpected LLM response",
+            _scrub(f"POST {url}\nNo choices[0].message in: {json.dumps(data)[:2000]}", key),
+        ) from None
+    if not isinstance(message, dict):
+        raise error("unexpected LLM response", f"POST {url}\nmessage is not an object")
+    usage = data.get("usage")
+    return message, usage if isinstance(usage, dict) else {}
+
+
 def chat_completion(
     base: str,
     key: str,
@@ -85,36 +176,25 @@ def chat_completion(
     timeout: int = TIMEOUT_SECONDS,
     error=LLMError,
 ) -> tuple[str, dict]:
-    """POST `messages` to `{base}/chat/completions`; returns (reply text, the API's `usage`
-    object or {}). Never follows redirects; raises `error` with a safe message."""
-    payload = {"model": model, "messages": messages}
-    if temperature is not None:
-        payload["temperature"] = temperature
-    request = urllib.request.Request(
-        f"{base.rstrip('/')}/chat/completions",
-        data=json.dumps(payload).encode(),
-        method="POST",
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {key}"},
+    """Like `chat_message`, but only the reply text (which must be a string)."""
+    message, usage = chat_message(
+        base, key, model, messages, temperature=temperature, timeout=timeout, error=error
     )
-    opener = urllib.request.build_opener(_NoRedirect)
-    try:
-        with opener.open(request, timeout=timeout) as response:
-            raw = response.read(MAX_RESPONSE_BYTES + 1)
-    except urllib.error.HTTPError as http_error:
-        raise error(f"LLM returned HTTP {http_error.code}") from None
-    except (urllib.error.URLError, OSError):
-        raise error("LLM is unreachable") from None
-    if len(raw) > MAX_RESPONSE_BYTES:
-        raise error("LLM response too large")
-    try:
-        data = json.loads(raw)
-        content = data["choices"][0]["message"]["content"]
-    except (ValueError, KeyError, IndexError, TypeError):
-        raise error("unexpected LLM response") from None
+    content = message.get("content")
     if not isinstance(content, str):
-        raise error("unexpected LLM response")
-    usage = data.get("usage") if isinstance(data, dict) else None
-    return content, usage if isinstance(usage, dict) else {}
+        raise error(
+            "unexpected LLM response", f"reply content is not a string: {str(content)[:500]}"
+        )
+    return content, usage
+
+
+def list_models(base: str, key: str, timeout: int = 30) -> list[str]:
+    """The model ids the endpoint offers (`GET {base}/models`), sorted."""
+    data = _post_json(f"{base.rstrip('/')}/models", None, key, timeout, LLMError)
+    rows = data.get("data", data.get("models", []))
+    ids = {r.get("id") or r.get("name") for r in rows if isinstance(r, dict)}
+    ids |= {r for r in rows if isinstance(r, str)}
+    return sorted(i for i in ids if isinstance(i, str) and i)
 
 
 def translate(fields: dict[str, str], source_lang: str, target_lang: str) -> dict[str, str]:

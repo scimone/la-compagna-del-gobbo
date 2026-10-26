@@ -1,5 +1,5 @@
-"""What the admin panel shows about AI use: totals, a table per user and a series per day, all
-computed from `AIRequestLog`. Plus the retention clean-up."""
+"""What the campaign pages show about AI use: totals, a table per user and a series per day, all
+computed from `AIRequestLog` rows of one campaign. Plus the retention clean-up."""
 
 from datetime import timedelta
 
@@ -19,8 +19,8 @@ PERIODS = {
 DEFAULT_PERIOD = "7d"
 
 
-def period_queryset(period: str):
-    queryset = AIRequestLog.objects.all()
+def period_queryset(campaign, period: str):
+    queryset = AIRequestLog.objects.filter(campaign=campaign)
     span = PERIODS.get(period, PERIODS[DEFAULT_PERIOD])
     return queryset.filter(created_at__gte=timezone.now() - span) if span else queryset
 
@@ -65,18 +65,20 @@ def per_day(queryset, tz) -> list[dict]:
     return rows
 
 
-def messages_today(user) -> int:
-    """Chat messages `user` has sent since local midnight (counts toward the daily cap)."""
+def messages_today(user, campaign) -> int:
+    """Chat questions `user` has sent in `campaign` since local midnight (the daily cap)."""
     start = timezone.localtime().replace(hour=0, minute=0, second=0, microsecond=0)
     return AIRequestLog.objects.filter(
-        user=user, purpose=AIRequestLog.Purpose.CHAT, created_at__gte=start
+        user=user, campaign=campaign, purpose=AIRequestLog.Purpose.CHAT, created_at__gte=start
     ).count()
 
 
 def prune_logs() -> int:
-    """Delete log rows older than the retention setting; returns how many went."""
-    days = AISettings.load().log_retention_days
-    if not days:
-        return 0
-    cutoff = timezone.now() - timedelta(days=days)
-    return AIRequestLog.objects.filter(created_at__lt=cutoff).delete()[0]
+    """Delete log rows older than each campaign's retention setting; returns how many went."""
+    deleted = 0
+    for config in AISettings.objects.filter(log_retention_days__gt=0):
+        cutoff = timezone.now() - timedelta(days=config.log_retention_days)
+        deleted += AIRequestLog.objects.filter(
+            campaign_id=config.campaign_id, created_at__lt=cutoff
+        ).delete()[0]
+    return deleted

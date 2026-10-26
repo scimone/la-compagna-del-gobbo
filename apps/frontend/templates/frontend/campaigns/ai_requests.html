@@ -1,7 +1,7 @@
 {% extends "frontend/base.html" %}
 {% load i18n %}
 
-{% block extra_style %}{% include "frontend/admin/_ai_style.html" %}{% endblock %}
+{% block extra_style %}{% include "frontend/campaigns/_ai_style.html" %}{% endblock %}
 
 {% block content %}
   <div class="aipanel">
@@ -18,7 +18,7 @@
       <noscript><button type="submit">{% translate "Filter" %}</button></noscript>
     </form>
     {% for r in page %}
-      <a class="item{% if r.status == 'error' %} failed{% endif %}" href="{% url 'admin-ai-request' r.pk %}">
+      <a class="item{% if r.status == 'error' %} failed{% endif %}" href="{% url 'campaign-ai-request' campaign.pk r.pk %}">
         <b>{{ r.username|default:"-" }}</b> · {{ r.get_purpose_display }} · {{ r.created_at|date:"j M H:i:s" }}
         <small>{{ r.total_tokens }} {% translate "tokens" %} · {{ r.latency_ms }} ms{% if r.error %} · {{ r.error }}{% endif %}</small>
         <small>{{ r.response_text|truncatechars:140 }}</small>

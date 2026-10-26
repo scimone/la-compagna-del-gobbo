@@ -850,6 +850,19 @@
       </svg>
       <span>{% translate "Logbook" %}</span>
     </a>
+    <a
+      href="{{ last_world_url }}"
+      data-menu="world"
+      data-root="{% url 'world-overview' %}"
+      class="bottom-nav-item{% if '/world/' in request.path or '/handbook/' in request.path %} active{% endif %}"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        {# An open book. #}
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+      </svg>
+      <span>{% translate "Handbook" %}</span>
+    </a>
     {% if ai_chat_available %}
       <a
         href="{% url 'chat' %}"
@@ -864,19 +877,6 @@
         <span>{% translate "Chat" %}</span>
       </a>
     {% endif %}
-    <a
-      href="{{ last_world_url }}"
-      data-menu="world"
-      data-root="{% url 'world-overview' %}"
-      class="bottom-nav-item{% if '/world/' in request.path or '/handbook/' in request.path %} active{% endif %}"
-    >
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        {# An open book. #}
-        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-      </svg>
-      <span>{% translate "Handbook" %}</span>
-    </a>
   </nav>
 
   {% if world_tabs or searchable %}

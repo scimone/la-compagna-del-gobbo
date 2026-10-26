@@ -43,7 +43,7 @@ def chat_page(request):
     campaign = _campaign_or_none(request)
     if campaign is None:
         return campaign_views.no_campaign_page(request, _("Chat"))
-    if not chat.is_available():
+    if not chat.is_available(campaign):
         raise Http404
     thread = chat.current_thread(request.user, campaign)
     response = render(
@@ -64,7 +64,7 @@ def _thread_of(request):
     campaign = _campaign_or_none(request)
     if not request.user.is_authenticated or campaign is None:
         raise Http404
-    if not chat.is_available():
+    if not chat.is_available(campaign):
         raise Http404
     return chat.current_thread(request.user, campaign)
 
@@ -85,7 +85,7 @@ def chat_send(request):
 @require_POST
 def chat_new(request):
     campaign = _campaign_or_none(request)
-    if not request.user.is_authenticated or campaign is None or not chat.is_available():
+    if not request.user.is_authenticated or campaign is None or not chat.is_available(campaign):
         raise Http404
     chat.new_thread(request.user, campaign)
     return redirect("chat")

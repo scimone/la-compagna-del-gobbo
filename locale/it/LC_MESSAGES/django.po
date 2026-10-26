@@ -3551,3 +3551,39 @@ msgstr "Hai raggiunto il limite di domande di oggi."
 
 msgid "tokens"
 msgstr "token"
+
+msgid "A chat that knows this campaign's logbook, characters and the rules. Each campaign has its own key."
+msgstr "Una chat che conosce il diario di bordo, i personaggi e le regole di questa campagna. Ogni campagna ha la sua chiave."
+
+msgid "AI assistant"
+msgstr "Assistente IA"
+
+msgid "Could not load the models: %(error)s"
+msgstr "Impossibile caricare i modelli: %(error)s"
+
+msgid "Enter the API key again when you change the URL."
+msgstr "Inserisci di nuovo la chiave API quando cambi l'URL."
+
+msgid "Enter the API key to load the models."
+msgstr "Inserisci la chiave API per caricare i modelli."
+
+msgid "Enter the base URL first."
+msgstr "Inserisci prima l'URL di base."
+
+msgid "Error detail"
+msgstr "Dettaglio dell'errore"
+
+msgid "Let the assistant search and read the handbook (needs a model with tool support)"
+msgstr "Lascia che l'assistente cerchi e legga il manuale (richiede un modello con supporto agli strumenti)"
+
+msgid "Load models"
+msgstr "Carica modelli"
+
+msgid "That address is not reachable from the internet."
+msgstr "Questo indirizzo non è raggiungibile da internet."
+
+msgid "models available - click the field to choose"
+msgstr "modelli disponibili - clicca il campo per scegliere"
+
+msgid "tool call"
+msgstr "chiamata a strumento"

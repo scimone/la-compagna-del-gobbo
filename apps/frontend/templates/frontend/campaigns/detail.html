@@ -88,6 +88,15 @@
         <textarea id="description" name="description" maxlength="2000">{{ campaign.description }}</textarea>
         <button type="submit">{% translate "Save" %}</button>
       </form>
+      <h2>{% translate "AI assistant" %}</h2>
+      <div class="box">
+        <p>{% translate "A chat that knows this campaign's logbook, characters and the rules. Each campaign has its own key." %}</p>
+        <div class="row">
+          <a class="btn secondary" href="{% url 'campaign-ai' campaign.pk %}">{% translate "Settings" %}</a>
+          <a class="btn secondary" href="{% url 'campaign-ai-requests' campaign.pk %}">{% translate "Requests" %}</a>
+          <a class="btn secondary" href="{% url 'campaign-ai-usage' campaign.pk %}">{% translate "Usage" %}</a>
+        </div>
+      </div>
       {% if has_characters %}
         <p>{% translate "A campaign can only be deleted once it has no characters left." %}</p>
       {% else %}
