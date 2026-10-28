@@ -935,7 +935,7 @@ def _casting(ctx: _Ctx) -> dict | None:
         row_new = ClassLevel.objects.filter(klass=klass, level=new).first()
         row_old = ClassLevel.objects.filter(klass=klass, level=old).first() if old else None
         return {
-            "list": klass.name,
+            "list": klass.name_en,
             "cantrips": (row_new.cantrips_known or 0)
             - ((row_old.cantrips_known or 0) if row_old else 0),
             "prepared": (row_new.spells_known_or_prepared or 0)
