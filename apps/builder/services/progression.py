@@ -1222,6 +1222,28 @@ def _subclass_pick_pickers(ctx: _Ctx, subclass: Subclass | None) -> list[Picker]
     return found
 
 
+def _duplicate_cantrip_pickers(ctx: _Ctx, subclass: Subclass | None) -> list[Picker]:
+    """Improved Illusions: "You also know Minor Illusion. If you already know it, you learn a
+    different Wizard cantrip of your choice" - asked when the subclass is taken and the cantrip is
+    already known (the new cantrip doesn't count against the cantrips known)."""
+    grant = (
+        spec.SUBCLASS_DUPLICATE_CANTRIP.get((ctx.klass.id, subclass.name_en)) if subclass else None
+    )
+    if not grant or not ctx.new_subclass or grant[0] not in ctx.spells:
+        return []
+    return [
+        ctx.picker(
+            "lu.cantrip_instead",
+            _("A different cantrip (you already know %(spell)s)")
+            % {"spell": ctx.spells[grant[0]].spell.name},
+            1,
+            _spells_of_lists([grant[1]], [0], set(ctx.spells) | {grant[0]}),
+            single=True,
+            kind="spell",
+        )
+    ]
+
+
 def _discovery_swap_pickers(ctx: _Ctx, subclass: Subclass | None) -> list[Picker]:
     """ "Whenever you gain a Bard level, you can replace one of the spells" (Magical Discoveries):
     swap one of the subclass's chosen spells for another from the same lists."""
@@ -1312,7 +1334,11 @@ def plan(character: Character, class_id: str, values: Values | None = None) -> P
                 )
             )
     subclass = ctx.subclass or ctx.new_subclass
-    if savant := [*_subclass_pick_pickers(ctx, subclass), *_discovery_swap_pickers(ctx, subclass)]:
+    if savant := [
+        *_subclass_pick_pickers(ctx, subclass),
+        *_duplicate_cantrip_pickers(ctx, subclass),
+        *_discovery_swap_pickers(ctx, subclass),
+    ]:
         sections.append(Section("savant", _("Subclass spells"), pickers=savant))
 
     # feat / ability score improvement
@@ -1860,6 +1886,15 @@ def commit(character: Character, class_id: str, values: Values) -> Plan:
                     always_prepared=pick["always"],
                     in_spellbook=not pick["always"],
                 )
+        if ctx.one("lu.cantrip_instead"):
+            _add_spell(
+                character,
+                ctx.one("lu.cantrip_instead"),
+                klass.id,
+                f"subclass:{subclass.pk}",
+                prepared=True,
+                always_prepared=True,
+            )
         if ctx.one("lu.discovery_out") and ctx.one("lu.discovery_in"):
             CharacterSpell.objects.filter(
                 character=character,

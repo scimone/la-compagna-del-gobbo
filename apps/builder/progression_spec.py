@@ -146,6 +146,9 @@ MYSTIC_ARCANUM_AT = {11: 6, 13: 7, 15: 8, 17: 9}
 #: Classes whose known/prepared spells may be swapped for another each time they gain a level
 #: (the others change their prepared list on a Long Rest, which the sheet lets the player do).
 SWAP_SPELL_CLASSES = ("bard", "sorcerer", "ranger", "warlock")
+#: A subclass that grants a fixed cantrip but, if it is already known, lets the player learn a
+#: different one instead: `{(class, subclass name): (cantrip id, spell list)}` (Improved Illusions).
+SUBCLASS_DUPLICATE_CANTRIP = {("wizard", "Illusionist"): ("minor-illusion", "Wizard")}
 #: Bard Magical Secrets (class level 10): new prepared spells may come from these lists too.
 MAGICAL_SECRETS_FROM = 10
 MAGICAL_SECRETS_LISTS = ("Cleric", "Druid", "Wizard")

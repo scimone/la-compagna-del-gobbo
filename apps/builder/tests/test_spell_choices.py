@@ -112,3 +112,36 @@ def test_every_subclass_spell_pick_is_asked_when_its_level_is_reached(owner):
         _to_level(character, subclass.klass_id, max(level - 1, 2), **picked)
         plan = progression.plan(character, subclass.klass_id, {"lu.subclass": [str(subclass.pk)]})
         assert any(p.key.startswith("lu.savant.") for p in plan.pickers), subclass.name_en
+
+
+def _illusionist_plan(owner, knows_minor_illusion):
+    character = finished(owner, "wizard")
+    level_up(character, "wizard")
+    character.spells.filter(spell_id="minor-illusion").delete()
+    if knows_minor_illusion:
+        CharacterSpell.objects.create(
+            character=character, spell_id="minor-illusion", klass_id="wizard", prepared=True
+        )
+    pk = Subclass.objects.get(klass_id="wizard", name_en="Illusionist").pk
+    return character, {"lu.subclass": [str(pk)]}
+
+
+@pytest.mark.parametrize("language", ["en", "it"])
+def test_improved_illusions_offers_another_cantrip_when_minor_illusion_is_known(owner, language):
+    with translation.override(language):
+        character, values = _illusionist_plan(owner, True)
+        plan = progression.plan(character, "wizard", values)
+        picker = next(p for p in plan.pickers if p.key == "lu.cantrip_instead")
+        assert "minor-illusion" not in [c[0] for c in picker.candidates] and picker.candidates
+        values = autofill(character, "wizard", prefer=values)
+        progression.commit(character, "wizard", values)
+    new = values["lu.cantrip_instead"][0]
+    assert character.spells.filter(spell_id=new, spell__level=0).exists()
+
+
+def test_improved_illusions_asks_nothing_extra_otherwise(owner):
+    character, values = _illusionist_plan(owner, False)
+    plan = progression.plan(character, "wizard", values)
+    assert "lu.cantrip_instead" not in [p.key for p in plan.pickers]
+    progression.commit(character, "wizard", autofill(character, "wizard", prefer=values))
+    assert character.spells.filter(spell_id="minor-illusion").exists()
