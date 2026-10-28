@@ -3,7 +3,7 @@
 {# `read_values`. A picker of catalog rows (spells, tools, feats, ...) is a card list in the World's  #}
 {# list design with a "Read" button; any other is a <select> (pick one) or a checkbox group.          #}
 {% for p in pickers %}
-  <fieldset class="picker"{% if not p.single %} data-count="{{ p.count }}"{% endif %}{% if p.refresh %} data-refresh{% endif %}>
+  <fieldset class="picker"{% if not p.single %} data-count="{{ p.count }}"{% endif %}{% if p.refresh %} data-refresh{% endif %}{% if p.single and p.optional %} data-deselect{% endif %}>
     <legend>{{ p.label }}
       <span class="count">{% if p.single %}{% translate "choose 1" %}{% else %}{% blocktranslate with n=p.count %}choose {{ n }}{% endblocktranslate %} · <span class="chosen"></span>{% endif %}</span>
     </legend>

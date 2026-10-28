@@ -146,6 +146,29 @@
       }
       initLimits();
 
+      // An optional single pick (a swap on level-up) is a radio group, which cannot be emptied by
+      // clicking; clicking the ticked one again clears it, so the player can change their mind.
+      wiz.addEventListener("click", function (event) {
+        var radio = event.target;
+        if (!radio.matches || !radio.matches("input[type=radio]")) return;
+        var group = radio.closest("fieldset[data-deselect]");
+        if (!group) return;
+        if (radio.dataset.was === "1") {
+          radio.checked = false;
+          radio.dataset.was = "";
+          radio.dispatchEvent(new Event("change", { bubbles: true }));
+        } else {
+          group.querySelectorAll("input[type=radio]").forEach(function (r) { r.dataset.was = ""; });
+          radio.dataset.was = "1";
+        }
+      });
+      function markChecked() {
+        wiz.querySelectorAll("fieldset[data-deselect] input[type=radio]").forEach(function (r) {
+          r.dataset.was = r.checked ? "1" : "";
+        });
+      }
+      markChecked();
+
       // Point buy: how many of the budget's points the six scores cost, recomputed as any of them
       // changes - no need to save to see it. An unset score counts as 8 (0 points), same as if it
       // had been picked.
@@ -255,6 +278,7 @@
             wiz.innerHTML = fresh.innerHTML;
             form = wiz.querySelector("form[data-live]");
             initLimits();
+            markChecked();
             var picked = wiz.querySelector(".opts-list li.selected");
             if (scrollToSelected && picked) picked.scrollIntoView({ block: "nearest" });
           })
