@@ -146,6 +146,12 @@ MYSTIC_ARCANUM_AT = {11: 6, 13: 7, 15: 8, 17: 9}
 #: Classes whose known/prepared spells may be swapped for another each time they gain a level
 #: (the others change their prepared list on a Long Rest, which the sheet lets the player do).
 SWAP_SPELL_CLASSES = ("bard", "sorcerer", "ranger", "warlock")
+#: Bard Magical Secrets (class level 10): new prepared spells may come from these lists too.
+MAGICAL_SECRETS_FROM = 10
+MAGICAL_SECRETS_LISTS = ("Cleric", "Druid", "Wizard")
+#: Wizard Spell Mastery / Signature Spells: the class levels that choose from the spellbook.
+SPELL_MASTERY_AT = 18
+SIGNATURE_SPELLS_AT = 20
 #: Wizard: spells copied into the spellbook each level, and at level 1 (or on entering the class).
 WIZARD_SPELLBOOK_PER_LEVEL = 2
 WIZARD_SPELLBOOK_START = 6

@@ -54,6 +54,7 @@ from apps.rules.models import (
     OptionalFeature,
     Sense,
     Skill,
+    Spell,
     Subclass,
     SubclassLevel,
 )
@@ -976,6 +977,11 @@ def _spell_sections(ctx: _Ctx) -> list[Section]:
             for s in class_spell_list(class_list, level)
             if s.id not in owned
         ]
+        if klass.id == "bard" and new >= spec.MAGICAL_SECRETS_FROM:
+            # Magical Secrets: new prepared spells may come from the Cleric, Druid and Wizard lists
+            leveled = _spells_of_lists(
+                [class_list, *spec.MAGICAL_SECRETS_LISTS], range(1, info["max_level"] + 1), owned
+            )
         book_picked = set(ctx.get("lu.spellbook"))
         if klass.id == "wizard":
             add = spec.WIZARD_SPELLBOOK_START if ctx.entering else spec.WIZARD_SPELLBOOK_PER_LEVEL
@@ -1037,7 +1043,51 @@ def _spell_sections(ctx: _Ctx) -> list[Section]:
                 kind="spell",
             )
         )
+    pickers.extend(_wizard_mastery_pickers(ctx))
     return [Section("spells", _("Spells"), pickers=pickers)] if pickers else []
+
+
+def _acts_as_action(spell) -> bool:
+    return any(t.get("unit") == "action" for t in spell.casting_time or [])
+
+
+def _wizard_mastery_pickers(ctx: _Ctx) -> list[Picker]:
+    """Wizard 18 Spell Mastery (a level 1 and a level 2 spell with a casting time of an action,
+    cast at their lowest level for free) and 20 Signature Spells (two level 3 spells, always
+    prepared, each cast once for free): chosen from the spellbook."""
+    if ctx.klass.id != "wizard":
+        return []
+    book = {
+        cs.spell_id: cs.spell
+        for cs in ctx.spells.values()
+        if cs.klass_id == "wizard" and cs.in_spellbook
+    }
+    book.update({s.id: s for s in Spell.objects.filter(id__in=ctx.get("lu.spellbook"))})
+    book = list(book.values())
+    new = ctx.new_level
+    if new == spec.SPELL_MASTERY_AT:
+        return [
+            ctx.picker(
+                f"lu.mastery.{level}",
+                _("Spell Mastery (level %(level)d)") % {"level": level},
+                1,
+                [(s.id, s.name) for s in book if s.level == level and _acts_as_action(s)],
+                single=True,
+                kind="spell",
+            )
+            for level in (1, 2)
+        ]
+    if new == spec.SIGNATURE_SPELLS_AT:
+        return [
+            ctx.picker(
+                "lu.signature",
+                _("Signature Spells (level 3)"),
+                2,
+                [(s.id, s.name) for s in book if s.level == 3],
+                kind="spell",
+            )
+        ]
+    return []
 
 
 # ---- multiclass entry ------------------------------------------------------------------------
@@ -1109,26 +1159,45 @@ _SCHOOL_CODES = {
 
 def _subclass_picks(ctx: _Ctx, subclass: Subclass | None) -> list[dict]:
     """The spells a subclass lets the player choose at this level (`{"choose": "level=0;1;2|
-    class=Wizard|school=A"}` in `additionalSpells.known`: a Wizard school's Savant) as
-    `{levels, class_name, school}` - the ones of this level, or every one up to it when the
-    subclass has just been taken."""
+    class=Wizard|school=A"}` in `additionalSpells`) as `{levels, class_names, school, always}` -
+    the ones of this level, or every one up to it when the subclass has just been taken. A `known`
+    pick (a Wizard school's Savant) goes into the spellbook; a `prepared` one (College of Lore's
+    Magical Discoveries, from several classes' lists) is always prepared."""
     picks = []
     for entry in subclass.additional_spells if subclass else ():
-        for key, items in (entry.get("known") or {}).items():
-            level = _level_of(key)
-            if level != ctx.new_level and not (ctx.new_subclass and level <= ctx.new_level):
-                continue
-            for item in items if isinstance(items, list) else []:
-                if isinstance(item, dict) and "choose" in item:
-                    parts = dict(p.split("=", 1) for p in item["choose"].split("|") if "=" in p)
-                    picks.append(
-                        {
+        for block, always in (("known", False), ("prepared", True)):
+            for key, items in (entry.get(block) or {}).items():
+                level = _level_of(key)
+                if level != ctx.new_level and not (ctx.new_subclass and level <= ctx.new_level):
+                    continue
+                for item in items if isinstance(items, list) else []:
+                    if isinstance(item, dict) and "choose" in item:
+                        parts = dict(p.split("=", 1) for p in item["choose"].split("|") if "=" in p)
+                        pick = {
                             "levels": [int(n) for n in parts.get("level", "0").split(";")],
-                            "class_name": parts.get("class", ""),
+                            "class_names": [c for c in parts.get("class", "").split(";") if c],
                             "school": _SCHOOL_CODES.get(parts.get("school", ""), ""),
+                            "always": always,
+                            "count": 1,
                         }
-                    )
+                        # two identical picks ("two spells of your choice") are one picker of two
+                        twin = next((p for p in picks if {**p, "count": 1} == pick), None)
+                        if twin:
+                            twin["count"] += 1
+                        else:
+                            picks.append(pick)
     return picks
+
+
+def _spells_of_lists(class_names: list[str], levels, owned=()) -> list[tuple[str, str]]:
+    """`(id, name)` of the spells of `levels` on any of `class_names`' lists, by name."""
+    found = {}
+    for class_name in class_names or [""]:
+        for level in levels:
+            for s in class_spell_list(class_name, level) if class_name else spell_pool("", level):
+                if s.id not in owned:
+                    found[s.id] = s
+    return [(s.id, s.name) for s in sorted(found.values(), key=lambda s: s.name)]
 
 
 def _subclass_pick_pickers(ctx: _Ctx, subclass: Subclass | None) -> list[Picker]:
@@ -1136,22 +1205,60 @@ def _subclass_pick_pickers(ctx: _Ctx, subclass: Subclass | None) -> list[Picker]
     found = []
     for index, pick in enumerate(_subclass_picks(ctx, subclass)):
         pool = [
-            (s.id, s.name)
-            for level in pick["levels"]
-            for s in class_spell_list(pick["class_name"], level)
-            if s.id not in owned and (not pick["school"] or s.school == pick["school"])
+            (s_id, name)
+            for s_id, name in _spells_of_lists(pick["class_names"], pick["levels"], owned)
+            if not pick["school"] or Spell.objects.get(id=s_id).school == pick["school"]
         ]
         found.append(
             ctx.picker(
                 f"lu.savant.{index}",
                 _("Spell from your subclass"),
-                1,
+                pick["count"],
                 pool,
-                single=True,
+                single=pick["count"] == 1,
                 kind="spell",
             )
         )
     return found
+
+
+def _discovery_swap_pickers(ctx: _Ctx, subclass: Subclass | None) -> list[Picker]:
+    """ "Whenever you gain a Bard level, you can replace one of the spells" (Magical Discoveries):
+    swap one of the subclass's chosen spells for another from the same lists."""
+    if not subclass or ctx.new_subclass:
+        return []
+    picks = [
+        (block, key, item)
+        for entry in subclass.additional_spells
+        for block in ("prepared",)
+        for key, items in (entry.get(block) or {}).items()
+        for item in (items if isinstance(items, list) else [])
+        if isinstance(item, dict) and "choose" in item and _level_of(key) < ctx.new_level
+    ]
+    mine = [
+        (cs.spell_id, cs.spell.name)
+        for cs in ctx.spells.values()
+        if cs.source == f"subclass:{subclass.pk}" and cs.always_prepared
+    ]
+    if not picks or not mine:
+        return []
+    parts = dict(p.split("=", 1) for p in picks[0][2]["choose"].split("|") if "=" in p)
+    classes = [c for c in parts.get("class", "").split(";") if c]
+    top = max_spell_level(ctx.klass, ctx.new_level)
+    pool = _spells_of_lists(classes, range(0, top + 1), set(ctx.spells))
+    return [
+        ctx.picker(
+            "lu.discovery_out",
+            _("Replace a spell from your subclass"),
+            1,
+            mine,
+            single=True,
+            optional=True,
+        ),
+        ctx.picker(
+            "lu.discovery_in", _("...with"), 1, pool, single=True, optional=True, kind="spell"
+        ),
+    ]
 
 
 def plan(character: Character, class_id: str, values: Values | None = None) -> Plan:
@@ -1205,7 +1312,7 @@ def plan(character: Character, class_id: str, values: Values | None = None) -> P
                 )
             )
     subclass = ctx.subclass or ctx.new_subclass
-    if savant := _subclass_pick_pickers(ctx, subclass):
+    if savant := [*_subclass_pick_pickers(ctx, subclass), *_discovery_swap_pickers(ctx, subclass)]:
         sections.append(Section("savant", _("Subclass spells"), pickers=savant))
 
     # feat / ability score improvement
@@ -1742,16 +1849,31 @@ def commit(character: Character, class_id: str, values: Values) -> Plan:
                 character=character, key=land_key, defaults={"value": ctx.one("lu.land")}
             )
             _grant_land_feature(character, subclass, ctx.one("lu.land"), new)
-        for index in range(len(_subclass_picks(ctx, subclass))):
+        for index, pick in enumerate(_subclass_picks(ctx, subclass)):
             for spell_key in ctx.get(f"lu.savant.{index}"):
                 _add_spell(
                     character,
                     spell_key,
                     klass.id,
                     f"subclass:{subclass.pk}",
-                    prepared=False,
-                    in_spellbook=True,
+                    prepared=pick["always"],
+                    always_prepared=pick["always"],
+                    in_spellbook=not pick["always"],
                 )
+        if ctx.one("lu.discovery_out") and ctx.one("lu.discovery_in"):
+            CharacterSpell.objects.filter(
+                character=character,
+                spell_id=ctx.one("lu.discovery_out"),
+                source=f"subclass:{subclass.pk}",
+            ).delete()
+            _add_spell(
+                character,
+                ctx.one("lu.discovery_in"),
+                klass.id,
+                f"subclass:{subclass.pk}",
+                prepared=True,
+                always_prepared=True,
+            )
         stored = CharacterChoice.objects.filter(character=character, key=land_key).first()
         _subclass_spells(ctx, subclass, new, stored.value if stored else "")
         for grants in [spec.SUBCLASS_GRANTS.get((klass.id, subclass.name_en), {}).get(new)]:
@@ -1889,6 +2011,15 @@ def commit(character: Character, class_id: str, values: Values) -> Plan:
             "feat:ritual-caster",
             prepared=True,
             always_prepared=True,
+        )
+    for level in (1, 2):
+        if ctx.one(f"lu.mastery.{level}"):
+            CharacterSpell.objects.filter(
+                character=character, spell_id=ctx.one(f"lu.mastery.{level}")
+            ).update(free_cast=True, free_cast_unlimited=True)
+    for spell_key in ctx.get("lu.signature"):
+        CharacterSpell.objects.filter(character=character, spell_id=spell_key).update(
+            prepared=True, always_prepared=True, free_cast=True
         )
     if ctx.one("lu.arcanum"):
         _add_spell(
