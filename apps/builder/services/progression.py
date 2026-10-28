@@ -502,7 +502,7 @@ def _class_feature_rows(klass: Class, level: int) -> list[Feature]:
 
 
 def _has_marker(rows: list[Feature], *names: str) -> bool:
-    return any(f.name in names for f in rows)
+    return any(f.name_en in names for f in rows)
 
 
 def _is_placeholder(feature: Feature, klass: Class) -> bool:
@@ -1171,7 +1171,7 @@ def plan(character: Character, class_id: str, values: Values | None = None) -> P
     needs_subclass = (
         not ctx.entering
         and ctx.subclass is None
-        and _has_marker(marker_rows, f"{klass.name} Subclass")
+        and _has_marker(marker_rows, f"{klass.name_en} Subclass")
     )
     if needs_subclass:
         pool = list(klass.subclasses.all())
@@ -1209,7 +1209,7 @@ def plan(character: Character, class_id: str, values: Values | None = None) -> P
         sections.append(Section("savant", _("Subclass spells"), pickers=savant))
 
     # feat / ability score improvement
-    asi_rows = [f for f in marker_rows if f.name in spec.ASI_FEATURES]
+    asi_rows = [f for f in marker_rows if f.name_en in spec.ASI_FEATURES]
     feat = None
     if asi_rows and not ctx.entering:
         categories = (
@@ -1320,7 +1320,7 @@ def _features_gained(ctx: _Ctx, subclass: Subclass | None) -> list[Feature]:
         unchosen = {
             o.feature for o in class_spec.orders if o.feature.lower().replace(" ", "-") != chosen
         }
-        rows = [f for f in rows if f.name not in unchosen]
+        rows = [f for f in rows if f.name_en not in unchosen]
     sub_levels = []
     if subclass:
         if ctx.new_subclass:

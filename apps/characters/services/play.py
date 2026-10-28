@@ -587,7 +587,7 @@ def add_spell(character: Character, spell_id: str, limits: dict | None = None) -
     always = spell.level > 0
     for class_id, limit in (limits or {}).items():
         row = character.classes.select_related("klass").filter(klass_id=class_id).first()
-        if row and row.klass.name in (spell.classes or []):
+        if row and row.klass.name_en in (spell.classes or []):
             klass_id = class_id
             in_spellbook = class_id == "wizard"
             used = character.spells.filter(

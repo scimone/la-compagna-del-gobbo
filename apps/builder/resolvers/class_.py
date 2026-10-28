@@ -90,7 +90,7 @@ def class_grants(draft: Draft, grants: Grants) -> None:
     for feature in Feature.objects.filter(
         class_level__klass=klass, class_level__level=_SPELLS_AT_LEVEL_1
     ).order_by("pk"):
-        if feature.name not in skipped:
+        if feature.name_en not in skipped:
             grants.features.append(feature)
 
     if style := draft.get("class.fighting_style"):
