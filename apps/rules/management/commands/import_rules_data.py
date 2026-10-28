@@ -532,6 +532,29 @@ def _parse_subclass_feature_ref(ref: str) -> tuple[str, str, str, str, int]:
     )
 
 
+def _inline_subclass_features(node, subclass_feature_lookup: dict):
+    """Subclass counterpart of `_inline_header_class_features()`: a `refSubclassFeature` pointer to
+    a sub-heading feature (College of Dance's Dazzling Footwork -> Dance Virtuoso, Unarmored
+    Defense...) becomes that feature's own name/entries as a nested block, so the parent reads as
+    the book prints it instead of ending after "you gain the following benefits"."""
+    if isinstance(node, dict):
+        if node.get("type") == "refSubclassFeature" and "subclassFeature" in node:
+            raw = subclass_feature_lookup.get(_parse_subclass_feature_ref(node["subclassFeature"]))
+            if raw is not None:
+                return {
+                    "type": "entries",
+                    "name": raw["name"],
+                    "entries": _inline_subclass_features(
+                        raw.get("entries", []), subclass_feature_lookup
+                    ),
+                }
+            return node
+        return {k: _inline_subclass_features(v, subclass_feature_lookup) for k, v in node.items()}
+    if isinstance(node, list):
+        return [_inline_subclass_features(item, subclass_feature_lookup) for item in node]
+    return node
+
+
 #: A `classTableGroups` colLabel is sometimes a literal 5etools `{@filter Display Text|...}` tag
 #: (e.g. `"{@filter Invocations|optionalfeatures|feature type=ei}"`), not a display string - the
 #: importer isn't a renderer (that's `apps/frontend/entries_render.py`'s job) and doesn't resolve
@@ -1040,6 +1063,32 @@ class Command(BaseCommand):
                         )
                     )
 
+                # Sub-heading features (`header` set) that a feature other than the subclass's own
+                # wrapper points at are inlined into it, not listed as features of their own.
+                nested = {
+                    _parse_subclass_feature_ref(r)
+                    for _, raw in entries_by_level
+                    if raw["name"].strip().lower() != sc["name"].strip().lower()
+                    for r in _walk_feature_pointers(
+                        raw.get("entries", []), "refSubclassFeature", "subclassFeature"
+                    )
+                }
+                entries_by_level = [
+                    (level, raw)
+                    for level, raw in entries_by_level
+                    if not (
+                        raw.get("header")
+                        and (
+                            raw["name"].strip().lower(),
+                            raw["className"].strip().lower(),
+                            raw["subclassShortName"].strip().lower(),
+                            raw["subclassSource"].strip().lower(),
+                            raw["level"],
+                        )
+                        in nested
+                    )
+                ]
+
                 subclass_obj.description = description
                 subclass_obj.save(update_fields=["description"])
 
@@ -1050,7 +1099,9 @@ class Command(BaseCommand):
                 level_by_number = {sl.level: sl for sl in subclass_levels}
                 for level, raw in entries_by_level:
                     lands = land_features(raw["name"], raw.get("entries", []), None)
-                    generic_entries = raw.get("entries", [])
+                    generic_entries = _inline_subclass_features(
+                        raw.get("entries", []), subclass_feature_lookup
+                    )
                     if lands:
                         captions = [
                             e["caption"]

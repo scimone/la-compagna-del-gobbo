@@ -112,7 +112,20 @@ def test_rows_without_an_official_source_are_hand_translated_and_flagged(catalog
     assert Species.objects.count() == 11
     assert Background.objects.count() == 16
     assert Equipment.objects.count() == 217
-    assert Feature.objects.count() == 723
+    assert Feature.objects.count() == 704  # sub-heading subclass features are inlined
+
+
+def test_a_subclass_subheading_is_nested_not_a_sibling_feature(catalogs):
+    # College of Dance's Dazzling Footwork lists Dance Virtuoso/Unarmored Defense/... through
+    # `refSubclassFeature` pointers: they belong inside it, not next to it at level 3.
+    footwork = Feature.objects.get(
+        name_en="Dazzling Footwork", subclass_level__subclass__name_en="College of Dance"
+    )
+    nested = [e["name"] for e in footwork.entries_en if isinstance(e, dict)]
+    assert nested == ["Dance Virtuoso", "Unarmored Defense", "Agile Strikes", "Bardic Damage"]
+    assert not Feature.objects.filter(
+        name_en="Dance Virtuoso", subclass_level__isnull=False
+    ).exists()
 
 
 def test_a_classfeature_subheading_is_nested_not_a_sibling_feature(catalogs):

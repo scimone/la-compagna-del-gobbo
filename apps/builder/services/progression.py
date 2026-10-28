@@ -1754,7 +1754,7 @@ def commit(character: Character, class_id: str, values: Values) -> Plan:
                 )
         stored = CharacterChoice.objects.filter(character=character, key=land_key).first()
         _subclass_spells(ctx, subclass, new, stored.value if stored else "")
-        for grants in [spec.SUBCLASS_GRANTS.get((klass.id, subclass.name), {}).get(new)]:
+        for grants in [spec.SUBCLASS_GRANTS.get((klass.id, subclass.name_en), {}).get(new)]:
             if not grants:
                 continue
             for category in grants.get("armor", ()):

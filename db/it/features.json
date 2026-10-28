@@ -3498,55 +3498,39 @@
   ],
   "name": "Elusione guidata"
  },
- "subclass:bard:college-of-dance:3:agile-strikes": {
-  "_self": [
-   "entries",
-   "name"
-  ],
-  "entries": [
-   "Quando spende un utilizzo della sua Ispirazione bardica come parte di un'azione, di un'{@variantrule Bonus Action|XPHB|azione bonus} o di una {@variantrule Reaction|XPHB|reazione}, il bardo può effettuare un {@variantrule Unarmed Strike|XPHB|colpo senz'armi} come parte di quell'azione, {@variantrule Bonus Action|XPHB|azione bonus} o {@variantrule Reaction|XPHB|reazione}."
-  ],
-  "name": "Colpi agili"
- },
- "subclass:bard:college-of-dance:3:bardic-damage": {
-  "_self": [
-   "entries",
-   "name"
-  ],
-  "entries": [
-   "Il bardo può usare Destrezza invece di Forza per i tiri per colpire dei suoi {@variantrule Unarmed Strike|XPHB|colpi senz'armi}. Quando infligge danni con un {@variantrule Unarmed Strike|XPHB|colpo senz'armi}, può infliggere danni contundenti pari a un tiro del suo dado di Ispirazione bardica più il suo modificatore di Destrezza, invece dei normali danni del colpo. Questo tiro non consuma il dado."
-  ],
-  "name": "Danno bardico"
- },
- "subclass:bard:college-of-dance:3:dance-virtuoso": {
-  "_self": [
-   "entries",
-   "name"
-  ],
-  "entries": [
-   "Il bardo dispone di {@variantrule Advantage|XPHB|vantaggio} a qualsiasi prova di Carisma ({@skill Performance|XPHB|Intrattenere}) che effettua e che comporti il ballare."
-  ],
-  "name": "Virtuoso della danza"
- },
  "subclass:bard:college-of-dance:3:dazzling-footwork": {
   "_self": [
    "entries",
    "name"
   ],
   "entries": [
-   "Finché non indossa un'armatura né impugna uno {@item Shield|XPHB|scudo}, il bardo ottiene i benefici seguenti."
+   "Finché non indossa un'armatura né impugna uno {@item Shield|XPHB|scudo}, il bardo ottiene i benefici seguenti.",
+   {
+    "entries": [
+     "Il bardo dispone di {@variantrule Advantage|XPHB|vantaggio} a qualsiasi prova di Carisma ({@skill Performance|XPHB|Intrattenere}) che effettua e che comporti il ballare."
+    ],
+    "name": "Virtuoso della danza"
+   },
+   {
+    "entries": [
+     "La {@variantrule Armor Class|XPHB|Classe Armatura} base del bardo equivale a 10 più i suoi modificatori di Destrezza e Carisma."
+    ],
+    "name": "Difesa senza armatura"
+   },
+   {
+    "entries": [
+     "Quando spende un utilizzo della sua Ispirazione bardica come parte di un'azione, di un'{@variantrule Bonus Action|XPHB|azione bonus} o di una {@variantrule Reaction|XPHB|reazione}, il bardo può effettuare un {@variantrule Unarmed Strike|XPHB|colpo senz'armi} come parte di quell'azione, {@variantrule Bonus Action|XPHB|azione bonus} o {@variantrule Reaction|XPHB|reazione}."
+    ],
+    "name": "Colpi agili"
+   },
+   {
+    "entries": [
+     "Il bardo può usare Destrezza invece di Forza per i tiri per colpire dei suoi {@variantrule Unarmed Strike|XPHB|colpi senz'armi}. Quando infligge danni con un {@variantrule Unarmed Strike|XPHB|colpo senz'armi}, può infliggere danni contundenti pari a un tiro del suo dado di Ispirazione bardica più il suo modificatore di Destrezza, invece dei normali danni del colpo. Questo tiro non consuma il dado."
+    ],
+    "name": "Danno bardico"
+   }
   ],
   "name": "Gioco di gambe abbagliante"
- },
- "subclass:bard:college-of-dance:3:unarmored-defense": {
-  "_self": [
-   "entries",
-   "name"
-  ],
-  "entries": [
-   "La {@variantrule Armor Class|XPHB|Classe Armatura} base del bardo equivale a 10 più i suoi modificatori di Destrezza e Carisma."
-  ],
-  "name": "Difesa senza armatura"
  },
  "subclass:bard:college-of-dance:6:inspiring-movement": {
   "_self": [
@@ -4402,36 +4386,6 @@
   ],
   "name": "Pieno di stelle"
  },
- "subclass:druid:circle-of-the-stars:3:archer": {
-  "_self": [
-   "entries",
-   "name"
-  ],
-  "entries": [
-   "Sul corpo del druido appare la costellazione di un arciere. Quando attiva questa forma e come {@variantrule Bonus Action|XPHB|azione bonus} nei suoi turni successivi finché dura, il druido può effettuare un attacco con incantesimo a distanza, scagliando una freccia luminosa che prende di mira una creatura entro 18 metri da sé. In caso di successo, l'attacco infligge danni radiosi pari a {@dice 1d8} più il suo modificatore di Saggezza."
-  ],
-  "name": "Arciere"
- },
- "subclass:druid:circle-of-the-stars:3:chalice": {
-  "_self": [
-   "entries",
-   "name"
-  ],
-  "entries": [
-   "Sul corpo del druido appare la costellazione di un calice datore di vita. Ogni volta che lancia un incantesimo usando uno slot incantesimo che ripristina {@variantrule Hit Points|XPHB|punti ferita} a una creatura, il druido o un'altra creatura entro 9 metri da lui può recuperare {@variantrule Hit Points|XPHB|punti ferita} pari a {@dice 1d8} più il suo modificatore di Saggezza."
-  ],
-  "name": "Calice"
- },
- "subclass:druid:circle-of-the-stars:3:dragon": {
-  "_self": [
-   "entries",
-   "name"
-  ],
-  "entries": [
-   "Sul corpo del druido appare la costellazione di un drago saggio. Quando effettua una prova di Intelligenza o di Saggezza, oppure un tiro salvezza su Costituzione per mantenere la {@status Concentration|XPHB|concentrazione}, può trattare un risultato di 9 o meno sul {@dice d20} come se fosse 10."
-  ],
-  "name": "Drago"
- },
  "subclass:druid:circle-of-the-stars:3:star-map": {
   "_self": [
    "entries",
@@ -4485,7 +4439,25 @@
   "entries": [
    "Come {@variantrule Bonus Action|XPHB|azione bonus}, il druido può spendere un utilizzo del suo privilegio Forma selvatica per assumere una forma stellare invece di mutare forma.",
    "Mentre si trova nella sua forma stellare, conserva le proprie statistiche di gioco, ma il suo corpo diventa luminoso, le sue articolazioni brillano come stelle e delle linee luminose le collegano come su una mappa stellare. Questa forma emette {@variantrule Bright Light|XPHB|luce intensa} in un raggio di 3 metri e {@variantrule Dim Light|XPHB|luce fioca} per altri 3 metri. La forma dura 10 minuti. Termina anticipatamente se il druido la dissolve (nessuna azione richiesta), ottiene la condizione {@condition Incapacitated|XPHB|incapacitato} oppure usa di nuovo questo privilegio.",
-   "Ogni volta che assume la sua forma stellare, il druido sceglie quale delle seguenti costellazioni brilla sul suo corpo; la sua scelta gli conferisce determinati benefici mentre si trova in quella forma."
+   "Ogni volta che assume la sua forma stellare, il druido sceglie quale delle seguenti costellazioni brilla sul suo corpo; la sua scelta gli conferisce determinati benefici mentre si trova in quella forma.",
+   {
+    "entries": [
+     "Sul corpo del druido appare la costellazione di un arciere. Quando attiva questa forma e come {@variantrule Bonus Action|XPHB|azione bonus} nei suoi turni successivi finché dura, il druido può effettuare un attacco con incantesimo a distanza, scagliando una freccia luminosa che prende di mira una creatura entro 18 metri da sé. In caso di successo, l'attacco infligge danni radiosi pari a {@dice 1d8} più il suo modificatore di Saggezza."
+    ],
+    "name": "Arciere"
+   },
+   {
+    "entries": [
+     "Sul corpo del druido appare la costellazione di un calice datore di vita. Ogni volta che lancia un incantesimo usando uno slot incantesimo che ripristina {@variantrule Hit Points|XPHB|punti ferita} a una creatura, il druido o un'altra creatura entro 9 metri da lui può recuperare {@variantrule Hit Points|XPHB|punti ferita} pari a {@dice 1d8} più il suo modificatore di Saggezza."
+    ],
+    "name": "Calice"
+   },
+   {
+    "entries": [
+     "Sul corpo del druido appare la costellazione di un drago saggio. Quando effettua una prova di Intelligenza o di Saggezza, oppure un tiro salvezza su Costituzione per mantenere la {@status Concentration|XPHB|concentrazione}, può trattare un risultato di 9 o meno sul {@dice d20} come se fosse 10."
+    ],
+    "name": "Drago"
+   }
   ],
   "name": "Forma stellare"
  },
@@ -4813,16 +4785,6 @@
   ],
   "name": "Maestro della telecinesi"
  },
- "subclass:fighter:psi-warrior:3:protective-field": {
-  "_self": [
-   "entries",
-   "name"
-  ],
-  "entries": [
-   "Quando lui o un'altra creatura che è in grado di vedere entro 9 metri da sé subisce danni, il guerriero può usare una {@variantrule Reaction|XPHB|reazione} per spendere un Dado di Energia Psionica, tirarlo e ridurre i danni subiti di un valore pari al risultato ottenuto più il suo modificatore di Intelligenza (riduzione minima di 1), creando un momentaneo scudo di forza telecinetica."
-  ],
-  "name": "Campo protettivo"
- },
  "subclass:fighter:psi-warrior:3:psionic-power": {
   "_self": [
    "entries",
@@ -4871,40 +4833,28 @@
     ]
    },
    "Qualsiasi privilegio di questa sottoclasse che utilizza un Dado di Energia Psionica usa soltanto i dadi provenienti da questa sottoclasse. Alcuni dei suoi poteri consumano il Dado di Energia Psionica, come specificato nella descrizione del potere, e il guerriero non può usare un potere se richiede l'uso di un dado quando tutti i suoi Dadi di Energia Psionica sono già stati spesi.",
-   "Il guerriero recupera uno dei suoi Dadi di Energia Psionica spesi quando completa un {@variantrule Short Rest|XPHB|riposo breve}, e li recupera tutti quando completa un {@variantrule Long Rest|XPHB|riposo lungo}."
+   "Il guerriero recupera uno dei suoi Dadi di Energia Psionica spesi quando completa un {@variantrule Short Rest|XPHB|riposo breve}, e li recupera tutti quando completa un {@variantrule Long Rest|XPHB|riposo lungo}.",
+   {
+    "entries": [
+     "Quando lui o un'altra creatura che è in grado di vedere entro 9 metri da sé subisce danni, il guerriero può usare una {@variantrule Reaction|XPHB|reazione} per spendere un Dado di Energia Psionica, tirarlo e ridurre i danni subiti di un valore pari al risultato ottenuto più il suo modificatore di Intelligenza (riduzione minima di 1), creando un momentaneo scudo di forza telecinetica."
+    ],
+    "name": "Campo protettivo"
+   },
+   {
+    "entries": [
+     "Il guerriero può proiettare le proprie armi con forza psionica. Una volta per ciascuno dei propri turni, subito dopo aver colpito con un attacco un bersaglio entro 9 metri da sé e avergli inflitto danni con un'arma, può spendere un Dado di Energia Psionica, tirarlo e infliggere al bersaglio danni da forza pari al risultato ottenuto più il suo modificatore di Intelligenza."
+    ],
+    "name": "Colpo psionico"
+   },
+   {
+    "entries": [
+     "Il guerriero può muovere un oggetto o una creatura con la mente. Come azione di {@action Magic|XPHB|Magia}, sceglie un bersaglio che è in grado di vedere entro 9 metri da sé; il bersaglio deve essere un oggetto sciolto di taglia Grande o inferiore, oppure una creatura consenziente diversa da sé stesso. Trasporta il bersaglio fino a 9 metri in uno spazio libero che è in grado di vedere. In alternativa, se il bersaglio è un oggetto di taglia Minuscola, può trasportarlo verso o dalla propria mano.",
+     "Dopo aver intrapreso questa azione, non può farlo di nuovo finché non completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}, a meno che non spenda un Dado di Energia Psionica (nessuna azione richiesta) per ripristinarne l'uso."
+    ],
+    "name": "Movimento telecinetico"
+   }
   ],
   "name": "Potere psionico"
- },
- "subclass:fighter:psi-warrior:3:psionic-strike": {
-  "_self": [
-   "entries",
-   "name"
-  ],
-  "entries": [
-   "Il guerriero può proiettare le proprie armi con forza psionica. Una volta per ciascuno dei propri turni, subito dopo aver colpito con un attacco un bersaglio entro 9 metri da sé e avergli inflitto danni con un'arma, può spendere un Dado di Energia Psionica, tirarlo e infliggere al bersaglio danni da forza pari al risultato ottenuto più il suo modificatore di Intelligenza."
-  ],
-  "name": "Colpo psionico"
- },
- "subclass:fighter:psi-warrior:3:telekinetic-movement": {
-  "_self": [
-   "entries",
-   "name"
-  ],
-  "entries": [
-   "Il guerriero può muovere un oggetto o una creatura con la mente. Come azione di {@action Magic|XPHB|Magia}, sceglie un bersaglio che è in grado di vedere entro 9 metri da sé; il bersaglio deve essere un oggetto sciolto di taglia Grande o inferiore, oppure una creatura consenziente diversa da sé stesso. Trasporta il bersaglio fino a 9 metri in uno spazio libero che è in grado di vedere. In alternativa, se il bersaglio è un oggetto di taglia Minuscola, può trasportarlo verso o dalla propria mano.",
-   "Dopo aver intrapreso questa azione, non può farlo di nuovo finché non completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}, a meno che non spenda un Dado di Energia Psionica (nessuna azione richiesta) per ripristinarne l'uso."
-  ],
-  "name": "Movimento telecinetico"
- },
- "subclass:fighter:psi-warrior:7:psi-powered-leap": {
-  "_self": [
-   "entries",
-   "name"
-  ],
-  "entries": [
-   "Come {@variantrule Bonus Action|XPHB|azione bonus}, il guerriero ottiene una {@variantrule Fly Speed|XPHB|velocità di volo} pari al doppio della sua {@variantrule Speed|XPHB|velocità} fino al termine del turno corrente. Dopo aver usato questa {@variantrule Bonus Action|XPHB|azione bonus}, non può farlo di nuovo finché non completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}, a meno che non spenda un Dado di Energia Psionica (nessuna azione richiesta) per ripristinarne l'uso."
-  ],
-  "name": "Balzo psionico"
  },
  "subclass:fighter:psi-warrior:7:telekinetic-adept": {
   "_self": [
@@ -4912,19 +4862,21 @@
    "name"
   ],
   "entries": [
-   "Il guerriero ha appreso nuovi modi di usare le proprie abilità telecinetiche, descritti sotto."
+   "Il guerriero ha appreso nuovi modi di usare le proprie abilità telecinetiche, descritti sotto.",
+   {
+    "entries": [
+     "Come {@variantrule Bonus Action|XPHB|azione bonus}, il guerriero ottiene una {@variantrule Fly Speed|XPHB|velocità di volo} pari al doppio della sua {@variantrule Speed|XPHB|velocità} fino al termine del turno corrente. Dopo aver usato questa {@variantrule Bonus Action|XPHB|azione bonus}, non può farlo di nuovo finché non completa un {@variantrule Short Rest|XPHB|riposo breve} o {@variantrule Long Rest|XPHB|lungo}, a meno che non spenda un Dado di Energia Psionica (nessuna azione richiesta) per ripristinarne l'uso."
+    ],
+    "name": "Balzo psionico"
+   },
+   {
+    "entries": [
+     "Quando infligge danni a un bersaglio con il suo Colpo psionico, il guerriero può costringerlo a effettuare un tiro salvezza su Forza ({@dc 8} più il suo modificatore di Intelligenza e il suo bonus di {@variantrule Proficiency|XPHB|competenza}). Se lo fallisce, il guerriero può conferire al bersaglio la condizione {@condition Prone|XPHB|prono} o trasportarlo fino a 3 metri in orizzontale."
+    ],
+    "name": "Spinta telecinetica"
+   }
   ],
   "name": "Adepto della telecinesi"
- },
- "subclass:fighter:psi-warrior:7:telekinetic-thrust": {
-  "_self": [
-   "entries",
-   "name"
-  ],
-  "entries": [
-   "Quando infligge danni a un bersaglio con il suo Colpo psionico, il guerriero può costringerlo a effettuare un tiro salvezza su Forza ({@dc 8} più il suo modificatore di Intelligenza e il suo bonus di {@variantrule Proficiency|XPHB|competenza}). Se lo fallisce, il guerriero può conferire al bersaglio la condizione {@condition Prone|XPHB|prono} o trasportarlo fino a 3 metri in orizzontale."
-  ],
-  "name": "Spinta telecinetica"
  },
  "subclass:monk:warrior-of-mercy:11:flurry-of-healing-and-harm": {
   "_self": [
@@ -5043,45 +4995,33 @@
   ],
   "name": "Manto d'ombra"
  },
- "subclass:monk:warrior-of-shadow:3:darkness": {
-  "_self": [
-   "entries",
-   "name"
-  ],
-  "entries": [
-   "Il monaco può spendere 1 punto concentrazione per lanciare l'incantesimo {@spell Darkness|XPHB|oscurità} senza componenti dell'incantesimo. Può vedere all'interno dell'area dell'incantesimo quando lo lancia con questo privilegio. Finché l'incantesimo persiste, può spostare la sua area di {@variantrule Darkness|XPHB|oscurità} in uno spazio entro 18 metri da sé all'inizio di ciascuno dei propri turni."
-  ],
-  "name": "Oscurità"
- },
- "subclass:monk:warrior-of-shadow:3:darkvision": {
-  "_self": [
-   "entries",
-   "name"
-  ],
-  "entries": [
-   "Il monaco ottiene la {@sense Darkvision|XPHB|scurovisione} con un raggio di 18 metri. Se possiede già la {@sense Darkvision|XPHB|scurovisione}, il suo raggio aumenta di 18 metri."
-  ],
-  "name": "Scurovisione"
- },
  "subclass:monk:warrior-of-shadow:3:shadow-arts": {
   "_self": [
    "entries",
    "name"
   ],
   "entries": [
-   "Il monaco ha imparato ad attingere al potere del Piano Ombra, ottenendo i seguenti benefici."
+   "Il monaco ha imparato ad attingere al potere del Piano Ombra, ottenendo i seguenti benefici.",
+   {
+    "entries": [
+     "Il monaco può spendere 1 punto concentrazione per lanciare l'incantesimo {@spell Darkness|XPHB|oscurità} senza componenti dell'incantesimo. Può vedere all'interno dell'area dell'incantesimo quando lo lancia con questo privilegio. Finché l'incantesimo persiste, può spostare la sua area di {@variantrule Darkness|XPHB|oscurità} in uno spazio entro 18 metri da sé all'inizio di ciascuno dei propri turni."
+    ],
+    "name": "Oscurità"
+   },
+   {
+    "entries": [
+     "Il monaco ottiene la {@sense Darkvision|XPHB|scurovisione} con un raggio di 18 metri. Se possiede già la {@sense Darkvision|XPHB|scurovisione}, il suo raggio aumenta di 18 metri."
+    ],
+    "name": "Scurovisione"
+   },
+   {
+    "entries": [
+     "Il monaco conosce l'incantesimo {@spell Minor Illusion|XPHB|illusione minore}. La Saggezza è la sua caratteristica da incantatore per esso."
+    ],
+    "name": "Illusioni d'ombra"
+   }
   ],
   "name": "Arti dell'ombra"
- },
- "subclass:monk:warrior-of-shadow:3:shadowy-figments": {
-  "_self": [
-   "entries",
-   "name"
-  ],
-  "entries": [
-   "Il monaco conosce l'incantesimo {@spell Minor Illusion|XPHB|illusione minore}. La Saggezza è la sua caratteristica da incantatore per esso."
-  ],
-  "name": "Illusioni d'ombra"
  },
  "subclass:monk:warrior-of-shadow:6:shadow-step": {
   "_self": [
@@ -6168,16 +6108,6 @@
   ],
   "name": "Lacerare la mente"
  },
- "subclass:rogue:soulknife:3:psi-bolstered-knack": {
-  "_self": [
-   "entries",
-   "name"
-  ],
-  "entries": [
-   "Se il ladro fallisce una prova di caratteristica utilizzando un'abilità o uno strumento in cui ha competenza, può tirare un Dado di energia psionica e aggiungere il numero ottenuto alla prova, trasformando potenzialmente il fallimento in successo. Il dado viene consumato solo se, in seguito, la prova ha successo."
-  ],
-  "name": "Abilità rafforzata dalla psionica"
- },
  "subclass:rogue:soulknife:3:psionic-power": {
   "_self": [
    "entries",
@@ -6227,8 +6157,18 @@
    },
    "Qualsiasi privilegio di questa sottoclasse che utilizza un Dado di energia psionica impiega solo i dadi di questa sottoclasse. Alcuni dei suoi poteri consumano un Dado di energia psionica, come specificato nella descrizione del potere, e il ladro non può utilizzare un potere se questo richiede l'uso di un dado quando tutti i suoi Dadi di energia psionica sono già stati consumati.",
    "Il ladro recupera uno dei propri Dadi di energia psionica consumati quando completa un {@variantrule Short Rest|XPHB|riposo breve}, e li recupera tutti quando completa un {@variantrule Long Rest|XPHB|riposo lungo}.",
-   {},
-   {},
+   {
+    "entries": [
+     "Se il ladro fallisce una prova di caratteristica utilizzando un'abilità o uno strumento in cui ha competenza, può tirare un Dado di energia psionica e aggiungere il numero ottenuto alla prova, trasformando potenzialmente il fallimento in successo. Il dado viene consumato solo se, in seguito, la prova ha successo."
+    ],
+    "name": "Abilità rafforzata dalla psionica"
+   },
+   {
+    "entries": [
+     "Il ladro può stabilire una comunicazione telepatica tra sé e altre creature. Come azione di {@action Magic|XPHB|Magia}, sceglie una o più creature che può vedere, fino a un numero di creature pari al proprio bonus di {@variantrule Proficiency|XPHB|competenza}, quindi tira un Dado di energia psionica. Per un numero di ore pari al numero ottenuto, le creature scelte possono parlare telepaticamente con lui, e lui può parlare telepaticamente con loro. Per inviare o ricevere un messaggio (nessuna azione richiesta), il ladro e l'altra creatura devono trovarsi entro 1,5 chilometri l'uno dall'altro. Una creatura può porre fine alla connessione telepatica in qualsiasi momento (nessuna azione richiesta)."
+    ],
+    "name": "Sussurri psichici"
+   },
    "La prima volta che il ladro utilizza questo potere dopo ciascun {@variantrule Long Rest|XPHB|riposo lungo}, non consuma il Dado di energia psionica. In tutte le altre occasioni in cui utilizza il potere, consuma il dado."
   ],
   "name": "Potere psionico"
@@ -6246,43 +6186,25 @@
   ],
   "name": "Lame psichiche"
  },
- "subclass:rogue:soulknife:3:psychic-whispers": {
-  "_self": [
-   "entries",
-   "name"
-  ],
-  "entries": [
-   "Il ladro può stabilire una comunicazione telepatica tra sé e altre creature. Come azione di {@action Magic|XPHB|Magia}, sceglie una o più creature che può vedere, fino a un numero di creature pari al proprio bonus di {@variantrule Proficiency|XPHB|competenza}, quindi tira un Dado di energia psionica. Per un numero di ore pari al numero ottenuto, le creature scelte possono parlare telepaticamente con lui, e lui può parlare telepaticamente con loro. Per inviare o ricevere un messaggio (nessuna azione richiesta), il ladro e l'altra creatura devono trovarsi entro 1,5 chilometri l'uno dall'altro. Una creatura può porre fine alla connessione telepatica in qualsiasi momento (nessuna azione richiesta)."
-  ],
-  "name": "Sussurri psichici"
- },
- "subclass:rogue:soulknife:9:homing-strikes": {
-  "_self": [
-   "entries",
-   "name"
-  ],
-  "entries": [
-   "Se il ladro effettua un tiro per colpire con la propria {@item Psychic Blade|XPHB|lama psichica} e manca il bersaglio, può tirare un Dado di energia psionica e aggiungere il numero ottenuto al tiro per colpire. Se ciò fa sì che l'attacco colpisca, il dado viene consumato."
-  ],
-  "name": "Colpi a ricerca"
- },
- "subclass:rogue:soulknife:9:psychic-teleportation": {
-  "_self": [
-   "entries",
-   "name"
-  ],
-  "entries": [
-   "Come {@variantrule Bonus Action|XPHB|azione bonus}, il ladro manifesta una {@item Psychic Blade|XPHB|lama psichica}, consuma un Dado di energia psionica e lo tira, quindi scaglia la lama verso uno spazio libero che può vedere, a una distanza in metri pari a 3 volte il numero ottenuto. Il ladro si teletrasporta quindi in quello spazio, e la lama svanisce."
-  ],
-  "name": "Teletrasporto psichico"
- },
  "subclass:rogue:soulknife:9:soul-blades": {
   "_self": [
    "entries",
    "name"
   ],
   "entries": [
-   "Il ladro può ora usare i seguenti poteri con le proprie Lame psichiche."
+   "Il ladro può ora usare i seguenti poteri con le proprie Lame psichiche.",
+   {
+    "entries": [
+     "Se il ladro effettua un tiro per colpire con la propria {@item Psychic Blade|XPHB|lama psichica} e manca il bersaglio, può tirare un Dado di energia psionica e aggiungere il numero ottenuto al tiro per colpire. Se ciò fa sì che l'attacco colpisca, il dado viene consumato."
+    ],
+    "name": "Colpi a ricerca"
+   },
+   {
+    "entries": [
+     "Come {@variantrule Bonus Action|XPHB|azione bonus}, il ladro manifesta una {@item Psychic Blade|XPHB|lama psichica}, consuma un Dado di energia psionica e lo tira, quindi scaglia la lama verso uno spazio libero che può vedere, a una distanza in metri pari a 3 volte il numero ottenuto. Il ladro si teletrasporta quindi in quello spazio, e la lama svanisce."
+    ],
+    "name": "Teletrasporto psichico"
+   }
   ],
   "name": "Lame dell'anima"
  },
