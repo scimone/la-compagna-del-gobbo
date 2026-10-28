@@ -36,7 +36,7 @@ class Pick:
 
 
 def is_repeatable(feat: Feat) -> bool:
-    return any(isinstance(e, dict) and e.get("name") == "Repeatable" for e in feat.entries)
+    return any(isinstance(e, dict) and e.get("name") == "Repeatable" for e in feat.entries_en)
 
 
 def variants(feat: Feat) -> list[str]:
