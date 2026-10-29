@@ -958,6 +958,7 @@ def _spell_sections(ctx: _Ctx) -> list[Section]:
     klass, new = ctx.klass, ctx.new_level
     info = _casting(ctx)
     pickers: list[Picker] = []
+    swap: list[Picker] = []
     owned = set(ctx.spells)
     if info:
         class_list = info["list"]
@@ -1015,12 +1016,12 @@ def _spell_sections(ctx: _Ctx) -> list[Section]:
                 and s.spell.level > 0
             ]
             if mine and not ctx.entering:
-                pickers.append(
+                swap.append(
                     ctx.picker(
                         "lu.spell_out", _("Replace a spell"), 1, mine, single=True, optional=True
                     )
                 )
-                pickers.append(
+                swap.append(
                     ctx.picker(
                         "lu.spell_in",
                         _("...with"),
@@ -1044,7 +1045,15 @@ def _spell_sections(ctx: _Ctx) -> list[Section]:
             )
         )
     pickers.extend(_wizard_mastery_pickers(ctx))
-    return [Section("spells", _("Spells"), pickers=pickers)] if pickers else []
+    # new spells and replacing one are two steps; the page lists them in that order
+    return [
+        Section(key, title, pickers=group)
+        for key, title, group in (
+            ("spells", _("Spells"), pickers),
+            ("spell_swap", _("Class spell replacement"), swap),
+        )
+        if group
+    ]
 
 
 def _acts_as_action(spell) -> bool:

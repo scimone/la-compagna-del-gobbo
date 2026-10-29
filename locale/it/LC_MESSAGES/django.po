@@ -3698,3 +3698,9 @@ msgstr "Sostituzione di un incantesimo della sottoclasse"
 
 msgid "Check the steps above - steps with a choice still to make are not ticked - then confirm."
 msgstr "Controlla le fasi qui sopra - le fasi con una scelta ancora da fare non sono segnate come completate - poi conferma."
+
+msgid "Class spell replacement"
+msgstr "Sostituzione di un incantesimo di classe"
+
+msgid "Change class"
+msgstr "Cambia classe"

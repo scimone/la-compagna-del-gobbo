@@ -9,12 +9,12 @@
   .lu-hp .hp-roll { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
   .lu-hp .hp-roll input[type="number"] { width: 5rem; }
   .lu-hp .hp-detail { color: var(--muted); font-size: 0.85rem; margin: 0; }
-  .lu-summary { flex-direction: row; align-items: center; gap: 0.7rem; }
-  .lu-summary .lu-who { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-  .lu-summary .lu-who b { font-size: 1.05rem; }
-  .lu-summary a { font-size: 0.85rem; color: var(--accent); white-space: nowrap; }
-  .lu-steps { display: none; }
-  .lu-js .lu-steps { display: flex; gap: 0.4rem; overflow-x: auto; position: sticky; top: 0; z-index: 5; margin: 0 -1rem; padding: 0.5rem 1rem; background: var(--bg); border-bottom: 1px solid var(--border); }
+  .lu-head { display: contents; }
+  .lu-js .lu-head { display: block; position: sticky; top: -1.25rem; z-index: 5; margin: -1.25rem -1rem 0; padding: 0.4rem 1rem 0.35rem; background: var(--bg); border-bottom: 1px solid var(--border); }
+  .lu-bar { display: flex; align-items: baseline; gap: 0.5rem; padding-top: 0.3rem; font-size: 0.85rem; color: var(--muted); }
+  .lu-bar b { color: var(--text); font-size: 0.95rem; }
+  .lu-bar a { margin-left: auto; color: var(--accent); }
+  .lu-steps { display: flex; gap: 0.4rem; overflow-x: auto; }
   .lu-steps button { flex-shrink: 0; display: flex; align-items: center; gap: 0.4rem; appearance: none; font: inherit; font-size: 0.82rem; padding: 0.3rem 0.75rem 0.3rem 0.35rem; border-radius: 1rem; white-space: nowrap; cursor: pointer; color: var(--muted); background: var(--surface); border: 1px solid var(--border); }
   .lu-steps .n { display: inline-grid; place-items: center; width: 1.3rem; height: 1.3rem; border-radius: 50%; font-size: 0.75rem; font-weight: 700; background: var(--bg); border: 1px solid var(--border); }
   .lu-steps button.current { color: var(--accent-text); background: var(--accent); border-color: var(--accent); }
@@ -38,19 +38,29 @@
   .opts-list .lvl { color: var(--accent); font-size: 0.8rem; font-weight: 600; }
   .opts-list .why { color: var(--accent); font-size: 0.8rem; }
 {% endblock %}
+{% block heading %}{% endblock %}
 {% block step %}
-  <p class="lu-note">
-    {% blocktranslate with level=total next=total|add:1 %}You are level {{ level }}. Levelling up takes you to level {{ next }}.{% endblocktranslate %}
-    {% if not xp_ready %}{% translate "Your Experience Points are below the next level's threshold - fine if your table levels up by milestones." %}{% endif %}
-  </p>
   <form method="post" data-live>
     {% csrf_token %}
     {% if plan %}
-    <div class="lu-card lu-summary">
-      <div class="lu-who"><b>{{ plan.klass.name }}</b><span class="lu-note">{% blocktranslate with a=plan.old_level b=plan.new_level %}Level {{ a }} → {{ b }}{% endblocktranslate %}</span></div>
-      <a href="{% url 'character-levelup' character.pk %}" data-nav="replace">{% translate "Choose another class" %}</a>
+    <div class="lu-head">
+      <nav class="lu-steps" aria-label="{% translate 'Steps' %}">
+        {% for section in level_steps %}
+          <button type="button" data-goto="{{ forloop.counter0 }}"><span class="n">{{ forloop.counter }}</span>{{ section.title }}</button>
+        {% endfor %}
+        <button type="button" data-goto="review"><span class="n">✓</span>{% translate "Review" %}</button>
+      </nav>
+      <div class="lu-bar">
+        <b>{{ plan.klass.name }}</b>
+        <span>{% blocktranslate with a=plan.old_level b=plan.new_level %}Level {{ a }} → {{ b }}{% endblocktranslate %}</span>
+        <a href="{% url 'character-levelup' character.pk %}" data-nav="replace">{% translate "Change class" %}</a>
+      </div>
     </div>
     {% else %}
+    <p class="lu-note">
+      {% blocktranslate with level=total next=total|add:1 %}You are level {{ level }}. Levelling up takes you to level {{ next }}.{% endblocktranslate %}
+      {% if not xp_ready %}{% translate "Your Experience Points are below the next level's threshold - fine if your table levels up by milestones." %}{% endif %}
+    </p>
     <div class="lu-card">
       <h3>{% translate "Class" %}</h3>
       <p class="lu-note">{% translate "Pick the class to advance - a class you already have, or a new one (multiclassing needs 13 in the primary ability of the new class and of every class you have)." %}</p>
@@ -75,14 +85,7 @@
     {% endif %}
 
     {% if plan %}
-      <nav class="lu-steps" aria-label="{% translate 'Steps' %}">
-        {% for section in steps %}
-          <button type="button" data-goto="{{ forloop.counter0 }}"><span class="n">{{ forloop.counter }}</span>{{ section.title }}</button>
-        {% endfor %}
-        <button type="button" data-goto="review"><span class="n">✓</span>{% translate "Review" %}</button>
-      </nav>
-
-      {% for section in steps %}
+      {% for section in level_steps %}
         <section class="lu-panel" data-panel="{{ forloop.counter0 }}">
           {% if section.key == "hp" %}
             <div class="lu-card lu-hp">
@@ -125,7 +128,9 @@
         {% endif %}
         <div class="lu-card">
           <h3>{% translate "Review" %}</h3>
-          <p class="lu-note">{% translate "Check the steps above - steps with a choice still to make are not ticked - then confirm." %}</p>
+          <p class="lu-note">{% blocktranslate with level=total next=total|add:1 %}You are level {{ level }}. Levelling up takes you to level {{ next }}.{% endblocktranslate %}
+            {% if not xp_ready %}{% translate "Your Experience Points are below the next level's threshold - fine if your table levels up by milestones." %}{% endif %}
+            {% translate "Check the steps above - steps with a choice still to make are not ticked - then confirm." %}</p>
         </div>
         <div class="actions">
           <a class="btn secondary lu-cancel" href="{% url 'character-detail' character.pk %}">{% translate "Cancel" %}</a>
@@ -180,18 +185,17 @@
           b.classList.toggle("done", !last && !incomplete(list[i]));
           b.setAttribute("aria-current", i === current ? "step" : "false");
         });
-        var bar = wiz.querySelector(".lu-steps");
+        var bar = wiz.querySelector(".lu-head");
         if (bar) {
-          document.documentElement.style.setProperty("--sticky-top", bar.offsetHeight + "px");
-          var on = bar.querySelector(".current");
+          document.documentElement.style.setProperty("--sticky-top", "calc(" + bar.offsetHeight + "px - 1.25rem)");
+          var on = bar.querySelector(".lu-steps .current");
           if (on && on.scrollIntoView) on.scrollIntoView({ inline: "center", block: "nearest" });
         }
       }
       function go(i, scroll) {
         current = i;
         render();
-        var bar = wiz.querySelector(".lu-steps");
-        if (scroll && bar) bar.scrollIntoView({ block: "start" });
+        if (scroll) wiz.scrollIntoView({ block: "start" });
       }
       wiz.addEventListener("click", function (event) {
         var t = event.target.closest && event.target.closest("[data-goto], [data-step-nav]");

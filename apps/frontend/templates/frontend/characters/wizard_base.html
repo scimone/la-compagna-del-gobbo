@@ -99,7 +99,7 @@
       {% endfor %}
     </nav>{% endif %}
 
-    <h2>{{ step_label }}</h2>
+    {% block heading %}<h2>{{ step_label }}</h2>{% endblock %}
 
     {% if editing %}
       <p class="wiz-warnings">{% translate "Editing an existing character: its inventory, gold and experience are kept as they are. Press Finish on the last step to save." %}</p>
