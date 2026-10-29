@@ -3707,3 +3707,9 @@ msgstr "Cambia classe"
 
 msgid "Choose…"
 msgstr "Scegli…"
+
+msgid "Replace a spell from your subclass"
+msgstr "Sostituisci un incantesimo della tua sottoclasse"
+
+msgid "A different cantrip (you already know %(spell)s)"
+msgstr "Un trucchetto diverso (conosci già %(spell)s)"

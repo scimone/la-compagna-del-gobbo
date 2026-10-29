@@ -25,10 +25,14 @@
   .lu-panel > .lu-card > h3 { font-size: 1.1rem; }
   /* No card in a card: the pickers sit straight on the page, only their count stays. */
   .lu-panel fieldset.picker { border: 0; border-radius: 0; padding: 0; background: none; }
-  .lu-panel fieldset.picker legend { padding: 0; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--muted); }
+  /* The count line stays under the step bar, and the level headings under it. */
+  .lu-panel fieldset.picker { --legend-h: 2rem; }
+  .lu-panel fieldset.picker legend { position: sticky; top: var(--sticky-top, 0px); z-index: 3; display: flex; align-items: center; width: 100%; height: var(--legend-h); box-sizing: border-box; padding: 0; font-size: 0.85rem; color: var(--muted); background: var(--bg); white-space: nowrap; overflow: hidden; }
+  .lu-panel .pick-level-head { top: calc(var(--sticky-top, 0px) + var(--legend-h)); }
   .lu-panel fieldset.picker legend .plabel { color: var(--text); font-weight: 600; font-size: 0.95rem; }
   .lu-panel fieldset.picker legend .count { margin-left: 0; }
-  .lu-panel fieldset.picker legend .plabel + .count::before { content: " · "; }
+  .lu-panel fieldset.picker legend .plabel + .count { margin-left: 0.4rem; }
+  .lu-panel fieldset.picker legend .plabel + .count::before { content: "· "; }
   .lu-solo fieldset.picker legend .plabel { display: none; }
   .lu-solo fieldset.picker legend .plabel + .count::before { content: none; }
   .pick-level-head { background: var(--bg); }
@@ -235,6 +239,14 @@
         if (!t) return;
         if (t.dataset.goto !== undefined) go(t.dataset.goto === "review" ? panels().length - 1 : parseInt(t.dataset.goto, 10), true);
         else go(current + parseInt(t.dataset.stepNav, 10), true);
+      });
+      // The chosen item of a folded pick reopens the list, so the choice can be changed.
+      wiz.addEventListener("click", function (event) {
+        var sel = event.target.closest && event.target.closest(".pick-fold-sel");
+        if (!sel || event.target.closest("button")) return;
+        event.preventDefault();
+        var d = sel.closest("details");
+        d.open = !d.open;
       });
       // Picking things changes which steps are complete.
       wiz.addEventListener("change", function (event) {
