@@ -3704,3 +3704,6 @@ msgstr "Sostituzione di un incantesimo di classe"
 
 msgid "Change class"
 msgstr "Cambia classe"
+
+msgid "Choose…"
+msgstr "Scegli…"

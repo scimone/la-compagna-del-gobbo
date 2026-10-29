@@ -1018,7 +1018,13 @@ def _spell_sections(ctx: _Ctx) -> list[Section]:
             if mine and not ctx.entering:
                 swap.append(
                     ctx.picker(
-                        "lu.spell_out", _("Replace a spell"), 1, mine, single=True, optional=True
+                        "lu.spell_out",
+                        _("Replace a spell"),
+                        1,
+                        mine,
+                        single=True,
+                        optional=True,
+                        kind="spell",
                     )
                 )
                 swap.append(
@@ -1285,6 +1291,7 @@ def _discovery_swap_pickers(ctx: _Ctx, subclass: Subclass | None) -> list[Picker
             mine,
             single=True,
             optional=True,
+            kind="spell",
         ),
         ctx.picker(
             "lu.discovery_in", _("...with"), 1, pool, single=True, optional=True, kind="spell"

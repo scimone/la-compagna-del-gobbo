@@ -4,11 +4,27 @@
 {# list design with a "Read" button; any other is a <select> (pick one) or a checkbox group.          #}
 {% for p in pickers %}
   <fieldset class="picker"{% if not p.single %} data-count="{{ p.count }}"{% endif %}{% if p.refresh %} data-refresh{% endif %}{% if p.single and p.optional %} data-deselect{% endif %}>
-    <legend>{{ p.label }}
+    <legend><span class="plabel">{{ p.label }}</span>
       <span class="count">{% if p.single %}{% translate "choose 1" %}{% else %}{% blocktranslate with n=p.count %}choose {{ n }}{% endblocktranslate %} · <span class="chosen"></span>{% endif %}</span>
     </legend>
     {% if p.hint %}<p class="hint">{{ p.hint }}</p>{% endif %}
     {% if p.cards %}
+      {% if p.single and p.optional %}
+        {# An optional pick (a swap): folded, showing the chosen spell as a list item; opening it lists the candidates. #}
+        <details class="pick-fold">
+          <summary><span class="pick-fold-empty">{% translate "Choose…" %}</span><ul class="item-list compact-thumbs pick-fold-sel"></ul></summary>
+        {% if p.groups %}
+          {% for g in p.groups %}
+            <section class="pick-level">
+              {% if g.heading %}<h4 class="pick-level-head">{{ g.label }}</h4>{% endif %}
+              <ul class="item-list compact-thumbs picks">{% for c in g.cards %}{% include "frontend/characters/_pick_card.html" %}{% endfor %}</ul>
+            </section>
+          {% endfor %}
+        {% else %}
+          <ul class="item-list compact-thumbs picks">{% for c in p.cards %}{% include "frontend/characters/_pick_card.html" %}{% endfor %}</ul>
+        {% endif %}
+        </details>
+      {% else %}
       {% if p.groups %}
         {% for g in p.groups %}
           <section class="pick-level">
@@ -18,6 +34,7 @@
         {% endfor %}
       {% else %}
         <ul class="item-list compact-thumbs picks">{% for c in p.cards %}{% include "frontend/characters/_pick_card.html" %}{% endfor %}</ul>
+      {% endif %}
       {% endif %}
     {% elif p.single %}
       <select name="{{ p.key }}">

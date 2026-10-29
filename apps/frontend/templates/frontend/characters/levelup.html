@@ -2,7 +2,7 @@
 {% load i18n %}
 {% block step_style %}
   .lu-note { color: var(--muted); font-size: 0.9rem; margin: 0; line-height: 1.45; }
-  .lu-card { background: var(--surface); border: 1px solid var(--border); border-radius: 0.6rem; padding: 0.7rem 0.9rem; display: flex; flex-direction: column; gap: 0.6rem; }
+  .lu-card { display: flex; flex-direction: column; gap: 0.6rem; }
   .lu-card h3 { margin: 0; font-size: 1rem; }
   .lu-hp label.hp-opt { display: flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0; }
   .lu-hp input[type="radio"] { accent-color: var(--accent); }
@@ -23,6 +23,24 @@
   .lu-js .lu-panel:not(.active) { display: none; }
   .lu-panel { display: flex; flex-direction: column; gap: 0.8rem; }
   .lu-panel > .lu-card > h3 { font-size: 1.1rem; }
+  /* No card in a card: the pickers sit straight on the page, only their count stays. */
+  .lu-panel fieldset.picker { border: 0; border-radius: 0; padding: 0; background: none; }
+  .lu-panel fieldset.picker legend { padding: 0; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--muted); }
+  .lu-panel fieldset.picker legend .plabel { color: var(--text); font-weight: 600; font-size: 0.95rem; }
+  .lu-panel fieldset.picker legend .count { margin-left: 0; }
+  .lu-panel fieldset.picker legend .plabel + .count::before { content: " · "; }
+  .lu-solo fieldset.picker legend .plabel { display: none; }
+  .lu-solo fieldset.picker legend .plabel + .count::before { content: none; }
+  .pick-level-head { background: var(--bg); }
+  /* A folded optional pick: the chosen spell as a list item, the candidates open underneath. */
+  .pick-fold > summary { list-style: none; cursor: pointer; }
+  .pick-fold > summary::-webkit-details-marker { display: none; }
+  .pick-fold .pick-fold-empty { display: block; padding: 0.6rem 0.8rem; border: 1px dashed var(--border); border-radius: 0.6rem; color: var(--muted); }
+  .pick-fold .pick-fold-empty::after { content: " ▾"; }
+  .pick-fold.has-pick .pick-fold-empty { display: none; }
+  .pick-fold .pick-fold-sel { margin: 0; }
+  .pick-fold .pick-fold-sel li { border-color: var(--accent); border-left-width: 0.3rem; }
+  .pick-fold[open] > summary { margin-bottom: 0.6rem; }
   .lu-progress { color: var(--muted); font-size: 0.8rem; margin: 0; }
   .lu-nav { display: none; }
   .lu-js .lu-nav { display: flex; gap: 0.6rem; }
@@ -86,7 +104,7 @@
 
     {% if plan %}
       {% for section in level_steps %}
-        <section class="lu-panel" data-panel="{{ forloop.counter0 }}">
+        <section class="lu-panel{% if section.pickers|length == 1 %} lu-solo{% endif %}" data-panel="{{ forloop.counter0 }}">
           {% if section.key == "hp" %}
             <div class="lu-card lu-hp">
               <h3>{% translate "Hit points" %}</h3>
@@ -107,7 +125,7 @@
             </div>
           {% else %}
             <div class="lu-card">
-              <h3>{{ section.title }}</h3>
+              {% if section.key != "spells" and section.key != "spell_swap" and section.key != "subclass_swap" %}<h3>{{ section.title }}</h3>{% endif %}
               {% if section.hint %}<p class="lu-note">{{ section.hint }}</p>{% endif %}
               {% include "frontend/characters/_pickers.html" with pickers=section.pickers %}
             </div>
@@ -170,7 +188,22 @@
           return !!select && select.options.length > 1 && !select.value;
         });
       }
+      // An optional pick is folded: its summary shows the chosen candidate as a list item.
+      function syncFolds() {
+        wiz.querySelectorAll("details.pick-fold").forEach(function (d) {
+          var sel = d.querySelector(".pick-fold-sel");
+          var input = d.querySelector("input:checked");
+          sel.innerHTML = "";
+          if (input) {
+            var li = input.closest("li").cloneNode(true);
+            li.querySelectorAll("input").forEach(function (i) { i.remove(); });
+            sel.appendChild(li);
+          }
+          d.classList.toggle("has-pick", !!input);
+        });
+      }
       function render() {
+        syncFolds();
         var f = form();
         if (!f) return;
         var list = panels();
@@ -204,7 +237,11 @@
         else go(current + parseInt(t.dataset.stepNav, 10), true);
       });
       // Picking things changes which steps are complete.
-      wiz.addEventListener("change", function () { render(); });
+      wiz.addEventListener("change", function (event) {
+        var fold = event.target.closest && event.target.closest("details.pick-fold");
+        if (fold) fold.open = false;
+        render();
+      });
       // A swap replaces the form: re-apply the step (a failed commit opens the first step with an error).
       var swapped = false;
       new MutationObserver(function () {
