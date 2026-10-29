@@ -77,6 +77,9 @@
   .item-list .desc .facts dt { color: var(--muted); font-size: 0.8rem; }
   .item-list .desc .facts dd { margin: 0; }
   .picks { max-height: none; }
+  /* Spell pickers: grouped by spell level, each heading stays in view while its group scrolls. */
+  .pick-level + .pick-level { margin-top: 0.6rem; }
+  .pick-level-head { position: sticky; top: var(--sticky-top, 0px); z-index: 2; margin: 0 0 0.35rem; padding: 0.4rem 0 0.25rem; font-size: 0.9rem; color: var(--accent); background: var(--surface); border-bottom: 1px solid var(--border); }
   .wiz.loading { opacity: 0.6; pointer-events: none; }
 
   .discard { margin-top: 0.5rem; text-align: center; }

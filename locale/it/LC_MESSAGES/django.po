@@ -3686,3 +3686,15 @@ msgid "%(n)s entry"
 msgid_plural "%(n)s entries"
 msgstr[0] "%(n)s voce"
 msgstr[1] "%(n)s voci"
+
+msgid "Level %(level)d"
+msgstr "Livello %(level)d"
+
+msgid "Next"
+msgstr "Avanti"
+
+msgid "Subclass spell replacement"
+msgstr "Sostituzione di un incantesimo della sottoclasse"
+
+msgid "Check the steps above - steps with a choice still to make are not ticked - then confirm."
+msgstr "Controlla le fasi qui sopra - le fasi con una scelta ancora da fare non sono segnate come completate - poi conferma."

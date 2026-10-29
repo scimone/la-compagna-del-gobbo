@@ -570,7 +570,7 @@ def _decorate(pickers):
     for picker in pickers:
         model = _CARD_MODELS.get(picker.kind)
         if model is None:
-            picker.cards = None
+            picker.cards = picker.groups = None
             continue
         ids = [c[0] for c in picker.candidates]
         queryset = model.objects.filter(id__in=ids)
@@ -591,7 +591,25 @@ def _decorate(pickers):
             for ident, name in picker.candidates
             if ident in objects
         ]
+        picker.groups = _spell_groups(picker, objects) if picker.kind == "spell" else None
     return pickers
+
+
+def _spell_groups(picker, spells) -> list[dict]:
+    """A spell picker's cards by spell level (Cantrips, Level 1, ...), each sorted by name, like
+    the Spellbook. A single group needs no heading, so `heading` says whether to show them."""
+    by_level: dict[int, list] = {}
+    for card in picker.cards:
+        by_level.setdefault(spells[card["id"]].level, []).append(card)
+    return [
+        {
+            "level": level,
+            "label": _("Cantrips") if level == 0 else _("Level %(level)d") % {"level": level},
+            "cards": sorted(by_level[level], key=lambda c: c["name"].casefold()),
+            "heading": len(by_level) > 1,
+        }
+        for level in sorted(by_level)
+    ]
 
 
 # --- descriptions (unfolded under a card) -------------------------------------------------------

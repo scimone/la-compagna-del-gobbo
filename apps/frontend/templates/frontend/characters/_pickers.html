@@ -9,22 +9,16 @@
     </legend>
     {% if p.hint %}<p class="hint">{{ p.hint }}</p>{% endif %}
     {% if p.cards %}
-      <ul class="item-list compact-thumbs picks">
-        {% for c in p.cards %}
-          <li>
-            <label class="pick">
-              <input type="{% if p.single %}radio{% else %}checkbox{% endif %}" name="{{ p.key }}" value="{{ c.id }}"{% if c.checked %} checked{% endif %}>
-              {% if c.image %}<img class="item-thumb" src="{{ c.image }}" alt="" loading="lazy" decoding="async">{% endif %}
-              <div class="item-text">
-                <span class="item-name">{{ c.name }}</span>
-                {% if c.detail %}<div class="item-detail">{{ c.detail }}</div>{% endif %}
-              </div>
-            </label>
-            <button type="button" class="pick-read" data-describe="{{ c.describe }}" aria-expanded="false">{% translate "Read" %}</button>
-            <div class="desc" hidden></div>
-          </li>
+      {% if p.groups %}
+        {% for g in p.groups %}
+          <section class="pick-level">
+            {% if g.heading %}<h4 class="pick-level-head">{{ g.label }}</h4>{% endif %}
+            <ul class="item-list compact-thumbs picks">{% for c in g.cards %}{% include "frontend/characters/_pick_card.html" %}{% endfor %}</ul>
+          </section>
         {% endfor %}
-      </ul>
+      {% else %}
+        <ul class="item-list compact-thumbs picks">{% for c in p.cards %}{% include "frontend/characters/_pick_card.html" %}{% endfor %}</ul>
+      {% endif %}
     {% elif p.single %}
       <select name="{{ p.key }}">
         <option value="">—</option>

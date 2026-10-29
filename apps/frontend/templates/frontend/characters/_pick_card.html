@@ -1,0 +1,13 @@
+{% load i18n %}
+<li>
+  <label class="pick">
+    <input type="{% if p.single %}radio{% else %}checkbox{% endif %}" name="{{ p.key }}" value="{{ c.id }}"{% if c.checked %} checked{% endif %}>
+    {% if c.image %}<img class="item-thumb" src="{{ c.image }}" alt="" loading="lazy" decoding="async">{% endif %}
+    <div class="item-text">
+      <span class="item-name">{{ c.name }}</span>
+      {% if c.detail %}<div class="item-detail">{{ c.detail }}</div>{% endif %}
+    </div>
+  </label>
+  <button type="button" class="pick-read" data-describe="{{ c.describe }}" aria-expanded="false">{% translate "Read" %}</button>
+  <div class="desc" hidden></div>
+</li>

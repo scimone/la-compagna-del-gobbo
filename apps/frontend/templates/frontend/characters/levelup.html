@@ -9,6 +9,28 @@
   .lu-hp .hp-roll { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
   .lu-hp .hp-roll input[type="number"] { width: 5rem; }
   .lu-hp .hp-detail { color: var(--muted); font-size: 0.85rem; margin: 0; }
+  .lu-summary { flex-direction: row; align-items: center; gap: 0.7rem; }
+  .lu-summary .lu-who { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .lu-summary .lu-who b { font-size: 1.05rem; }
+  .lu-summary a { font-size: 0.85rem; color: var(--accent); white-space: nowrap; }
+  .lu-steps { display: none; }
+  .lu-js .lu-steps { display: flex; gap: 0.4rem; overflow-x: auto; position: sticky; top: 0; z-index: 5; margin: 0 -1rem; padding: 0.5rem 1rem; background: var(--bg); border-bottom: 1px solid var(--border); }
+  .lu-steps button { flex-shrink: 0; display: flex; align-items: center; gap: 0.4rem; appearance: none; font: inherit; font-size: 0.82rem; padding: 0.3rem 0.75rem 0.3rem 0.35rem; border-radius: 1rem; white-space: nowrap; cursor: pointer; color: var(--muted); background: var(--surface); border: 1px solid var(--border); }
+  .lu-steps .n { display: inline-grid; place-items: center; width: 1.3rem; height: 1.3rem; border-radius: 50%; font-size: 0.75rem; font-weight: 700; background: var(--bg); border: 1px solid var(--border); }
+  .lu-steps button.current { color: var(--accent-text); background: var(--accent); border-color: var(--accent); }
+  .lu-steps button.current .n { color: var(--accent); border-color: var(--bg); }
+  .lu-steps button.done:not(.current) .n { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+  .lu-js .lu-panel:not(.active) { display: none; }
+  .lu-panel { display: flex; flex-direction: column; gap: 0.8rem; }
+  .lu-panel > .lu-card > h3 { font-size: 1.1rem; }
+  .lu-progress { color: var(--muted); font-size: 0.8rem; margin: 0; }
+  .lu-nav { display: none; }
+  .lu-js .lu-nav { display: flex; gap: 0.6rem; }
+  .lu-nav .btn { flex: 1; }
+  .lu-nav .spacer { flex: 1; }
+  .lu-js .lu-cancel { display: none; }
+  .lu-back { display: none; }
+  .lu-js .lu-back { display: block; }
   .lu-features { margin: 0; padding-left: 1.2rem; }
   .lu-features a { color: var(--accent); }
   .opts-list li.disabled { opacity: 0.55; }
@@ -23,13 +45,18 @@
   </p>
   <form method="post" data-live>
     {% csrf_token %}
+    {% if plan %}
+    <div class="lu-card lu-summary">
+      <div class="lu-who"><b>{{ plan.klass.name }}</b><span class="lu-note">{% blocktranslate with a=plan.old_level b=plan.new_level %}Level {{ a }} → {{ b }}{% endblocktranslate %}</span></div>
+      <a href="{% url 'character-levelup' character.pk %}" data-nav="replace">{% translate "Choose another class" %}</a>
+    </div>
+    {% else %}
     <div class="lu-card">
       <h3>{% translate "Class" %}</h3>
       <p class="lu-note">{% translate "Pick the class to advance - a class you already have, or a new one (multiclassing needs 13 in the primary ability of the new class and of every class you have)." %}</p>
       <ul class="item-list opts-list">
         {% for o in options %}
-          {% if not plan or o.selected %}
-          <li class="{% if o.selected %}selected{% endif %}{% if not o.allowed %} disabled{% endif %}">
+                    <li class="{% if o.selected %}selected{% endif %}{% if not o.allowed %} disabled{% endif %}">
             <label class="pick menu-thumb">
               <input type="radio" name="klass" value="{{ o.id }}" data-select{% if o.selected %} checked{% endif %}{% if not o.allowed %} disabled{% endif %}>
               {% if o.image %}<img class="item-thumb" src="{{ o.image }}" alt="" loading="lazy" decoding="async">{% endif %}
@@ -42,52 +69,70 @@
             </label>
             <a class="pick-read" href="{{ o.url }}">{% translate "Read" %}</a>
           </li>
-          {% endif %}
         {% endfor %}
       </ul>
-      {% if plan %}<a class="lu-note" href="{% url 'character-levelup' character.pk %}" data-nav="replace">{% translate "Choose another class" %}</a>{% endif %}
     </div>
+    {% endif %}
 
     {% if plan %}
-      {% for section in plan.sections %}
-        {% if section.key == "hp" %}
-          <div class="lu-card lu-hp">
-            <h3>{% translate "Hit points" %}</h3>
-            <label class="hp-opt"><input type="radio" name="lu.hp_mode" value="fixed"{% if plan.hp.mode == "fixed" %} checked{% endif %}>
-              {% blocktranslate with n=plan.hp.fixed die=plan.hp.die %}Take the average ({{ n }}, from your {{ die }} hit die){% endblocktranslate %}</label>
-            <label class="hp-opt"><input type="radio" name="lu.hp_mode" value="roll"{% if plan.hp.mode == "roll" %} checked{% endif %}>
-              {% blocktranslate with die=plan.hp.die %}Roll your {{ die }}{% endblocktranslate %}</label>
-            <div class="hp-roll">
-              <input type="number" name="lu.hp_roll" min="1" max="{{ plan.hp.faces }}" inputmode="numeric" value="{{ plan.hp.roll|default_if_none:'' }}" aria-label="{% translate 'Your roll' %}">
-              <button type="button" class="btn secondary small" data-roll="{{ plan.hp.faces }}">{% translate "Roll for me" %}</button>
+      <nav class="lu-steps" aria-label="{% translate 'Steps' %}">
+        {% for section in steps %}
+          <button type="button" data-goto="{{ forloop.counter0 }}"><span class="n">{{ forloop.counter }}</span>{{ section.title }}</button>
+        {% endfor %}
+        <button type="button" data-goto="review"><span class="n">✓</span>{% translate "Review" %}</button>
+      </nav>
+
+      {% for section in steps %}
+        <section class="lu-panel" data-panel="{{ forloop.counter0 }}">
+          {% if section.key == "hp" %}
+            <div class="lu-card lu-hp">
+              <h3>{% translate "Hit points" %}</h3>
+              <label class="hp-opt"><input type="radio" name="lu.hp_mode" value="fixed"{% if plan.hp.mode == "fixed" %} checked{% endif %}>
+                {% blocktranslate with n=plan.hp.fixed die=plan.hp.die %}Take the average ({{ n }}, from your {{ die }} hit die){% endblocktranslate %}</label>
+              <label class="hp-opt"><input type="radio" name="lu.hp_mode" value="roll"{% if plan.hp.mode == "roll" %} checked{% endif %}>
+                {% blocktranslate with die=plan.hp.die %}Roll your {{ die }}{% endblocktranslate %}</label>
+              <div class="hp-roll">
+                <input type="number" name="lu.hp_roll" min="1" max="{{ plan.hp.faces }}" inputmode="numeric" value="{{ plan.hp.roll|default_if_none:'' }}" aria-label="{% translate 'Your roll' %}">
+                <button type="button" class="btn secondary small" data-roll="{{ plan.hp.faces }}">{% translate "Roll for me" %}</button>
+              </div>
+              {% for path, message in issue_paths.items %}{% if path == "lu.hp_roll" %}<p class="field-error">{{ message }}</p>{% endif %}{% endfor %}
+              <p class="hp-detail">
+                {% blocktranslate with mod=plan.hp.con_mod %}Your Constitution modifier ({{ mod }}) is added.{% endblocktranslate %}
+                {% if plan.hp.per_level %}{% blocktranslate with n=plan.hp.per_level %}+{{ n }} more from your feats and features.{% endblocktranslate %}{% endif %}
+                {% if plan.hp.retro %}{% blocktranslate with n=plan.hp.retro %}Your new Constitution modifier also changes the hit points of your earlier levels ({{ n }}).{% endblocktranslate %}{% endif %}
+              </p>
             </div>
-            {% for path, message in issue_paths.items %}{% if path == "lu.hp_roll" %}<p class="field-error">{{ message }}</p>{% endif %}{% endfor %}
-            <p class="hp-detail">
-              {% blocktranslate with mod=plan.hp.con_mod %}Your Constitution modifier ({{ mod }}) is added.{% endblocktranslate %}
-              {% if plan.hp.per_level %}{% blocktranslate with n=plan.hp.per_level %}+{{ n }} more from your feats and features.{% endblocktranslate %}{% endif %}
-              {% if plan.hp.retro %}{% blocktranslate with n=plan.hp.retro %}Your new Constitution modifier also changes the hit points of your earlier levels ({{ n }}).{% endblocktranslate %}{% endif %}
-            </p>
+          {% else %}
+            <div class="lu-card">
+              <h3>{{ section.title }}</h3>
+              {% if section.hint %}<p class="lu-note">{{ section.hint }}</p>{% endif %}
+              {% include "frontend/characters/_pickers.html" with pickers=section.pickers %}
+            </div>
+          {% endif %}
+          <div class="lu-nav">
+            {% if forloop.first %}<span class="spacer"></span>{% else %}<button type="button" class="btn secondary" data-step-nav="-1">{% translate "Back" %}</button>{% endif %}
+            <button type="button" class="btn" data-step-nav="1">{% translate "Next" %}</button>
           </div>
-        {% elif section.pickers %}
-          <div class="lu-card">
-            <h3>{{ section.title }}</h3>
-            {% if section.hint %}<p class="lu-note">{{ section.hint }}</p>{% endif %}
-            {% include "frontend/characters/_pickers.html" with pickers=section.pickers %}
-          </div>
-        {% endif %}
+        </section>
       {% endfor %}
 
-      {% if features %}
+      <section class="lu-panel" data-panel="review">
+        {% if features %}
+          <div class="lu-card">
+            <h3>{% translate "You gain" %}</h3>
+            <ul class="lu-features">{% for f in features %}<li><a href="{{ f.url }}">{{ f.name }}</a></li>{% endfor %}</ul>
+          </div>
+        {% endif %}
         <div class="lu-card">
-          <h3>{% translate "You gain" %}</h3>
-          <ul class="lu-features">{% for f in features %}<li><a href="{{ f.url }}">{{ f.name }}</a></li>{% endfor %}</ul>
+          <h3>{% translate "Review" %}</h3>
+          <p class="lu-note">{% translate "Check the steps above - steps with a choice still to make are not ticked - then confirm." %}</p>
         </div>
-      {% endif %}
-
-      <div class="actions">
-        <a class="btn secondary" href="{% url 'character-detail' character.pk %}">{% translate "Cancel" %}</a>
-        <button type="submit" name="action" value="commit" class="btn">{% blocktranslate with klass=plan.klass.name level=plan.new_level %}Level up: {{ klass }} {{ level }}{% endblocktranslate %}</button>
-      </div>
+        <div class="actions">
+          <a class="btn secondary lu-cancel" href="{% url 'character-detail' character.pk %}">{% translate "Cancel" %}</a>
+          <button type="button" class="btn secondary lu-back" data-step-nav="-1">{% translate "Back" %}</button>
+          <button type="submit" name="action" value="commit" class="btn">{% blocktranslate with klass=plan.klass.name level=plan.new_level %}Level up: {{ klass }} {{ level }}{% endblocktranslate %}</button>
+        </div>
+      </section>
     {% else %}
       <div class="actions"><a class="btn secondary" href="{% url 'character-detail' character.pk %}">{% translate "Cancel" %}</a></div>
     {% endif %}
@@ -96,6 +141,78 @@
 {% block footer %}{% endblock %}
 {% block extra_script %}
   <script>
+    // The level-up as steps: one panel (Hit points, Spells, ...) at a time, with a stepper on top and
+    // Back / Next below. Without script every panel simply shows, one after the other. The page is
+    // swapped in place when a class / subclass / feat changes, so the step is remembered by index
+    // and re-applied after each swap.
+    (function () {
+      var wiz = document.querySelector(".wiz");
+      var current = 0;
+      function form() { return wiz.querySelector("form[data-live]"); }
+      function panels() { return Array.prototype.slice.call(wiz.querySelectorAll(".lu-panel")); }
+      // A step is open when a required picker still has fewer picks than it asks for.
+      function incomplete(panel) {
+        return Array.prototype.some.call(panel.querySelectorAll("fieldset.picker"), function (g) {
+          if (g.hasAttribute("data-deselect")) return false;
+          var boxes = g.querySelectorAll("input[type=checkbox]");
+          if (boxes.length) {
+            var need = Math.min(parseInt(g.dataset.count, 10) || 0, boxes.length);
+            return g.querySelectorAll("input[type=checkbox]:checked").length < need;
+          }
+          var radios = g.querySelectorAll("input[type=radio]");
+          if (radios.length) return !g.querySelector("input[type=radio]:checked");
+          var select = g.querySelector("select");
+          return !!select && select.options.length > 1 && !select.value;
+        });
+      }
+      function render() {
+        var f = form();
+        if (!f) return;
+        var list = panels();
+        if (!list.length) return;
+        wiz.classList.add("lu-js");
+        current = Math.max(0, Math.min(current, list.length - 1));
+        list.forEach(function (p, i) { p.classList.toggle("active", i === current); });
+        var steps = wiz.querySelectorAll(".lu-steps button");
+        steps.forEach(function (b, i) {
+          var last = i === list.length - 1;
+          b.classList.toggle("current", i === current);
+          b.classList.toggle("done", !last && !incomplete(list[i]));
+          b.setAttribute("aria-current", i === current ? "step" : "false");
+        });
+        var bar = wiz.querySelector(".lu-steps");
+        if (bar) {
+          document.documentElement.style.setProperty("--sticky-top", bar.offsetHeight + "px");
+          var on = bar.querySelector(".current");
+          if (on && on.scrollIntoView) on.scrollIntoView({ inline: "center", block: "nearest" });
+        }
+      }
+      function go(i, scroll) {
+        current = i;
+        render();
+        var bar = wiz.querySelector(".lu-steps");
+        if (scroll && bar) bar.scrollIntoView({ block: "start" });
+      }
+      wiz.addEventListener("click", function (event) {
+        var t = event.target.closest && event.target.closest("[data-goto], [data-step-nav]");
+        if (!t) return;
+        if (t.dataset.goto !== undefined) go(t.dataset.goto === "review" ? panels().length - 1 : parseInt(t.dataset.goto, 10), true);
+        else go(current + parseInt(t.dataset.stepNav, 10), true);
+      });
+      // Picking things changes which steps are complete.
+      wiz.addEventListener("change", function () { render(); });
+      // A swap replaces the form: re-apply the step (a failed commit opens the first step with an error).
+      var swapped = false;
+      new MutationObserver(function () {
+        if (swapped) return;
+        swapped = true;
+        setTimeout(function () { swapped = false; render(); }, 0);
+      }).observe(wiz, { childList: true });
+      var firstError = panels().findIndex(function (p) { return p.querySelector(".field-error"); });
+      if (firstError >= 0) current = firstError;
+      render();
+    })();
+
     // "Roll for me": fills the hit die roll and switches the choice to it.
     document.addEventListener("click", function (event) {
       var button = event.target.closest && event.target.closest("[data-roll]");

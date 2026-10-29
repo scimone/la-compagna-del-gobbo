@@ -101,6 +101,8 @@ def character_levelup(request, pk):
             ],
             "class_id": class_id,
             "plan": plan,
+            # the steps of the page: hit points and every section that asks for a choice
+            "steps": [s for s in plan.sections if s.key == "hp" or s.pickers] if plan else [],
             "features": _feature_rows(plan.features) if plan else [],
             "issues": plan.issues if show_issues else [],
             "issue_paths": {i.path: i.message for i in plan.issues} if show_issues else {},

@@ -1337,7 +1337,6 @@ def plan(character: Character, class_id: str, values: Values | None = None) -> P
     if savant := [
         *_subclass_pick_pickers(ctx, subclass),
         *_duplicate_cantrip_pickers(ctx, subclass),
-        *_discovery_swap_pickers(ctx, subclass),
     ]:
         sections.append(Section("savant", _("Subclass spells"), pickers=savant))
 
@@ -1381,6 +1380,9 @@ def plan(character: Character, class_id: str, values: Values | None = None) -> P
     sections += _class_sections(ctx)
     sections += _spell_sections(ctx)
     sections += _ritual_caster_sections(ctx)
+    # replacing a subclass spell comes last, after the new prepared spells and the class swap
+    if swap := _discovery_swap_pickers(ctx, subclass):
+        sections.append(Section("subclass_swap", _("Subclass spell replacement"), pickers=swap))
 
     # hit points come first on the page
     hp = _hp_plan(ctx, new_con, old_con, subclass)
