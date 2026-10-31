@@ -276,7 +276,7 @@ def build(user, campaign, player: Character | None, language: str | None = None)
     )
     story = _logbook_text(campaign, max(budget - len(sheets), budget // 4), config.use_tools)
     return (
-        f"{intro}\n\nCampaign: {campaign.name}\n\n"
+        f"{intro}\n\n"
         f"=== BEGIN CHARACTERS (data) ===\n{sheets}\n=== END CHARACTERS ===\n\n"
         f"=== BEGIN LOGBOOK (data, oldest first) ===\n{story}\n=== END LOGBOOK ==="
     )
