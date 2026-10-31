@@ -1,0 +1,111 @@
+"""The level-up's review step: what this level changes, as blocks the template lays out.
+
+Shaping only - the rules are `builder.services.progression`. A block is one thing that changes
+(hit points, new features, the spells added, a spell swapped, the feat ...) with the step it comes
+from, so the page can offer "Edit" next to it and say where a choice is still missing.
+"""
+
+from django.urls import reverse
+from django.utils.translation import gettext as _
+from django.utils.translation import ngettext
+
+from apps.frontend.character_sheet import _feature_row
+from apps.rules.models import Ability
+
+#: Sections whose two pickers are "this out, that in".
+_SWAP_SECTIONS = ("spell_swap", "subclass_swap")
+_CARD_URLS = {"spell": "world-spell-detail", "feat": "world-feat-detail"}
+
+
+def _rows(picker) -> list[dict]:
+    """The picks of one picker as list rows: catalog cards where the picker has them, else names."""
+    if getattr(picker, "cards", None) is not None:
+        url_name = _CARD_URLS.get(picker.kind)
+        return [
+            {
+                "name": c["name"],
+                "detail": c["detail"],
+                "image": c["image"],
+                "url": reverse(url_name, args=[c["id"]]) if url_name else "",
+            }
+            for c in picker.cards
+            if c["checked"]
+        ]
+    return [{"name": n} for i, n in picker.candidates if i in picker.selected]
+
+
+def _missing(picker) -> int:
+    """How many required picks the picker still lacks."""
+    if picker.optional:
+        return 0
+    need = min(picker.count, len(picker.candidates))
+    return max(0, need - len(picker.selected))
+
+
+def _hp_block(plan) -> dict:
+    hp = plan.hp
+    gain = hp["gain"] + hp["retro"]
+    how = (
+        _("rolled %(n)d") % {"n": hp["roll"]}
+        if hp["mode"] == "roll" and hp["roll"]
+        else _("average of the %(die)s") % {"die": hp["die"]}
+    )
+    return {
+        "key": "hp",
+        "title": _("Hit points"),
+        "step": 0,
+        "groups": [
+            {"label": "", "rows": [{"name": _("+%(n)d hit points") % {"n": gain}, "detail": how}]}
+        ],
+    }
+
+
+def build(plan, steps) -> dict:
+    """`{"blocks": [...], "todo": [...]}` for `plan`; `steps` are the page's steps, in order."""
+    blocks = [_hp_block(plan)]
+    todo = []
+    if plan.features:
+        blocks.append(
+            {
+                "key": "features",
+                "title": _("New features"),
+                "step": None,
+                "groups": [{"label": "", "rows": [_feature_row(f) for f in plan.features]}],
+            }
+        )
+    deltas = plan.extra.get("deltas") or {}
+    abilities = {a.id: a.name for a in Ability.objects.all()} if deltas else {}
+    for index, section in enumerate(steps):
+        if section.key == "hp":
+            continue
+        block = {"key": section.key, "title": section.title, "step": index, "groups": []}
+        pickers = section.pickers
+        if section.key in _SWAP_SECTIONS and len(pickers) == 2:
+            out, new = (_rows(p) for p in pickers)
+            if out and new:
+                block["swap"] = {"old": out[0], "new": new[0]}
+            elif out or new:
+                block["incomplete"] = _("Pick the spell to put in its place too.")
+                todo.append(index)
+        else:
+            for picker in pickers:
+                if rows := _rows(picker):
+                    block["groups"].append({"label": picker.label, "rows": rows})
+            if section.key == "feat" and deltas:
+                block["groups"].append(
+                    {
+                        "label": "",
+                        "rows": [
+                            {"name": f"{abilities.get(a, a)} +{n}", "detail": ""}
+                            for a, n in deltas.items()
+                        ],
+                    }
+                )
+            if left := sum(_missing(p) for p in pickers):
+                block["incomplete"] = ngettext(
+                    "%(n)d choice still to make.", "%(n)d choices still to make.", left
+                ) % {"n": left}
+                todo.append(index)
+        if block["groups"] or block.get("swap") or block.get("incomplete"):
+            blocks.append(block)
+    return {"blocks": blocks, "todo": todo, "next_todo": todo[0] if todo else None}

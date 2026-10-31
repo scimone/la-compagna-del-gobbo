@@ -15,7 +15,7 @@ from django.utils.translation import gettext as _
 from apps.builder.services import progression
 from apps.characters.models import Character
 from apps.characters.services import access
-from apps.frontend.character_sheet import _feature_row
+from apps.frontend import levelup_review
 from apps.frontend.character_views import _decorate, _menu_image_url
 
 _DONE_KEY = "levelup_done_%d"
@@ -35,42 +35,6 @@ def _owner_character(request, pk) -> Character:
     ):
         raise Http404
     return character
-
-
-def _feature_rows(features) -> list[dict]:
-    """The features gained, as the Handbook's feature list rows (icon, properties, link)."""
-    return [_feature_row(f) for f in features]
-
-
-_SPELL_SECTIONS = ("spells", "spell_swap", "savant", "subclass_swap", "ritual_caster")
-
-
-def _spell_choices(plan) -> list[dict]:
-    """What the player picked in the spell steps, for the review: per picker, its label and the
-    chosen spells as Handbook rows (spell pickers; any other picker is listed by name)."""
-    groups = []
-    for section in plan.sections:
-        if section.key not in _SPELL_SECTIONS:
-            continue
-        for picker in section.pickers:
-            if picker.kind == "spell" and picker.cards is not None:
-                items = [
-                    {
-                        "name": c["name"],
-                        "properties": [c["detail"]],
-                        "image": c["image"],
-                        "url": reverse("world-spell-detail", args=[c["id"]]),
-                    }
-                    for c in picker.cards
-                    if c["checked"]
-                ]
-                names = []
-            else:
-                items = []
-                names = [n for i, n in picker.candidates if i in picker.selected]
-            if items or names:
-                groups.append({"label": picker.label, "items": items, "names": names})
-    return groups
 
 
 def character_levelup(request, pk):
@@ -121,6 +85,7 @@ def character_levelup(request, pk):
     for section in plan.sections if plan else ():
         _decorate(section.pickers)
 
+    level_steps = [s for s in plan.sections if s.key == "hp" or s.pickers] if plan else []
     show_issues = bool(plan) and action == "commit"
     total = progression.total_level(character)
     response = render(
@@ -150,9 +115,8 @@ def character_levelup(request, pk):
             "class_id": class_id,
             "plan": plan,
             # the steps of the page: hit points and every section that asks for a choice
-            "level_steps": [s for s in plan.sections if s.key == "hp" or s.pickers] if plan else [],
-            "features": _feature_rows(plan.features) if plan else [],
-            "spell_choices": _spell_choices(plan) if plan else [],
+            "level_steps": level_steps,
+            "review": levelup_review.build(plan, level_steps) if plan else None,
             "issues": plan.issues if show_issues else [],
             "issue_paths": {i.path: i.message for i in plan.issues} if show_issues else {},
         },

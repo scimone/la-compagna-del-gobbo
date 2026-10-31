@@ -198,3 +198,12 @@ def test_the_review_lists_the_chosen_spells(signed_in, alice):
     ).content.decode()
     review = html[html.index('data-panel="review"') :]
     assert spell_name in review and f"/world/spells/{spell_id}/" in review
+
+
+def test_the_review_is_a_change_summary_with_edit_links_and_open_choices(signed_in, alice):
+    character = finished(alice, "wizard", xp=300)
+    url = f"/characters/{character.pk}/levelup/"
+    html = signed_in.post(url, {"klass": "wizard", "action": "refresh"}).content.decode()
+    review = html[html.index('data-panel="review"') :]
+    assert "rv-block" in review and 'data-goto="0"' in review  # hit points, with its Edit button
+    assert "still to make" in review  # the spells are not chosen yet

@@ -1,0 +1,4 @@
+{# One row of the review: icon, name, detail; a link where the row has a page of its own. #}
+{% if row.url %}<a href="{{ row.url }}" class="{% if row.image %}menu-thumb{% endif %}">{% else %}<div class="rv-static{% if row.image %} menu-thumb{% endif %}">{% endif %}
+  {% include "frontend/_list_item_content.html" with item=row %}
+{% if row.url %}</a>{% else %}</div>{% endif %}

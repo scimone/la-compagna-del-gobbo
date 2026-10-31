@@ -1,6 +1,33 @@
 {% extends "frontend/characters/wizard_base.html" %}
 {% load i18n %}
 {% block step_style %}
+  /* The review: a change summary, one block per thing that changes. */
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .rv-head { text-align: left; display: flex; flex-direction: column; gap: 0.2rem; }
+  .rv-title-line { font-size: 1.35rem; }
+  .rv-title-line b { font-weight: 700; }
+  .rv-levels { color: var(--accent); font-weight: 700; margin-left: 0.4rem; }
+  .rv-sub { margin: 0; color: var(--muted); font-size: 0.88rem; }
+  .rv-block { display: flex; flex-direction: column; gap: 0.5rem; }
+  .rv-block-head { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+  .rv-block-head h3 { margin: 0; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  .rv-edit { appearance: none; font: inherit; font-size: 0.8rem; color: var(--accent); background: none; border: 1px solid var(--border); border-radius: 1rem; padding: 0.2rem 0.7rem; cursor: pointer; }
+  .rv-open .rv-edit { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+  .rv-warn { margin: 0; color: var(--accent); font-size: 0.88rem; }
+  .rv-link { appearance: none; font: inherit; color: var(--accent); background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; }
+  .rv-group { margin: 0.2rem 0 0; font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+  .item-list.rv-list li { align-items: stretch; }
+  .item-list.rv-list .rv-static { flex: 1; min-width: 0; padding: 0.6rem 0.9rem; }
+  .item-list.rv-list .rv-static.menu-thumb { display: flex; align-items: center; gap: 0.75rem; padding: 0.35rem 0.9rem 0.35rem 0.5rem; }
+  .rv-mark { flex: 0 0 1.7rem; display: grid; place-items: center; font-weight: 800; font-size: 1.1rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--surface)); border-right: 1px solid var(--border); }
+  .rv-out .rv-mark { color: var(--muted); background: var(--bg); }
+  .rv-out { opacity: 0.7; }
+  .rv-out .item-thumb { filter: grayscale(1); }
+  .rv-out .item-name { text-decoration: line-through; text-decoration-thickness: 1px; }
+  .item-list.rv-swap { gap: 0; }
+  .item-list.rv-swap .rv-out { border-bottom-style: dashed; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  .item-list.rv-swap .rv-in { border-top: 0; border-top-left-radius: 0; border-top-right-radius: 0; }
+  .rv-cta { position: sticky; bottom: 0; z-index: 4; display: flex; flex-direction: column; gap: 0.5rem; margin: 0 -1rem -1.25rem; padding: 0.7rem 1rem 1rem; background: var(--bg); border-top: 1px solid var(--border); }
   .lu-note { color: var(--muted); font-size: 0.9rem; margin: 0; line-height: 1.45; }
   .lu-card { display: flex; flex-direction: column; gap: 0.6rem; }
   .lu-card h3 { margin: 0; font-size: 1rem; }
@@ -146,31 +173,8 @@
         </section>
       {% endfor %}
 
-      <section class="lu-panel" data-panel="review">
-        {% if features %}
-          <div class="lu-card">
-            <h3>{% translate "You gain" %}</h3>
-            <ul class="item-list">{% for item in features %}{% include "frontend/_list_item.html" %}{% endfor %}</ul>
-          </div>
-        {% endif %}
-        {% for g in spell_choices %}
-          <div class="lu-card">
-            <h3>{{ g.label }}</h3>
-            {% if g.items %}<ul class="item-list">{% for item in g.items %}{% include "frontend/_list_item.html" %}{% endfor %}</ul>{% endif %}
-            {% if g.names %}<p class="lu-note">{{ g.names|join:", " }}</p>{% endif %}
-          </div>
-        {% endfor %}
-        <div class="lu-card">
-          <h3>{% translate "Review" %}</h3>
-          <p class="lu-note">{% blocktranslate with level=total next=total|add:1 %}You are level {{ level }}. Levelling up takes you to level {{ next }}.{% endblocktranslate %}
-            {% if not xp_ready %}{% translate "Your Experience Points are below the next level's threshold - fine if your table levels up by milestones." %}{% endif %}
-            {% translate "Check the steps above - steps with a choice still to make are not ticked - then confirm." %}</p>
-        </div>
-        <div class="actions">
-          <a class="btn secondary lu-cancel" href="{% url 'character-detail' character.pk %}">{% translate "Cancel" %}</a>
-          <button type="button" class="btn secondary lu-back" data-step-nav="-1">{% translate "Back" %}</button>
-          <button type="submit" name="action" value="commit" class="btn">{% blocktranslate with klass=plan.klass.name level=plan.new_level %}Level up: {{ klass }} {{ level }}{% endblocktranslate %}</button>
-        </div>
+      <section class="lu-panel lu-review" data-panel="review">
+        {% include "frontend/characters/_levelup_review.html" %}
       </section>
     {% else %}
       <div class="actions"><a class="btn secondary" href="{% url 'character-detail' character.pk %}">{% translate "Cancel" %}</a></div>

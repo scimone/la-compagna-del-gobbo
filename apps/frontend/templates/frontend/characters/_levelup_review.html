@@ -1,0 +1,44 @@
+{% load i18n %}
+{# The level-up's last step: what this level changes, block by block, each with a way back to #}
+{# the step it came from. Built by `levelup_review.build()`; re-fetched when the step opens.   #}
+<header class="rv-head">
+  <div class="rv-title-line"><b>{{ plan.klass.name }}</b> <span class="rv-levels">{{ plan.old_level }} <span aria-hidden="true">→</span><span class="sr-only"> {% translate "to" %} </span> {{ plan.new_level }}</span></div>
+  <p class="rv-sub">{% translate "This is what changes. Tap Edit to change a choice." %}</p>
+</header>
+
+{% for block in review.blocks %}
+  <section class="rv-block{% if block.incomplete %} rv-open{% endif %}">
+    <div class="rv-block-head">
+      <h3>{{ block.title }}</h3>
+      {% if block.step is not None %}<button type="button" class="rv-edit" data-goto="{{ block.step }}">{% if block.incomplete %}{% translate "Choose" %}{% else %}{% translate "Edit" %}{% endif %}</button>{% endif %}
+    </div>
+    {% if block.incomplete %}<p class="rv-warn">{{ block.incomplete }}</p>{% endif %}
+    {% if block.swap %}
+      <ul class="item-list rv-list rv-swap">
+        <li class="rv-out"><span class="rv-mark" aria-label="{% translate 'Removed' %}">−</span>{% with row=block.swap.old %}{% include "frontend/characters/_review_row.html" %}{% endwith %}</li>
+        <li class="rv-in"><span class="rv-mark" aria-label="{% translate 'Added' %}">+</span>{% with row=block.swap.new %}{% include "frontend/characters/_review_row.html" %}{% endwith %}</li>
+      </ul>
+    {% endif %}
+    {% for group in block.groups %}
+      {% if group.label and block.groups|length > 1 %}<h4 class="rv-group">{{ group.label }}</h4>{% endif %}
+      <ul class="item-list rv-list">
+        {% for row in group.rows %}
+          <li class="rv-in">{% if block.key != "hp" and block.key != "features" %}<span class="rv-mark" aria-label="{% translate 'Added' %}">+</span>{% endif %}{% include "frontend/characters/_review_row.html" %}</li>
+        {% endfor %}
+      </ul>
+    {% endfor %}
+  </section>
+{% endfor %}
+
+{% if not xp_ready %}<p class="lu-note">{% translate "Your Experience Points are below the next level's threshold - fine if your table levels up by milestones." %}</p>{% endif %}
+
+<div class="rv-cta">
+  {% if review.todo %}
+    <p class="rv-warn"><button type="button" class="rv-link" data-goto="{{ review.next_todo }}">{% translate "Some choices are still open - go to the first" %}</button></p>
+  {% endif %}
+  <div class="actions">
+    <a class="btn secondary lu-cancel" href="{% url 'character-detail' character.pk %}">{% translate "Cancel" %}</a>
+    <button type="button" class="btn secondary lu-back" data-step-nav="-1">{% translate "Back" %}</button>
+    <button type="submit" name="action" value="commit" class="btn">{% blocktranslate with klass=plan.klass.name level=plan.new_level %}Level up: {{ klass }} {{ level }}{% endblocktranslate %}</button>
+  </div>
+</div>

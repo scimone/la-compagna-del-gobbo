@@ -3713,3 +3713,32 @@ msgstr "Sostituisci un incantesimo della tua sottoclasse"
 
 msgid "A different cantrip (you already know %(spell)s)"
 msgstr "Un trucchetto diverso (conosci già %(spell)s)"
+
+msgid "This is what changes. Tap Edit to change a choice."
+msgstr "Ecco cosa cambia. Tocca Modifica per cambiare una scelta."
+
+msgid "to"
+msgstr "a"
+
+msgid "Removed"
+msgstr "Rimosso"
+
+msgid "Some choices are still open - go to the first"
+msgstr "Ci sono ancora scelte da fare - vai alla prima"
+
+msgid "+%(n)d hit points"
+msgstr "+%(n)d punti ferita"
+
+msgid "rolled %(n)d"
+msgstr "tirato %(n)d"
+
+msgid "average of the %(die)s"
+msgstr "media del %(die)s"
+
+msgid "Pick the spell to put in its place too."
+msgstr "Scegli anche l'incantesimo che lo sostituisce."
+
+msgid "%(n)d choice still to make."
+msgid_plural "%(n)d choices still to make."
+msgstr[0] "Ancora %(n)d scelta da fare."
+msgstr[1] "Ancora %(n)d scelte da fare."
