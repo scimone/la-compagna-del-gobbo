@@ -215,5 +215,5 @@ def test_the_review_lists_what_the_level_raises_by_itself(signed_in, alice):
         f"/characters/{character.pk}/levelup/", {"klass": "wizard", "action": "refresh"}
     ).content.decode()
     review = html[html.index('data-panel="review"') :]
-    assert "rv-effects" in review and "1d6" not in review
-    assert "Hit Dice" in review and "2d6" in review  # level 1 -> 2
+    assert "rv-effects" in review and "Level 1 spell slots" in review
+    assert "Hit Dice" in review and "<b>2d6</b>" in review  # level 1 -> 2
