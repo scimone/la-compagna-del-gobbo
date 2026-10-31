@@ -207,3 +207,13 @@ def test_the_review_is_a_change_summary_with_edit_links_and_open_choices(signed_
     review = html[html.index('data-panel="review"') :]
     assert "rv-block" in review and 'data-goto="0"' in review  # hit points, with its Edit button
     assert "still to make" in review  # the spells are not chosen yet
+
+
+def test_the_review_lists_what_the_level_raises_by_itself(signed_in, alice):
+    character = finished(alice, "wizard", xp=300)
+    html = signed_in.post(
+        f"/characters/{character.pk}/levelup/", {"klass": "wizard", "action": "refresh"}
+    ).content.decode()
+    review = html[html.index('data-panel="review"') :]
+    assert "rv-effects" in review and "1d6" not in review
+    assert "Hit Dice" in review and "2d6" in review  # level 1 -> 2

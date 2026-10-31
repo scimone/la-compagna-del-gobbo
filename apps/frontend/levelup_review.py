@@ -9,8 +9,10 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.utils.translation import ngettext
 
+from apps.builder import tables
 from apps.frontend.character_sheet import _feature_row
-from apps.rules.models import Ability
+from apps.frontend.entries_render import _format_table_cell
+from apps.rules.models import Ability, ClassLevel
 
 #: Sections whose two pickers are "this out, that in".
 _SWAP_SECTIONS = ("spell_swap", "subclass_swap")
@@ -60,9 +62,67 @@ def _hp_block(plan) -> dict:
     }
 
 
+def _effects(plan) -> list[dict]:
+    """What the level raises without any choice: proficiency bonus, hit dice, the class table's
+    new numbers (spell slots, cantrips, prepared spells, Rages, Martial Arts die ...) as
+    `{name, old, new}`. Only what actually changes; spell slots only for a single casting class
+    (a multiclass character's slots come from the combined table)."""
+    klass = plan.klass
+    effects = []
+
+    def add(name, old, new):
+        if old != new:
+            effects.append({"name": name, "old": old if old != "" else "—", "new": new})
+
+    add(
+        _("Proficiency bonus"),
+        f"+{tables.proficiency_bonus(plan.total_after - 1)}",
+        f"+{tables.proficiency_bonus(plan.total_after)}",
+    )
+    effects.append(
+        {
+            "name": _("Hit Dice"),
+            "old": f"{plan.old_level}{klass.hit_die}" if plan.old_level else "—",
+            "new": f"{plan.new_level}{klass.hit_die}",
+        }
+    )
+    rows = {
+        r.level: r
+        for r in ClassLevel.objects.filter(klass=klass, level__in=(plan.old_level, plan.new_level))
+    }
+    old, new = rows.get(plan.old_level), rows.get(plan.new_level)
+    if not new:
+        return effects
+    other_casters = (
+        plan.character.classes.exclude(klass=klass)
+        .filter(klass__spellcasting_ability__isnull=False)
+        .exists()
+    )
+    if new.spell_slots and not other_casters:
+        before = old.spell_slots if old else []
+        for level, count in enumerate(new.spell_slots, start=1):
+            was = before[level - 1] if level <= len(before) else 0
+            if count != was:
+                add(_("Level %(n)d spell slots") % {"n": level}, str(was), str(count))
+    add(_("Cantrips"), str(old.cantrips_known or "") if old else "", str(new.cantrips_known or ""))
+    add(
+        _("Prepared spells"),
+        str(old.spells_known_or_prepared or "") if old else "",
+        str(new.spells_known_or_prepared or ""),
+    )
+    for column, value in new.columns.items():
+        was = _format_table_cell(old.columns[column]) if old and column in old.columns else ""
+        add(_(column), was, _format_table_cell(value))
+    return effects
+
+
 def build(plan, steps) -> dict:
     """`{"blocks": [...], "todo": [...]}` for `plan`; `steps` are the page's steps, in order."""
     blocks = [_hp_block(plan)]
+    if effects := _effects(plan):
+        blocks.append(
+            {"key": "effects", "title": _("Also improves"), "step": None, "effects": effects}
+        )
     todo = []
     if plan.features:
         blocks.append(

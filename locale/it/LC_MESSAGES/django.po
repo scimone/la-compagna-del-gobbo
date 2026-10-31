@@ -3742,3 +3742,13 @@ msgid "%(n)d choice still to make."
 msgid_plural "%(n)d choices still to make."
 msgstr[0] "Ancora %(n)d scelta da fare."
 msgstr[1] "Ancora %(n)d scelte da fare."
+
+msgid "Also improves"
+msgstr "Migliora anche"
+
+msgid "Proficiency bonus"
+msgstr "Bonus di competenza"
+
+
+msgid "Level %(n)d spell slots"
+msgstr "Slot incantesimo di livello %(n)d"

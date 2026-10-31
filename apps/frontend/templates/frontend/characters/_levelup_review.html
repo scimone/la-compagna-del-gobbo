@@ -13,6 +13,11 @@
       {% if block.step is not None %}<button type="button" class="rv-edit" data-goto="{{ block.step }}">{% if block.incomplete %}{% translate "Choose" %}{% else %}{% translate "Edit" %}{% endif %}</button>{% endif %}
     </div>
     {% if block.incomplete %}<p class="rv-warn">{{ block.incomplete }}</p>{% endif %}
+    {% if block.effects %}
+      <ul class="rv-effects">
+        {% for e in block.effects %}<li><span>{{ e.name }}</span><span class="rv-delta"><span class="rv-was">{{ e.old }}</span> <span aria-hidden="true">→</span><span class="sr-only"> {% translate "to" %} </span> <b>{{ e.new }}</b></span></li>{% endfor %}
+      </ul>
+    {% endif %}
     {% if block.swap %}
       <ul class="item-list rv-list rv-swap">
         <li class="rv-out"><span class="rv-mark" aria-label="{% translate 'Removed' %}">−</span>{% with row=block.swap.old %}{% include "frontend/characters/_review_row.html" %}{% endwith %}</li>

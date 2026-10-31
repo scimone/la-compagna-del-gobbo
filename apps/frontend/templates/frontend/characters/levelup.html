@@ -3,7 +3,7 @@
 {% block step_style %}
   /* The review: a change summary, one block per thing that changes. */
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  .rv-head { text-align: left; display: flex; flex-direction: column; gap: 0.2rem; }
+  .rv-head { text-align: left; align-items: stretch; display: flex; flex-direction: column; gap: 0.2rem; }
   .rv-title-line { font-size: 1.35rem; }
   .rv-title-line b { font-weight: 700; }
   .rv-levels { color: var(--accent); font-weight: 700; margin-left: 0.4rem; }
@@ -27,7 +27,13 @@
   .item-list.rv-swap { gap: 0; }
   .item-list.rv-swap .rv-out { border-bottom-style: dashed; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
   .item-list.rv-swap .rv-in { border-top: 0; border-top-left-radius: 0; border-top-right-radius: 0; }
-  .rv-cta { position: sticky; bottom: 0; z-index: 4; display: flex; flex-direction: column; gap: 0.5rem; margin: 0 -1rem -1.25rem; padding: 0.7rem 1rem 1rem; background: var(--bg); border-top: 1px solid var(--border); }
+  .rv-effects { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 0.6rem; background: var(--surface); }
+  .rv-effects li { display: flex; justify-content: space-between; align-items: baseline; gap: 0.8rem; padding: 0.5rem 0.9rem; font-size: 0.92rem; }
+  .rv-effects li + li { border-top: 1px solid var(--border); }
+  .rv-delta { white-space: nowrap; }
+  .rv-was { color: var(--muted); }
+  .rv-delta b { color: var(--accent); }
+  .rv-cta { position: sticky; bottom: -1rem; z-index: 4; display: flex; flex-direction: column; gap: 0.5rem; margin: 0 -1rem -1rem; padding: 0.7rem 1rem 1rem; background: var(--bg); border-top: 1px solid var(--border); }
   .lu-note { color: var(--muted); font-size: 0.9rem; margin: 0; line-height: 1.45; }
   .lu-card { display: flex; flex-direction: column; gap: 0.6rem; }
   .lu-card h3 { margin: 0; font-size: 1rem; }
