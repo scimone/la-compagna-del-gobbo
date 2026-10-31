@@ -163,3 +163,25 @@ def test_the_subclass_step_keeps_the_class_and_offers_descriptions(signed_in, al
     ).content.decode()
     assert "Level up: Monk 3" in html
     assert signed_in.get(f"/characters/describe/subclass/{sub}/").status_code == 200
+
+
+def test_coming_back_to_the_page_restores_the_choices_and_the_review_lists_icons(signed_in, alice):
+    character = finished(alice, "monk", xp=900)
+    url = f"/characters/{character.pk}/levelup/"
+    progression.commit(character, "monk", {"lu.hp_mode": ["fixed"]})
+    character.refresh_from_db()
+    character.experience_points = 900
+    character.save()
+    sub = progression.plan(character, "monk").pickers[0].candidates[0][0]
+
+    signed_in.post(url, {"klass": "monk", "action": "refresh", "lu.subclass": sub})
+    html = signed_in.get(f"{url}?klass=monk&step=review").content.decode()
+    assert f'value="{sub}" checked' in html  # the subclass picked before leaving
+    assert 'class="item-thumb' in html  # the features gained, as Handbook rows with an icon
+    # the class list again forgets the draft
+    signed_in.get(url)
+    html = signed_in.get(f"{url}?klass=monk").content.decode()
+    assert f'value="{sub}" checked' not in html
+
+    body = signed_in.get(f"/characters/describe/subclass/{sub}/").content.decode()
+    assert "level-heading" in body and "feature-link-list" in body

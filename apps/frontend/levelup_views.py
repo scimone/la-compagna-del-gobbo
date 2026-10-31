@@ -15,9 +15,13 @@ from django.utils.translation import gettext as _
 from apps.builder.services import progression
 from apps.characters.models import Character
 from apps.characters.services import access
+from apps.frontend.character_sheet import _feature_row
 from apps.frontend.character_views import _decorate, _menu_image_url
 
 _DONE_KEY = "levelup_done_%d"
+#: The choices made so far, kept so that leaving the page (to read a feature) and coming back by
+#: the Back button finds them again; dropped when the class list is shown again or on commit.
+_DRAFT_KEY = "levelup_draft_%d"
 
 
 def _values(post) -> dict[str, list[str]]:
@@ -34,7 +38,8 @@ def _owner_character(request, pk) -> Character:
 
 
 def _feature_rows(features) -> list[dict]:
-    return [{"name": f.name, "url": reverse("world-feature-detail", args=[f.pk])} for f in features]
+    """The features gained, as the Handbook's feature list rows (icon, properties, link)."""
+    return [_feature_row(f) for f in features]
 
 
 def character_levelup(request, pk):
@@ -52,8 +57,19 @@ def character_levelup(request, pk):
     allowed = {o["klass"].id for o in options if o["allowed"]}
     if class_id not in allowed:
         class_id = ""
+    draft_key = _DRAFT_KEY % character.pk
     # A different class starts its choices afresh.
-    values = {} if action == "select" or not class_id else _values(request.POST)
+    if action == "select" or not class_id:
+        values = {}
+    elif post:
+        values = _values(request.POST)
+    else:
+        draft = request.session.get(draft_key) or {}
+        values = draft.get("values", {}) if draft.get("klass") == class_id else {}
+    if not class_id:
+        request.session.pop(draft_key, None)
+    elif action != "commit":
+        request.session[draft_key] = {"klass": class_id, "values": values}
 
     plan = None
     if class_id:
@@ -63,6 +79,7 @@ def character_levelup(request, pk):
             except ValueError:
                 plan = progression.plan(character, class_id, values)
             else:
+                request.session.pop(draft_key, None)
                 request.session[_DONE_KEY % character.pk] = {
                     "lines": plan.summary,
                     "features": [{"name": f.name, "pk": f.pk} for f in plan.features],

@@ -160,4 +160,6 @@ def known_languages(draft: Draft) -> list[str]:
 
 
 def spell_pool(draft: Draft, level: int):
-    return Spell.objects.filter(level=level, classes__contains=[draft.klass.name_en]).order_by("name")
+    return Spell.objects.filter(level=level, classes__contains=[draft.klass.name_en]).order_by(
+        "name"
+    )

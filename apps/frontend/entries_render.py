@@ -413,6 +413,18 @@ def render_class_features(features) -> SafeString:
     return mark_safe(_render_level_feature_links(by_level, linker))
 
 
+def render_subclass_body(subclass, features) -> SafeString:
+    """One subclass as the Handbook's Subclasses tab shows it, minus the `<details>` wrapper: its
+    flavour text, then the level headings with a link per feature (`features`, in level order,
+    each with its `subclass_level` loaded)."""
+    linker = _ReferenceLinker()
+    by_level: dict[int, list] = {}
+    for feature in features:
+        by_level.setdefault(feature.subclass_level.level, []).append(feature)
+    description_html = _render_node(subclass.description, linker) if subclass.description else ""
+    return mark_safe(description_html + _render_level_feature_links(by_level, linker))
+
+
 def render_subclasses(subclasses) -> SafeString:
     """Render a Class's `rules.Subclass` rows - each with its own `description` (flavor text)
     and `levels` (`SubclassLevel` rows, each with its features as `Feature` rows reachable via

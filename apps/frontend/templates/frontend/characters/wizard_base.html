@@ -302,6 +302,14 @@
         if (!button) return;
         var panel = button.closest("li").querySelector(".desc");
         var open = panel.hidden;
+        // Like the Handbook's subclasses: opening one closes the others.
+        var group = open && button.closest("fieldset[data-accordion]");
+        if (group) {
+          group.querySelectorAll("button.pick-read[aria-expanded=true]").forEach(function (other) {
+            other.closest("li").querySelector(".desc").hidden = true;
+            other.setAttribute("aria-expanded", "false");
+          });
+        }
         if (open && !panel.dataset.loaded) {
           panel.textContent = "…";
           fetch(button.dataset.describe, { credentials: "same-origin" })

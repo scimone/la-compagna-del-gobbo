@@ -33,9 +33,10 @@ from apps.characters.models import Character
 from apps.characters.services import access
 from apps.characters.services import character as character_service
 from apps.frontend import accounts, campaign_context, campaign_views, translations, units
-from apps.frontend.entries_render import render_entries
+from apps.frontend.entries_render import render_entries, render_subclass_body
 from apps.frontend.views import (
     _BACKGROUND_IMAGE_SLUGS,
+    _OPTION_LIST_FEATURES,
     _SCHOOL_LABELS,
     _SPECIES_IMAGE_SLUGS,
     _WEAPON_CATEGORY_LABELS,
@@ -703,20 +704,15 @@ def _describe_feature(pk):
 
 
 def _describe_subclass(pk):
-    """The flavour text, then every feature the subclass grants (name and text) by level."""
+    """A subclass as the Handbook shows it: flavour text, level headings, a link per feature."""
     subclass = get_object_or_404(Subclass, pk=pk)
-    sections = [render_entries(subclass.description)] if subclass.description else []
     features = (
         Feature.objects.filter(subclass_level__subclass=subclass, choice_option=False)
+        .exclude(name_en__in=_OPTION_LIST_FEATURES.values())
         .select_related("subclass_level")
         .order_by("subclass_level__level", "pk")
     )
-    for feature in features:
-        heading = f"{_('Level')} {feature.subclass_level.level} · {feature.name}"
-        sections.append(
-            render_entries([{"type": "entries", "name": heading, "entries": feature.entries}])
-        )
-    return [], sections
+    return [], [render_subclass_body(subclass, features)]
 
 
 def _describe_mastery(pk):

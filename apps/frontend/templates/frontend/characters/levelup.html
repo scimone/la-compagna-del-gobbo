@@ -53,8 +53,12 @@
   .lu-js .lu-cancel { display: none; }
   .lu-back { display: none; }
   .lu-js .lu-back { display: block; }
-  .lu-features { margin: 0; padding-left: 1.2rem; }
-  .lu-features a { color: var(--accent); }
+  /* A subclass's description, as in the Handbook: level headings over a link per feature. */
+  .desc .level-group + .level-group { margin-top: 0.6rem; }
+  .desc .level-group.static > .level-heading { padding: 0.4rem 0; font-weight: 700; color: var(--accent); border-bottom: 1px solid var(--border); }
+  .desc .feature-link-list { list-style: none; margin: 0; padding: 0.5rem 0 0; display: flex; flex-direction: column; gap: 0.4rem; }
+  .desc .feature-link-list li { margin: 0; display: block; border: 0; background: none; }
+  .desc .feature-link-list a { display: block; padding: 0.5rem 0.8rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; color: var(--text); font-weight: 600; text-decoration: none; }
   .opts-list li.disabled { opacity: 0.55; }
   .opts-list li.disabled label { cursor: default; }
   .opts-list .lvl { color: var(--accent); font-size: 0.8rem; font-weight: 600; }
@@ -146,7 +150,7 @@
         {% if features %}
           <div class="lu-card">
             <h3>{% translate "You gain" %}</h3>
-            <ul class="lu-features">{% for f in features %}<li><a href="{{ f.url }}">{{ f.name }}</a></li>{% endfor %}</ul>
+            <ul class="item-list">{% for item in features %}{% include "frontend/_list_item.html" %}{% endfor %}</ul>
           </div>
         {% endif %}
         <div class="lu-card">
@@ -229,6 +233,18 @@
           var on = bar.querySelector(".lu-steps .current");
           if (on && on.scrollIntoView) on.scrollIntoView({ inline: "center", block: "nearest" });
         }
+        syncUrl();
+      }
+      // The class and step live in the URL (replaced, no new history entry), so Back from a feature's
+      // page lands on the same step; the choices themselves are kept server-side.
+      function syncUrl() {
+        var klass = form() && form().querySelector('input[name="klass"][type="hidden"]');
+        if (!klass) return;
+        var last = current === panels().length - 1;
+        var url = location.pathname + "?klass=" + encodeURIComponent(klass.value) + "&step=" + (last ? "review" : current);
+        if (url === location.pathname + location.search) return;
+        if (window.appNav) window.appNav.replaceUrl(url);
+        else window.history.replaceState(null, "", url);
       }
       function go(i, scroll) {
         current = i;
@@ -263,6 +279,8 @@
         setTimeout(function () { swapped = false; render(); }, 0);
       }).observe(wiz, { childList: true });
       var firstError = panels().findIndex(function (p) { return p.querySelector(".field-error"); });
+      var wanted = new URLSearchParams(location.search).get("step");
+      if (wanted !== null) current = wanted === "review" ? panels().length - 1 : parseInt(wanted, 10) || 0;
       if (firstError >= 0) current = firstError;
       render();
     })();
