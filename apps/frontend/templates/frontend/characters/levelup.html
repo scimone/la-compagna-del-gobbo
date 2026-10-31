@@ -153,6 +153,13 @@
             <ul class="item-list">{% for item in features %}{% include "frontend/_list_item.html" %}{% endfor %}</ul>
           </div>
         {% endif %}
+        {% for g in spell_choices %}
+          <div class="lu-card">
+            <h3>{{ g.label }}</h3>
+            {% if g.items %}<ul class="item-list">{% for item in g.items %}{% include "frontend/_list_item.html" %}{% endfor %}</ul>{% endif %}
+            {% if g.names %}<p class="lu-note">{{ g.names|join:", " }}</p>{% endif %}
+          </div>
+        {% endfor %}
         <div class="lu-card">
           <h3>{% translate "Review" %}</h3>
           <p class="lu-note">{% blocktranslate with level=total next=total|add:1 %}You are level {{ level }}. Levelling up takes you to level {{ next }}.{% endblocktranslate %}
@@ -246,8 +253,29 @@
         if (window.appNav) window.appNav.replaceUrl(url);
         else window.history.replaceState(null, "", url);
       }
+      // The review is built by the server from the choices, which change without a reload (spells,
+      // swaps): re-read just that panel when it is opened.
+      function refreshReview() {
+        var f = form();
+        var data = new FormData(f);
+        data.set("action", "refresh");
+        fetch(location.href, { method: "POST", body: data, credentials: "same-origin", headers: { "X-Requested-With": "XMLHttpRequest" } })
+          .then(function (r) { return r.text(); })
+          .then(function (html) {
+            var fresh = new DOMParser().parseFromString(html, "text/html").querySelector('[data-panel="review"]');
+            var old = wiz.querySelector('[data-panel="review"]');
+            if (!fresh || !old || old.dataset.refreshing !== "1") return;
+            fresh.classList.toggle("active", old.classList.contains("active"));
+            old.innerHTML = fresh.innerHTML;
+            old.dataset.refreshing = "";
+          });
+      }
       function go(i, scroll) {
         current = i;
+        if (i === panels().length - 1) {
+          var review = wiz.querySelector('[data-panel="review"]');
+          if (review) { review.dataset.refreshing = "1"; refreshReview(); }
+        }
         render();
         if (scroll) wiz.scrollIntoView({ block: "start" });
       }

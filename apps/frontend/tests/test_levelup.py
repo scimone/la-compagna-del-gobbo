@@ -185,3 +185,16 @@ def test_coming_back_to_the_page_restores_the_choices_and_the_review_lists_icons
 
     body = signed_in.get(f"/characters/describe/subclass/{sub}/").content.decode()
     assert "level-heading" in body and "feature-link-list" in body
+
+
+def test_the_review_lists_the_chosen_spells(signed_in, alice):
+    character = finished(alice, "wizard", xp=300)
+    url = f"/characters/{character.pk}/levelup/"
+    plan = progression.plan(character, "wizard")
+    picker = next(p for p in plan.pickers if p.key == "lu.spells")
+    spell_id, spell_name = picker.candidates[0]
+    html = signed_in.post(
+        url, {"klass": "wizard", "action": "refresh", "lu.spells": [spell_id]}
+    ).content.decode()
+    review = html[html.index('data-panel="review"') :]
+    assert spell_name in review and f"/world/spells/{spell_id}/" in review

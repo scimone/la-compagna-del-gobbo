@@ -42,6 +42,37 @@ def _feature_rows(features) -> list[dict]:
     return [_feature_row(f) for f in features]
 
 
+_SPELL_SECTIONS = ("spells", "spell_swap", "savant", "subclass_swap", "ritual_caster")
+
+
+def _spell_choices(plan) -> list[dict]:
+    """What the player picked in the spell steps, for the review: per picker, its label and the
+    chosen spells as Handbook rows (spell pickers; any other picker is listed by name)."""
+    groups = []
+    for section in plan.sections:
+        if section.key not in _SPELL_SECTIONS:
+            continue
+        for picker in section.pickers:
+            if picker.kind == "spell" and picker.cards is not None:
+                items = [
+                    {
+                        "name": c["name"],
+                        "properties": [c["detail"]],
+                        "image": c["image"],
+                        "url": reverse("world-spell-detail", args=[c["id"]]),
+                    }
+                    for c in picker.cards
+                    if c["checked"]
+                ]
+                names = []
+            else:
+                items = []
+                names = [n for i, n in picker.candidates if i in picker.selected]
+            if items or names:
+                groups.append({"label": picker.label, "items": items, "names": names})
+    return groups
+
+
 def character_levelup(request, pk):
     if not request.user.is_authenticated:
         return redirect(f"{reverse('account')}?next={request.get_full_path()}")
@@ -121,6 +152,7 @@ def character_levelup(request, pk):
             # the steps of the page: hit points and every section that asks for a choice
             "level_steps": [s for s in plan.sections if s.key == "hp" or s.pickers] if plan else [],
             "features": _feature_rows(plan.features) if plan else [],
+            "spell_choices": _spell_choices(plan) if plan else [],
             "issues": plan.issues if show_issues else [],
             "issue_paths": {i.path: i.message for i in plan.issues} if show_issues else {},
         },
