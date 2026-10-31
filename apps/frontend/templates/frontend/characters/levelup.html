@@ -65,6 +65,7 @@
   <form method="post" data-live>
     {% csrf_token %}
     {% if plan %}
+    <input type="hidden" name="klass" value="{{ class_id }}">
     <div class="lu-head">
       <nav class="lu-steps" aria-label="{% translate 'Steps' %}">
         {% for section in level_steps %}

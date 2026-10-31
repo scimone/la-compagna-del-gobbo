@@ -1331,6 +1331,7 @@ def plan(character: Character, class_id: str, values: Values | None = None) -> P
                         1,
                         [(str(s.pk), s.name) for s in pool],
                         single=True,
+                        kind="subclass",
                         refresh=True,
                     )
                 ],

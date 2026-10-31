@@ -142,3 +142,24 @@ def test_a_character_at_level_20_has_no_level_up(signed_in, alice):
     )
     html = stats_panel(signed_in.get(f"/characters/{character.pk}/").content.decode())
     assert "/levelup/" not in html
+
+
+def test_the_subclass_step_keeps_the_class_and_offers_descriptions(signed_in, alice):
+    character = finished(alice, "monk", xp=900)
+    url = f"/characters/{character.pk}/levelup/"
+    progression.commit(character, "monk", {"lu.hp_mode": ["fixed"]})
+    character.refresh_from_db()
+    character.experience_points = 900
+    character.save()
+
+    html = signed_in.post(url, {"klass": "monk", "action": "select"}).content.decode()
+    assert 'type="hidden" name="klass" value="monk"' in html
+    assert "data-describe" in html
+
+    sub = progression.plan(character, "monk").pickers[0].candidates[0][0]
+    # the refresh after picking a subclass must stay on the class, not fall back to the class list
+    html = signed_in.post(
+        url, {"klass": "monk", "action": "refresh", "lu.subclass": sub}
+    ).content.decode()
+    assert "Level up: Monk 3" in html
+    assert signed_in.get(f"/characters/describe/subclass/{sub}/").status_code == 200

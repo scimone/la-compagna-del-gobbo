@@ -62,6 +62,7 @@ from apps.rules.models import (
     Skill,
     Species,
     Spell,
+    Subclass,
 )
 
 STEP_LABELS = {
@@ -519,6 +520,7 @@ _CARD_MODELS = {
     "feat": Feat,
     "invocation": OptionalFeature,
     "skill": Skill,
+    "subclass": Subclass,
 }
 
 
@@ -541,6 +543,8 @@ def _card_line(kind: str, obj) -> str:
         return _format_feat_category(obj.category)
     if kind == "invocation":
         return _("Eldritch Invocation")
+    if kind == "subclass":
+        return obj.klass.name
     if kind == "skill":
         return obj.ability.name
     parts = [obj.type.name if obj.type_id else ""]
@@ -576,9 +580,11 @@ def _decorate(pickers):
         queryset = model.objects.filter(id__in=ids)
         if picker.kind == "skill":
             queryset = queryset.select_related("ability")
+        elif picker.kind == "subclass":
+            queryset = queryset.select_related("klass")
         elif picker.kind == "equipment":
             queryset = queryset.select_related("type").prefetch_related("masteries")
-        objects = queryset.in_bulk()
+        objects = {str(k): v for k, v in queryset.in_bulk().items()}
         picker.cards = [
             {
                 "id": ident,
@@ -696,6 +702,23 @@ def _describe_feature(pk):
     return [], [render_entries(get_object_or_404(Feature, pk=pk).entries)]
 
 
+def _describe_subclass(pk):
+    """The flavour text, then every feature the subclass grants (name and text) by level."""
+    subclass = get_object_or_404(Subclass, pk=pk)
+    sections = [render_entries(subclass.description)] if subclass.description else []
+    features = (
+        Feature.objects.filter(subclass_level__subclass=subclass, choice_option=False)
+        .select_related("subclass_level")
+        .order_by("subclass_level__level", "pk")
+    )
+    for feature in features:
+        heading = f"{_('Level')} {feature.subclass_level.level} · {feature.name}"
+        sections.append(
+            render_entries([{"type": "entries", "name": heading, "entries": feature.entries}])
+        )
+    return [], sections
+
+
 def _describe_mastery(pk):
     mastery = get_object_or_404(Mastery, pk=pk)
     return [], [render_entries(mastery.entries)]
@@ -708,6 +731,7 @@ _DESCRIBERS = {
     "feat": _describe_feat,
     "invocation": _describe_invocation,
     "skill": _describe_skill,
+    "subclass": _describe_subclass,
     "equipment": _describe_equipment,
 }
 

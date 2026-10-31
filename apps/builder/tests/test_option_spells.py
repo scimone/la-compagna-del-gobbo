@@ -3,7 +3,7 @@ Caster's rituals - at creation and when levelling up."""
 
 import pytest
 
-from apps.builder.services import class_choices, creation, progression
+from apps.builder.services import class_choices, progression
 from apps.builder.services.store import Draft
 from apps.builder.tests.conftest import build_character
 from apps.builder.tests.test_progression import autofill, finished, level_up
