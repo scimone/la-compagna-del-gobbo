@@ -23,7 +23,7 @@
         {% if can_reopen %}
           {# Owner, DM or admin: reopen the creation screens (a level-1 character; see `creation.reopen()`). #}
           <form method="post" action="{% url 'character-reopen' character.pk %}" data-nav="push"
-                data-app-confirm="{% translate 'Reopen the creation screens to change this character? Its inventory and gold are kept.' %}">
+                data-app-confirm="{% if reopen_rebuilds %}{% translate 'Reopen the creation screens to change this character? Whatever is connected to a component you change is removed and its levels are chosen again; the inventory, gold and Experience Points are kept.' %}{% else %}{% translate 'Reopen the creation screens to change this character? Its inventory and gold are kept.' %}{% endif %}">
             {% csrf_token %}
             <button type="submit" role="menuitem">{% translate "Edit character" %}</button>
           </form>

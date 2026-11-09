@@ -25,6 +25,7 @@ from apps.builder.services import (
     derived_stats,
     origins,
     progression,
+    rebuild,
     validation,
 )
 from apps.builder.services.store import STEPS, Draft, read_values
@@ -237,6 +238,8 @@ def wizard(request, pk, step):
         return response
     if step not in STEPS:
         raise Http404
+    if rebuild.replaying(character):
+        return redirect("character-rebuild", pk=pk)
     draft = Draft(character)
     if validation.locked(draft, step):
         missing = next(
@@ -293,6 +296,8 @@ def wizard_finish(request, pk):
     problems = creation.finalize(character)
     if problems:
         return redirect(_step_url(character, creation.get_state(character)["current"]))
+    if rebuild.replaying(character):
+        return redirect("character-rebuild", pk=character.pk)
     if editing:
         return redirect("character-detail", pk=character.pk)
     return redirect(f"{reverse('characters-overview')}?new={character.pk}")
@@ -310,11 +315,11 @@ def wizard_discard(request, pk):
 @require_POST
 def character_reopen(request, pk):
     """Its owner, the campaign's DM or an admin: turn a finished level-1 character back into a
-    draft and open the wizard."""
+    draft and open the wizard. An admin may do so for any level (see `builder.services.rebuild`)."""
     character = get_object_or_404(Character, pk=pk)
     if not access.can_edit(request.user, character):
         return HttpResponseForbidden()
-    if not creation.reopen(character):
+    if not creation.reopen(character, any_level=access.is_admin(request.user)):
         return redirect("character-detail", pk=pk)
     return redirect(_step_url(character, creation.get_state(character)["current"]))
 

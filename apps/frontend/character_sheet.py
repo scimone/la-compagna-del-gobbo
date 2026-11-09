@@ -1303,7 +1303,9 @@ def character_detail(request, pk):
             "can_edit_slots": access.can_speak_as_dm(request.user, character.campaign),
             "can_assign": access.can_speak_as_dm(request.user, character.campaign),
             "can_move": can_edit,
-            "can_reopen": can_edit and creation.can_reopen(character),
+            "can_reopen": can_edit
+            and creation.can_reopen(character, any_level=access.is_admin(request.user)),
+            "reopen_rebuilds": progression.total_level(character) > 1,
             # Not `tabs`/`active_tab`: base.html draws its own `?tab=` strip for those names.
             "sheet_tabs": TABS,
             "sheet_tab": tab if tab in dict(TABS) else DEFAULT_TAB,

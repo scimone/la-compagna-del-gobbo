@@ -43,6 +43,23 @@ STEPS = (
 
 #: Set while an admin has reopened a finished character in the wizard (`creation.reopen()`).
 EDITING_KEY = "meta.editing"
+#: Every level-up applied since creation, in order (`[{"klass", "values"}]`), so a character can be
+#: rebuilt level by level (`rebuild.py`).
+HISTORY_KEY = "meta.history"
+#: Set while an admin rebuilds a character above level 1 (`{"pending", "start", "replaying"}`).
+REBUILD_KEY = "meta.rebuild"
+#: The choice keys the creation wizard owns; anything else (the land, the order taken on
+#: multiclassing, a feat's spell ability, ...) was written by a level-up and goes with it.
+WIZARD_PREFIXES = (
+    "class.",
+    "background.",
+    "species.",
+    "languages",
+    "equipment.",
+    "abilities",
+    "manual.",
+    "meta.",
+)
 
 
 @dataclass(frozen=True)

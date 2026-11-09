@@ -34,6 +34,11 @@ urlpatterns = [
         character_pdf.character_export_pdf,
         name="character-export-pdf",
     ),
+    path(
+        "characters/<int:pk>/rebuild/",
+        levelup_views.character_rebuild,
+        name="character-rebuild",
+    ),
     path("characters/<int:pk>/reopen/", character_views.character_reopen, name="character-reopen"),
     path("characters/<int:pk>/assign/", character_views.character_assign, name="character-assign"),
     path("characters/<int:pk>/delete/", character_views.character_delete, name="character-delete"),

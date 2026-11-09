@@ -563,17 +563,21 @@ def test_admin_reopens_edits_and_finishes_keeping_inventory(client, alice, bob, 
     assert list(character.inventory_items.values_list("pk", flat=True)) == items_before
 
 
-def test_a_leveled_character_cannot_be_reopened(client, alice, settings):
+def test_only_an_admin_can_reopen_a_leveled_character(client, alice, bob, settings):
     settings.ADMIN_ACCOUNTS = ["alice"]
-    character = build_character(alice, "fighter")
+    character = build_character(bob, "fighter")
     creation.finalize(character)
     character.classes.update(level=2)
 
-    client.force_login(alice)
+    client.force_login(bob)  # the owner, not an admin
     client.post(f"/characters/{character.pk}/reopen/")
-
     character.refresh_from_db()
     assert character.status == Character.STATUS_COMPLETE
+
+    client.force_login(alice)
+    assert client.post(f"/characters/{character.pk}/reopen/").status_code == 302
+    character.refresh_from_db()
+    assert character.status == Character.STATUS_DRAFT
 
 
 def test_reopened_character_keeps_new_ability_distribution(client, alice, settings):

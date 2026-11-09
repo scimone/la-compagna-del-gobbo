@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.utils.cache import add_never_cache_headers
 from django.utils.translation import gettext as _
 
-from apps.builder.services import progression
+from apps.builder.services import progression, rebuild
 from apps.characters.models import Character
 from apps.characters.services import access
 from apps.frontend import levelup_review
@@ -22,6 +22,7 @@ _DONE_KEY = "levelup_done_%d"
 #: The choices made so far, kept so that leaving the page (to read a feature) and coming back by
 #: the Back button finds them again; dropped when the class list is shown again or on commit.
 _DRAFT_KEY = "levelup_draft_%d"
+_REBUILD_DRAFT_KEY = "rebuild_draft_%d"
 
 
 def _values(post) -> dict[str, list[str]]:
@@ -151,6 +152,76 @@ def character_levelup_done(request, pk):
                 if character.spell_changes
                 else ""
             ),
+        },
+    )
+    add_never_cache_headers(response)
+    return response
+
+
+def character_rebuild(request, pk):
+    """An admin rebuilding a levelled character, after the creation screens: the recorded levels
+    that still hold are applied, and each one that does not is asked here, with the picks that are
+    still valid filled in (`builder.services.rebuild`). The same page as the level-up."""
+    if not request.user.is_authenticated:
+        return redirect(f"{reverse('account')}?next={request.get_full_path()}")
+    character = get_object_or_404(Character, pk=pk)
+    if not access.can_edit(request.user, character):
+        raise Http404
+    sheet = reverse("character-detail", args=[character.pk])
+    if not rebuild.replaying(character):
+        return redirect(sheet)
+
+    entry = rebuild.advance(character)
+    if entry is None:
+        request.session.pop(_REBUILD_DRAFT_KEY % character.pk, None)
+        return redirect(sheet)
+
+    draft_key = _REBUILD_DRAFT_KEY % character.pk
+    class_id = entry["klass"]
+    left = len(rebuild.pending(character))
+    post = request.method == "POST"
+    action = request.POST.get("action", "") if post else ""
+    if post:
+        values = _values(request.POST)
+    else:
+        draft = request.session.get(draft_key) or {}
+        values = draft.get("values") if draft.get("left") == left else entry["values"]
+    if action != "commit":
+        request.session[draft_key] = {"left": left, "values": values}
+
+    if action == "commit":
+        try:
+            progression.commit(character, class_id, values, rebuilding=True)
+        except ValueError:
+            pass
+        else:
+            rebuild.drop_first(character)
+            request.session.pop(draft_key, None)
+            return redirect("character-rebuild", pk=character.pk)
+    plan = progression.plan(character, class_id, values, rebuilding=True)
+    for section in plan.sections:
+        _decorate(section.pickers)
+
+    level_steps = [s for s in plan.sections if s.key == "hp" or s.pickers]
+    show_issues = action == "commit"
+    done, total = rebuild.progress(character)
+    response = render(
+        request,
+        "frontend/characters/levelup.html",
+        {
+            "page_title": character.name,
+            "back_url": sheet,
+            "character": character,
+            "step_label": _("Rebuilding: level %(level)d of %(total)d")
+            % {"level": done + 2, "total": total + 1},
+            "total": done + 1,
+            "rebuilding": True,
+            "class_id": class_id,
+            "plan": plan,
+            "level_steps": level_steps,
+            "review": levelup_review.build(plan, level_steps),
+            "issues": plan.issues if show_issues else [],
+            "issue_paths": {i.path: i.message for i in plan.issues} if show_issues else {},
         },
     )
     add_never_cache_headers(response)

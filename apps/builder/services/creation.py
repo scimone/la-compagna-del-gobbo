@@ -6,7 +6,7 @@ from django.utils.translation import gettext as _
 from apps.characters.models import Character, CharacterCurrency
 
 from .. import tables
-from . import effects, validation
+from . import effects, rebuild, validation
 from .store import EDITING_KEY, STEPS, Draft, Issue, clear_choices, set_choice
 
 #: Steps that must be complete before Finish (`details` is optional, `review` is derived).
@@ -132,6 +132,11 @@ def finalize(character: Character) -> list[Issue]:
             Issue("review", "incomplete", _("Finish every step first."))
         ]
     effects.apply(character)  # one last recompute from the final choices
+    if rebuild.has_pending(character):
+        # An admin rebuilding a levelled character: its levels are re-applied next, and the
+        # character is complete again only once the last one is back (`rebuild.advance()`).
+        rebuild.start_replay(character)
+        return []
     character.status = Character.STATUS_COMPLETE
     if is_editing(character):
         clear_choices(character, EDITING_KEY)
@@ -147,22 +152,27 @@ def is_editing(character: Character) -> bool:
     return bool(Draft(character).get(EDITING_KEY))
 
 
-def can_reopen(character: Character) -> bool:
-    """Only a finished character that has not levelled up: the wizard recomputes a character from
-    its level-1 choices, whereas a level-up is written straight to the rows and would be lost."""
-    from .progression import total_level  # local: progression -> resolvers
+def can_reopen(character: Character, *, any_level: bool = False) -> bool:
+    """A finished level-1 character; an administrator (`any_level`) may reopen a levelled one too,
+    which is rebuilt level by level (`rebuild.py`)."""
+    return character.status == Character.STATUS_COMPLETE and (
+        any_level or rebuild.total_level(character) == 1
+    )
 
-    return character.status == Character.STATUS_COMPLETE and total_level(character) == 1
 
-
-def reopen(character: Character) -> bool:
-    """Turn a finished level-1 character back into a draft so the wizard can change it. Its
-    inventory, coins and Experience Points are kept (see `effects.apply()`)."""
-    if not can_reopen(character):
+def reopen(character: Character, *, any_level: bool = False) -> bool:
+    """Turn a finished character back into a draft so the wizard can change it. Its inventory,
+    coins and Experience Points are kept (see `effects.apply()`); above level 1 it first goes back
+    to level 1 and its levels are replayed once the wizard is finished."""
+    if not can_reopen(character, any_level=any_level):
         return False
+    if rebuild.total_level(character) > 1:
+        rebuild.begin(character)
     set_choice(character, EDITING_KEY, True)
     character.status = Character.STATUS_DRAFT
     character.save(update_fields=["status", "updated_at"])
+    if rebuild.has_pending(character):
+        effects.apply(character)  # the level-1 rows, now, so nothing of the levels shows
     return True
 
 

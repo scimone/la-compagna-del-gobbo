@@ -3770,3 +3770,16 @@ msgstr "Consegnare %(items)s a %(name)s? Verranno rimossi dal tuo inventario."
 
 msgid "Handed %(items)s to %(name)s"
 msgstr "Consegnato %(items)s a %(name)s"
+
+#: apps/frontend/levelup_views.py
+#, python-format
+msgid "Rebuilding: level %(level)d of %(total)d"
+msgstr "Ricostruzione: livello %(level)d di %(total)d"
+
+#: apps/frontend/templates/frontend/characters/levelup.html
+msgid "Choose again what the changed parts of the character make you pick at this level; what is still valid is already filled in."
+msgstr "Scegli di nuovo ciò che le parti modificate del personaggio ti fanno scegliere a questo livello; ciò che è ancora valido è già compilato."
+
+#: apps/frontend/templates/frontend/characters/sheet/_top.html
+msgid "Reopen the creation screens to change this character? Whatever is connected to a component you change is removed and its levels are chosen again; the inventory, gold and Experience Points are kept."
+msgstr "Riaprire le schermate di creazione per modificare questo personaggio? Tutto ciò che è collegato a una componente che cambi viene rimosso e i suoi livelli vanno scelti di nuovo; inventario, oro e Punti Esperienza vengono mantenuti."

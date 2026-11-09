@@ -7,7 +7,7 @@ field it is about, and the Review step can list everything outstanding.
 from django.utils.translation import gettext as _
 
 from . import abilities, class_choices, origins
-from .store import STEPS, Draft, Issue
+from .store import EDITING_KEY, STEPS, Draft, Issue
 
 #: Steps that can't be answered before others have been - shown "locked" until then.
 PREREQUISITES = {
@@ -38,7 +38,9 @@ def step_issues(draft: Draft) -> dict[str, list[Issue]]:
     result["background"] = origins.background_issues(draft)
     result["species"] = origins.species_issues(draft)
     result["languages"] = origins.languages_issues(draft)
-    if not locked(draft, "equipment"):
+    # A character being edited keeps the inventory and coins it has (`effects.apply()`), so the
+    # starting equipment is not asked again.
+    if not locked(draft, "equipment") and not draft.get(EDITING_KEY):
         result["equipment"] = origins.equipment_issues(draft)
     if not locked(draft, "abilities"):
         result["abilities"] = abilities.issues(draft)

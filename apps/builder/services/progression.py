@@ -74,7 +74,7 @@ from ..resolvers.spell import (
     spell_id,
     spell_pool,
 )
-from . import feature_resources
+from . import feature_resources, rebuild
 from .store import Issue, Picker, picker_issues
 
 Values = Mapping[str, list[str]]
@@ -1299,15 +1299,18 @@ def _discovery_swap_pickers(ctx: _Ctx, subclass: Subclass | None) -> list[Picker
     ]
 
 
-def plan(character: Character, class_id: str, values: Values | None = None) -> Plan:
-    """The next level in `class_id` for `character`, and what is still to decide."""
+def plan(
+    character: Character, class_id: str, values: Values | None = None, *, rebuilding: bool = False
+) -> Plan:
+    """The next level in `class_id` for `character`, and what is still to decide. `rebuilding`
+    (an admin replaying a character's levels) waives the multiclass minimums."""
     values = values or {}
     klass = Class.objects.prefetch_related("primary_abilities").get(id=class_id)
     ctx = _Ctx(character, klass, values)
     issues: list[Issue] = []
     if total_level(character) >= spec.MAX_LEVEL:
         raise ValueError("already at the maximum level")
-    if ctx.entering and (short := multiclass_shortfall(character, klass)):
+    if ctx.entering and not rebuilding and (short := multiclass_shortfall(character, klass)):
         raise ValueError("multiclass requirements not met: " + ", ".join(short))
 
     # subclass
@@ -1825,10 +1828,12 @@ def _subclass_spells(ctx: _Ctx, subclass: Subclass, level: int, land: str) -> No
 
 
 @transaction.atomic
-def commit(character: Character, class_id: str, values: Values) -> Plan:
+def commit(
+    character: Character, class_id: str, values: Values, *, rebuilding: bool = False
+) -> Plan:
     """Apply the level-up `plan()` describes. Raises `ValueError` if it isn't ready."""
     character = Character.objects.select_for_update().get(pk=character.pk)
-    plan_ = plan(character, class_id, values)
+    plan_ = plan(character, class_id, values, rebuilding=rebuilding)
     if not plan_.ready:
         raise ValueError("; ".join(i.message for i in plan_.issues))
     ctx: _Ctx = plan_.extra["ctx"]
@@ -2090,4 +2095,5 @@ def commit(character: Character, class_id: str, values: Values) -> Plan:
     ctx.rows[klass.id] = row
     _update_resources(ctx, new, subclass, mods)
     feature_resources.refresh(character)
+    rebuild.record(character, klass.id, values)
     return plan_

@@ -103,6 +103,9 @@
     {% csrf_token %}
     {% if plan %}
     <input type="hidden" name="klass" value="{{ class_id }}">
+    {% if rebuilding %}
+      <p class="lu-note"><b>{{ step_label }}.</b> {% translate "Choose again what the changed parts of the character make you pick at this level; what is still valid is already filled in." %}</p>
+    {% endif %}
     <div class="lu-head">
       <nav class="lu-steps" aria-label="{% translate 'Steps' %}">
         {% for section in level_steps %}
@@ -113,7 +116,7 @@
       <div class="lu-bar">
         <b>{{ plan.klass.name }}</b>
         <span>{% blocktranslate with a=plan.old_level b=plan.new_level %}Level {{ a }} → {{ b }}{% endblocktranslate %}</span>
-        <a href="{% url 'character-levelup' character.pk %}" data-nav="replace">{% translate "Change class" %}</a>
+        {% if not rebuilding %}<a href="{% url 'character-levelup' character.pk %}" data-nav="replace">{% translate "Change class" %}</a>{% endif %}
       </div>
     </div>
     {% else %}

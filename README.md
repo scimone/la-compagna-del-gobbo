@@ -691,6 +691,21 @@ did). Not modelled: the subclass choices that are only prose with no row to writ
 Prey, Blessed Strikes, Rage of the Wilds ... are read in the feature's text), resistances from
 feats, swapping Weapon Mastery or Expertise at a rest.
 
+**Rebuilding a levelled character** (`services/rebuild.py`, admins only above level 1; the
+**Edit character** item of the sheet's menu). The wizard recomputes a character from its level-1
+choices, so a levelled one is taken back to a level-1 draft first (the extra classes, the subclass
+and every level-up choice are removed; inventory, coins and Experience Points stay) and its
+level-ups, which `progression.commit()` records in `meta.history`, are set aside. The admin changes
+whatever they like in the creation screens - everything granted by a changed component simply
+disappears, as the rows are rebuilt from the choices - and on *Finish* the levels are replayed
+(`/characters/<id>/rebuild/`): a level whose recorded picks still hold is re-applied silently, any
+other (a swapped class, a pick that a new species/background made impossible, a new pick) is shown
+on the level-up page with the valid picks filled in. The character is complete again after the last
+level. Changes made by hand on the sheet (feats added there, prepared-spell swaps, ...) are not
+replayed; a character levelled before the history existed has every level asked again; the
+multiclass minimums are waived while replaying; the starting equipment step is not asked while
+editing, since the inventory is kept.
+
 **Access** (`apps/characters/services/access.py`): every finished character is *visible* to every
 member of its campaign (and to administrators), and to nobody else - they get a 404. The character's owner, the
 campaign's DM and administrators edit and delete it; only the DM and administrators move Hit Dice

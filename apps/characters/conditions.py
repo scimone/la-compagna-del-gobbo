@@ -165,7 +165,11 @@ def summary(character, distance=lambda feet: f"{feet:g} ft") -> list:
     if fx.exhaustion:
         lines.append(
             _("Exhaustion %(level)s: D20 Tests -%(penalty)s, Speed -%(speed)s")
-            % {"level": fx.exhaustion, "penalty": fx.d20_penalty, "speed": distance(fx.speed_penalty)}
+            % {
+                "level": fx.exhaustion,
+                "penalty": fx.d20_penalty,
+                "speed": distance(fx.speed_penalty),
+            }
         )
     if fx.incapacitated:
         lines.append(_("You can't take actions, Bonus Actions or Reactions"))
@@ -186,8 +190,10 @@ def summary(character, distance=lambda feet: f"{feet:g} ft") -> list:
         if adv or dis:
             lines.append(_("Attack rolls against you: Advantage and Disadvantage may cancel out"))
         else:
-            lines.append(_("Attack rolls against you: Advantage within %(distance)s, Disadvantage farther")
-                % {"distance": distance(5)})
+            lines.append(
+                _("Attack rolls against you: Advantage within %(distance)s, Disadvantage farther")
+                % {"distance": distance(5)}
+            )
     elif adv and dis:
         lines.append(_("Attack rolls against you: Advantage and Disadvantage cancel out"))
     elif adv:
@@ -207,5 +213,7 @@ def summary(character, distance=lambda feet: f"{feet:g} ft") -> list:
     elif fx.dex_saves_disadvantage:
         lines.append(_("Disadvantage on Dexterity saving throws"))
     if fx.crit_within_5:
-        lines.append(_("Hits from within %(distance)s are Critical Hits") % {"distance": distance(5)})
+        lines.append(
+            _("Hits from within %(distance)s are Critical Hits") % {"distance": distance(5)}
+        )
     return lines
