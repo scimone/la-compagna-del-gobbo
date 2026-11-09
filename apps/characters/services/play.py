@@ -28,6 +28,7 @@ from apps.characters.models import (
     CharacterOptionalFeature,
     CharacterResource,
     CharacterSpell,
+    CustomCatalogItem,
 )
 from apps.rules.models import Equipment, Feat, Feature, OptionalFeature, Spell
 
@@ -331,6 +332,15 @@ def sale_price(value: int | None, quantity: int, *, full_value: bool) -> int:
     return total if full_value else total // 2
 
 
+#: The custom-item fields a catalog entry stores (everything `_clean_custom` takes).
+CATALOG_FIELDS = (
+    "name", "section", "type_label", "weapon_category", "weight", "value", "valuable",
+    "description", "armor_kind", "ac", "strength_requirement", "stealth_disadvantage",
+    "damage_dice", "damage_type", "versatile_damage_dice", "ranged", "finesse", "two_handed",
+    "range", "wearable", "effects",
+)  # fmt: skip
+
+
 def _row(character: Character, kind: str, item_id: int):
     """The catalog stack or custom item `item_id` of this character (`DoesNotExist` if it is not
     theirs)."""
@@ -503,7 +513,38 @@ def add_custom_item(
         if value * quantity > _purse_copper(purse):
             raise ValueError("not enough money to buy this")
         _set_purse_copper(purse, _purse_copper(purse) - value * quantity)
+    _remember_custom(character.campaign_id, clean)
     return CharacterCustomItem.objects.create(character=character, quantity=quantity, **clean)
+
+
+def _remember_custom(
+    campaign_id: int | None, clean: dict, old_name: str = ""
+) -> CustomCatalogItem | None:
+    """Keep a custom item in the campaign's permanent catalog (`CustomCatalogItem`): the entry
+    with its name - or, when it was just renamed, with its `old_name` - takes the new values, else
+    a new entry is made (a character outside any campaign has no catalog)."""
+    if campaign_id is None:
+        return None
+    entries = CustomCatalogItem.objects.filter(campaign_id=campaign_id)
+    entry = entries.filter(name__iexact=clean["name"]).first()
+    if entry is None and old_name:
+        entry = entries.filter(name__iexact=old_name).first()
+    if entry is None:
+        return entries.create(campaign_id=campaign_id, **clean)
+    for key, value in clean.items():
+        setattr(entry, key, value)
+    entry.save()
+    return entry
+
+
+@transaction.atomic
+def add_catalog_custom_item(
+    character: Character, entry_id: int, *, quantity: int = 1, buy: bool = False
+) -> CharacterCustomItem:
+    """Put an entry of the campaign's custom catalog on the sheet, like `add_custom_item`."""
+    entry = CustomCatalogItem.objects.get(pk=entry_id, campaign_id=character.campaign_id)
+    fields = {f: getattr(entry, f) for f in CATALOG_FIELDS}
+    return add_custom_item(character, quantity=quantity, buy=buy, **fields)
 
 
 def update_custom_item(character: Character, item_id: int, **fields) -> CharacterCustomItem:
@@ -511,11 +552,14 @@ def update_custom_item(character: Character, item_id: int, **fields) -> Characte
     its own control). An item that can no longer be worn - its section or stats changed - is taken
     off."""
     item = character.custom_items.get(pk=item_id)
-    for key, value in _clean_custom(**fields).items():
+    clean = _clean_custom(**fields)
+    old_name = item.name
+    for key, value in clean.items():
         setattr(item, key, value)
     if item.equipped and not custom_wear_type(item):
         item.equipped = False
     item.save()
+    _remember_custom(character.campaign_id, clean, old_name)
     return item
 
 
@@ -565,6 +609,47 @@ def sell_item(character: Character, kind: str, item_id: int, quantity: int = 1) 
         row.quantity -= quantity
         row.save(update_fields=["quantity"])
     return price
+
+
+@transaction.atomic
+def transfer_items(
+    character: Character, target: Character, picks: list[tuple[str, int, int]]
+) -> list[str]:
+    """Hand items over to another character of the same campaign. `picks` are `(kind, item id,
+    quantity)`; a quantity above what there is moves the whole stack. Catalog gear joins the loose
+    stack of the same item on the other sheet; a custom item arrives as a copy, not worn. The
+    items leave this sheet (a worn one is simply no longer worn). Returns what moved, as
+    `"Name x2"` lines. Nothing moves if any pick is wrong."""
+    if target.pk == character.pk:
+        raise ValueError("choose another character")
+    if target.campaign_id != character.campaign_id or target.status != Character.STATUS_COMPLETE:
+        raise ValueError("that character cannot receive items")
+    if not picks:
+        raise ValueError("no items chosen")
+    if len({(kind, item_id) for kind, item_id, _qty in picks}) != len(picks):
+        raise ValueError("an item was chosen twice")
+    moved = []
+    for kind, item_id, quantity in picks:
+        row = _row(character, kind, item_id)
+        quantity = _clamp(quantity, 1, row.quantity)
+        if isinstance(row, CharacterCustomItem):
+            name = row.name
+            copy = CharacterCustomItem(
+                character=target,
+                quantity=quantity,
+                **{f: getattr(row, f) for f in CATALOG_FIELDS},
+            )
+            copy.save()
+        else:
+            name = row.equipment.name
+            add_item(target, row.equipment_id, quantity)
+        if quantity >= row.quantity:
+            remove_item(character, kind, item_id)
+        else:
+            row.quantity -= quantity
+            row.save(update_fields=["quantity"])
+        moved.append(f"{name} x{quantity}" if quantity > 1 else name)
+    return moved
 
 
 # --- spells ------------------------------------------------------------------------------------

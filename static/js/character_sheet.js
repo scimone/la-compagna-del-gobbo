@@ -97,7 +97,7 @@
     });
     if (el.matches("input, textarea, select")) params.value = el.value;
     if (el.dataset.from) params.value = document.getElementById(el.dataset.from).value; // a button reading a field
-    if (el.dataset.act === "item_add" || el.dataset.act === "item_buy") params.quantity = String(addQuantity(el));
+    if (["item_add", "item_buy", "custom_catalog_add", "custom_catalog_buy"].indexOf(el.dataset.act) !== -1) params.quantity = String(addQuantity(el));
     return params;
   }
 
@@ -407,6 +407,40 @@
     var field = event.target;
     if (field.matches("input[data-act]")) field.blur();
     else if (field.matches(".world-search input")) event.preventDefault();
+  });
+
+  // ---- transferring items to another character: pick, confirm, post --------------------------
+
+  root.addEventListener("click", function (event) {
+    var dialog = document.getElementById("cs-transfer-dialog");
+    if (!dialog) return;
+    if (event.target.closest("[data-transfer-open]")) {
+      dialog.querySelectorAll("[data-transfer-pick]").forEach(function (box) { box.checked = false; });
+      dialog.showModal();
+    } else if (event.target.closest("[data-transfer-cancel]")) {
+      dialog.close();
+    } else if (event.target.closest("[data-transfer-confirm]")) {
+      var picks = [];
+      dialog.querySelectorAll("[data-transfer-row]").forEach(function (row) {
+        if (!row.querySelector("[data-transfer-pick]").checked) return;
+        var qty = row.querySelector("[data-transfer-qty]");
+        picks.push({ kind: row.dataset.kind, item: row.dataset.item, quantity: Number(qty.value) || 1, name: row.dataset.name });
+      });
+      if (!picks.length) return;
+      var select = dialog.querySelector("[data-transfer-to]");
+      var who = select.options[select.selectedIndex].dataset.name;
+      var list = picks.map(function (p) { return (p.quantity > 1 ? p.quantity + "× " : "") + p.name; }).join(", ");
+      var ask = dialog.dataset.confirm.replace("%(items)s", list).replace("%(name)s", who);
+      window.appConfirm(ask).then(function (ok) {
+        if (!ok) return;
+        dialog.close();
+        send({
+          action: "item_transfer",
+          to: select.value,
+          items: JSON.stringify(picks.map(function (p) { return { kind: p.kind, item: p.item, quantity: p.quantity }; })),
+        });
+      });
+    }
   });
 
   // ---- tabs: plain clicks ------------------------------------------------

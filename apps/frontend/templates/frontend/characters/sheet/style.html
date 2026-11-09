@@ -348,6 +348,10 @@
   dialog.cs-cast .cs-metric { padding: 0.25rem 0.5rem; }
   dialog.cs-cast .cs-metric b { font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
   .cs-card .cs-metric { padding: 0.35rem 0.4rem; }
+  .cs-transfer-list { list-style: none; margin: 0.5rem 0; padding: 0; max-height: 40vh; overflow-y: auto; }
+  .cs-transfer-list li { display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0; }
+  .cs-transfer-list li .check { flex: 1; }
+  .cs-transfer-list input[type="number"] { width: 4rem; }
   dialog.cs-cast { max-width: 24rem; width: calc(100% - 2rem); padding: 1rem; border: 1px solid var(--border); border-radius: 0.8rem; background: var(--surface); color: var(--text); }
   dialog.cs-cast::backdrop { background: rgba(0,0,0,.5); }
   dialog.cs-cast h3 { margin: 0 0 0.3rem; }

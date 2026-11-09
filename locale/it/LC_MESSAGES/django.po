@@ -3752,3 +3752,21 @@ msgstr "Bonus di competenza"
 
 msgid "Level %(n)d spell slots"
 msgstr "Slot incantesimo di livello %(n)d"
+
+msgid "Transfer"
+msgstr "Trasferisci"
+
+msgid "Transfer items"
+msgstr "Trasferisci oggetti"
+
+msgid "Choose what to hand over and who receives it. The items leave your sheet and appear on theirs."
+msgstr "Scegli cosa consegnare e a chi. Gli oggetti lasciano la tua scheda e compaiono sulla sua."
+
+msgid "Give to"
+msgstr "Consegna a"
+
+msgid "Hand over %(items)s to %(name)s? They will be removed from your inventory."
+msgstr "Consegnare %(items)s a %(name)s? Verranno rimossi dal tuo inventario."
+
+msgid "Handed %(items)s to %(name)s"
+msgstr "Consegnato %(items)s a %(name)s"

@@ -573,6 +573,7 @@ inventory item, currency, a resource — with no constraint violations).
 | `CharacterSense` | A `rules.Sense` grant with its range in feet (the range varies by source, e.g. a species trait vs. a feat, so it lives on the grant, not on `rules.Sense` itself) |
 | `CharacterInventoryItem` | An `Equipment` stack a `Character` owns, with `equipped`/`attuned`/`quantity` |
 | `CharacterCustomItem` | **New** - an item the player made up (name, quantity, weight, cost in copper, "trade good or valuable" flag, inventory section, a free-text finer type within it, description, optional weapon/armor stats, a ranged weapon's range, `wearable` and `effects`); sheet-only, see the character sheet section |
+| `CustomCatalogItem` | **New** - a campaign's permanent catalog of custom items: every `CharacterCustomItem` added (or edited, or already existing - migration 0029) is also kept here, one entry per name, and is listed (marked *Custom*) in the Add item overlay with Add/Buy (`custom_catalog_add`/`custom_catalog_buy`); shares its fields with `CharacterCustomItem` through the abstract `CustomItemBase` |
 | `CharacterCustomFeature` | **New** - a feature the player made up (name, description, `effects`); sheet-only, listed on the Features tab |
 | `CharacterCurrency` | The coin purse — a true 1:1 with `Character` (`character` is both the FK and the primary key) |
 | `CharacterSpell` | A spell a `Character` knows/has access to, with `prepared`/`always_prepared` flags |
@@ -919,6 +920,10 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
       language there is a real page reload (`?overlay=item|spell`, set by `character_sheet.js` the
       moment the overlay opens and read back on load), so it lands you back in the overlay rather
       than dropping you back on the sheet as if you had backed out of it.
+      **Transfer** (Inventory toolbar, owner only, shown when the campaign has another finished character):
+      a dialog to tick items and quantities and pick the receiving character, then a confirmation;
+      `play.transfer_items` moves them (catalog gear merges into the loose stack on the other sheet, a custom item
+      arrives as an unworn copy; a worn item is simply no longer worn).
     - *Proficiencies*: armor proficiencies, weapon proficiencies, weapon masteries, tool
       proficiencies (artisan's tools and the other tools together), gaming sets, musical
       instruments and languages. A weapon grant is spelled out as the weapons it really
@@ -942,7 +947,7 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
   - **`POST /characters/<id>/act/`** is the one endpoint the sheet posts to (form fields `action` +
     parameters; owner only, completed characters only). Actions: `name`, `xp`, `hp_delta`, `hp_set`,
     `temp_hp`, `death_toggle`, `inspiration`, `hit_dice`, `slots`, `coin`, `equip`, `text` (backstory only),
-    `item_add`, `item_buy`, `custom_add`, `custom_edit`, `item_qty`, `item_remove`, `item_sell`, `spell_add`, `spell_remove`, `feature_add`, `feature_remove`, `custom_feature_add`, `custom_feature_edit`, `custom_feature_remove` (the picture has its own
+    `item_add`, `item_buy`, `custom_add`, `custom_catalog_add`, `custom_catalog_buy`, `item_transfer`, `custom_edit`, `item_qty`, `item_remove`, `item_sell`, `spell_add`, `spell_remove`, `feature_add`, `feature_remove`, `custom_feature_add`, `custom_feature_edit`, `custom_feature_remove` (the picture has its own
     endpoint, above). It answers
     `{ok, refresh, message, state}` (`message` is a note for a toast, e.g. "Sold for 2 gp 5 sp"); the script redraws from `state`, or - when `refresh` is true because
     something derived changed (`equip`: AC, warnings; the item actions: the lists) - re-fetches the page and swaps

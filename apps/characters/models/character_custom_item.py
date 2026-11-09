@@ -1,8 +1,11 @@
 from django.db import models
 
 
-class CharacterCustomItem(models.Model):
-    """An item the player made up (a keepsake, loot, a homebrew weapon) - not a catalog row.
+class CustomItemBase(models.Model):
+    """The fields of an item the player made up: shared by the item on a sheet
+    (`CharacterCustomItem`) and its entry in the campaign's permanent catalog (`CustomCatalogItem`).
+
+    An item the player made up (a keepsake, loot, a homebrew weapon) - not a catalog row.
 
     A separate model rather than a nullable `CharacterInventoryItem.equipment`: the catalog is
     `rules` data (read-only, wiped and reloaded by `import_rules_data`), so a custom item cannot be
@@ -43,11 +46,7 @@ class CharacterCustomItem(models.Model):
         ("shield", "Shield"),
     ]
 
-    character = models.ForeignKey(
-        "characters.Character", related_name="custom_items", on_delete=models.CASCADE
-    )
     name = models.CharField(max_length=200)
-    quantity = models.PositiveSmallIntegerField(default=1)
     weight = models.FloatField(null=True, blank=True)
     value = models.PositiveIntegerField(null=True, blank=True)
     valuable = models.BooleanField(default=False)
@@ -59,7 +58,6 @@ class CharacterCustomItem(models.Model):
     description = models.TextField(blank=True, default="")
     # What lets a custom weapon/armor/shield be worn: the same few numbers a catalog row has. All
     # optional - an item without them stays a plain, unwearable keepsake.
-    equipped = models.BooleanField(default=False)
     armor_kind = models.CharField(max_length=10, choices=ARMOR_KIND_CHOICES, blank=True, default="")
     ac = models.PositiveSmallIntegerField(null=True, blank=True)
     strength_requirement = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -78,7 +76,38 @@ class CharacterCustomItem(models.Model):
     effects = models.JSONField(default=list, blank=True)
 
     class Meta:
+        abstract = True
+
+
+class CharacterCustomItem(CustomItemBase):
+    """An item of the player's own on one character's sheet (see `CustomItemBase`)."""
+
+    character = models.ForeignKey(
+        "characters.Character", related_name="custom_items", on_delete=models.CASCADE
+    )
+    quantity = models.PositiveSmallIntegerField(default=1)
+    equipped = models.BooleanField(default=False)
+
+    class Meta:
         ordering = ["character", "name"]
 
     def __str__(self) -> str:
         return f"{self.character}: {self.name} x{self.quantity}"
+
+
+class CustomCatalogItem(CustomItemBase):
+    """An item a player made up once, kept for good: every custom item added to a sheet (and every
+    one that already existed) is also an entry here, so the whole campaign can add it again from
+    the "add an item" list without retyping it. The catalog proper is `rules` data, wiped and
+    reloaded by `import_rules_data`; these belong to the campaign, so they live beside the
+    characters. One entry per name within a campaign - adding the same name again refreshes it."""
+
+    campaign = models.ForeignKey(
+        "campaigns.Campaign", related_name="custom_catalog", on_delete=models.CASCADE
+    )
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self) -> str:
+        return f"{self.campaign}: {self.name}"

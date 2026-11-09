@@ -4,7 +4,7 @@ from .character_choice import CharacterChoice
 from .character_class import CharacterClass
 from .character_currency import CharacterCurrency
 from .character_custom_feature import CharacterCustomFeature
-from .character_custom_item import CharacterCustomItem
+from .character_custom_item import CharacterCustomItem, CustomCatalogItem
 from .character_feat import CharacterFeat
 from .character_feature import CharacterFeature
 from .character_inventory_item import CharacterInventoryItem
@@ -24,6 +24,7 @@ __all__ = [
     "CharacterCurrency",
     "CharacterCustomFeature",
     "CharacterCustomItem",
+    "CustomCatalogItem",
     "CharacterFeat",
     "CharacterFeature",
     "CharacterInventoryItem",

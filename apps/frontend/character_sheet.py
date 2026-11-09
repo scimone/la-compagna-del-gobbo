@@ -32,9 +32,9 @@ from apps.builder.class_spec import CLASS_SPEC
 from apps.builder.resolvers.proficiency import WeaponProficiency
 from apps.builder.services import creation, derived_stats, land, progression
 from apps.characters import conditions, custom_effects
-from apps.characters.models import Character, CharacterChoice
+from apps.characters.models import Character, CharacterChoice, CustomCatalogItem
 from apps.characters.services import access, play, portrait
-from apps.frontend import translations, units
+from apps.frontend import accounts, translations, units
 from apps.frontend.character_views import (
     _DESCRIBERS,
     _card_line,
@@ -1052,9 +1052,26 @@ def _inventory(character: Character, stats) -> dict:
         section["cards"].sort(key=lambda c: c["name"].lower())
     return {
         "coins": _coins(character),
+        "transfer_targets": _transfer_targets(character),
         "sections": [s for s in sections.values() if s["cards"]],
         "total_weight": _weight_text(total_weight) if total_weight else "",
     }
+
+
+def _transfer_targets(character: Character) -> list[dict]:
+    """The other finished characters of the campaign an item can be handed to."""
+    others = (
+        Character.objects.filter(
+            campaign_id=character.campaign_id, status=Character.STATUS_COMPLETE
+        )
+        .exclude(pk=character.pk)
+        .select_related("owner")
+        .order_by("name")
+    )
+    return [
+        {"id": c.pk, "name": c.name, "owner": accounts.display_name(c.owner) if c.owner else ""}
+        for c in others
+    ]
 
 
 def _coins(character: Character) -> list[dict]:
@@ -1669,6 +1686,46 @@ def _act_custom_add(character, post):
     return {"refresh": True, "message": message}
 
 
+def _act_custom_catalog(character, post, *, buy: bool):
+    quantity = int(_number(post, "quantity") or 1)
+    item = play.add_catalog_custom_item(character, _int(post, "entry"), quantity=quantity, buy=buy)
+    if buy:
+        message = _("Bought %(name)s for %(price)s") % {
+            "name": item.name,
+            "price": _gold_label(item.value * item.quantity),
+        }
+    else:
+        message = _("Added %(name)s") % {"name": item.name}
+    return {"refresh": True, "message": message}
+
+
+def _act_custom_catalog_add(character, post):
+    return _act_custom_catalog(character, post, buy=False)
+
+
+def _act_custom_catalog_buy(character, post):
+    return _act_custom_catalog(character, post, buy=True)
+
+
+def _act_item_transfer(character, post):
+    """Hand items to another character of the campaign. `items` is a JSON list of
+    `{"kind", "item", "quantity"}`, `to` the receiving character."""
+    try:
+        picks = [
+            (str(p["kind"]), int(p["item"]), int(p.get("quantity") or 1))
+            for p in json.loads(post.get("items", "[]"))
+        ]
+    except (TypeError, ValueError, KeyError):
+        raise ValueError("items are not valid") from None
+    target = Character.objects.get(pk=_int(post, "to"))
+    moved = play.transfer_items(character, target, picks)
+    return {
+        "refresh": True,
+        "message": _("Handed %(items)s to %(name)s")
+        % {"items": ", ".join(moved), "name": target.name},
+    }
+
+
 def _act_custom_edit(character, post):
     item = play.update_custom_item(character, _int(post, "item"), **_custom_fields(post))
     return {"refresh": True, "message": _("Saved %(name)s") % {"name": item.name}}
@@ -1699,6 +1756,9 @@ _ACTIONS["equip"] = _act_equip
 _ACTIONS["item_add"] = _act_item_add
 _ACTIONS["item_buy"] = _act_item_buy
 _ACTIONS["custom_add"] = _act_custom_add
+_ACTIONS["custom_catalog_add"] = _act_custom_catalog_add
+_ACTIONS["custom_catalog_buy"] = _act_custom_catalog_buy
+_ACTIONS["item_transfer"] = _act_item_transfer
 _ACTIONS["custom_edit"] = _act_custom_edit
 _ACTIONS["item_qty"] = _act_item_qty
 _ACTIONS["item_remove"] = _act_item_remove
@@ -2049,6 +2109,34 @@ def inventory_filters(
     return filters
 
 
+def _custom_catalog_row(entry: CustomCatalogItem) -> dict:
+    """One entry of the campaign's custom catalog as a row of the "add an item" list."""
+    detail = []
+    if entry.weapon_category:
+        detail.append(_pick_translation(_WEAPON_CATEGORY_LABELS, entry.weapon_category))
+    if entry.type_label:
+        detail.append(entry.type_label)
+    if entry.damage_dice:
+        detail.append(_damage_text(entry))
+    if entry.armor_kind == "shield" and entry.ac:
+        detail.append(f"{_('AC')} +{entry.ac}")
+    elif entry.armor_kind and entry.ac:
+        detail.append(f"{_('AC')} {entry.ac}")
+    if entry.weight:
+        detail.append(_weight_text(entry.weight))
+    if entry.value:
+        detail.append(_gold_label(entry.value))
+    return {
+        "id": entry.pk,
+        "name": entry.name,
+        "search": entry.name.lower(),
+        "detail": " · ".join(detail),
+        "description": entry.description,
+        "section": entry.section,
+        "cost": entry.value or 0,
+    }
+
+
 @require_GET
 def character_items(request, pk):
     """The "add an item" sheet: every catalog item as a filterable list, plus the custom-item form.
@@ -2078,6 +2166,10 @@ def character_items(request, pk):
         for e in catalog
     ]
     used_types = {r["type"]: r["section"] for r in rows}
+    custom_rows = [
+        _custom_catalog_row(e)
+        for e in CustomCatalogItem.objects.filter(campaign_id=character.campaign_id)
+    ]
     type_names = {t.pk: t.name for t in EquipmentType.objects.order_by("name")}
     filters = inventory_filters(used_types=used_types, all_types=True)
     return render(
@@ -2086,6 +2178,7 @@ def character_items(request, pk):
         {
             **_custom_form_context(),
             "items": rows,
+            "custom_entries": custom_rows,
             "filters": filters,
             # Suggestions for the custom item's free-text Type field - the catalog's own type
             # names, so a homebrew item can be labelled "Light Armor" or "Potion" like a real one.

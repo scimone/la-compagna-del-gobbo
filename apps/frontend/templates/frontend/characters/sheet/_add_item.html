@@ -50,6 +50,25 @@
         </div>
       </li>
     {% endfor %}
+    {% for e in custom_entries %}
+      <li data-search="{{ e.search }}" data-section="{{ e.section }}" data-type="" data-category="" data-property="" data-mastery="" data-custom-entry>
+        <div class="cs-line">
+          <div class="cs-row has-buy">
+            <span class="item-text">
+              <span class="item-name">{{ e.name }} <span class="qty">{% translate "Custom" %}</span></span>
+              {% if e.detail %}<span class="item-detail">{{ e.detail }}</span>{% endif %}
+              {% if e.description %}<span class="item-detail">{{ e.description|truncatechars:140 }}</span>{% endif %}
+            </span>
+          </div>
+          <div class="cs-actions">
+            {% if e.cost %}
+              <button type="button" class="equip buy" data-buy="1" data-act="custom_catalog_buy" data-entry="{{ e.id }}" data-cost="{{ e.cost }}">{% translate "Buy" %}</button>
+            {% endif %}
+            <button type="button" class="equip add" data-act="custom_catalog_add" data-entry="{{ e.id }}" data-done="{% translate 'Added' %}" data-again="1">{% translate "Add" %}</button>
+          </div>
+        </div>
+      </li>
+    {% endfor %}
   </ul>
   <p class="cs-empty" id="cs-catalog-empty" hidden>{% translate "No items match." %}</p>
 </div>

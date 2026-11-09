@@ -1,5 +1,6 @@
 """A finished character's page and the endpoint its script posts to, driven over HTTP."""
 
+import json
 import re
 from io import BytesIO
 from pathlib import Path
@@ -1744,3 +1745,61 @@ def test_the_slot_descriptions_are_tooltip_data_for_players(signed_in, alice):
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
     assert 'data-tip-title="Spell Slots"' in html
     assert "All slots reset after a Long Rest." in html
+
+
+# --- the campaign's permanent custom catalog, and handing items to another character ----------
+
+
+def test_a_custom_item_stays_in_the_campaigns_catalog_and_can_be_added_again(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    from apps.characters.models import CharacterCustomItem, CustomCatalogItem
+
+    act(signed_in, cleric, action="custom_add", name="Ruby", section="misc", cost="50")
+    entry = CustomCatalogItem.objects.get(campaign=cleric.campaign, name="Ruby")
+    assert entry.value == 5000
+
+    act(signed_in, cleric, action="custom_add", name="ruby", section="misc", cost="60")
+    assert CustomCatalogItem.objects.filter(campaign=cleric.campaign).count() == 1  # refreshed
+
+    CharacterCustomItem.objects.filter(
+        character=cleric
+    ).delete()  # gone from the sheet, not the catalog
+    again = act(signed_in, cleric, action="custom_catalog_add", entry=entry.pk, quantity="2")
+    assert again.status_code == 200
+    item = cleric.custom_items.get()
+    assert (item.name, item.quantity, item.value) == ("ruby", 2, 6000)
+
+    page = signed_in.get(f"/characters/{cleric.pk}/items/").content.decode()
+    assert "data-custom-entry" in page and 'data-act="custom_catalog_add"' in page
+
+
+def test_transferring_items_moves_them_to_another_character_of_the_campaign(signed_in, alice):
+    from apps.characters.models import CharacterInventoryItem
+
+    cleric = finished(alice, "cleric")
+    friend = finished(alice, "cleric", name="Friend")
+    play.add_custom_item(cleric, name="Locket", quantity=1)
+    locket = cleric.custom_items.get()
+    torches = CharacterInventoryItem.objects.create(
+        character=cleric, equipment_id="torch", quantity=10
+    )
+
+    items = json.dumps(
+        [
+            {"kind": "custom", "item": locket.pk, "quantity": 1},
+            {"kind": "catalog", "item": torches.pk, "quantity": 4},
+        ]
+    )
+    reply = act(signed_in, cleric, action="item_transfer", to=friend.pk, items=items)
+
+    assert reply.status_code == 200
+    assert not cleric.custom_items.exists()
+    torches.refresh_from_db()
+    assert torches.quantity == 6
+    assert friend.custom_items.get().name == "Locket"
+    assert friend.inventory_items.get(equipment_id="torch").quantity == 4
+
+    # Not to oneself, and not more than once per item.
+    assert (
+        act(signed_in, cleric, action="item_transfer", to=cleric.pk, items=items).status_code == 400
+    )
