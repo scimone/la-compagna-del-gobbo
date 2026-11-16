@@ -16,7 +16,11 @@ from apps.rules.models import Ability, ClassLevel
 
 #: Sections whose two pickers are "this out, that in".
 _SWAP_SECTIONS = ("spell_swap", "subclass_swap")
-_CARD_URLS = {"spell": "world-spell-detail", "feat": "world-feat-detail"}
+_CARD_URLS = {
+    "spell": "world-spell-detail",
+    "feat": "world-feat-detail",
+    "creature": "world-creature-detail",
+}
 
 
 def _rows(picker) -> list[dict]:

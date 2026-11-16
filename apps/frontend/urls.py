@@ -45,6 +45,7 @@ urlpatterns = [
     path("characters/<int:pk>/act/", character_sheet.character_act, name="character-act"),
     path("characters/<int:pk>/items/", character_sheet.character_items, name="character-items"),
     path("characters/<int:pk>/spells/", character_sheet.character_spells, name="character-spells"),
+    path("spells/picker/", character_sheet.spell_picker, name="spell-picker"),
     path(
         "characters/<int:pk>/feature-picks/",
         character_sheet.character_feature_picks,
@@ -193,6 +194,11 @@ urlpatterns = [
         "world/feats/feature/<int:pk>/",
         views.world_feature_detail,
         name="world-feature-detail",
+    ),
+    path(
+        "world/creatures/<slug:pk>/",
+        views.world_creature_detail,
+        name="world-creature-detail",
     ),
     path(
         "world/feats/option/<slug:pk>/",

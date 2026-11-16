@@ -74,7 +74,7 @@ from ..resolvers.spell import (
     spell_id,
     spell_pool,
 )
-from . import feature_resources, rebuild
+from . import feature_resources, rebuild, wild_shape
 from .store import Issue, Picker, picker_issues
 
 Values = Mapping[str, list[str]]
@@ -908,6 +908,29 @@ def _class_sections(ctx: _Ctx) -> list[Section]:
 _PROFICIENCY_RISES = (5, 9, 13, 17)
 
 
+def _wild_shape_sections(ctx: _Ctx) -> list[Section]:
+    """A Druid learns Beast forms for Wild Shape when the Beast Shapes table lets them know more:
+    4 at level 2, then 2 more at levels 4 and 8 (`wild_shape.py`)."""
+    if ctx.klass.id != "druid" or ctx.entering:
+        return []
+    count = wild_shape.needed(ctx.character, ctx.new_level)
+    if not count:
+        return []
+    candidates = wild_shape.eligible(ctx.new_level, exclude=wild_shape.known_ids(ctx.character))
+    picker = ctx.picker(
+        "lu.wild_shape",
+        _("Wild Shape forms"),
+        count,
+        [(c.pk, c.name) for c in candidates],
+        kind="creature",
+        hint=_(
+            "Beasts you can turn into with Wild Shape. After a Long Rest you can replace one of "
+            "your known forms with another eligible Beast."
+        ),
+    )
+    return [Section("wild_shape", _("Wild Shape"), pickers=[picker])]
+
+
 def _ritual_caster_sections(ctx: _Ctx) -> list[Section]:
     """Ritual Caster: when the proficiency bonus increases, one more level 1 ritual spell is
     always prepared."""
@@ -1398,6 +1421,7 @@ def plan(
     if ctx.entering:
         sections += _entry_sections(ctx)
     sections += _class_sections(ctx)
+    sections += _wild_shape_sections(ctx)
     sections += _spell_sections(ctx)
     sections += _ritual_caster_sections(ctx)
     # replacing a subclass spell comes last, after the new prepared spells and the class swap
@@ -1892,6 +1916,8 @@ def commit(
             character=character, feature=feature, defaults={"granted_at_level": new}
         )
     _grant_species_traits(character, total)
+    if klass.id == "druid" and (forms := ctx.get("lu.wild_shape")):
+        wild_shape.add_forms(character, forms, new)
     if subclass:
         land_key = f"subclass.{klass.id}.land"
         if ctx.new_subclass and ctx.one("lu.land"):

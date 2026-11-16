@@ -1,0 +1,191 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "creatures",
+  "description": "SRD 5.2 Appendix B stat blocks, converted from creature_stat_blocks.md (apps/rules Creature).",
+  "type": "object",
+  "required": [
+    "creature"
+  ],
+  "properties": {
+    "creature": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "source",
+          "size",
+          "type",
+          "alignment",
+          "ac",
+          "initiative",
+          "hp",
+          "speed",
+          "abilities",
+          "senses",
+          "languages",
+          "cr",
+          "cr_value",
+          "xp",
+          "pb",
+          "traits",
+          "actions",
+          "bonus_actions",
+          "reactions"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "size": {
+            "enum": [
+              "Tiny",
+              "Small",
+              "Medium",
+              "Large",
+              "Huge",
+              "Gargantuan"
+            ]
+          },
+          "type": {
+            "type": "string"
+          },
+          "subtype": {
+            "type": "string"
+          },
+          "alignment": {
+            "type": "string"
+          },
+          "ac": {
+            "type": "integer"
+          },
+          "initiative": {
+            "type": "object",
+            "required": [
+              "mod",
+              "score"
+            ],
+            "properties": {
+              "mod": {
+                "type": "integer"
+              },
+              "score": {
+                "type": "integer"
+              }
+            }
+          },
+          "hp": {
+            "type": "object",
+            "required": [
+              "average",
+              "formula"
+            ],
+            "properties": {
+              "average": {
+                "type": "integer"
+              },
+              "formula": {
+                "type": "string"
+              }
+            }
+          },
+          "speed": {
+            "type": "object",
+            "description": "feet per movement mode; walk is the unlabelled speed",
+            "additionalProperties": {
+              "type": [
+                "integer",
+                "string"
+              ]
+            }
+          },
+          "speed_text": {
+            "type": "string"
+          },
+          "abilities": {
+            "type": "object",
+            "description": "str/dex/con/int/wis/cha -> {score, mod}"
+          },
+          "skills": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer"
+            }
+          },
+          "vulnerabilities": {
+            "type": "string"
+          },
+          "resistances": {
+            "type": "string"
+          },
+          "immunities": {
+            "type": "string"
+          },
+          "senses": {
+            "type": "string"
+          },
+          "languages": {
+            "type": "string"
+          },
+          "gear": {
+            "type": "string"
+          },
+          "cr": {
+            "type": "string"
+          },
+          "cr_value": {
+            "type": "number"
+          },
+          "xp": {
+            "type": "integer"
+          },
+          "pb": {
+            "type": "integer"
+          },
+          "traits": {
+            "$ref": "#/definitions/entries"
+          },
+          "actions": {
+            "$ref": "#/definitions/entries"
+          },
+          "bonus_actions": {
+            "$ref": "#/definitions/entries"
+          },
+          "reactions": {
+            "$ref": "#/definitions/entries"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "type",
+          "name",
+          "entries"
+        ],
+        "properties": {
+          "type": {
+            "const": "entries"
+          },
+          "name": {
+            "type": "string"
+          },
+          "entries": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

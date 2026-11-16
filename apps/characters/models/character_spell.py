@@ -41,6 +41,9 @@ class CharacterSpell(models.Model):
     free_cast = models.BooleanField(default=False)
     free_cast_used = models.BooleanField(default=False)
     free_cast_unlimited = models.BooleanField(default=False)
+    #: When the one `free_cast` comes back: after a `long` rest (the default, Magic Initiate's) or
+    #: a `short` one (a custom item or feature can say so).
+    free_cast_recharge = models.CharField(max_length=5, default="long")
 
     class Meta:
         ordering = ["character", "spell"]

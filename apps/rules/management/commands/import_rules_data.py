@@ -19,6 +19,7 @@ from apps.rules.models import (
     ClassLevel,
     ClassStartingEquipmentOption,
     Condition,
+    Creature,
     Effect,
     Equipment,
     EquipmentGroup,
@@ -644,6 +645,7 @@ class Command(BaseCommand):
         self._import_skills()
         self._import_senses()
         self._import_conditions()
+        self._import_creatures()
         self._import_masteries()
         self._import_languages()
         self._import_equipment_types()
@@ -698,6 +700,7 @@ class Command(BaseCommand):
             Skill,
             Sense,
             Condition,
+            Creature,
             Mastery,
             EquipmentProperty,
             EquipmentType,
@@ -781,6 +784,46 @@ class Command(BaseCommand):
         self._check_unique(Condition, rows)
         Condition.objects.bulk_create(rows)
         self.stdout.write(f"  Condition: {Condition.objects.count()}")
+
+    def _import_creatures(self):
+        """Appendix B's stat blocks (`db/creatures.json`, converted from the SRD text)."""
+        rows = [
+            Creature(
+                id=_slug(it["name"]),
+                name=it["name"],
+                size=it["size"],
+                type=it["type"],
+                subtype=it.get("subtype", ""),
+                alignment=it.get("alignment", ""),
+                ac=it["ac"],
+                initiative_modifier=it["initiative"]["mod"],
+                initiative_score=it["initiative"]["score"],
+                hp_average=it["hp"]["average"],
+                hp_formula=it["hp"]["formula"],
+                speed=it["speed"],
+                speed_text=it.get("speed_text", ""),
+                abilities=it["abilities"],
+                skills=it.get("skills", {}),
+                vulnerabilities=it.get("vulnerabilities", ""),
+                resistances=it.get("resistances", ""),
+                immunities=it.get("immunities", ""),
+                senses=it.get("senses", ""),
+                languages=it.get("languages", ""),
+                gear=it.get("gear", ""),
+                cr=it["cr"],
+                cr_value=it["cr_value"],
+                xp=it.get("xp", 0),
+                proficiency_bonus=it.get("pb", 2),
+                traits=it.get("traits", []),
+                actions=it.get("actions", []),
+                bonus_actions=it.get("bonus_actions", []),
+                reactions=it.get("reactions", []),
+            )
+            for it in _load("creatures.json")["creature"]
+        ]
+        self._check_unique(Creature, rows)
+        Creature.objects.bulk_create(rows)
+        self.stdout.write(f"  Creature: {Creature.objects.count()}")
 
     def _import_masteries(self):
         rows = [

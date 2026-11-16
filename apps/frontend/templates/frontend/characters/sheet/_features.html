@@ -15,6 +15,9 @@
       <button type="button" class="cs-add-btn" data-land-confirm>{% translate "Choose land" %}</button>
     </div>
   {% endif %}
+  {% if can_edit and features.wild_shape %}
+    {% include "frontend/characters/sheet/_wild_shape.html" with ws=features.wild_shape %}
+  {% endif %}
   <div class="cs-sticky">
     {% if can_edit %}
       <div class="cs-invbar">

@@ -1,0 +1,46 @@
+{% load i18n %}
+{# The spell list of the custom item / feature form's picker (`item_form.js` loads it into a dialog): #}
+{# search, a few filters, a Read button that unfolds the spell's description, and an Add button that #}
+{# first asks whether the spell may be cast without a spell slot.                                     #}
+<div class="spk-tools">
+  <input type="search" class="spk-search" data-spk-search placeholder="{% translate 'Search spells' %}" aria-label="{% translate 'Search spells' %}" autocomplete="off">
+  <div class="spk-filters">
+    {% for f in filters %}
+      <select data-spk-filter="{{ f.name }}" aria-label="{{ f.label }}">
+        <option value="">{{ f.label }}</option>
+        {% for value, label in f.options %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+      </select>
+    {% endfor %}
+  </div>
+</div>
+<ul class="spk-list" data-spk-list>
+  {% for s in spells %}
+    <li data-id="{{ s.id }}" data-name="{{ s.name }}" data-search="{{ s.search }}" data-level="{{ s.level }}" data-class="{{ s.classes }}"
+        data-school="{{ s.school }}" data-range="{{ s.range }}" data-time="{{ s.times }}" data-save="{{ s.saves }}">
+      <div class="spk-line">
+        <button type="button" class="spk-row" data-spk-read="{{ s.describe }}" aria-expanded="false">
+          {% if s.image %}<img class="spk-thumb" src="{{ s.image }}" alt="" loading="lazy">{% endif %}
+          <span class="spk-text"><b>{{ s.name }}</b><small>{{ s.detail }}</small></span>
+          <span class="spk-chev" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="spk-add" data-spk-add>{% translate "Add" %}</button>
+      </div>
+      <div class="spk-free" hidden>
+        <label>{% translate "Cast without a spell slot" %}
+          <select data-spk-free>
+            <option value="">{% translate "No - needs a spell slot" %}</option>
+            <option value="long">{% translate "Once per long rest" %}</option>
+            <option value="short">{% translate "Once per short rest" %}</option>
+            <option value="unlimited">{% translate "Unlimited" %}</option>
+          </select>
+        </label>
+        <div class="spk-free-buttons">
+          <button type="button" data-spk-cancel>{% translate "Cancel" %}</button>
+          <button type="button" class="ok" data-spk-confirm>{% translate "Add" %}</button>
+        </div>
+      </div>
+      <div class="spk-desc" hidden></div>
+    </li>
+  {% endfor %}
+</ul>
+<p class="spk-empty" data-spk-empty hidden>{% translate "No spells match." %}</p>

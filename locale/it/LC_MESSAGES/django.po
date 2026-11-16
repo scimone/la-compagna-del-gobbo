@@ -3843,3 +3843,132 @@ msgstr "Sempre preparati finché il privilegio è sulla scheda."
 #, python-format
 msgid "Always prepared (%(name)s)"
 msgstr "Sempre preparato (%(name)s)"
+
+#: apps/frontend/templates/frontend/characters/sheet/_wild_shape.html
+#, python-format
+msgid "Wild Shape: choose %(n)s more Beast form"
+msgid_plural "Wild Shape: choose %(n)s more Beast forms"
+msgstr[0] "Forma Selvatica: scegli %(n)s altra forma di Bestia"
+msgstr[1] "Forma Selvatica: scegli altre %(n)s forme di Bestia"
+
+msgid "Wild Shape: you can replace one known form"
+msgstr "Forma Selvatica: puoi sostituire una forma conosciuta"
+
+msgid "Choose forms"
+msgstr "Scegli le forme"
+
+msgid "Replace a form"
+msgstr "Sostituisci una forma"
+
+msgid "Replace this form…"
+msgstr "Sostituisci questa forma…"
+
+msgid "…with this one"
+msgstr "…con questa"
+
+msgid "Beast forms"
+msgstr "Forme di Bestia"
+
+#: apps/frontend/character_sheet.py
+#, python-format
+msgid "Wild Shape: %(name)s"
+msgstr "Forma Selvatica: %(name)s"
+
+msgid "Wild Shape forms learned"
+msgstr "Forme Selvatiche apprese"
+
+msgid "Wild Shape form replaced"
+msgstr "Forma Selvatica sostituita"
+
+msgid "You can replace one of your Wild Shape forms now. Do it?"
+msgstr "Ora puoi sostituire una delle tue Forme Selvatiche. Vuoi farlo?"
+
+#: apps/builder/services/progression.py
+msgid "Wild Shape forms"
+msgstr "Forme Selvatiche"
+
+msgid "Beasts you can turn into with Wild Shape. After a Long Rest you can replace one of your known forms with another eligible Beast."
+msgstr "Bestie in cui puoi trasformarti con Forma Selvatica. Dopo un Riposo Lungo puoi sostituire una delle forme conosciute con un'altra Bestia ammessa."
+
+#: apps/builder/services/wild_shape.py
+msgid "There is no Wild Shape form to replace now."
+msgstr "Ora non c'è nessuna Forma Selvatica da sostituire."
+
+#: apps/frontend/creature_render.py
+msgid "CR"
+msgstr "GS"
+
+msgid "Vulnerabilities"
+msgstr "Vulnerabilità"
+
+msgid "Resistances"
+msgstr "Resistenze"
+
+msgid "Immunities"
+msgstr "Immunità"
+
+msgid "Senses"
+msgstr "Sensi"
+
+msgid "Gear"
+msgstr "Equipaggiamento"
+
+msgid "Challenge"
+msgstr "Sfida"
+
+msgid "PB"
+msgstr "BC"
+
+msgid "Actions"
+msgstr "Azioni"
+
+msgid "Bonus Actions"
+msgstr "Azioni Bonus"
+
+msgid "Reactions"
+msgstr "Reazioni"
+
+msgid "Stat block"
+msgstr "Scheda del mostro"
+
+#: apps/frontend/templates/frontend/characters/_spells_editor.html
+msgid "Choose spells"
+msgstr "Scegli gli incantesimi"
+
+msgid "Cast without a spell slot"
+msgstr "Lancia senza slot incantesimo"
+
+msgid "Needs a spell slot"
+msgstr "Richiede uno slot incantesimo"
+
+msgid "Free: once per long rest"
+msgstr "Gratis: una volta per riposo lungo"
+
+msgid "Free: once per short rest"
+msgstr "Gratis: una volta per riposo breve"
+
+msgid "Free: unlimited"
+msgstr "Gratis: illimitato"
+
+#: apps/frontend/templates/frontend/characters/_spell_picker.html
+msgid "No - needs a spell slot"
+msgstr "No - richiede uno slot incantesimo"
+
+msgid "Once per long rest"
+msgstr "Una volta per riposo lungo"
+
+msgid "Once per short rest"
+msgstr "Una volta per riposo breve"
+
+msgid "Unlimited"
+msgstr "Illimitato"
+
+#: apps/frontend/character_sheet.py
+msgid "free once per long rest"
+msgstr "gratis una volta per riposo lungo"
+
+msgid "free once per short rest"
+msgstr "gratis una volta per riposo breve"
+
+msgid "free, unlimited"
+msgstr "gratis, illimitato"

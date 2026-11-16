@@ -1,15 +1,16 @@
 {% load i18n %}
-{# Spells a custom item or feature grants, always prepared: a search box over every spell and the #}
-{# chosen ones as chips, kept in the hidden `spells` field as a JSON list of spell ids            #}
-{# (`static/js/item_form.js`).                                                                    #}
-<div class="fx-editor sp-editor" data-spells>
+{# Spells a custom item or feature grants, always prepared: the chosen ones as chips (each with how it #}
+{# may be cast without a spell slot, if at all) and a button that opens the spell list. Kept in the   #}
+{# hidden `spells` field as JSON `[{"id", "free"}]` (`static/js/item_form.js`).                       #}
+<div class="fx-editor sp-editor" data-spells data-picker-url="{{ picker_url }}">
   <p class="fx-title">{% translate "Spells" %}</p>
   <p class="hint">{{ hint }}</p>
   <input type="hidden" name="spells" value="{{ value }}">
   <ul class="sp-chips" data-spells-chips></ul>
-  <input type="text" class="sp-search" list="sp-{{ uid }}" autocomplete="off" data-spells-input placeholder="{% translate 'Search a spell to add…' %}" aria-label="{% translate 'Add a spell' %}">
-  <datalist id="sp-{{ uid }}">
-    {% for id, name, level in options %}<option value="{{ name }}" data-id="{{ id }}" label="{% if level %}{% blocktranslate %}Level {{ level }}{% endblocktranslate %}{% else %}{% translate 'Cantrip' %}{% endif %}"></option>{% endfor %}
-  </datalist>
-  <span hidden data-spells-labels data-remove="{% translate 'Remove this spell' %}"></span>
+  <button type="button" class="fx-add" data-spells-open>+ {% translate "Choose spells" %}</button>
+  <script type="application/json" data-spells-names>{{ names|safe }}</script>
+  <span hidden data-spells-labels data-remove="{% translate 'Remove this spell' %}" data-done="{% translate 'Done' %}"
+        data-free="{% translate 'Cast without a spell slot' %}" data-none="{% translate 'Needs a spell slot' %}"
+        data-long="{% translate 'Free: once per long rest' %}" data-short="{% translate 'Free: once per short rest' %}"
+        data-unlimited="{% translate 'Free: unlimited' %}"></span>
 </div>

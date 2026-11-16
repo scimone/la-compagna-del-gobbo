@@ -17,7 +17,7 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
 from apps.characters.services import access
-from apps.frontend import accounts, cloudflare_access, units
+from apps.frontend import accounts, cloudflare_access, creature_render, units
 from apps.frontend.bookmarks import BOOKMARK_MODELS, bookmarked_ids, is_bookmarked
 from apps.frontend.entries_render import (
     homebrew_badge,
@@ -38,6 +38,7 @@ from apps.frontend.models import Bookmark
 from apps.rules.models import Ability, Class, Equipment, Feature, Subclass
 from apps.rules.services import background as background_service
 from apps.rules.services import class_ as class_service
+from apps.rules.services import creature as creature_service
 from apps.rules.services import equipment as equipment_service
 from apps.rules.services import feat as feat_service
 from apps.rules.services import feature as feature_service
@@ -2060,6 +2061,19 @@ def world_feature_detail(request, pk):
         "world-feats",
         facts,
         plain_sections=plain_sections,
+    )
+
+
+def world_creature_detail(request, pk):
+    """A stat block (Appendix B) - reachable from a Druid's "Wild Shape: <beast>" cards."""
+    creature = creature_service.get_creature(pk)
+    facts, sections = creature_render.facts_and_sections(creature)
+    return _detail_page(
+        request,
+        creature.name,
+        "world-feats",
+        facts,
+        plain_sections=[(_("Stat block"), mark_safe("".join(sections)))],  # noqa: S308
     )
 
 

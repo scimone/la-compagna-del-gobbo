@@ -440,11 +440,15 @@ MAX_CUSTOM_SPELLS = 20
 #: `CharacterSpell.source` of a spell an item or feature of the player's own grants:
 #: `custom:item:<pk>` (while that item is worn) / `custom:feature:<pk>` (always).
 CUSTOM_SPELL_SOURCE = "custom:"
+#: How a granted spell may be cast without a slot: never (""), once per long rest, once per short
+#: rest, or as often as wanted.
+FREE_CASTS = ("", "long", "short", "unlimited")
 
 
-def clean_spells(raw) -> list[str]:
-    """The spell ids a custom item or feature grants, from what a form posts (a JSON list, or an
-    already-parsed one): each must be a real spell, listed once, in the order given."""
+def clean_spells(raw) -> list[dict]:
+    """The spells a custom item or feature grants, from what a form posts (a JSON list, or an
+    already-parsed one) as `[{"id": spell id, "free": one of FREE_CASTS}]`. A bare id means no
+    free cast. Each must be a real spell, listed once, in the order given."""
     if not raw:
         return []
     if isinstance(raw, str):
@@ -454,36 +458,68 @@ def clean_spells(raw) -> list[str]:
             raise ValueError("spells are not valid JSON") from None
     if not isinstance(raw, list) or len(raw) > MAX_CUSTOM_SPELLS:
         raise ValueError("too many spells")
-    ids = list(dict.fromkeys(str(i) for i in raw))
-    known = set(Spell.objects.filter(pk__in=ids).values_list("pk", flat=True))
-    if len(known) != len(ids):
+    entries: dict[str, str] = {}
+    for entry in raw:
+        spell_id, free = (
+            (str(entry.get("id", "")), str(entry.get("free", "")))
+            if isinstance(entry, dict)
+            else (str(entry), "")
+        )
+        if free not in FREE_CASTS:
+            raise ValueError(f"unknown free cast {free!r}")
+        entries.setdefault(spell_id, free)
+    known = set(Spell.objects.filter(pk__in=entries).values_list("pk", flat=True))
+    if len(known) != len(entries):
         raise ValueError("unknown spell")
-    return ids
+    return [{"id": i, "free": free} for i, free in entries.items()]
+
+
+def spell_entries(raw) -> list[dict]:
+    """A stored `spells` value as `[{"id", "free"}]` (older rows hold bare ids)."""
+    return [
+        {"id": e["id"], "free": e.get("free", "")} if isinstance(e, dict) else {"id": e, "free": ""}
+        for e in raw or []
+    ]
+
+
+def _free_flags(free: str) -> dict:
+    return {
+        "free_cast": free in ("long", "short"),
+        "free_cast_recharge": "short" if free == "short" else "long",
+        "free_cast_unlimited": free == "unlimited",
+    }
 
 
 def sync_custom_spells(character: Character) -> None:
     """Make the character's spells match what their own items and features grant: every spell of
-    a custom feature, and of a custom item while it is worn, is a spell that is always prepared;
-    one that is no longer granted goes (the player's own spells and a spell the character has from
-    anywhere else are never touched or doubled)."""
-    wanted: dict[str, str] = {}
+    a custom feature, and of a custom item while it is worn, is a spell that is always prepared
+    (and, if the grant says so, can be cast without a slot); one that is no longer granted goes
+    (the player's own spells and a spell the character has from anywhere else are never touched
+    or doubled)."""
+    wanted: dict[str, tuple[str, str]] = {}
     for feature in character.custom_features.all():
-        for spell_id in feature.spells or []:
-            wanted.setdefault(spell_id, f"{CUSTOM_SPELL_SOURCE}feature:{feature.pk}")
+        for entry in spell_entries(feature.spells):
+            wanted.setdefault(
+                entry["id"], (f"{CUSTOM_SPELL_SOURCE}feature:{feature.pk}", entry["free"])
+            )
     for item in character.custom_items.filter(equipped=True):
-        for spell_id in item.spells or []:
-            wanted.setdefault(spell_id, f"{CUSTOM_SPELL_SOURCE}item:{item.pk}")
-    mine = character.spells.filter(source__startswith=CUSTOM_SPELL_SOURCE)
-    for row in mine:
-        if wanted.get(row.spell_id) == row.source:
-            wanted.pop(row.spell_id)
-        elif row.spell_id in wanted:  # granted by something else now: just re-label it
-            row.source = wanted.pop(row.spell_id)
-            row.save(update_fields=["source"])
-        else:
+        for entry in spell_entries(item.spells):
+            wanted.setdefault(entry["id"], (f"{CUSTOM_SPELL_SOURCE}item:{item.pk}", entry["free"]))
+    for row in character.spells.filter(source__startswith=CUSTOM_SPELL_SOURCE):
+        if row.spell_id not in wanted:
             row.delete()
+            continue
+        source, free = wanted.pop(row.spell_id)
+        flags = _free_flags(free)
+        if row.source != source or any(getattr(row, k) != v for k, v in flags.items()):
+            row.source = source
+            for key, value in flags.items():
+                setattr(row, key, value)
+            if not (row.free_cast or row.free_cast_unlimited):
+                row.free_cast_used = False
+            row.save()
     have = set(character.spells.values_list("spell_id", flat=True))
-    for spell_id, source in wanted.items():
+    for spell_id, (source, free) in wanted.items():
         if spell_id not in have:
             CharacterSpell.objects.create(
                 character=character,
@@ -491,6 +527,7 @@ def sync_custom_spells(character: Character) -> None:
                 prepared=True,
                 always_prepared=True,
                 source=source,
+                **_free_flags(free),
             )
 
 
@@ -910,6 +947,9 @@ def grant_rest_choices(character: Character) -> None:
     choices = dict(character.rest_choices)
     if has_land:
         choices["land"] = True
+    # Wild Shape: a Long Rest lets one known form be replaced (`builder/services/wild_shape.py`).
+    if CharacterChoice.objects.filter(character=character, key="wild_shape.forms").exists():
+        choices["wild_shape"] = True
     if choices != character.rest_choices:
         character.rest_choices = choices
         character.save(update_fields=["rest_choices"])
@@ -1257,6 +1297,9 @@ def short_rest(
     if character.exhaustion and character.features.filter(feature__name_en="Tireless").exists():
         character.exhaustion -= 1
     character.save()
+    character.spells.filter(free_cast_used=True, free_cast_recharge="short").update(
+        free_cast_used=False
+    )
     for row in character.resources.all():
         if row.reset_on == "short_rest":
             row.current_uses = row.max_uses

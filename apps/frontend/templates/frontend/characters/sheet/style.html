@@ -415,6 +415,21 @@
   .coin .disc { cursor: pointer; }
   .coin button.disc { appearance: none; border: 0; padding: 0; font: inherit; font-size: 1.2rem; font-weight: 700; line-height: 1; touch-action: manipulation; }
   .coin button.disc:active { filter: brightness(0.9); transform: scale(0.94); }
+  .cs-wild-bar { padding: 0.5rem 0.9rem; gap: 0.6rem; }
+  .cs-wild-bar .cs-weight { flex: 1; min-width: 0; white-space: normal; }
+  dialog.cs-wild { max-width: 28rem; max-height: 90vh; overflow-y: auto; }
+  .ws-group { margin: 0.6rem 0 0; padding: 0; border: 0; }
+  .ws-group legend { padding: 0; font-weight: 600; font-size: 0.9rem; color: var(--muted); }
+  .ws-list { list-style: none; margin: 0.3rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .ws-list li { flex: 1 1 100%; display: flex; flex-wrap: wrap; align-items: center; border: 1px solid var(--border); border-radius: 0.6rem; background: var(--bg); }
+  .ws-list li:has(input:checked) { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+  .ws-pick { flex: 1; min-width: 0; display: flex; align-items: center; gap: 0.6rem; padding: 0.4rem 0.6rem; cursor: pointer; }
+  .ws-pick input { accent-color: var(--accent); }
+  .ws-text { display: flex; flex-direction: column; min-width: 0; }
+  .ws-text small { color: var(--muted); }
+  .ws-read { margin: 0 0.5rem; padding: 0.25rem 0.6rem; border: 1px solid var(--border); border-radius: 1rem; background: none; color: var(--accent); font: inherit; font-size: 0.8rem; cursor: pointer; }
+  .ws-read[aria-expanded="true"] { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+  .ws-list .desc { flex: 1 1 100%; padding: 0.3rem 0.8rem 0.6rem; font-size: 0.9rem; }
   .coin-quick { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.7rem; }
   .coin-quick button { padding: 0.35rem 0.8rem; border-radius: 1rem; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 600; cursor: pointer; }
   .coin-tip.slot-tip { max-width: min(18rem, calc(100vw - 16px)); font-weight: 400; line-height: 1.35; }

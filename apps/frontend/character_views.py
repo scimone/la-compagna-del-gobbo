@@ -33,7 +33,14 @@ from apps.campaigns.services import membership
 from apps.characters.models import Character
 from apps.characters.services import access
 from apps.characters.services import character as character_service
-from apps.frontend import accounts, campaign_context, campaign_views, translations, units
+from apps.frontend import (
+    accounts,
+    campaign_context,
+    campaign_views,
+    creature_render,
+    translations,
+    units,
+)
 from apps.frontend.entries_render import render_entries, render_subclass_body
 from apps.frontend.views import (
     _BACKGROUND_IMAGE_SLUGS,
@@ -56,6 +63,7 @@ from apps.rules.models import (
     Ability,
     Background,
     Class,
+    Creature,
     Equipment,
     Feat,
     Feature,
@@ -527,6 +535,7 @@ _CARD_MODELS = {
     "invocation": OptionalFeature,
     "skill": Skill,
     "subclass": Subclass,
+    "creature": Creature,
 }
 
 
@@ -551,6 +560,8 @@ def _card_line(kind: str, obj) -> str:
         return _("Eldritch Invocation")
     if kind == "subclass":
         return obj.klass.name
+    if kind == "creature":
+        return creature_render.line(obj)
     if kind == "skill":
         return obj.ability.name
     parts = [obj.type.name if obj.type_id else ""]
@@ -704,6 +715,10 @@ def _describe_equipment(pk):
     return facts, sections
 
 
+def _describe_creature(pk):
+    return creature_render.facts_and_sections(get_object_or_404(Creature, pk=pk))
+
+
 def _describe_feature(pk):
     return [], [render_entries(get_object_or_404(Feature, pk=pk).entries)]
 
@@ -733,6 +748,7 @@ _DESCRIBERS = {
     "invocation": _describe_invocation,
     "skill": _describe_skill,
     "subclass": _describe_subclass,
+    "creature": _describe_creature,
     "equipment": _describe_equipment,
 }
 

@@ -30,11 +30,11 @@ from django.views.decorators.http import require_GET, require_POST
 from apps.builder import tables
 from apps.builder.class_spec import CLASS_SPEC
 from apps.builder.resolvers.proficiency import WeaponProficiency
-from apps.builder.services import creation, derived_stats, land, progression
+from apps.builder.services import creation, derived_stats, land, progression, wild_shape
 from apps.characters import conditions, custom_effects
 from apps.characters.models import Character, CharacterChoice, CustomCatalogItem
 from apps.characters.services import access, play, portrait
-from apps.frontend import accounts, translations, units
+from apps.frontend import accounts, creature_render, translations, units
 from apps.frontend.character_views import (
     _DESCRIBERS,
     _card_line,
@@ -409,10 +409,66 @@ def _feature_items(character: Character, can_edit: bool = False) -> list[dict]:
     for co in character.optional_features.select_related("optional_feature"):
         option = co.optional_feature
         items.append({**_option_row(option), **_removal(can_edit, co.source, "option", option.pk)})
+    for creature in wild_shape.known_forms(character):
+        items.append(_wild_shape_row(creature))
     for custom in character.custom_features.all():
         items.append(_custom_feature_row(custom, can_edit))
     items.sort(key=lambda item: item["name"].casefold())
     return items
+
+
+def _wild_shape_row(creature) -> dict:
+    """A Beast form a Druid has learned for Wild Shape, as a class-feature row ("Wild Shape:
+    Wolf") with the Wild Shape icon, linking to the stat block."""
+    return {
+        "pk": creature.pk,
+        "kind": "wild_shape",
+        "name": _("Wild Shape: %(name)s") % {"name": creature.name},
+        "properties": [
+            _("Class"),
+            Class.objects.get(pk="druid").name,
+            creature_render.line(creature),
+        ],
+        "url": reverse("world-creature-detail", args=[creature.pk]),
+        "image": _menu_image_url("features_classes", "druid.jpeg"),
+        "type": "class",
+        "group": "druid",
+        "search": f"wild shape {creature.name}".lower(),
+    }
+
+
+def _wild_shape_dialog(character: Character, can_edit: bool) -> dict | None:
+    """What the Features tab's Wild Shape control needs: `mode` "learn" (the Druid may still pick
+    forms: `count` of them) or "swap" (a Long Rest opened the one replacement), the known forms and
+    the eligible candidates, each as a card with the link that reads its stat block."""
+    if not can_edit:
+        return None
+
+    def card(c):
+        return {
+            "id": c.pk,
+            "name": c.name,
+            "detail": creature_render.line(c),
+            "describe": reverse("character-describe", args=["creature", c.pk]),
+        }
+
+    count = wild_shape.needed(character)
+    if count:
+        known = wild_shape.known_ids(character)
+        level = wild_shape.druid_level(character)
+        return {
+            "mode": "learn",
+            "count": count,
+            "candidates": [card(c) for c in wild_shape.eligible(level, exclude=known)],
+        }
+    options = wild_shape.swap_options(character)
+    if options:
+        return {
+            "mode": "swap",
+            "known": [card(c) for c in options["known"]],
+            "candidates": [card(c) for c in options["candidates"]],
+        }
+    return None
 
 
 def _custom_feature_row(custom, can_edit: bool) -> dict:
@@ -475,6 +531,7 @@ def _features_tab(request, character: Character, can_edit: bool = False) -> dict
         "items": items,
         "filters": [type_filter] if type_filter else [],
         "land_change": land.land_options(character) if can_edit else None,
+        "wild_shape": _wild_shape_dialog(character, can_edit),
     }
 
 
@@ -1409,7 +1466,21 @@ def _act_long_rest(character, post):
     elif character.rest_choices.get("land"):
         result["prompt"] = _("You can choose a new land for Circle of the Land now. Do it?")
         result["prompt_tab"] = "features"
+    elif character.rest_choices.get("wild_shape"):
+        result["prompt"] = _("You can replace one of your Wild Shape forms now. Do it?")
+        result["prompt_tab"] = "features"
     return result
+
+
+def _act_wild_shape_choose(character, post):
+    ids = [i for i in post.get("forms", "").split(",") if i]
+    wild_shape.add_forms(character, ids)
+    return {"refresh": True, "message": _("Wild Shape forms learned")}
+
+
+def _act_wild_shape_swap(character, post):
+    wild_shape.swap_form(character, post.get("old", ""), post.get("new", ""))
+    return {"refresh": True, "message": _("Wild Shape form replaced")}
 
 
 def _act_land_change(character, post):
@@ -1632,10 +1703,23 @@ def _int_or_none(post, name: str) -> int | None:
     return None if number is None else int(number)
 
 
-def _spell_names(ids) -> str:
-    """The names of the spells a custom item or feature grants, in the order they were chosen."""
-    names = dict(Spell.objects.filter(pk__in=ids).values_list("pk", "name"))
-    return ", ".join(names[i] for i in ids if i in names)
+_FREE_CAST_LABELS = {
+    "long": gettext_lazy("free once per long rest"),
+    "short": gettext_lazy("free once per short rest"),
+    "unlimited": gettext_lazy("free, unlimited"),
+}
+
+
+def _spell_names(spells) -> str:
+    """The spells a custom item or feature grants, in the order they were chosen, each with how it
+    may be cast for free, if it may."""
+    entries = play.spell_entries(spells)
+    names = dict(Spell.objects.filter(pk__in=[e["id"] for e in entries]).values_list("pk", "name"))
+    return ", ".join(
+        names[e["id"]] + (f" ({_FREE_CAST_LABELS[e['free']]})" if e["free"] else "")
+        for e in entries
+        if e["id"] in names
+    )
 
 
 def _effects_lines(effects) -> list[str]:
@@ -1794,6 +1878,8 @@ _ACTIONS["short_rest"] = _act_short_rest
 _ACTIONS["long_rest"] = _act_long_rest
 _ACTIONS["weapon_mastery_swap"] = _act_mastery_swap
 _ACTIONS["land_change"] = _act_land_change
+_ACTIONS["wild_shape_choose"] = _act_wild_shape_choose
+_ACTIONS["wild_shape_swap"] = _act_wild_shape_swap
 _ACTIONS["resource"] = _act_resource
 _ACTIONS["spell_add"] = _act_spell_add
 _ACTIONS["spell_prepare"] = _act_spell_prepare
@@ -1894,6 +1980,26 @@ def character_spells(request, pk):
     return render(
         request,
         "frontend/characters/sheet/_add_spell.html",
+        {"spells": rows, "filters": _spell_filters(rows)},
+    )
+
+
+@require_GET
+def spell_picker(request):
+    """Every spell as a list with search and filters, for choosing the spells of a custom item or
+    feature: a fragment `item_form.js` loads into its dialog (any signed-in player; spells are
+    rules text)."""
+    if not request.user.is_authenticated:
+        return HttpResponse(status=403)
+    rows = [
+        _spell_row(spell)
+        for spell in Spell.objects.prefetch_related("saving_throw_abilities").order_by(
+            "level", "name"
+        )
+    ]
+    return render(
+        request,
+        "frontend/characters/_spell_picker.html",
         {"spells": rows, "filters": _spell_filters(rows)},
     )
 

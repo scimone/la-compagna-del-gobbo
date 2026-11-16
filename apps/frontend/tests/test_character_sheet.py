@@ -1911,7 +1911,7 @@ def test_a_custom_item_grants_spells_only_while_equipped(signed_in, alice):
         spells=json.dumps([spell.pk]),
     )
     item = cleric.custom_items.get()
-    assert item.spells == [spell.pk]
+    assert item.spells == [{"id": spell.pk, "free": ""}]
     assert not cleric.spells.filter(spell=spell).exists()  # carried, not worn
 
     act(signed_in, cleric, action="equip", kind="custom", item=item.pk, value="1")
@@ -1935,3 +1935,93 @@ def test_a_spell_the_character_already_has_is_not_doubled_or_removed(signed_in, 
     assert cleric.spells.filter(spell=spell).count() == 1
     act(signed_in, cleric, action="custom_feature_remove", feature=cleric.custom_features.get().pk)
     assert cleric.spells.filter(spell=spell).exists()  # the player's own stays
+
+
+def test_wild_shape_forms_are_feature_cards_with_stat_blocks_and_a_swap_after_a_rest(
+    signed_in, alice
+):
+    from apps.builder.services import wild_shape
+
+    druid = finished(alice, "druid", name="Moss")
+    druid.classes.update(level=2)
+    html = panel(signed_in.get(f"/characters/{druid.pk}/").content.decode(), "features")
+    assert "Wild Shape: Wolf" not in html and "data-wild-open" in html  # none learnt yet
+    assert 'data-mode="learn"' in html and 'data-count="4"' in html
+
+    forms = "wolf,rat,spider,riding-horse"
+    assert act(signed_in, druid, action="wild_shape_choose", forms=forms).status_code == 200
+    html = panel(signed_in.get(f"/characters/{druid.pk}/").content.decode(), "features")
+    assert "Wild Shape: Wolf" in html and "/world/creatures/wolf/" in html
+    assert "data-wild-open" not in html  # nothing to choose or replace right now
+
+    page = signed_in.get("/world/creatures/wolf/").content.decode()
+    assert "Pack Tactics" in page and "Armor Class" in page and "DEX" in page
+    described = signed_in.get("/characters/describe/creature/wolf/").content.decode()
+    assert "Pack Tactics" in described
+
+    act(signed_in, druid, action="long_rest")
+    html = panel(signed_in.get(f"/characters/{druid.pk}/").content.decode(), "features")
+    assert 'data-mode="swap"' in html and 'name="ws_old"' in html
+    reply = act(signed_in, druid, action="wild_shape_swap", old="wolf", new="boar")
+    assert reply.status_code == 200
+    assert "boar" in wild_shape.known_ids(druid) and "wolf" not in wild_shape.known_ids(druid)
+    assert act(signed_in, druid, action="wild_shape_swap", old="rat", new="cat").status_code == 400
+
+
+def test_a_granted_spell_can_be_cast_free_once_per_rest_or_without_limit(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    long_, short_, unlimited, plain = _unknown_spells(cleric, 4)
+    entries = [
+        {"id": long_.pk, "free": "long"},
+        {"id": short_.pk, "free": "short"},
+        {"id": unlimited.pk, "free": "unlimited"},
+        {"id": plain.pk, "free": ""},
+    ]
+    act(signed_in, cleric, action="custom_feature_add", name="Boon", spells=json.dumps(entries))
+    rows = {r.spell_id: r for r in cleric.spells.filter(source__startswith="custom:")}
+    assert (rows[long_.pk].free_cast, rows[long_.pk].free_cast_recharge) == (True, "long")
+    assert (rows[short_.pk].free_cast, rows[short_.pk].free_cast_recharge) == (True, "short")
+    assert rows[unlimited.pk].free_cast_unlimited and not rows[unlimited.pk].free_cast
+    assert not (rows[plain.pk].free_cast or rows[plain.pk].free_cast_unlimited)
+
+    # Spend the two free casts: a short rest restores only the one that says so.
+    cleric.spells.filter(spell_id__in=[long_.pk, short_.pk]).update(free_cast_used=True)
+    play.short_rest(cleric, [], 0)
+    assert cleric.spells.get(spell_id=short_.pk).free_cast_used is False
+    assert cleric.spells.get(spell_id=long_.pk).free_cast_used is True
+    play.long_rest(cleric)
+    assert cleric.spells.get(spell_id=long_.pk).free_cast_used is False
+
+    # Editing the grant changes the flags; a bad value is refused.
+    feature = cleric.custom_features.get()
+    changed = json.dumps([{"id": long_.pk, "free": ""}])
+    act(
+        signed_in,
+        cleric,
+        action="custom_feature_edit",
+        feature=feature.pk,
+        name="Boon",
+        spells=changed,
+    )
+    row = cleric.spells.get(spell_id=long_.pk)
+    assert not row.free_cast and not cleric.spells.filter(spell_id=short_.pk).exists()
+    bad = json.dumps([{"id": long_.pk, "free": "daily"}])
+    assert (
+        act(signed_in, cleric, action="custom_feature_add", name="X", spells=bad).status_code == 400
+    )
+
+
+def test_the_spell_picker_lists_spells_with_search_filters_and_a_free_cast_choice(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    html = signed_in.get("/spells/picker/").content.decode()
+    assert "data-spk-search" in html and 'data-spk-filter="level"' in html
+    assert 'data-spk-filter="school"' in html and "data-spk-free" in html
+    assert html.count("data-spk-add") >= Spell.objects.count()
+    assert "/characters/describe/spell/" in html
+    signed_in.logout()
+    assert signed_in.get("/spells/picker/").status_code == 403
+
+    # The editor on the forms carries the picker's address and the chosen spells.
+    signed_in.force_login(alice)
+    page = signed_in.get(f"/characters/{cleric.pk}/items/").content.decode()
+    assert "data-spells-open" in page and 'data-picker-url="/spells/picker/"' in page

@@ -159,6 +159,7 @@ kept on `db/handbook.json` copied verbatim from the old dump).
 | `EquipmentProperty` | Defined | `db/equipment-base.json` (`itemProperty`) | 9 rows. No top-level `name` in the source (display name lives at `entries[0].name`) - `id` is `slugify(abbreviation)` |
 | `Equipment` | Defined | `db/equipment-base.json` (`baseitem`, 94 rows) + `db/equipment.json` (`item`, 123 rows) | 217 rows total - an exact split of the old single flat catalog, not new content. `type`/`properties`/`masteries`/`group` are real FKs/M2Ms now (were a free-text `category` plus JSON ref lists); `pack_contents` is a new self-M2M (`EquipmentPackContent`) for pack contents (e.g. Burglar's Pack -> Backpack, Candles, ...) |
 | `EquipmentPackContent` | Defined | `db/equipment.json` (`item.packContents`) | 65 rows. New - resolves a pack's contents to real `Equipment` FKs with a quantity, where the old format left this as unparsed prose |
+| `Creature` | Defined | `db/creatures.json` (`creature`), converted from the SRD's Appendix B text (`creature_stat_blocks.md`) | 51 stat blocks (Ape ... Zombie): size/type/alignment, AC, initiative, HP, `speed` (a dict in feet, `walk` being the unlabelled one) and `speed_text`, `abilities`, skills, resistances/immunities/vulnerabilities, senses, languages, gear, `cr` (+ `cr_value` as a number), XP, PB and `traits`/`actions`/`bonus_actions`/`reactions` as `entries` lists. Not translated. Loaded by `import_rules_data` and, on its own (leaving every other table and so working with characters present), by `manage.py import_creatures`. Shown by `frontend/creature_render.py` (`/world/creatures/<id>/`, the `creature` describer); the Druid's Wild Shape picks its forms from the Beasts |
 | `Species` | Defined | `db/species.json` (`race`) | 11 rows - 10 XPHB plus `Grung` (source VGM), which is absent from the new source drop as shipped (not filtered by this project) and was added back by hand afterward, at the project owner's request, converting `db_old/species.json`'s row into the new format - see `SPECIES_SHORT_DESCRIPTIONS` in `import_rules_data.py`. `fly_speed`/`swim_speed`/`climb_speed` were dropped (no source left for them, and verified zero real data loss - every surviving species already had all three at 0, including the hand-added `Grung`); `speed` is now a plain int. `darkvision` is new. `resistances`/`additional_spells`/`lineages` are new (character builder): flat damage resistances (Aasimar, Dwarf), unconditional species spells (Aasimar's Light), and the source's `_versions` normalised to one lineage shape (Elf, Gnome, Goliath, Tiefling, Dragonborn colours) - see the model docstring |
 | `Background` | Defined | `db/backgrounds.json` | `skills` is a real M2M to `Skill` now (was a comma string); `feat` is a real FK to `Feat` now (was a bare name string), with `feat_variant` keeping the source's `; cleric`/`; druid`/`; wizard` suffix (Magic Initiate) that the FK alone loses; `ability_scores`/`tools` keep the source's own structured choice/grant JSON rather than a free-text summary |
 | `BackgroundStartingEquipmentOption` | Defined | `db/backgrounds.json` (`startingEquipment`) | 108 rows. New - a background's "choose A or B" starting gear, resolved to real `Equipment` FKs (or a gold value) where the old format left this as unparsed prose. Two picks (e.g. Acolyte's "Holy Symbol") name an `EquipmentGroup` instead of one concrete item - a `group` FK covers those; displayed on the background/class detail page as a "Starting Equipment" section |
@@ -929,8 +930,11 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
       attack, a weapon's own attack/damage (a +1 sword), saves and skills (a bonus, all of them, or
       proficiency / expertise), and ability scores (a bonus, or "at least" - Gauntlets of Ogre Power).
       Not covered: maximum hit points, resistances, senses. A custom item or feature can also
-      grant **spells** (`spells`, a JSON list of spell ids, edited with the search-and-chips picker of
-      `_spells_editor.html`): `play.sync_custom_spells` keeps them on the sheet as always-prepared
+      grant **spells** (`spells`, a JSON list of `{"id", "free"}`; the field shows the chosen ones as chips
+      and "Choose spells" opens a full-screen list - `GET /spells/picker/`, `_spell_picker.html`, driven by
+      `item_form.js` - with search, filters, a Read button for the description and an Add button that asks
+      whether the spell can be cast without a slot: never, once per long rest, once per short rest
+      (`CharacterSpell.free_cast_recharge`, restored by `play.short_rest`) or unlimited): `play.sync_custom_spells` keeps them on the sheet as always-prepared
       `CharacterSpell` rows (`source="custom:item:<pk>"` / `"custom:feature:<pk>"`) - a feature's always,
       an item's only while it is worn - and removes them when the item is taken off, edited or removed;
       a spell the character already has from anywhere else is never doubled or taken away. **Custom features** are added from the
@@ -1343,6 +1347,21 @@ addresses and browser strings are never stored**, so it says who used what and w
 what they wrote. A failure to record is logged and never breaks the page. `manage.py
 interaction_report [--days N]` prints per-user, per-page and per-action counts, and `--prune
 --days N` deletes older rows.
+
+#### Druid: Wild Shape
+
+`apps/builder/services/wild_shape.py` implements the SRD feature's Known Forms: 4 Beast forms at Druid
+level 2, 6 at 4, 8 at 8 (the Beast Shapes table), chosen from the `Creature` stat blocks of type Beast
+with a maximum CR of 1/4, 1/2 and 1, no Fly Speed before level 8 and no Swarms. They are the
+`wild_shape.forms` `CharacterChoice` (creature ids). The level-up asks for them in a "Wild Shape"
+section (`lu.wild_shape`, a `creature` picker with a Read button per Beast, via the `creature`
+describer), 4 at level 2 and 2 more at 4 and 8; a Druid who got those levels before this existed is
+offered the missing ones on the Features tab ("Choose forms", action `wild_shape_choose`). A Long Rest
+opens `rest_choices["wild_shape"]` and the Features tab offers "Replace a form" (action
+`wild_shape_swap`: one known form out, one eligible Beast in - once per Long Rest; the long-rest
+prompt mentions it). Each known form is a "Wild Shape: <beast>" row of the Features list with the
+Druid's icon, opening the stat block. Uses per rest (Wild Shape column) were already handled as a
+resource. Not tracked: being shape-shifted (duration, temporary hit points, the form's own statistics).
 
 #### Logbook and automatic translation
 

@@ -1,0 +1,29 @@
+{% load i18n %}
+{# The Druid's Wild Shape forms: "learn" (the Beast Shapes table lets the Druid know more forms than #}
+{# they have) or "swap" (a Long Rest opened the replacement of one known form). Every Beast shows a #}
+{# Read button that unfolds its stat block (`character_sheet.js`'s `[data-describe]` rows). The      #}
+{# dialog posts `wild_shape_choose` / `wild_shape_swap`.                                              #}
+<div class="cs-invbar cs-wild-bar">
+  <span class="cs-weight">
+    {% if ws.mode == "learn" %}{% blocktranslate count n=ws.count %}Wild Shape: choose {{ n }} more Beast form{% plural %}Wild Shape: choose {{ n }} more Beast forms{% endblocktranslate %}
+    {% else %}{% translate "Wild Shape: you can replace one known form" %}{% endif %}
+  </span>
+  <button type="button" class="cs-add-btn" data-wild-open>{% if ws.mode == "learn" %}{% translate "Choose forms" %}{% else %}{% translate "Replace a form" %}{% endif %}</button>
+</div>
+<dialog class="cs-cast cs-wild" id="cs-wild-dialog" data-mode="{{ ws.mode }}"{% if ws.mode == "learn" %} data-count="{{ ws.count }}"{% endif %}>
+  <h3>{% translate "Wild Shape" %}</h3>
+  {% if ws.mode == "swap" %}
+    <fieldset class="ws-group" data-wild-old>
+      <legend>{% translate "Replace this form…" %}</legend>
+      <ul class="ws-list">{% for c in ws.known %}{% include "frontend/characters/sheet/_wild_row.html" with input="radio" name="ws_old" %}{% endfor %}</ul>
+    </fieldset>
+  {% endif %}
+  <fieldset class="ws-group" data-wild-new>
+    <legend>{% if ws.mode == "swap" %}{% translate "…with this one" %}{% else %}{% translate "Beast forms" %}{% endif %}</legend>
+    <ul class="ws-list">{% for c in ws.candidates %}{% if ws.mode == "swap" %}{% include "frontend/characters/sheet/_wild_row.html" with input="radio" name="ws_new" %}{% else %}{% include "frontend/characters/sheet/_wild_row.html" with input="checkbox" name="ws_new" %}{% endif %}{% endfor %}</ul>
+  </fieldset>
+  <div class="cs-cast-buttons">
+    <button type="button" data-wild-cancel>{% translate "Cancel" %}</button>
+    <button type="button" class="ok" data-wild-confirm disabled>{% translate "Confirm" %}</button>
+  </div>
+</dialog>

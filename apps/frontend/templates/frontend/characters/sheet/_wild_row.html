@@ -1,0 +1,6 @@
+{% load i18n %}
+<li>
+  <label class="ws-pick"><input type="{{ input }}" name="{{ name }}" value="{{ c.id }}"><span class="ws-text"><b>{{ c.name }}</b><small>{{ c.detail }}</small></span></label>
+  <button type="button" class="ws-read" data-describe="{{ c.describe }}" aria-expanded="false">{% translate "Read" %}</button>
+  <div class="desc" hidden></div>
+</li>

@@ -1026,6 +1026,49 @@
     if (select) send({ action: "land_change", land: select.value });
   });
 
+  // Wild Shape (Druid): learn forms, or replace one after a Long Rest. The dialog is in the page; the
+  // Read buttons are ordinary `[data-describe]` rows.
+  root.addEventListener("click", function (event) {
+    var dialog = document.getElementById("cs-wild-dialog");
+    if (!dialog) return;
+    var ok = dialog.querySelector("[data-wild-confirm]");
+    if (event.target.closest("[data-wild-open]")) {
+      dialog.querySelectorAll("input").forEach(function (box) { box.checked = false; box.disabled = false; });
+      ok.disabled = true;
+      dialog.showModal();
+    } else if (event.target.closest("[data-wild-cancel]")) {
+      dialog.close();
+    } else if (event.target.closest("[data-wild-confirm]")) {
+      var chosen = function (group) {
+        return Array.prototype.map.call(
+          dialog.querySelectorAll(group + " input:checked"),
+          function (box) { return box.value; }
+        );
+      };
+      var params;
+      if (dialog.dataset.mode === "swap") {
+        params = { action: "wild_shape_swap", old: chosen("[data-wild-old]")[0], new: chosen("[data-wild-new]")[0] };
+      } else {
+        params = { action: "wild_shape_choose", forms: chosen("[data-wild-new]").join(",") };
+      }
+      dialog.close();
+      send(params);
+    }
+  });
+  root.addEventListener("change", function (event) {
+    var dialog = document.getElementById("cs-wild-dialog");
+    if (!dialog || !dialog.contains(event.target)) return;
+    var ok = dialog.querySelector("[data-wild-confirm]");
+    var picked = dialog.querySelectorAll("[data-wild-new] input:checked").length;
+    if (dialog.dataset.mode === "swap") {
+      ok.disabled = !(picked === 1 && dialog.querySelectorAll("[data-wild-old] input:checked").length === 1);
+    } else {
+      var count = Number(dialog.dataset.count);
+      dialog.querySelectorAll("[data-wild-new] input").forEach(function (box) { box.disabled = picked >= count && !box.checked; });
+      ok.disabled = picked !== count;
+    }
+  });
+
   // A filter popover closes when you tap anywhere else.
   document.addEventListener("click", function (event) {
     if (event.target.closest(".filter-popover")) return;

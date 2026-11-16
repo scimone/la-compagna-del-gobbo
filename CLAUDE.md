@@ -38,7 +38,7 @@ uv run ruff format .
 `.env` (copied from `.env.dist`) supplies DB credentials to both `manage.py` and Docker Compose —
 see the README's "Running it" section for exactly which vars to override for which run mode.
 
-⚠️ `import_rules_data` wipes and reloads every `rules` table; it's a one-off/data-refresh step,
+⚠️ `import_rules_data` wipes and reloads every `rules` table (for just the creature stat blocks use `manage.py import_creatures`, which is safe with characters present); it's a one-off/data-refresh step,
 not part of the normal dev loop, and will raise `ProtectedError` once real `Character` rows
 reference `rules` data.
 
@@ -134,9 +134,6 @@ service validates and applies it (builder, not `play`, if it needs `progression`
   `rest_choices["hunters_prey"]` from both `short_rest()` and `long_rest()`, and swap it like the land
   (a "Hunter's Prey (X)" feature per option, cut with the `lineage_features` helpers,
   `choice_option=True`).
-- **Wild Shape known forms (Druid).** A long rest lets the Druid replace one known form. Not tracked
-  (there is no bestiary); needs a free-text list on the sheet (`CharacterChoice` `class.wild_shape_forms`,
-  list of strings) and a "replace one form" control opened by `rest_choices["wild_shape"]`.
 - **Portent (Diviner) and Cosmic Omen (Circle of the Stars).** Rolled anew after every long rest:
   Portent is two d20s (three from level 14) the player spends to replace rolls; Cosmic Omen is one die,
   even = Weal, odd = Woe. Plan: `CharacterChoice` `rest.portent` = list of rolled values, rolled

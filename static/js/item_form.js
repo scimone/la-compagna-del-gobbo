@@ -95,74 +95,181 @@
     effects.forEach(function (effect) { addRow(editor, effect); });
   }
 
-  // ---- the spells picker (`_spells_editor.html`): chips + a search box over a datalist ----------
+  // ---- the spells field (`_spells_editor.html`): chips, and a dialog with the whole spell list ------
+  //
+  // The field holds `[{id, free}]` (`free`: "", "long", "short" or "unlimited") in the hidden `spells`
+  // input. The chips show the chosen spells, each with a select for how it may be cast without a slot;
+  // "Choose spells" opens the list (fetched once from the editor's `data-picker-url`): search, filters,
+  // a Read button that unfolds the spell, and an Add button that asks about the free cast first.
 
-  function spellNames(editor) {
-    if (!editor._names) {
-      editor._names = {};
-      editor._byName = {};
-      editor.querySelectorAll("datalist option").forEach(function (o) {
-        editor._names[o.dataset.id] = o.value;
-        editor._byName[o.value.toLowerCase()] = o.dataset.id;
-      });
+  var FREE = ["", "long", "short", "unlimited"];
+
+  function spellState(editor) {
+    if (!editor._spells) {
+      var names = {};
+      try { names = JSON.parse(editor.querySelector("[data-spells-names]").textContent || "{}"); } catch (e) {}
+      editor._names = names;
+      try { editor._spells = JSON.parse(editor.querySelector('input[name="spells"]').value || "[]"); } catch (e) { editor._spells = []; }
+      editor._spells = editor._spells.map(function (e) { return typeof e === "string" ? { id: e, free: "" } : e; });
     }
-    return editor;
+    return editor._spells;
   }
 
-  function spellIds(editor) {
-    try { return JSON.parse(editor.querySelector('input[name="spells"]').value || "[]"); } catch (e) { return []; }
-  }
-
-  function setSpells(editor, ids) {
-    editor.querySelector('input[name="spells"]').value = ids.length ? JSON.stringify(ids) : "";
-    var names = spellNames(editor)._names;
-    var list = editor.querySelector("[data-spells-chips]");
-    var remove = editor.querySelector("[data-spells-labels]").dataset.remove;
-    list.textContent = "";
-    ids.forEach(function (id) {
+  function drawSpells(editor) {
+    var list = spellState(editor);
+    var labels = editor.querySelector("[data-spells-labels]").dataset;
+    editor.querySelector('input[name="spells"]').value = list.length ? JSON.stringify(list) : "";
+    var chips = editor.querySelector("[data-spells-chips]");
+    chips.textContent = "";
+    list.forEach(function (entry) {
       var li = document.createElement("li");
-      li.appendChild(document.createTextNode(names[id] || id));
-      var button = document.createElement("button");
-      button.type = "button";
-      button.textContent = "×";
-      button.dataset.spellRemove = id;
-      button.setAttribute("aria-label", remove);
-      li.appendChild(button);
-      list.appendChild(li);
+      li.appendChild(document.createTextNode(editor._names[entry.id] || entry.id));
+      var select = document.createElement("select");
+      select.className = "sp-free";
+      select.dataset.spellFree = entry.id;
+      select.setAttribute("aria-label", labels.free);
+      FREE.forEach(function (key) {
+        var option = new Option(labels[key || "none"], key);
+        option.selected = key === entry.free;
+        select.appendChild(option);
+      });
+      var remove = document.createElement("button");
+      remove.type = "button";
+      remove.textContent = "×";
+      remove.dataset.spellRemove = entry.id;
+      remove.setAttribute("aria-label", labels.remove);
+      li.append(select, remove);
+      chips.appendChild(li);
     });
   }
 
-  function pickSpell(editor, input) {
-    var id = spellNames(editor)._byName[input.value.trim().toLowerCase()];
-    if (!id) return;
-    var ids = spellIds(editor);
-    if (ids.indexOf(id) < 0) setSpells(editor, ids.concat(id));
-    input.value = "";
+  function addSpell(editor, id, name, free) {
+    var list = spellState(editor);
+    editor._names[id] = name;
+    var found = list.filter(function (e) { return e.id === id; })[0];
+    if (found) found.free = free;
+    else list.push({ id: id, free: free });
+    drawSpells(editor);
   }
 
-  document.addEventListener("input", function (event) {
-    var input = event.target;
-    if (!input.matches || !input.matches("[data-spells-input]")) return;
-    // Choosing from the list arrives as a replacement, not as typing: typing "Light" on the way to
-    // "Lightning Bolt" must not add Light.
-    if (!event.inputType || event.inputType === "insertReplacementText") pickSpell(input.closest("[data-spells]"), input);
-  });
   document.addEventListener("change", function (event) {
-    var input = event.target;
-    if (input.matches && input.matches("[data-spells-input]")) pickSpell(input.closest("[data-spells]"), input);
+    var select = event.target;
+    if (!select.dataset || select.dataset.spellFree === undefined) return;
+    var editor = select.closest("[data-spells]");
+    spellState(editor).forEach(function (e) { if (e.id === select.dataset.spellFree) e.free = select.value; });
+    drawSpells(editor);
   });
-  document.addEventListener("keydown", function (event) {
-    var input = event.target;
-    if (event.key === "Enter" && input.matches && input.matches("[data-spells-input]")) {
-      event.preventDefault();
-      pickSpell(input.closest("[data-spells]"), input);
-    }
-  });
+
   document.addEventListener("click", function (event) {
     var button = event.target.closest("[data-spell-remove]");
     if (!button) return;
     var editor = button.closest("[data-spells]");
-    setSpells(editor, spellIds(editor).filter(function (id) { return id !== button.dataset.spellRemove; }));
+    editor._spells = spellState(editor).filter(function (e) { return e.id !== button.dataset.spellRemove; });
+    drawSpells(editor);
+  });
+
+  // The picker dialog: one per page, filled once.
+  var picker = null;       // {dialog, body, ready}
+  var pickerEditor = null; // the editor the dialog is choosing for
+
+  function markAdded() {
+    if (!picker || !pickerEditor) return;
+    var chosen = {};
+    spellState(pickerEditor).forEach(function (e) { chosen[e.id] = true; });
+    picker.body.querySelectorAll("[data-spk-list] > li").forEach(function (li) {
+      li.classList.toggle("added", !!chosen[li.dataset.id]);
+      li.querySelector("[data-spk-add]").textContent = chosen[li.dataset.id] ? picker.added : picker.add;
+    });
+  }
+
+  function filterSpells() {
+    var query = (picker.body.querySelector("[data-spk-search]").value || "").trim().toLowerCase();
+    var selects = picker.body.querySelectorAll("[data-spk-filter]");
+    var shown = 0;
+    picker.body.querySelectorAll("[data-spk-list] > li").forEach(function (li) {
+      var ok = !query || li.dataset.search.indexOf(query) >= 0;
+      selects.forEach(function (select) {
+        if (!ok || !select.value) return;
+        var values = (li.dataset[select.dataset.spkFilter] || "").split(" ");
+        ok = values.indexOf(select.value) >= 0;
+      });
+      li.hidden = !ok;
+      if (ok) shown += 1;
+    });
+    picker.body.querySelector("[data-spk-empty]").hidden = shown > 0;
+  }
+
+  function ensurePicker(editor) {
+    if (picker) return picker.ready;
+    var dialog = document.createElement("dialog");
+    dialog.className = "spk-dialog";
+    dialog.innerHTML = '<div class="spk-wrap"><div class="spk-head"><h3></h3><button type="button" data-spk-close></button></div><div class="spk-body"></div></div>';
+    var labels = editor.querySelector("[data-spells-labels]").dataset;
+    dialog.querySelector("h3").textContent = editor.querySelector(".fx-title").textContent;
+    dialog.querySelector("[data-spk-close]").textContent = labels.done;
+    document.body.appendChild(dialog);
+    picker = { dialog: dialog, body: dialog.querySelector(".spk-body"), add: "", added: "" };
+    picker.ready = fetch(editor.dataset.pickerUrl, { credentials: "same-origin" })
+      .then(function (r) { return r.ok ? r.text() : Promise.reject(); })
+      .then(function (html) {
+        picker.body.innerHTML = html;
+        var add = picker.body.querySelector("[data-spk-add]");
+        picker.add = add ? add.textContent : "Add";
+        picker.added = "✓";
+        picker.body.addEventListener("input", function (e) { if (e.target.matches("[data-spk-search]")) filterSpells(); });
+        picker.body.addEventListener("change", function (e) {
+          if (e.target.matches("[data-spk-filter]")) {
+            e.target.classList.toggle("active", !!e.target.value);
+            filterSpells();
+          }
+        });
+        picker.body.addEventListener("click", pickerClick);
+        dialog.querySelector("[data-spk-close]").addEventListener("click", function () { dialog.close(); });
+      })
+      .catch(function () { picker.body.textContent = "…"; picker = null; });
+    return picker.ready;
+  }
+
+  function pickerClick(event) {
+    var li = event.target.closest("[data-spk-list] > li");
+    if (!li) return;
+    var free = li.querySelector(".spk-free");
+    var read = event.target.closest("[data-spk-read]");
+    if (read) {
+      var desc = li.querySelector(".spk-desc");
+      var open = desc.hidden;
+      if (open && !desc.dataset.loaded) {
+        desc.textContent = "…";
+        fetch(read.dataset.spkRead, { credentials: "same-origin" })
+          .then(function (r) { return r.ok ? r.text() : Promise.reject(); })
+          .then(function (html) { desc.innerHTML = html; desc.dataset.loaded = "1"; })
+          .catch(function () { desc.textContent = ""; desc.hidden = true; });
+      }
+      desc.hidden = !open;
+      read.setAttribute("aria-expanded", open ? "true" : "false");
+    } else if (event.target.closest("[data-spk-add]")) {
+      var current = spellState(pickerEditor).filter(function (e) { return e.id === li.dataset.id; })[0];
+      free.querySelector("[data-spk-free]").value = current ? current.free : "";
+      free.hidden = !free.hidden;
+    } else if (event.target.closest("[data-spk-cancel]")) {
+      free.hidden = true;
+    } else if (event.target.closest("[data-spk-confirm]")) {
+      addSpell(pickerEditor, li.dataset.id, li.dataset.name, free.querySelector("[data-spk-free]").value);
+      free.hidden = true;
+      markAdded();
+    }
+  }
+
+  document.addEventListener("click", function (event) {
+    var open = event.target.closest("[data-spells-open]");
+    if (!open) return;
+    var editor = open.closest("[data-spells]");
+    pickerEditor = editor;
+    ensurePicker(editor).then(function () {
+      if (!picker) return;
+      markAdded();
+      picker.dialog.showModal();
+    });
   });
 
   function syncShowIf(scope) {
@@ -220,14 +327,14 @@
         editor.querySelector('input[name="effects"]').value = "";
         load(editor);
       });
-      scope.querySelectorAll("[data-spells]").forEach(function (editor) { setSpells(editor, []); });
+      scope.querySelectorAll("[data-spells]").forEach(function (editor) { editor._spells = []; drawSpells(editor); });
       syncShowIf(scope);
     },
   };
 
   function init() {
     document.querySelectorAll("[data-effects]").forEach(load);
-    document.querySelectorAll("[data-spells]").forEach(function (editor) { setSpells(editor, spellIds(editor)); });
+    document.querySelectorAll("[data-spells]").forEach(drawSpells);
     syncShowIf(document);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
