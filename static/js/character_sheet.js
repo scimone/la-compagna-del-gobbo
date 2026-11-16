@@ -421,15 +421,24 @@
       dialog.close();
     } else if (event.target.closest("[data-transfer-confirm]")) {
       var picks = [];
+      var coins = {};
+      var coinNames = [];
+      dialog.querySelectorAll("[data-transfer-coin]").forEach(function (row) {
+        if (!row.querySelector("[data-transfer-pick]").checked) return;
+        var amount = Math.floor(Number(row.querySelector("[data-transfer-qty]").value)) || 0;
+        if (amount < 1) return;
+        coins[row.dataset.transferCoin] = amount;
+        coinNames.push(amount + " " + row.dataset.abbr);
+      });
       dialog.querySelectorAll("[data-transfer-row]").forEach(function (row) {
         if (!row.querySelector("[data-transfer-pick]").checked) return;
         var qty = row.querySelector("[data-transfer-qty]");
         picks.push({ kind: row.dataset.kind, item: row.dataset.item, quantity: Number(qty.value) || 1, name: row.dataset.name });
       });
-      if (!picks.length) return;
+      if (!picks.length && !coinNames.length) return;
       var select = dialog.querySelector("[data-transfer-to]");
       var who = select.options[select.selectedIndex].dataset.name;
-      var list = picks.map(function (p) { return (p.quantity > 1 ? p.quantity + "× " : "") + p.name; }).join(", ");
+      var list = coinNames.concat(picks.map(function (p) { return (p.quantity > 1 ? p.quantity + "× " : "") + p.name; })).join(", ");
       var ask = dialog.dataset.confirm.replace("%(items)s", list).replace("%(name)s", who);
       window.appConfirm(ask).then(function (ok) {
         if (!ok) return;
@@ -437,9 +446,37 @@
         send({
           action: "item_transfer",
           to: select.value,
+          coins: JSON.stringify(coins),
           items: JSON.stringify(picks.map(function (p) { return { kind: p.kind, item: p.item, quantity: p.quantity }; })),
         });
       });
+    }
+  });
+
+  // ---- adding money: the "+" on a coin opens a small dialog ------------------------------------
+
+  var coinToAdd = null;
+  root.addEventListener("click", function (event) {
+    var dialog = document.getElementById("cs-coin-dialog");
+    if (!dialog) return;
+    var opener = event.target.closest("[data-coin-add]");
+    var amount = dialog.querySelector("[data-coin-amount]");
+    if (opener) {
+      event.preventDefault(); // the "+" sits in a <label>: don't focus the amount box behind it
+      coinToAdd = opener.dataset.coinAdd;
+      dialog.querySelector("[data-coin-title]").textContent = dialog.dataset.title.replace("%(coin)s", opener.dataset.label);
+      amount.value = "";
+      dialog.showModal();
+      amount.focus();
+    } else if (event.target.closest("[data-coin-cancel]")) {
+      dialog.close();
+    } else if (event.target.closest("[data-coin-quick]")) {
+      amount.value = (Math.floor(Number(amount.value)) || 0) + Number(event.target.closest("[data-coin-quick]").dataset.coinQuick);
+    } else if (event.target.closest("[data-coin-confirm]")) {
+      var value = Math.floor(Number(amount.value)) || 0;
+      if (value < 1 || !coinToAdd) return;
+      dialog.close();
+      send({ action: "coin_add", coin: coinToAdd, value: value });
     }
   });
 
@@ -468,7 +505,7 @@
     var disc = event.target.closest(".coin .disc");
     var wasShown = coinTip && coinTip.dataset.for;
     hideCoinTip();
-    if (!disc) return;
+    if (!disc || disc.matches("[data-coin-add]")) return;
     event.preventDefault(); // the disc sits in a <label>: don't focus the amount field
     var coin = disc.closest(".coin");
     if (wasShown === coin.className) return;

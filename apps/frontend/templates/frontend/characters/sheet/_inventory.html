@@ -7,7 +7,11 @@
   <div class="cs-purse" aria-label="{% translate 'Coins' %}">
     {% for c in inventory.coins %}
       <label class="coin coin-{{ c.key }}" title="{{ c.label }}">
-        <span class="disc" aria-hidden="true">{{ c.abbr }}</span>
+        {% if can_edit %}
+          <button type="button" class="disc" data-coin-add="{{ c.key }}" data-label="{{ c.label }}" aria-label="{% blocktranslate with coin=c.label %}Add {{ coin }}{% endblocktranslate %}">+</button>
+        {% else %}
+          <span class="disc" aria-hidden="true">{{ c.abbr }}</span>
+        {% endif %}
         {% if can_edit %}
           <input type="number" min="0" inputmode="numeric" value="{{ c.amount }}" data-act="coin" data-coin="{{ c.key }}" data-bind="coins.{{ c.key }}"
                  aria-label="{{ c.label }}">
@@ -20,7 +24,7 @@
   <div class="cs-invbar">
     <span class="cs-weight">{% if inventory.total_weight %}{% translate "Carrying" %} <b>{{ inventory.total_weight }}</b>{% endif %}</span>
     {% if can_edit %}
-      {% if inventory.sections and inventory.transfer_targets %}<button type="button" class="cs-add-btn" data-transfer-open>{% translate "Transfer" %}</button>{% endif %}
+      {% if inventory.transfer_targets and inventory.has_coins or inventory.transfer_targets and inventory.sections %}<button type="button" class="cs-add-btn" data-transfer-open>{% translate "Transfer" %}</button>{% endif %}
       <button type="button" class="cs-add-btn" data-add-open="cs-add">+ {% translate "Add item" %}</button>
     {% endif %}
   </div>
@@ -75,7 +79,7 @@
 {% endif %}
 </div>
 
-{% if can_edit and inventory.sections and inventory.transfer_targets %}
+{% if can_edit and inventory.transfer_targets and inventory.has_coins or can_edit and inventory.transfer_targets and inventory.sections %}
 {# Hand items to another character of the campaign: tick what goes (and how many), pick who gets it. #}
 {# `character_sheet.js` asks for a confirmation before posting `item_transfer`.                     #}
 {% translate "Hand over %(items)s to %(name)s? They will be removed from your inventory." as transfer_confirm %}
@@ -90,6 +94,13 @@
     </select>
   </label>
   <ul class="cs-transfer-list">
+    {% for c in inventory.coins %}{% if c.amount %}
+      <li class="coin-row" data-transfer-coin="{{ c.key }}" data-abbr="{{ c.abbr|lower }}">
+        <label class="check"><input type="checkbox" data-transfer-pick> {{ c.label }}</label>
+        <input type="number" min="1" max="{{ c.amount }}" value="{{ c.amount }}" inputmode="numeric" data-transfer-qty aria-label="{% translate 'Amount' %}">
+        <span class="dim">/ {{ c.amount }}</span>
+      </li>
+    {% endif %}{% endfor %}
     {% for sec in inventory.sections %}
       {% for c in sec.cards %}
         <li data-transfer-row data-kind="{{ c.kind }}" data-item="{{ c.id }}" data-name="{{ c.name }}">
@@ -103,6 +114,23 @@
   <div class="cs-cast-buttons">
     <button type="button" data-transfer-cancel>{% translate "Cancel" %}</button>
     <button type="button" class="ok" data-transfer-confirm>{% translate "Transfer" %}</button>
+  </div>
+</dialog>
+{% endif %}
+
+{% if can_edit %}
+{# Add money: the "+" on a coin opens this; quick amounts pile up in the box, then Add. #}
+<dialog class="cs-cast" id="cs-coin-dialog" data-title="{% translate 'Add %(coin)s' %}">
+  <h3 data-coin-title></h3>
+  <label class="cs-cast-field"><span class="k">{% translate "Amount" %}</span>
+    <input type="number" min="1" inputmode="numeric" data-coin-amount placeholder="0">
+  </label>
+  <div class="coin-quick">
+    <button type="button" data-coin-quick="1">+1</button><button type="button" data-coin-quick="5">+5</button><button type="button" data-coin-quick="10">+10</button><button type="button" data-coin-quick="50">+50</button><button type="button" data-coin-quick="100">+100</button>
+  </div>
+  <div class="cs-cast-buttons">
+    <button type="button" data-coin-cancel>{% translate "Cancel" %}</button>
+    <button type="button" class="ok" data-coin-confirm>{% translate "Add" %}</button>
   </div>
 </dialog>
 {% endif %}

@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n custom_spells %}
 {# The "add a feature" sheet (fetched into the overlay on first use): every feature, feat and   #}
 {# option as a filterable list in the World's list design - the same search box and filter      #}
 {# buttons as the World's Features list, over one Type pill and the Class / Species filters      #}
@@ -46,6 +46,8 @@
     <label>{% translate "Description" %}<textarea name="description" rows="4"></textarea></label>
     {% translate "Changes to the numbers on the sheet." as effects_hint %}
     {% include "frontend/characters/_effects_editor.html" with hint=effects_hint %}
+    {% translate "Always prepared while the feature is on the sheet." as spells_hint %}
+    {% spells_editor "" spells_hint %}
     <div class="cs-form-actions">
       <button type="button" class="btn-primary" data-custom-add data-custom-action="custom_feature_add">{% translate "Add to features" %}</button>
     </div>

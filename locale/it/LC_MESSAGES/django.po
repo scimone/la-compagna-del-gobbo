@@ -3783,3 +3783,63 @@ msgstr "Scegli di nuovo ciò che le parti modificate del personaggio ti fanno sc
 #: apps/frontend/templates/frontend/characters/sheet/_top.html
 msgid "Reopen the creation screens to change this character? Whatever is connected to a component you change is removed and its levels are chosen again; the inventory, gold and Experience Points are kept."
 msgstr "Riaprire le schermate di creazione per modificare questo personaggio? Tutto ciò che è collegato a una componente che cambi viene rimosso e i suoi livelli vanno scelti di nuovo; inventario, oro e Punti Esperienza vengono mantenuti."
+
+#: apps/frontend/templates/frontend/logbook/form.html
+msgid "Private note"
+msgstr "Nota privata"
+
+msgid "Only you can read this. Not the other players, not the DM, not the assistant."
+msgstr "Solo tu puoi leggerla. Né gli altri giocatori, né il DM, né l'assistente."
+
+msgid "Save privately"
+msgstr "Salva in privato"
+
+#: apps/frontend/templates/frontend/logbook/list.html
+msgid "Private note: only you can see it"
+msgstr "Nota privata: solo tu puoi vederla"
+
+msgid "Private · only you"
+msgstr "Privata · solo tu"
+
+msgid "New private note (only you can see it)"
+msgstr "Nuova nota privata (solo tu puoi vederla)"
+
+#: apps/frontend/logbook_views.py
+msgid "New private note"
+msgstr "Nuova nota privata"
+
+msgid "Edit private note"
+msgstr "Modifica nota privata"
+
+#: apps/frontend/templates/frontend/characters/sheet/_inventory.html
+#, python-format
+msgid "Add %(coin)s"
+msgstr "Aggiungi %(coin)s"
+
+msgid "Amount"
+msgstr "Importo"
+
+#: apps/frontend/templates/frontend/characters/_spells_editor.html
+msgid "Search a spell to add…"
+msgstr "Cerca un incantesimo da aggiungere…"
+
+msgid "Add a spell"
+msgstr "Aggiungi un incantesimo"
+
+#, python-format
+msgid "Level %(level)s"
+msgstr "Livello %(level)s"
+
+msgid "Remove this spell"
+msgstr "Rimuovi questo incantesimo"
+
+msgid "Always prepared while the item is equipped."
+msgstr "Sempre preparati finché l'oggetto è equipaggiato."
+
+msgid "Always prepared while the feature is on the sheet."
+msgstr "Sempre preparati finché il privilegio è sulla scheda."
+
+#: apps/frontend/character_sheet.py
+#, python-format
+msgid "Always prepared (%(name)s)"
+msgstr "Sempre preparato (%(name)s)"

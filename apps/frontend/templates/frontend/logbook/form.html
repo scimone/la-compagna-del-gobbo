@@ -23,6 +23,14 @@
   .logform-pic input:focus-visible ~ img { outline: 2px solid var(--accent); outline-offset: -2px; }
   .logform-pic.new { cursor: default; }
   .logform-pic.new .x { display: none; }
+  /* A private note: the whole form is tinted and carries a banner, so it is obvious nobody else sees it. */
+  .private-banner { display: flex; align-items: center; gap: 0.7rem; padding: 0.7rem 0.9rem; border-radius: 0.7rem; background: color-mix(in srgb, #8a6d1d 14%, var(--surface)); border: 2px dashed #8a6d1d; }
+  .private-banner svg { flex-shrink: 0; width: 1.6rem; height: 1.6rem; fill: none; stroke: #8a6d1d; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .private-banner strong { display: block; }
+  .private-banner span { font-size: 0.85rem; color: var(--muted); }
+  .logform.private textarea, .logform.private .rte-body, .logform.private input[type=date], .logform.private select { border: 1px dashed #8a6d1d; background: color-mix(in srgb, #8a6d1d 6%, var(--surface)); }
+  .logform.private button[type=submit] { background: #8a6d1d; color: #fff; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+  .logform.private button[type=submit] svg { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   .logform .hint { margin: 0; font-size: 0.8rem; color: var(--muted); }
   /* The banner picker: a 21:9 frame, the same shape the logbook shows it in. Empty it is one big
      dashed "add" target; with a picture it is the picture, with Change / Remove on top. */
@@ -64,9 +72,15 @@
   .logform button[type=submit] { appearance: none; border: 0; background: var(--accent); color: var(--accent-text); font: inherit; font-weight: 600; padding: 0.65rem 1rem; border-radius: 0.6rem; cursor: pointer; }
 {% endblock %}
 {% block content %}
-  <div class="logform">
+  <div class="logform{% if private %} private{% endif %}">
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
+      {% if private %}
+      <div class="private-banner" role="note">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        <div><strong>{% translate "Private note" %}</strong><span>{% translate "Only you can read this. Not the other players, not the DM, not the assistant." %}</span></div>
+      </div>
+      {% endif %}
       {{ form.non_field_errors }}
       {% for field in form %}
         <div class="field">
@@ -126,7 +140,7 @@
         <div class="logform-pics" data-new-pics></div>
         <input type="file" id="id_images" name="images" accept="image/*" multiple>
       </div>
-      <button type="submit">{% translate "Save" %}</button>
+      <button type="submit">{% if private %}<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>{% translate "Save privately" %}{% else %}{% translate "Save" %}{% endif %}</button>
     </form>
   </div>
   <script src="{% static_v 'js/logbook_editor.js' %}" defer></script>

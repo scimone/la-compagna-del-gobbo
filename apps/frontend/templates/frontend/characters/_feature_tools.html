@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n custom_spells %}
 {# A custom feature's page (`character_custom_feature()`): a note about what just happened, then #}
 {# its description - and, for an editor, either the buttons (Edit, Remove) or, with ?edit=1, the #}
 {# form. Plain forms posting back to the page.                                                    #}
@@ -13,6 +13,8 @@
     </section>
     {% translate "Always in force while the feature is on the sheet." as effects_hint %}
     {% include "frontend/characters/_effects_editor.html" with hint=effects_hint %}
+    {% translate "Always prepared while the feature is on the sheet." as spells_hint %}
+    {% spells_editor spells_json spells_hint %}
     <div class="item-buttons form-buttons">
       <button type="submit" class="primary">{% translate "Save" %}</button>
       <a href="{{ cancel_url }}">{% translate "Cancel" %}</a>

@@ -9,6 +9,7 @@ An item row is one of two kinds, named `kind` in the functions that take a row i
 `CharacterInventoryItem`) or `"custom"` (a `CharacterCustomItem`).
 """
 
+import json
 import re
 
 from django.db import models, transaction
@@ -33,6 +34,7 @@ from apps.characters.models import (
 from apps.rules.models import Equipment, Feat, Feature, OptionalFeature, Spell
 
 COINS = ("copper", "silver", "electrum", "gold", "platinum")
+_COIN_ABBR = {"copper": "cp", "silver": "sp", "electrum": "ep", "gold": "gp", "platinum": "pp"}
 TEXT_FIELDS = ("backstory",)
 DEATH_SAVES_MAX = 3
 #: `rules.EquipmentType` ids. Only one body armor and one shield can be worn at a time.
@@ -252,6 +254,17 @@ def set_coin(character: Character, coin: str, amount: int) -> None:
     purse.save(update_fields=[coin])
 
 
+def add_coins(character: Character, coin: str, amount: int) -> None:
+    """Put `amount` more `coin`s in the purse (loot, a reward, a gift)."""
+    if coin not in COINS:
+        raise ValueError(f"unknown coin {coin!r}")
+    if amount < 1:
+        raise ValueError("the amount must be at least 1")
+    purse, _created = CharacterCurrency.objects.get_or_create(character=character)
+    setattr(purse, coin, getattr(purse, coin) + amount)
+    purse.save(update_fields=[coin])
+
+
 def _purse_copper(purse: CharacterCurrency) -> int:
     """The whole purse, in copper."""
     return (
@@ -307,6 +320,8 @@ def set_equipped(character: Character, item_id: int, equipped: bool, kind: str =
                 other.save(update_fields=["equipped"])
     item.equipped = equipped
     item.save(update_fields=["equipped"])
+    if kind == "custom":
+        sync_custom_spells(character)
 
 
 def custom_wear_type(item: CharacterCustomItem) -> str:
@@ -317,7 +332,7 @@ def custom_wear_type(item: CharacterCustomItem) -> str:
         return CUSTOM_ARMOR_TYPE[item.armor_kind]
     if item.section == "weapons" and item.damage_dice:
         return "r" if item.ranged else "m"
-    if item.section not in ("weapons", "armor") and (item.wearable or item.effects):
+    if item.section not in ("weapons", "armor") and (item.wearable or item.effects or item.spells):
         return CUSTOM_WORN
     return ""
 
@@ -337,7 +352,7 @@ CATALOG_FIELDS = (
     "name", "section", "type_label", "weapon_category", "weight", "value", "valuable",
     "description", "armor_kind", "ac", "strength_requirement", "stealth_disadvantage",
     "damage_dice", "damage_type", "versatile_damage_dice", "ranged", "finesse", "two_handed",
-    "range", "wearable", "effects",
+    "range", "wearable", "effects", "spells",
 )  # fmt: skip
 
 
@@ -421,6 +436,64 @@ def _dice(text: str, label: str) -> str:
     return text
 
 
+MAX_CUSTOM_SPELLS = 20
+#: `CharacterSpell.source` of a spell an item or feature of the player's own grants:
+#: `custom:item:<pk>` (while that item is worn) / `custom:feature:<pk>` (always).
+CUSTOM_SPELL_SOURCE = "custom:"
+
+
+def clean_spells(raw) -> list[str]:
+    """The spell ids a custom item or feature grants, from what a form posts (a JSON list, or an
+    already-parsed one): each must be a real spell, listed once, in the order given."""
+    if not raw:
+        return []
+    if isinstance(raw, str):
+        try:
+            raw = json.loads(raw)
+        except json.JSONDecodeError:
+            raise ValueError("spells are not valid JSON") from None
+    if not isinstance(raw, list) or len(raw) > MAX_CUSTOM_SPELLS:
+        raise ValueError("too many spells")
+    ids = list(dict.fromkeys(str(i) for i in raw))
+    known = set(Spell.objects.filter(pk__in=ids).values_list("pk", flat=True))
+    if len(known) != len(ids):
+        raise ValueError("unknown spell")
+    return ids
+
+
+def sync_custom_spells(character: Character) -> None:
+    """Make the character's spells match what their own items and features grant: every spell of
+    a custom feature, and of a custom item while it is worn, is a spell that is always prepared;
+    one that is no longer granted goes (the player's own spells and a spell the character has from
+    anywhere else are never touched or doubled)."""
+    wanted: dict[str, str] = {}
+    for feature in character.custom_features.all():
+        for spell_id in feature.spells or []:
+            wanted.setdefault(spell_id, f"{CUSTOM_SPELL_SOURCE}feature:{feature.pk}")
+    for item in character.custom_items.filter(equipped=True):
+        for spell_id in item.spells or []:
+            wanted.setdefault(spell_id, f"{CUSTOM_SPELL_SOURCE}item:{item.pk}")
+    mine = character.spells.filter(source__startswith=CUSTOM_SPELL_SOURCE)
+    for row in mine:
+        if wanted.get(row.spell_id) == row.source:
+            wanted.pop(row.spell_id)
+        elif row.spell_id in wanted:  # granted by something else now: just re-label it
+            row.source = wanted.pop(row.spell_id)
+            row.save(update_fields=["source"])
+        else:
+            row.delete()
+    have = set(character.spells.values_list("spell_id", flat=True))
+    for spell_id, source in wanted.items():
+        if spell_id not in have:
+            CharacterSpell.objects.create(
+                character=character,
+                spell_id=spell_id,
+                prepared=True,
+                always_prepared=True,
+                source=source,
+            )
+
+
 def _clean_custom(
     *,
     name: str,
@@ -444,6 +517,7 @@ def _clean_custom(
     range: str = "",  # noqa: A002 - the model's own field name
     wearable: bool = False,
     effects=None,
+    spells=None,
 ) -> dict:
     """Validate a custom item's fields and return them as model fields. A stat that does not belong
     to the section (damage on a potion) is dropped rather than trusted, like `weapon_category`."""
@@ -492,6 +566,7 @@ def _clean_custom(
         "range": range if weapon and ranged else "",
         "wearable": wearable if section not in ("weapons", "armor") else False,
         "effects": custom_effects.clean(effects, weapon=weapon),
+        "spells": clean_spells(spells),
     }
 
 
@@ -560,6 +635,7 @@ def update_custom_item(character: Character, item_id: int, **fields) -> Characte
         item.equipped = False
     item.save()
     _remember_custom(character.campaign_id, clean, old_name)
+    sync_custom_spells(character)
     return item
 
 
@@ -580,6 +656,8 @@ def remove_item(character: Character, kind: str, item_id: int) -> None:
     row = _row(character, kind, item_id)
     parent_id = getattr(row, "parent_id", None)
     row.delete()
+    if kind == "custom":
+        sync_custom_spells(character)
     # A pack is listed as its contents, so once the last of them is gone the empty pack row would
     # turn up as an item of its own.
     if parent_id and not CharacterInventoryItem.objects.filter(parent_id=parent_id).exists():
@@ -613,22 +691,38 @@ def sell_item(character: Character, kind: str, item_id: int, quantity: int = 1) 
 
 @transaction.atomic
 def transfer_items(
-    character: Character, target: Character, picks: list[tuple[str, int, int]]
+    character: Character,
+    target: Character,
+    picks: list[tuple[str, int, int]],
+    coins: dict[str, int] | None = None,
 ) -> list[str]:
     """Hand items over to another character of the same campaign. `picks` are `(kind, item id,
     quantity)`; a quantity above what there is moves the whole stack. Catalog gear joins the loose
     stack of the same item on the other sheet; a custom item arrives as a copy, not worn. The
-    items leave this sheet (a worn one is simply no longer worn). Returns what moved, as
-    `"Name x2"` lines. Nothing moves if any pick is wrong."""
+    items leave this sheet (a worn one is simply no longer worn). `coins` (`{coin: amount}`) moves
+    money the same way, coin for coin - never more than the purse holds. Returns what moved, as
+    `"Name x2"` / `"5 gp"` lines. Nothing moves if any pick is wrong."""
     if target.pk == character.pk:
         raise ValueError("choose another character")
     if target.campaign_id != character.campaign_id or target.status != Character.STATUS_COMPLETE:
         raise ValueError("that character cannot receive items")
-    if not picks:
+    coins = {coin: amount for coin, amount in (coins or {}).items() if amount}
+    if not picks and not coins:
         raise ValueError("no items chosen")
     if len({(kind, item_id) for kind, item_id, _qty in picks}) != len(picks):
         raise ValueError("an item was chosen twice")
     moved = []
+    if coins:
+        purse = CharacterCurrency.objects.filter(character=character).first()
+        for coin, amount in coins.items():
+            if coin not in COINS or amount < 1:
+                raise ValueError(f"invalid amount of {coin}")
+            if not purse or getattr(purse, coin) < amount:
+                raise ValueError(f"not enough {coin}")
+        for coin, amount in coins.items():
+            set_coin(character, coin, getattr(purse, coin) - amount)
+            add_coins(target, coin, amount)
+            moved.append(f"{amount} {_COIN_ABBR[coin]}")
     for kind, item_id, quantity in picks:
         row = _row(character, kind, item_id)
         quantity = _clamp(quantity, 1, row.quantity)
@@ -982,7 +1076,7 @@ def remove_feature(character: Character, kind: str, ref: str) -> None:
         character.spells.filter(source=f"feat:{ref}").delete()
 
 
-def _clean_custom_feature(name: str, description: str = "", effects=None) -> dict:
+def _clean_custom_feature(name: str, description: str = "", effects=None, spells=None) -> dict:
     name = name.strip()
     if not name:
         raise ValueError("name is empty")
@@ -990,15 +1084,19 @@ def _clean_custom_feature(name: str, description: str = "", effects=None) -> dic
         "name": name[: CharacterCustomFeature._meta.get_field("name").max_length],
         "description": (description or "").strip(),
         "effects": custom_effects.clean(effects),
+        "spells": clean_spells(spells),
     }
 
 
 def add_custom_feature(character: Character, **fields) -> CharacterCustomFeature:
-    """Give the character a feature of the player's own: a name, a description and the `effects`
-    that are always in force (see `characters.custom_effects`)."""
-    return CharacterCustomFeature.objects.create(
+    """Give the character a feature of the player's own: a name, a description, the `effects`
+    that are always in force (see `characters.custom_effects`) and the `spells` that are always
+    prepared."""
+    feature = CharacterCustomFeature.objects.create(
         character=character, **_clean_custom_feature(**fields)
     )
+    sync_custom_spells(character)
+    return feature
 
 
 def update_custom_feature(
@@ -1008,11 +1106,13 @@ def update_custom_feature(
     for key, value in _clean_custom_feature(**fields).items():
         setattr(feature, key, value)
     feature.save()
+    sync_custom_spells(character)
     return feature
 
 
 def remove_custom_feature(character: Character, feature_id: int) -> None:
     character.custom_features.get(pk=feature_id).delete()
+    sync_custom_spells(character)
 
 
 # --- resources ---------------------------------------------------------------------------------

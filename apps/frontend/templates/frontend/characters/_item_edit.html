@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n custom_spells %}
 {# The page that edits a custom item (`character_item()` with ?edit=1): a form of its own, in #}
 {# groups, instead of a toggle on the item's page. Only what the item's Category has is here -  #}
 {# an armor has no weapon fields. Saving or cancelling goes back to the item's page.            #}
@@ -29,6 +29,8 @@
   {% include "frontend/characters/_custom_stats.html" with row=form.row damage_types=form.damage_types armor_kinds=form.armor_kinds weight_unit=form.weight_unit range_normal=form.range_normal range_long=form.range_long %}
   {% translate "What the item does to the sheet while it is equipped." as effects_hint %}
   {% include "frontend/characters/_effects_editor.html" with hint=effects_hint effects_json=form.effects_json effect_options=form.effect_options weapon=form.is_weapon %}
+  {% translate "Always prepared while the item is equipped." as spells_hint %}
+  {% spells_editor form.spells_json spells_hint %}
   <section class="item-group">
     <label>{% translate "Description" %}<textarea name="description" rows="4">{{ form.row.description }}</textarea></label>
   </section>

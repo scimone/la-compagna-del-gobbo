@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n custom_spells %}
 {# The "add an item" sheet (fetched into the overlay on first use): the catalog as a filterable  #}
 {# list in the World's list design - same search box and filter buttons as the World's lists -  #}
 {# and a small form for an item of the player's own. The coin purse stays visible on top, since  #}
@@ -113,6 +113,8 @@
     {% include "frontend/characters/_custom_stats.html" with row=None %}
     {% translate "What the item does to the sheet while it is equipped." as effects_hint %}
     {% include "frontend/characters/_effects_editor.html" with hint=effects_hint effects_json="" %}
+    {% translate "Always prepared while the item is equipped." as spells_hint %}
+    {% spells_editor "" spells_hint %}
     <label>{% translate "Description" %}<textarea name="description" rows="3"></textarea></label>
     {# Two ways in: just add it (a gift, loot), or pay its cost out of the purse. The Buy button #}
     {# only shows while a cost is filled in that the purse can cover (`character_sheet.js`).    #}

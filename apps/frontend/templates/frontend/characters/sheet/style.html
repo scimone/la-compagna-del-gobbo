@@ -413,6 +413,10 @@
   .coin-gold .disc { background: #e6bd45; }
   .coin-platinum .disc { background: #dfe6ec; }
   .coin .disc { cursor: pointer; }
+  .coin button.disc { appearance: none; border: 0; padding: 0; font: inherit; font-size: 1.2rem; font-weight: 700; line-height: 1; touch-action: manipulation; }
+  .coin button.disc:active { filter: brightness(0.9); transform: scale(0.94); }
+  .coin-quick { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.7rem; }
+  .coin-quick button { padding: 0.35rem 0.8rem; border-radius: 1rem; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 600; cursor: pointer; }
   .coin-tip.slot-tip { max-width: min(18rem, calc(100vw - 16px)); font-weight: 400; line-height: 1.35; }
   .coin-tip.slot-tip b { display: block; margin-bottom: 0.15rem; }
   .coin-tip { position: fixed; z-index: 1000; padding: 0.3rem 0.6rem; border-radius: 0.4rem; background: var(--text); color: var(--bg); font-size: 0.8rem; font-weight: 600; pointer-events: none; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); }

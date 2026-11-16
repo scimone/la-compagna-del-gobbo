@@ -70,6 +70,9 @@ class LogEntry(models.Model):
     #: A personal message spoken by the Dungeon Master rather than a character (`character` is
     #: NULL then); only the DM and administrators may post one.
     as_dm = models.BooleanField(default=False)
+    #: A private note (personal entries only): visible to its `author` and to nobody else - not
+    #: the DM, an administrator, the other members or the AI assistant. See `logbook.visible_to`.
+    private = models.BooleanField(default=False)
     date = models.DateField()
     title = models.CharField(max_length=150, blank=True)  # objective entries only
     text = models.TextField(blank=True)
@@ -87,6 +90,8 @@ class LogEntry(models.Model):
         ordering = ["-date", "-created_at"]
 
     def __str__(self) -> str:
+        if self.private:
+            return f"{self.date} (private note)"  # never leak a private text into logs
         return f"{self.date} {self.title or self.text[:40]}".strip()
 
 

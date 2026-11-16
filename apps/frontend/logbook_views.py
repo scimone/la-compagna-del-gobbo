@@ -32,7 +32,7 @@ def logbook_list(request):
     if campaign is None:
         return campaign_views.no_campaign_page(request, _("Logbook"))
     q = request.GET.get("q", "").strip()
-    found = list(logbook.list_entries(campaign))
+    found = list(logbook.list_entries(campaign, request.user))
     if q:
         found = logbook.search(found, q)
     shown = logbook.display(found)
@@ -47,6 +47,7 @@ def logbook_list(request):
             "can_edit": logbook.can_edit(request.user, entry),
             "personal": entry.kind == LogEntry.PERSONAL,
             "dm": entry.as_dm,
+            "private": entry.private,
             "avatar": logbook.avatar_url(entry),
             "full": logbook.full_url(entry),
             "banner": logbook.banner_url(entry),
@@ -105,7 +106,7 @@ def _save_frame(request, entry):
         )
 
 
-def _form_page(request, form, title, entry=None):
+def _form_page(request, form, title, entry=None, private=False):
     response = render(
         request,
         "frontend/logbook/form.html",
@@ -114,6 +115,7 @@ def _form_page(request, form, title, entry=None):
             "banner": logbook.banner_url(entry) if entry else "",
             "banner_style": logbook.banner_style(entry) if entry else "",
             "frame": entry,
+            "private": private,
             "page_title": title,
             "back_url": reverse("logbook-list"),
             "form": form,
@@ -133,6 +135,7 @@ def logbook_new(request):
         return _sign_in_redirect(request)
     kind = request.GET.get("kind")
     kind = LogEntry.PERSONAL if kind == LogEntry.PERSONAL else LogEntry.OBJECTIVE
+    private = kind == LogEntry.PERSONAL and request.GET.get("private") == "1"
     campaign = _campaign_or_none(request)
     if campaign is None:
         raise Http404
@@ -147,6 +150,7 @@ def logbook_new(request):
     ):
         entry = form.save(commit=False)
         entry.kind = kind
+        entry.private = private
         entry.author = request.user
         entry.campaign = campaign
         entry.save()
@@ -155,8 +159,11 @@ def logbook_new(request):
         _save_frame(request, entry)
         logbook.queue_translation(entry)
         return redirect(f"{reverse('logbook-list')}#entry-{entry.pk}")
-    title = _("New entry") if kind == LogEntry.OBJECTIVE else _("New personal message")
-    return _form_page(request, form, title)
+    if private:
+        title = _("New private note")
+    else:
+        title = _("New entry") if kind == LogEntry.OBJECTIVE else _("New personal message")
+    return _form_page(request, form, title, private=private)
 
 
 def logbook_edit(request, pk):
@@ -194,7 +201,8 @@ def logbook_edit(request, pk):
             )
             _save_frame(request, entry)
             return redirect(f"{reverse('logbook-list')}#entry-{entry.pk}")
-    return _form_page(request, form, _("Edit entry"), entry)
+    title = _("Edit private note") if entry.private else _("Edit entry")
+    return _form_page(request, form, title, entry, private=entry.private)
 
 
 def logbook_banner(request, pk):
@@ -203,6 +211,8 @@ def logbook_banner(request, pk):
     if not entry.banner or not request.user.is_authenticated:
         raise Http404
     if not membership.is_member(request.user, entry.campaign):
+        raise Http404
+    if not logbook.visible_to(request.user, entry):
         raise Http404
     try:
         with entry.banner.open("rb") as file:
@@ -220,6 +230,8 @@ def logbook_image(request, pk):
     if not request.user.is_authenticated or not membership.is_member(
         request.user, image.entry.campaign
     ):
+        raise Http404
+    if not logbook.visible_to(request.user, image.entry):
         raise Http404
     try:
         with image.image.open("rb") as file:

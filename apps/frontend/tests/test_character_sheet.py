@@ -1648,15 +1648,23 @@ def test_the_overview_shows_a_picture_and_level_wording(signed_in, alice):
     assert 'class="item-thumb pic-empty"' in html and "Monk · Level 1" in html
 
 
-def test_the_purse_uses_the_italian_coin_abbreviations(signed_in, alice):
+def test_the_purse_has_plus_buttons_and_italian_coin_abbreviations_for_others(
+    signed_in, alice, bob
+):
     cleric = finished(alice, "cleric")
     signed_in.cookies["django_language"] = "it"
 
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "inventory")
 
+    # The owner's coins are "+" buttons (the coin's name is in the label, not the disc).
+    assert html.count('data-coin-add="') == 4 and ">+</button>" in html
+    assert ">GP<" not in html and ">MO<" not in html
+
+    # Someone else's sheet is read-only and keeps the abbreviations.
+    signed_in.force_login(bob)
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "inventory")
     for abbreviation in ("MR", "MA", "MO", "MP"):
         assert f'aria-hidden="true">{abbreviation}<' in html
-    assert ">GP<" not in html
 
 
 def test_the_manifest_is_fetched_with_credentials(signed_in):
@@ -1803,3 +1811,127 @@ def test_transferring_items_moves_them_to_another_character_of_the_campaign(sign
     assert (
         act(signed_in, cleric, action="item_transfer", to=cleric.pk, items=items).status_code == 400
     )
+
+
+def test_the_plus_on_a_coin_adds_money(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    play.set_coin(cleric, "gold", 5)
+    page = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
+    assert 'data-coin-add="gold"' in page and 'id="cs-coin-dialog"' in page
+
+    assert act(signed_in, cleric, action="coin_add", coin="gold", value="15").status_code == 200
+    assert cleric.currency.gold == 20
+    for bad in ("0", "-3", "x"):
+        assert act(signed_in, cleric, action="coin_add", coin="gold", value=bad).status_code == 400
+    assert act(signed_in, cleric, action="coin_add", coin="gems", value="1").status_code == 400
+    cleric.currency.refresh_from_db()
+    assert cleric.currency.gold == 20
+
+
+def test_money_passes_between_characters_with_or_without_items(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    friend = finished(alice, "cleric", name="Friend")
+    play.set_coin(cleric, "gold", 10)
+    play.set_coin(cleric, "silver", 3)
+    coins = json.dumps({"gold": 4, "silver": 3})
+    friend_gold = getattr(getattr(friend, "currency", None), "gold", 0)
+    friend_silver = getattr(getattr(friend, "currency", None), "silver", 0)
+
+    reply = act(signed_in, cleric, action="item_transfer", to=friend.pk, items="[]", coins=coins)
+    assert reply.status_code == 200
+    cleric.currency.refresh_from_db()
+    assert (cleric.currency.gold, cleric.currency.silver) == (6, 0)
+    friend.currency.refresh_from_db()
+    assert (friend.currency.gold, friend.currency.silver) == (friend_gold + 4, friend_silver + 3)
+
+    # Never more than the purse holds, and nothing moves when any amount is wrong.
+    too_much = json.dumps({"silver": 1, "gold": 7})
+    reply = act(signed_in, cleric, action="item_transfer", to=friend.pk, items="[]", coins=too_much)
+    assert reply.status_code == 400
+    cleric.currency.refresh_from_db()
+    friend.currency.refresh_from_db()
+    assert (cleric.currency.gold, friend.currency.gold) == (6, friend_gold + 4)
+    assert (
+        act(signed_in, cleric, action="item_transfer", to=friend.pk, items="[]").status_code == 400
+    )
+
+
+def _unknown_spells(character, count=2):
+    return list(
+        Spell.objects.exclude(pk__in=character.spells.values_list("spell_id", flat=True)).filter(
+            level__gt=0
+        )[:count]
+    )
+
+
+def test_a_custom_feature_grants_always_prepared_spells(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    first, second = _unknown_spells(cleric)
+    reply = act(
+        signed_in,
+        cleric,
+        action="custom_feature_add",
+        name="Fey Gift",
+        spells=json.dumps([first.pk, second.pk]),
+    )
+    assert reply.status_code == 200
+    rows = cleric.spells.filter(source__startswith="custom:")
+    assert {r.spell_id for r in rows} == {first.pk, second.pk}
+    assert all(r.prepared and r.always_prepared for r in rows)
+
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
+    assert "Always prepared (Fey Gift)" in html and f"/world/spells/{first.pk}/" in html
+    # They are not the player's to remove or unprepare.
+    row = next(c for c in html.split("<li") if f"/world/spells/{first.pk}/" in c)
+    assert "spell_remove" not in row and "spell_prepare" not in row
+
+    # Dropping one spell from the feature, then the feature itself, takes the spells away.
+    feature = cleric.custom_features.get()
+    act(signed_in, cleric, action="custom_feature_edit", feature=feature.pk, name="Fey Gift",
+        spells=json.dumps([second.pk]))  # fmt: skip
+    assert set(
+        cleric.spells.filter(source__startswith="custom:").values_list("spell_id", flat=True)
+    ) == {second.pk}
+    act(signed_in, cleric, action="custom_feature_remove", feature=feature.pk)
+    assert not cleric.spells.filter(source__startswith="custom:").exists()
+
+    bad = act(signed_in, cleric, action="custom_feature_add", name="Bad", spells='["nope"]')
+    assert bad.status_code == 400
+
+
+def test_a_custom_item_grants_spells_only_while_equipped(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    (spell,) = _unknown_spells(cleric, 1)
+    act(
+        signed_in,
+        cleric,
+        action="custom_add",
+        name="Staff of Sparks",
+        section="misc",
+        spells=json.dumps([spell.pk]),
+    )
+    item = cleric.custom_items.get()
+    assert item.spells == [spell.pk]
+    assert not cleric.spells.filter(spell=spell).exists()  # carried, not worn
+
+    act(signed_in, cleric, action="equip", kind="custom", item=item.pk, value="1")
+    row = cleric.spells.get(spell=spell)
+    assert row.always_prepared and row.source == f"custom:item:{item.pk}"
+
+    act(signed_in, cleric, action="equip", kind="custom", item=item.pk, value="0")
+    assert not cleric.spells.filter(spell=spell).exists()
+
+    # Worn again, then gone from the sheet altogether: the spell goes too.
+    act(signed_in, cleric, action="equip", kind="custom", item=item.pk, value="1")
+    act(signed_in, cleric, action="item_remove", kind="custom", item=item.pk)
+    assert not cleric.spells.filter(spell=spell).exists()
+
+
+def test_a_spell_the_character_already_has_is_not_doubled_or_removed(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    (spell,) = _unknown_spells(cleric, 1)
+    act(signed_in, cleric, action="spell_add", spell=spell.pk)
+    act(signed_in, cleric, action="custom_feature_add", name="Echo", spells=json.dumps([spell.pk]))
+    assert cleric.spells.filter(spell=spell).count() == 1
+    act(signed_in, cleric, action="custom_feature_remove", feature=cleric.custom_features.get().pk)
+    assert cleric.spells.filter(spell=spell).exists()  # the player's own stays

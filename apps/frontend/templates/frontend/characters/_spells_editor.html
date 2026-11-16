@@ -1,0 +1,15 @@
+{% load i18n %}
+{# Spells a custom item or feature grants, always prepared: a search box over every spell and the #}
+{# chosen ones as chips, kept in the hidden `spells` field as a JSON list of spell ids            #}
+{# (`static/js/item_form.js`).                                                                    #}
+<div class="fx-editor sp-editor" data-spells>
+  <p class="fx-title">{% translate "Spells" %}</p>
+  <p class="hint">{{ hint }}</p>
+  <input type="hidden" name="spells" value="{{ value }}">
+  <ul class="sp-chips" data-spells-chips></ul>
+  <input type="text" class="sp-search" list="sp-{{ uid }}" autocomplete="off" data-spells-input placeholder="{% translate 'Search a spell to add…' %}" aria-label="{% translate 'Add a spell' %}">
+  <datalist id="sp-{{ uid }}">
+    {% for id, name, level in options %}<option value="{{ name }}" data-id="{{ id }}" label="{% if level %}{% blocktranslate %}Level {{ level }}{% endblocktranslate %}{% else %}{% translate 'Cantrip' %}{% endif %}"></option>{% endfor %}
+  </datalist>
+  <span hidden data-spells-labels data-remove="{% translate 'Remove this spell' %}"></span>
+</div>

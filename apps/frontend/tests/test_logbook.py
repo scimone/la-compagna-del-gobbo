@@ -403,3 +403,48 @@ def test_the_banner_frame_is_saved_clamped_shown_and_reset_by_a_new_banner(
     )
     entry.refresh_from_db()
     assert entry.banner_x == 0.5
+
+
+def test_a_private_note_is_seen_and_changed_by_its_author_alone(client, alice, bob, settings):
+    settings.MEDIA_ROOT = "/tmp/media-private-test"
+    hero = _hero(alice, "Gobbo")
+    client.force_login(alice)
+    page = client.get("/logbook/new/?kind=personal&private=1").content.decode()
+    assert "private-banner" in page and "Only you can read this" in page
+    response = client.post(
+        "/logbook/new/?kind=personal&private=1",
+        {"date": "2026-09-02", "text": "Secretly I fear the duke."},
+    )
+    entry = LogEntry.objects.get()
+    assert response.status_code == 302
+    assert entry.private and entry.kind == "personal" and entry.character == hero
+
+    mine = client.get("/logbook/").content.decode()
+    assert "log-entry personal private" in mine and "Secretly I fear the duke." in mine
+    assert "Secretly" in client.get("/logbook/?q=fear").content.decode()
+    assert client.get(f"/logbook/{entry.pk}/edit/").status_code == 200
+
+    client.force_login(bob)
+    assert "Secretly" not in client.get("/logbook/").content.decode()
+    assert "Secretly" not in client.get("/logbook/?q=fear").content.decode()
+    assert client.get(f"/logbook/{entry.pk}/edit/").status_code == 404
+    assert client.post(f"/logbook/{entry.pk}/delete/").status_code == 404
+    assert LogEntry.objects.count() == 1
+
+
+def test_not_even_the_dm_or_an_admin_reads_a_private_note(client, alice, bob, settings):
+    from apps.frontend import logbook
+
+    _hero(alice, "Gobbo")
+    note = _entry(alice, kind="personal", private=True, text="Mine.")
+    public = _entry(alice, kind="personal", text="Everyone's.")
+    admin = get_user_model().objects.create_user("root", is_staff=True, is_superuser=True)
+    for other in (bob, admin):
+        client.force_login(other)
+        assert "Mine." not in client.get("/logbook/").content.decode()
+        assert client.get(f"/logbook/{note.pk}/edit/").status_code == 404
+    # The assistant's view (no user) and other members' views leave it out.
+    assert logbook.list_entries(note.campaign) == [public]
+    assert logbook.list_entries(note.campaign, bob) == [public]
+    assert set(logbook.list_entries(note.campaign, alice)) == {note, public}
+    assert "Mine." not in str(note)

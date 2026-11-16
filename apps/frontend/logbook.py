@@ -4,6 +4,7 @@ from secrets import token_hex
 
 from django.contrib.staticfiles import finders
 from django.core.files.base import ContentFile
+from django.db.models import Q
 from django.templatetags.static import static
 from django.urls import reverse
 
@@ -20,12 +21,26 @@ def _order(entry: LogEntry) -> tuple:
     return (entry.date.toordinal(), not personal, written, entry.pk)
 
 
-def list_entries(campaign) -> list[LogEntry]:
+def visible_to(user, entry: LogEntry) -> bool:
+    """A private note is for its author alone; everything else is for the campaign."""
+    return not entry.private or (
+        getattr(user, "is_authenticated", False)
+        and entry.author_id is not None
+        and entry.author_id == user.id
+    )
+
+
+def list_entries(campaign, user=None) -> list[LogEntry]:
     """Oldest first, so the newest is at the bottom like in a chat. Within a day the personal
     messages come first and the objective entries follow under them, each in the order they were
-    written. Only `campaign`'s journal."""
+    written. Only `campaign`'s journal. Private notes are included only for `user`'s own - with no
+    `user` (the AI assistant's view, say) there are none."""
+    visible = Q(private=False)
+    if getattr(user, "is_authenticated", False):
+        visible |= Q(author=user)
     entries = (
         LogEntry.objects.filter(campaign=campaign)
+        .filter(visible)
         .select_related("author", "character")
         .prefetch_related("images")
     )
@@ -63,9 +78,11 @@ def full_url(entry: LogEntry) -> str:
 
 def can_edit(user, entry: LogEntry) -> bool:
     """The author (while still in the campaign), the campaign's DM, or an administrator. Anyone
-    else only reads."""
+    else only reads. A private note is the author's alone, whatever anyone's rank."""
     if not getattr(user, "is_authenticated", False):
         return False
+    if entry.private:
+        return visible_to(user, entry) and membership.is_member(user, entry.campaign)
     if membership.can_manage(user, entry.campaign):
         return True
     return (

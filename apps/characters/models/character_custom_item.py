@@ -74,6 +74,9 @@ class CustomItemBase(models.Model):
     #: of its own, only `effects` - see `characters.custom_effects` for their shape.
     wearable = models.BooleanField(default=False)
     effects = models.JSONField(default=list, blank=True)
+    #: Ids of `rules.Spell`s this grants, always prepared - a feature's always, an item's while worn
+    #: (`play.sync_custom_spells` keeps the character's `CharacterSpell` rows in step).
+    spells = models.JSONField(default=list, blank=True)
 
     class Meta:
         abstract = True

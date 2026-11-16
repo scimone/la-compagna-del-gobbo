@@ -875,7 +875,9 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
       rule (when/how many may change - shown, not enforced). Bookmarking exists in the World
       lists only, not on the character sheet.
     - *Inventory*: a fixed top part with the coin pouch (copper/silver/gold/platinum, electrum only
-      if owned; editable), the carried weight and an **Add item** button, then Weapons / Armor /
+      if owned; editable; the owner's coin discs are "+" buttons that open an *Add money* dialog with
+      quick +1/+5/+10/+50/+100 amounts - action `coin_add`; the **Transfer** dialog hands over coins too,
+      alongside or instead of items - `coins` in `item_transfer`, `play.transfer_items`), the carried weight and an **Add item** button, then Weapons / Armor /
       Tools / Misc as one list in the Features/Spellbook row style: name, one detail line (damage
       or AC, weight, cost, attunement, and "from <pack>") and a chevron on the right that unfolds
       the description under the row. **Packs are not listed**: their contents are, as ordinary items
@@ -926,7 +928,12 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
       feature: Armor Class, Speed, Initiative, Passive Perception, every attack/damage roll, spell save DC /
       attack, a weapon's own attack/damage (a +1 sword), saves and skills (a bonus, all of them, or
       proficiency / expertise), and ability scores (a bonus, or "at least" - Gauntlets of Ogre Power).
-      Not covered: maximum hit points, resistances, senses. **Custom features** are added from the
+      Not covered: maximum hit points, resistances, senses. A custom item or feature can also
+      grant **spells** (`spells`, a JSON list of spell ids, edited with the search-and-chips picker of
+      `_spells_editor.html`): `play.sync_custom_spells` keeps them on the sheet as always-prepared
+      `CharacterSpell` rows (`source="custom:item:<pk>"` / `"custom:feature:<pk>"`) - a feature's always,
+      an item's only while it is worn - and removes them when the item is taken off, edited or removed;
+      a spell the character already has from anywhere else is never doubled or taken away. **Custom features** are added from the
       *Custom feature* tab of the Add feature overlay (`custom_feature_add`), listed on the Features tab as
       *Custom* rows, and have a page of their own to edit or remove
       (`/characters/<id>/features/custom/<id>/`, `custom_feature_edit` / `custom_feature_remove`).
@@ -961,7 +968,7 @@ around mobile browsers resizing the visible viewport as the address bar shows/hi
     also serves `feature` (a `rules.Feature`) and `mastery`.
   - **`POST /characters/<id>/act/`** is the one endpoint the sheet posts to (form fields `action` +
     parameters; owner only, completed characters only). Actions: `name`, `xp`, `hp_delta`, `hp_set`,
-    `temp_hp`, `death_toggle`, `inspiration`, `hit_dice`, `slots`, `coin`, `equip`, `text` (backstory only),
+    `temp_hp`, `death_toggle`, `inspiration`, `hit_dice`, `slots`, `coin`, `coin_add`, `equip`, `text` (backstory only),
     `item_add`, `item_buy`, `custom_add`, `custom_catalog_add`, `custom_catalog_buy`, `item_transfer`, `custom_edit`, `item_qty`, `item_remove`, `item_sell`, `spell_add`, `spell_remove`, `feature_add`, `feature_remove`, `custom_feature_add`, `custom_feature_edit`, `custom_feature_remove` (the picture has its own
     endpoint, above). It answers
     `{ok, refresh, message, state}` (`message` is a note for a toast, e.g. "Sold for 2 gp 5 sp"); the script redraws from `state`, or - when `refresh` is true because
@@ -1343,6 +1350,13 @@ interaction_report [--days N]` prints per-user, per-page and per-action counts, 
 `campaign`; `logbook.py`, `logbook_views.py`), readable and written by the campaign's members,
 edited/deleted by the author, the campaign's DM or an admin (a DM or admin can also write personal
 messages "as the DM"), searchable live (as written *and* in either language's translation).
+A **private note** (the lock button next to the speech-bubble and + ones; `LogEntry.private`, a personal
+message) is visible to its author's account alone - not the DM, an admin, the other members or the AI
+assistant (`logbook.list_entries(campaign, user)` includes only the viewer's own; with no user it
+returns none; the banner/image views and edit/delete check `logbook.visible_to`/`can_edit` too). It is
+drawn apart from the party's messages: a dashed gold bubble with a "Private · only you" badge, and a
+tinted form with a lock banner and a "Save privately" button. Search covers public entries and the
+viewer's own private ones. It cannot be made public afterwards (delete and rewrite it).
 An entry's *Visited locations* is a text block like *Characters met*. The edit form starts from the
 text as the reader sees it, so an entry can be corrected while reading its machine translation;
 saving overwrites the stored original with the submitted text and queues the translation back into

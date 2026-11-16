@@ -13,6 +13,9 @@ class CharacterCustomFeature(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True, default="")
     effects = models.JSONField(default=list, blank=True)
+    #: Ids of `rules.Spell`s this grants, always prepared - a feature's always, an item's while worn
+    #: (`play.sync_custom_spells` keeps the character's `CharacterSpell` rows in step).
+    spells = models.JSONField(default=list, blank=True)
 
     class Meta:
         ordering = ["character", "name"]

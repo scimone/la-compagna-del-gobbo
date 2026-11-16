@@ -95,6 +95,76 @@
     effects.forEach(function (effect) { addRow(editor, effect); });
   }
 
+  // ---- the spells picker (`_spells_editor.html`): chips + a search box over a datalist ----------
+
+  function spellNames(editor) {
+    if (!editor._names) {
+      editor._names = {};
+      editor._byName = {};
+      editor.querySelectorAll("datalist option").forEach(function (o) {
+        editor._names[o.dataset.id] = o.value;
+        editor._byName[o.value.toLowerCase()] = o.dataset.id;
+      });
+    }
+    return editor;
+  }
+
+  function spellIds(editor) {
+    try { return JSON.parse(editor.querySelector('input[name="spells"]').value || "[]"); } catch (e) { return []; }
+  }
+
+  function setSpells(editor, ids) {
+    editor.querySelector('input[name="spells"]').value = ids.length ? JSON.stringify(ids) : "";
+    var names = spellNames(editor)._names;
+    var list = editor.querySelector("[data-spells-chips]");
+    var remove = editor.querySelector("[data-spells-labels]").dataset.remove;
+    list.textContent = "";
+    ids.forEach(function (id) {
+      var li = document.createElement("li");
+      li.appendChild(document.createTextNode(names[id] || id));
+      var button = document.createElement("button");
+      button.type = "button";
+      button.textContent = "×";
+      button.dataset.spellRemove = id;
+      button.setAttribute("aria-label", remove);
+      li.appendChild(button);
+      list.appendChild(li);
+    });
+  }
+
+  function pickSpell(editor, input) {
+    var id = spellNames(editor)._byName[input.value.trim().toLowerCase()];
+    if (!id) return;
+    var ids = spellIds(editor);
+    if (ids.indexOf(id) < 0) setSpells(editor, ids.concat(id));
+    input.value = "";
+  }
+
+  document.addEventListener("input", function (event) {
+    var input = event.target;
+    if (!input.matches || !input.matches("[data-spells-input]")) return;
+    // Choosing from the list arrives as a replacement, not as typing: typing "Light" on the way to
+    // "Lightning Bolt" must not add Light.
+    if (!event.inputType || event.inputType === "insertReplacementText") pickSpell(input.closest("[data-spells]"), input);
+  });
+  document.addEventListener("change", function (event) {
+    var input = event.target;
+    if (input.matches && input.matches("[data-spells-input]")) pickSpell(input.closest("[data-spells]"), input);
+  });
+  document.addEventListener("keydown", function (event) {
+    var input = event.target;
+    if (event.key === "Enter" && input.matches && input.matches("[data-spells-input]")) {
+      event.preventDefault();
+      pickSpell(input.closest("[data-spells]"), input);
+    }
+  });
+  document.addEventListener("click", function (event) {
+    var button = event.target.closest("[data-spell-remove]");
+    if (!button) return;
+    var editor = button.closest("[data-spells]");
+    setSpells(editor, spellIds(editor).filter(function (id) { return id !== button.dataset.spellRemove; }));
+  });
+
   function syncShowIf(scope) {
     scope.querySelectorAll("[data-show-if]").forEach(function (el) {
       var form = el.closest("[data-custom-form], form");
@@ -150,12 +220,14 @@
         editor.querySelector('input[name="effects"]').value = "";
         load(editor);
       });
+      scope.querySelectorAll("[data-spells]").forEach(function (editor) { setSpells(editor, []); });
       syncShowIf(scope);
     },
   };
 
   function init() {
     document.querySelectorAll("[data-effects]").forEach(load);
+    document.querySelectorAll("[data-spells]").forEach(function (editor) { setSpells(editor, spellIds(editor)); });
     syncShowIf(document);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);

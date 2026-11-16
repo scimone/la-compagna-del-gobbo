@@ -55,6 +55,14 @@
   .log-bubble .log-date { color: var(--muted); font-weight: 400; }
   /* The DM stands out within the app's own palette: the accent (burgundy) instead of the
      characters' blue, a heavier frame, a larger zoomed-in portrait and a "DM" badge. */
+  /* A private note: dashed gold frame, a tinted bubble, a lock on the picture and a "Private" badge
+     with "only you" - clearly not something the party sees. */
+  .log-entry.private { --bubble-line: #8a6d1d; }
+  .log-entry.private .log-bubble { --bubble-bg: color-mix(in srgb, #8a6d1d 12%, var(--surface)); border-style: dashed; border-width: 2px; }
+  .log-entry.private .log-bubble::before { border-style: dashed; border-width: 2px; }
+  .log-entry.private .log-avatar { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px #8a6d1d; }
+  .log-lock { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.05rem 0.5rem; border-radius: 1rem; background: #8a6d1d; color: #fff; font-size: 0.75rem; font-weight: 600; }
+  .log-lock svg { width: 0.8rem; height: 0.8rem; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
   .log-entry.dm { --bubble-line: var(--accent); }
   .log-entry.dm .log-avatar { width: 3rem; height: 3rem; left: -1.1rem; }
   .log-entry.dm .log-avatar img { transform: scale(3.5); transform-origin: 50% 30%; }
@@ -101,7 +109,7 @@
           {% with e=row.entry %}
           {% if row.personal %}
           {# A personal message: the character's picture sits on the timeline, the text is a speech bubble. #}
-          <li class="log-entry personal{% if row.dm %} dm{% endif %}" id="entry-{{ e.pk }}">
+          <li class="log-entry personal{% if row.dm %} dm{% endif %}{% if row.private %} private{% endif %}" id="entry-{{ e.pk }}">
             {% if row.avatar and row.full %}
             <button type="button" class="log-avatar" data-full="{{ row.full }}" aria-label="{% translate 'Enlarge picture' %}"><img src="{{ row.avatar }}" alt="" loading="lazy"></button>
             {% else %}
@@ -112,7 +120,7 @@
             <div class="log-bubble">
               {% include "frontend/logbook/_banner.html" %}
               <div class="log-head">
-                <div class="who"><span class="log-char">{% if row.dm %}{% translate "DM" %}{% else %}{{ e.character.name|default:"—" }}{% endif %}</span><span class="log-date">{{ e.date|date:"j M Y" }}</span></div>
+                <div class="who"><span class="log-char">{% if row.dm %}{% translate "DM" %}{% else %}{{ e.character.name|default:"—" }}{% endif %}</span><span class="log-date">{{ e.date|date:"j M Y" }}</span>{% if row.private %}<span class="log-lock" title="{% translate 'Private note: only you can see it' %}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>{% translate "Private · only you" %}</span>{% endif %}</div>
                 {% include "frontend/logbook/_actions.html" %}
               </div>
               <div class="log-field log-text">{{ row.fields.text }}</div>
@@ -195,6 +203,9 @@
     <div class="fab-bar">
       <a class="fab alt" href="{% url 'logbook-new' %}?kind=personal" aria-label="{% translate 'New personal message' %}" title="{% translate 'New personal message' %}">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H11l-4.5 4v-4H4z"/></svg>
+      </a>
+      <a class="fab alt private" href="{% url 'logbook-new' %}?kind=personal&amp;private=1" aria-label="{% translate 'New private note (only you can see it)' %}" title="{% translate 'New private note (only you can see it)' %}" style="color:#8a6d1d;border-color:#8a6d1d">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
       </a>
       <a class="fab" href="{% url 'logbook-new' %}" aria-label="{% translate 'New logbook entry' %}" title="{% translate 'New logbook entry' %}">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>

@@ -635,12 +635,15 @@ def _spellbook_rows(character: Character, can_edit: bool, limits: dict | None = 
     rows = []
     limits = limits or {}
     natural_free = play.natural_free_cast_left(character)
+    granted_by = _custom_spell_sources(character)
     for cs in (
         character.spells.select_related("spell", "klass")
         .prefetch_related("spell__saving_throw_abilities")
         .order_by("spell__level", "spell__name")
     ):
-        if cs.always_prepared:
+        if cs.source in granted_by:
+            status = _("Always prepared (%(name)s)") % {"name": granted_by[cs.source]}
+        elif cs.always_prepared:
             status = _("Always prepared")
         elif cs.prepared and cs.spell.level > 0:
             # The Prepared button already says so - only a read-only sheet has no button.
@@ -691,6 +694,16 @@ def _spellbook_rows(character: Character, can_edit: bool, limits: dict | None = 
         row["unprepared"] = cs.spell.level > 0 and not prepared
         rows.append(row)
     return rows
+
+
+def _custom_spell_sources(character: Character) -> dict[str, str]:
+    """`{CharacterSpell.source: name}` of the custom items and features that grant spells."""
+    names = {}
+    for feature in character.custom_features.all():
+        names[f"{play.CUSTOM_SPELL_SOURCE}feature:{feature.pk}"] = feature.name
+    for item in character.custom_items.filter(equipped=True):
+        names[f"{play.CUSTOM_SPELL_SOURCE}item:{item.pk}"] = item.name
+    return names
 
 
 def _prepared_count(character: Character, class_id: str) -> int:
@@ -1053,6 +1066,7 @@ def _inventory(character: Character, stats) -> dict:
     return {
         "coins": _coins(character),
         "transfer_targets": _transfer_targets(character),
+        "has_coins": any(c["amount"] for c in _coins(character)),
         "sections": [s for s in sections.values() if s["cards"]],
         "total_weight": _weight_text(total_weight) if total_weight else "",
     }
@@ -1485,6 +1499,7 @@ _ACTIONS = {
     "hit_dice": _act_hit_dice,
     "slots": _act_slots,
     "coin": lambda c, p: play.set_coin(c, p.get("coin", ""), _int(p, "value")),
+    "coin_add": lambda c, p: play.add_coins(c, p.get("coin", ""), _int(p, "value")),
     "text": lambda c, p: _act_text(c, p),
 }
 
@@ -1551,6 +1566,7 @@ def _custom_feature_fields(post) -> dict:
         "name": post.get("name", ""),
         "description": post.get("description", ""),
         "effects": post.get("effects", ""),
+        "spells": post.get("spells", ""),
     }
 
 
@@ -1616,6 +1632,12 @@ def _int_or_none(post, name: str) -> int | None:
     return None if number is None else int(number)
 
 
+def _spell_names(ids) -> str:
+    """The names of the spells a custom item or feature grants, in the order they were chosen."""
+    names = dict(Spell.objects.filter(pk__in=ids).values_list("pk", "name"))
+    return ", ".join(names[i] for i in ids if i in names)
+
+
 def _effects_lines(effects) -> list[str]:
     """A custom item's or feature's effects as lines of text ("+2 Armor Class")."""
     if not effects:
@@ -1667,6 +1689,7 @@ def _custom_fields(post) -> dict:
         "range": _range_text(post),
         "wearable": post.get("wearable") == "1",
         "effects": post.get("effects", ""),
+        "spells": post.get("spells", ""),
     }
 
 
@@ -1717,10 +1740,11 @@ def _act_item_transfer(character, post):
             (str(p["kind"]), int(p["item"]), int(p.get("quantity") or 1))
             for p in json.loads(post.get("items", "[]"))
         ]
-    except (TypeError, ValueError, KeyError):
+        coins = {str(k): int(v) for k, v in json.loads(post.get("coins", "{}")).items()}
+    except (TypeError, ValueError, KeyError, AttributeError):
         raise ValueError("items are not valid") from None
     target = Character.objects.get(pk=_int(post, "to"))
-    moved = play.transfer_items(character, target, picks)
+    moved = play.transfer_items(character, target, picks, coins)
     return {
         "refresh": True,
         "message": _("Handed %(items)s to %(name)s")
@@ -2231,6 +2255,7 @@ def _custom_form_context(row=None) -> dict:
         "range_normal": range_normal,
         "range_long": range_long,
         "effects_json": json.dumps(row.effects) if row is not None and row.effects else "",
+        "spells_json": json.dumps(row.spells) if row is not None and row.spells else "",
         "effect_options": _effect_options_json(),
         "sections": [(key, label) for key, label, _types in _INVENTORY_SECTIONS],
         "weapon_categories": [
@@ -2292,6 +2317,8 @@ def _item_page_facts(kind: str, row) -> tuple[list, list]:
         facts.append((_("Strength required"), row.strength_requirement))
     if row.effects:
         facts.append((_("Effects"), "; ".join(_effects_lines(row.effects))))
+    if row.spells:
+        facts.append((_("Spells"), _spell_names(row.spells)))
     if row.value:
         facts.append((_("Cost"), _gold_label(row.value)))
     if row.weight:
@@ -2436,6 +2463,7 @@ def character_custom_feature(request, pk, ref):
             "can_edit": can_edit,
             "editing": editing,
             "effects_json": json.dumps(row.effects) if row.effects else "",
+            "spells_json": json.dumps(row.spells) if row.spells else "",
             "effect_options": _effect_options_json(),
             "cancel_url": request.path,
             "messages": messages.get_messages(request),
@@ -2445,6 +2473,8 @@ def character_custom_feature(request, pk, ref):
     facts = [(_("Type"), _("Custom"))]
     if row.effects and not editing:
         facts.append((_("Effects"), "; ".join(_effects_lines(row.effects))))
+    if row.spells and not editing:
+        facts.append((_("Spells"), _spell_names(row.spells)))
     response = render(
         request,
         "frontend/characters/item.html",
