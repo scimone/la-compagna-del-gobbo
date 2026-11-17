@@ -546,13 +546,19 @@ def test_a_long_rest_restores_everything_but_inspiration(fighter):
     assert all(r.current_uses == r.max_uses for r in fighter.resources.all())
 
 
-def test_a_resource_is_spent_and_regained_between_zero_and_its_maximum(fighter):
+def test_a_resource_is_spent_but_never_beyond_what_is_left(fighter):
+    fighter.resources.filter(name="Second Wind").update(current_uses=2)
     wind = fighter.resources.get(name="Second Wind")
 
-    play.adjust_resource(fighter, wind.pk, 5)
-    assert fighter.resources.get(name="Second Wind").current_uses == 2
-    play.adjust_resource(fighter, wind.pk, -5)
-    assert fighter.resources.get(name="Second Wind").current_uses == 0
+    play.use_resource(fighter, wind.pk)
+    assert fighter.resources.get(name="Second Wind").current_uses == 1
+    with pytest.raises(ValueError):
+        play.use_resource(fighter, wind.pk, 2)
+    with pytest.raises(ValueError):
+        play.use_resource(fighter, wind.pk, 0)
+    play.use_resource(fighter, wind.pk)
+    with pytest.raises(ValueError):
+        play.use_resource(fighter, wind.pk)
 
 
 def test_level_gain_opens_one_change_for_a_bard_and_each_change_uses_it_up(hero):

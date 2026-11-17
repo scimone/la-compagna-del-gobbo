@@ -12,7 +12,7 @@
         {% if shaped.can_edit %}<button type="button" class="cs-shaped-end" data-act="wild_shape_end" data-confirm="{% translate 'Leave the Beast form and return to your own statistics?' %}">{% translate "End" %}</button>{% endif %}
       </summary>
       <div class="cs-shaped-body">
-        <p>{% translate "Armor Class, Speed, Strength, Dexterity and Constitution are the Beast's; your hit points, Intelligence, Wisdom, Charisma, proficiencies and class features stay. You can't cast spells." %}</p>
+        <p>{% translate "You can't cast spells." %}</p>
         <p><b>{% translate "Speed" %}</b> {{ shaped.speed }}<br><b>{% translate "Senses" %}</b> {{ shaped.senses }}</p>
         {% for name, text in shaped.actions %}<p><b>{{ name }}.</b> {{ text }}</p>{% endfor %}
         <p><a href="{{ shaped.url }}">{% translate "Full stat block" %}</a></p>

@@ -24,7 +24,7 @@
     {# A row's own main action (the sheet's Wild Shape forms: "Use"), run by `character_sheet.js`'s #}
     {# generic `[data-act]` handler.                                                               #}
     <button type="button" class="item-use" data-act="{{ item.use.act }}" data-{{ item.use.param }}="{{ item.use.id }}"
-            data-confirm="{{ item.use.confirm }}">{{ item.use.label }}</button>
+            {% if item.use.confirm %}data-confirm="{{ item.use.confirm }}"{% endif %}{% if item.use.ask %} data-ask-amount="{{ item.use.ask }}" data-ask-label="{{ item.use.ask_label }}"{% endif %}{% if item.use.disabled %} disabled{% endif %}>{{ item.use.label }}</button>
   {% endif %}
   {% if item.remove %}
     {# A row's own small "take this off the character" action (e.g. a spell the player added by #}

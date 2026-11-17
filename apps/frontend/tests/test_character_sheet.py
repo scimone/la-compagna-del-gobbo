@@ -463,11 +463,30 @@ def test_a_long_rest_asks_whether_to_change_the_prepared_spells(signed_in, alice
 
     response = act(signed_in, cleric, action="long_rest")
 
-    assert "prepared spells" in response.json()["prompt"]
+    (prompt,) = response.json()["prompts"]
+    assert "prepared spells" in prompt["text"] and "can't change them until" in prompt["text"]
     fighter = finished(alice, "fighter", background="soldier")
     # A Fighter has no prepared spells to change, but may swap a Weapon Mastery weapon.
-    prompt = act(signed_in, fighter, action="long_rest").json()
-    assert "prepared spells" not in prompt["prompt"] and prompt["prompt_tab"] == "proficiencies"
+    (prompt,) = act(signed_in, fighter, action="long_rest").json()["prompts"]
+    assert prompt["kind"] == "mastery" and prompt["tab"] == "proficiencies"
+    assert "until your next long rest" in prompt["text"]
+
+
+def test_cancelling_a_rests_offer_forfeits_that_change(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    act(signed_in, cleric, action="long_rest")
+    cleric.refresh_from_db()
+    assert cleric.spell_changes
+    assert act(signed_in, cleric, action="rest_decline", kind="spells").status_code == 200
+    cleric.refresh_from_db()
+    assert cleric.spell_changes == {}
+    assert act(signed_in, cleric, action="rest_decline", kind="nonsense").status_code == 400
+
+    fighter = finished(alice, "fighter", background="soldier")
+    act(signed_in, fighter, action="long_rest")
+    act(signed_in, fighter, action="rest_decline", kind="mastery")
+    fighter.refresh_from_db()
+    assert fighter.weapon_mastery_changes == {}
 
 
 def test_a_hand_added_spell_of_a_preparing_class_follows_its_preparation(signed_in, alice):
@@ -1624,7 +1643,11 @@ def test_the_rest_buttons_and_the_resources_show_and_the_actions_work(signed_in,
     fighter.refresh_from_db()
     assert fighter.current_hit_points == fighter.max_hit_points
     wind = fighter.resources.get(name="Second Wind")
-    act(signed_in, fighter, action="resource", id=wind.pk, delta="-1")
+    # The counter is not the player's to set: only the feature's Use button spends it.
+    assert act(signed_in, fighter, action="resource", id=wind.pk, delta="-1").status_code == 400
+    html = signed_in.get(f"/characters/{fighter.pk}/").content.decode()
+    assert 'data-act="resource"' not in html
+    assert act(signed_in, fighter, action="resource_use", resource=wind.pk).status_code == 200
     assert fighter.resources.get(name="Second Wind").current_uses == wind.max_uses - 1
 
 

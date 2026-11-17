@@ -14,10 +14,10 @@ from apps.characters.models import Character, CharacterChoice
 from apps.rules.models import ClassLevel, Skill
 
 from .. import tables
-from . import wild_shape
 from ..class_spec import CLASS_SPEC
 from ..progression_spec import SUBCLASS_CASTING
 from ..resolvers.proficiency import WeaponProficiency
+from . import wild_shape
 
 _ARMOR_CATEGORY = {"la": "light", "ma": "medium", "ha": "heavy"}
 _LEVEL_MULTIPLIER = {"proficient": 1, "expertise": 2}

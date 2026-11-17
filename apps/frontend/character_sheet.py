@@ -396,6 +396,7 @@ def _feature_items(character: Character, can_edit: bool = False) -> list[dict]:
     action (see `_removal()`).
     """
     items = []
+    resources = {r.name: r for r in character.resources.all()}
     for cf in character.features.select_related(
         "feature__class_level__klass",
         "feature__subclass_level__subclass__klass",
@@ -403,21 +404,64 @@ def _feature_items(character: Character, can_edit: bool = False) -> list[dict]:
     ):
         f = cf.feature
         if f.species_id or f.class_level_id or f.subclass_level_id:
-            items.append({**_feature_row(f), **_removal(can_edit, cf.source, "feature", f.pk)})
+            row = {**_feature_row(f), **_removal(can_edit, cf.source, "feature", f.pk)}
+            resource = resources.get(_resource_name(f.name_en))
+            if can_edit and resource and resource.name != "Wild Shape":
+                row["use"] = _resource_use(resource)
+            items.append(row)
     for cf in character.feats.select_related("feat"):
         items.append({**_feat_row(cf.feat), **_removal(can_edit, cf.source, "feat", cf.feat.pk)})
     for co in character.optional_features.select_related("optional_feature"):
         option = co.optional_feature
         items.append({**_option_row(option), **_removal(can_edit, co.source, "option", option.pk)})
+    active = character.wild_shape_form
     for creature in wild_shape.known_forms(character):
         row = _wild_shape_row(creature)
-        if not can_edit:
-            row.pop("use")
+        if not can_edit or creature.pk == active:
+            row.pop("use")  # already in this form: using it again would only waste a use
+        else:
+            row["use"]["label"] = f"{_('Use')} {wild_shape.uses_left(character)}"
+            row["use"]["disabled"] = wild_shape.uses_left(character) < 1
         items.append(row)
     for custom in character.custom_features.all():
         items.append(_custom_feature_row(custom, can_edit))
     items.sort(key=lambda item: item["name"].casefold())
     return items
+
+
+#: The feature whose card spends a counter, where the counter has another name than the feature.
+_RESOURCE_ALIASES = {
+    "Monk's Focus": "Focus Points",
+    "Font of Magic": "Sorcery Points",
+    "Combat Superiority": "Superiority Dice",
+}
+#: Counters that are a pool of points rather than uses: Use asks how many to spend.
+_POOLS = {"Lay on Hands", "Sorcery Points", "Focus Points"}
+
+
+def _resource_name(feature_name: str) -> str:
+    """The counter a feature's card spends: its own name ("Giant Ancestry (Fire)" counts as
+    "Giant Ancestry"), or the alias above."""
+    name = feature_name.split(" (")[0]
+    return _RESOURCE_ALIASES.get(name, name)
+
+
+def _resource_use(resource) -> dict:
+    """The "Use" button of a feature card that has a counter: spends one use (or asks how many
+    points, for a pool); disabled while none are left. Uses come back by resting only."""
+    pool = resource.name in _POOLS
+    return {
+        "act": "resource_use",
+        "param": "resource",
+        "id": resource.pk,
+        "label": f"{_('Use')} {resource.current_uses}/{resource.max_uses}",
+        "confirm": ""
+        if pool
+        else _("Use %(name)s? This spends one use.") % {"name": resource.name},
+        "disabled": resource.current_uses < 1,
+        "ask": resource.current_uses if pool else 0,
+        "ask_label": _("How many points of %(name)s?") % {"name": resource.name},
+    }
 
 
 def _wild_shape_row(creature) -> dict:
@@ -1490,26 +1534,70 @@ def _act_short_rest(character, post):
 
 
 def _spell_change_prompt() -> str:
-    return _("You can change your prepared spells now. Do you want to do it?")
+    return _(
+        "You can change your prepared spells now. Do you want to do it? "
+        "If you cancel, you can't change them until your next long rest."
+    )
+
+
+def _rest_prompts(character) -> list[dict]:
+    """What a rest offers to change, one prompt each (`kind` is what `rest_decline` turns down).
+    Cancelling a prompt forfeits that change until the next rest."""
+    warning = _("If you cancel, you can't do it until your next long rest.")
+    prompts = []
+    if character.spell_changes:
+        prompts.append({"kind": "spells", "tab": "spellbook", "text": _spell_change_prompt()})
+    if character.weapon_mastery_changes:
+        prompts.append(
+            {
+                "kind": "mastery",
+                "tab": "proficiencies",
+                "text": _(
+                    "You can change one of your Weapon Mastery weapons now. Do you want to do it?"
+                )
+                + " "
+                + warning,
+            }
+        )
+    if character.rest_choices.get("land"):
+        prompts.append(
+            {
+                "kind": "land",
+                "tab": "features",
+                "text": _("You can choose a new land for Circle of the Land now. Do it?")
+                + " "
+                + warning,
+            }
+        )
+    if character.rest_choices.get("wild_shape"):
+        prompts.append(
+            {
+                "kind": "wild_shape",
+                "tab": "features",
+                "text": _("You can replace one of your Wild Shape forms now. Do it?")
+                + " "
+                + warning,
+            }
+        )
+    return prompts
 
 
 def _act_long_rest(character, post):
     play.long_rest(character)
     result = {"refresh": True, "message": _("Long rest taken")}
-    if character.spell_changes:
-        result["prompt"] = _spell_change_prompt()
-    elif character.weapon_mastery_changes:
-        result["prompt"] = _(
-            "You can change one of your Weapon Mastery weapons now. Do you want to do it?"
-        )
-        result["prompt_tab"] = "proficiencies"
-    elif character.rest_choices.get("land"):
-        result["prompt"] = _("You can choose a new land for Circle of the Land now. Do it?")
-        result["prompt_tab"] = "features"
-    elif character.rest_choices.get("wild_shape"):
-        result["prompt"] = _("You can replace one of your Wild Shape forms now. Do it?")
-        result["prompt_tab"] = "features"
+    if prompts := _rest_prompts(character):
+        result["prompts"] = prompts
     return result
+
+
+def _act_rest_decline(character, post):
+    play.decline_rest_window(character, post.get("kind", ""))
+    return {"refresh": True}
+
+
+def _act_resource_use(character, post):
+    play.use_resource(character, _int(post, "resource"), int(post.get("amount") or 1))
+    return {"refresh": True, "message": _("Used")}
 
 
 def _act_wild_shape_use(character, post):
@@ -1545,10 +1633,6 @@ def _act_land_change(character, post):
 def _act_mastery_swap(character, post):
     play.swap_weapon_mastery(character, post.get("old", ""), post.get("new", ""))
     return {"refresh": True, "message": _("Weapon Mastery changed")}
-
-
-def _act_resource(character, post):
-    play.adjust_resource(character, _int(post, "id"), _int(post, "delta"))
 
 
 def _act_slots(character, post):
@@ -1936,7 +2020,8 @@ _ACTIONS["wild_shape_use"] = _act_wild_shape_use
 _ACTIONS["wild_shape_end"] = _act_wild_shape_end
 _ACTIONS["wild_shape_choose"] = _act_wild_shape_choose
 _ACTIONS["wild_shape_swap"] = _act_wild_shape_swap
-_ACTIONS["resource"] = _act_resource
+_ACTIONS["resource_use"] = _act_resource_use
+_ACTIONS["rest_decline"] = _act_rest_decline
 _ACTIONS["spell_add"] = _act_spell_add
 _ACTIONS["spell_prepare"] = _act_spell_prepare
 _ACTIONS["spell_remove"] = _act_spell_remove
@@ -2006,8 +2091,7 @@ def character_act(request, pk):
             "ok": True,
             "refresh": bool(outcome.get("refresh")),
             "message": outcome.get("message", ""),
-            "prompt": outcome.get("prompt", ""),
-            "prompt_tab": outcome.get("prompt_tab", ""),
+            "prompts": outcome.get("prompts", []),
             "state": _state(character),
         }
     )

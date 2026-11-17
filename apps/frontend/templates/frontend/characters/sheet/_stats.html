@@ -174,7 +174,7 @@
   </div>
   {% endif %}
 
-  {# Limited-use resources (Rage, Bardic Inspiration, ...): spent with the buttons, restored by rests. #}
+  {# Limited-use resources (Rage, Bardic Inspiration, ...): spent with the Use button of the feature, restored by rests. #}
   {% if strip.resources %}
   <div class="st-card st-res st-wide">
     <span class="k">{% translate "Resources" %}</span>
@@ -182,9 +182,7 @@
       <div class="cs-res-row">
         <span class="lbl">{{ r.name }}</span>
         <span class="ctl">
-          {% if can_edit %}<button type="button" class="step small" data-act="resource" data-id="{{ r.pk }}" data-delta="-1" aria-label="{% translate 'Spend one use' %}">−</button>{% endif %}
           <span class="cnt"><b data-bind="resources.{{ r.pk }}.current">{{ r.current }}</b>/{{ r.max }}</span>
-          {% if can_edit %}<button type="button" class="step small" data-act="resource" data-id="{{ r.pk }}" data-delta="1" aria-label="{% translate 'Regain one use' %}">+</button>{% endif %}
         </span>
       </div>
     {% endfor %}

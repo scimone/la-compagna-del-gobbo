@@ -1361,7 +1361,7 @@ opens `rest_choices["wild_shape"]` and the Features tab offers "Replace a form" 
 `wild_shape_swap`: one known form out, one eligible Beast in - once per Long Rest; the long-rest
 prompt mentions it). Each known form is a "Wild Shape: <beast>" row of the Features list with the
 Druid's icon, opening the stat block. Uses per rest (Wild Shape column) were already handled as a
-resource. **Use** (a button on each "Wild Shape: <beast>" row, action `wild_shape_use`; `wild_shape.use()`)
+resource; they are spent by Use only. **Use** (a button on each "Wild Shape: <beast>" row, action `wild_shape_use`; `wild_shape.use()`)
 spends one use of that resource (also when already shape-shifted: using it again changes form), gives
 temporary hit points equal to the Druid level and sets `Character.wild_shape_form`. While it is set
 `derived_stats.compute()` replaces Armor Class, Speed, Strength, Dexterity and Constitution with the
@@ -1372,6 +1372,21 @@ Druid level in hours, its speed, senses and actions, an **End** button - action 
 the replaced numbers outlined in green. No spell can be cast meanwhile (`play.cast_spell`, no Cast
 buttons). The form also ends at 0 hit points, with an Incapacitated condition and at a Long Rest. The
 duration is only shown (game time); equipment merging into the form is not modelled.
+
+#### Counters, Use and rest offers
+
+A feature with a counter in the Stats tab's Resources card (`CharacterResource`: Rage, Second Wind, Breath
+Weapon, Lay on Hands ...) has a **Use** button on its Features-list card (`character_sheet._resource_name`
+maps a card to its counter - its own name, or `_RESOURCE_ALIASES` for Monk's Focus / Font of Magic /
+Combat Superiority; `test_feature_use.py` fails if a counter has no card). It shows `Use n/max`, is
+disabled at 0 and spends one use (`resource_use`, `play.use_resource`); a pool (`_POOLS`: Lay on Hands,
+Sorcery Points, Focus Points) asks how many points. The player never sets a counter by hand - the Stats
+card is read-only and uses come back only by resting. Wild Shape's counter is spent from the forms'
+Use buttons, and the card of the form the Druid is in has none.
+
+A long rest lists what it offers to change (`prompts`: prepared spells, Weapon Mastery, the Circle of the
+Land's land, a Wild Shape form), each asked in turn with a warning; cancelling one posts `rest_decline`
+(`play.decline_rest_window`) and that change is gone until the next rest.
 
 #### Logbook and automatic translation
 

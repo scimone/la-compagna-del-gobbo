@@ -933,6 +933,23 @@ def grant_spell_changes(character: Character, when: str, class_ids=None) -> None
 MASTERY_CHOICE = "class.weapon_mastery"
 
 
+def decline_rest_window(character: Character, kind: str) -> None:
+    """The player turned down a change a rest offered (prepared spells, a Weapon Mastery weapon,
+    the land, a Wild Shape form): it is gone until the next rest or level opens it again."""
+    if kind == "spells":
+        character.spell_changes = {}
+        fields = ["spell_changes"]
+    elif kind == "mastery":
+        character.weapon_mastery_changes = {}
+        fields = ["weapon_mastery_changes"]
+    elif kind in ("land", "wild_shape"):
+        character.rest_choices = {k: v for k, v in character.rest_choices.items() if k != kind}
+        fields = ["rest_choices"]
+    else:
+        raise ValueError("unknown choice")
+    character.save(update_fields=fields)
+
+
 def grant_weapon_mastery_changes(character: Character) -> None:
     """A Long Rest lets each class with Weapon Mastery change one of its weapon choices."""
     changes = {
@@ -1170,11 +1187,19 @@ def remove_custom_feature(character: Character, feature_id: int) -> None:
 # --- resources ---------------------------------------------------------------------------------
 
 
-def adjust_resource(character: Character, resource_id: int, delta: int) -> None:
-    """Spend (`delta < 0`) or regain uses of a limited-use resource (Rage, Bardic Inspiration...),
-    between none and its maximum."""
-    row = character.resources.get(pk=resource_id)
-    row.current_uses = _clamp(row.current_uses + delta, 0, row.max_uses)
+@transaction.atomic
+def use_resource(character: Character, resource_id: int, amount: int = 1) -> None:
+    """Spend `amount` of a limited-use resource (a use of Rage or Bardic Inspiration, points of
+    Lay on Hands or Sorcery Points). Uses only come back by resting (or, for Wild Shape, are
+    spent by `wild_shape.use()`): the player never sets the counter."""
+    row = character.resources.select_for_update().get(pk=resource_id)
+    if row.name == "Wild Shape":
+        raise ValueError("Wild Shape is used with one of its forms")
+    if amount < 1:
+        raise ValueError("spend at least 1")
+    if amount > row.current_uses:
+        raise ValueError(f"only {row.current_uses} left")
+    row.current_uses -= amount
     row.save(update_fields=["current_uses"])
 
 

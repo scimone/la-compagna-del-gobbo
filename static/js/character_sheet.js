@@ -162,14 +162,18 @@
           apply(result.json.state);
           if (result.json.message) notify(result.json.message);
           return (result.json.refresh ? refresh() : Promise.resolve()).then(function () {
-            // The server offers to go and change the prepared spells (after a long rest).
-            if (result.json.prompt && window.appConfirm) {
-              return window.appConfirm(result.json.prompt).then(function (yes) {
-                if (yes) showTab(result.json.prompt_tab || "spellbook", true);
-                return true;
+            // A rest offers changes (prepared spells, a Weapon Mastery weapon, the land, a Wild Shape
+            // form), one prompt each. Cancelling forfeits that change until the next rest.
+            var prompts = result.json.prompts || [];
+            if (!prompts.length || !window.appConfirm) return true;
+            return prompts.reduce(function (chain, prompt) {
+              return chain.then(function () {
+                return window.appConfirm(prompt.text).then(function (yes) {
+                  if (yes) showTab(prompt.tab, true);
+                  else return send({ action: "rest_decline", kind: prompt.kind });
+                });
               });
-            }
-            return true;
+            }, Promise.resolve()).then(function () { return true; });
           });
         })
         .catch(function () { showError(); return false; });
@@ -355,6 +359,37 @@
     event.preventDefault();
   });
 
+  // A small dialog asking for a number between 1 and the button's `data-ask-amount`.
+  function askAmount(button) {
+    var labels = window.APP_CONFIRM_LABELS || {};
+    var max = Number(button.dataset.askAmount);
+    return new Promise(function (resolve) {
+      var dialog = document.createElement("dialog");
+      dialog.className = "app-dialog";
+      dialog.innerHTML =
+        '<p data-q></p><input type="number" min="1" inputmode="numeric" style="width:100%;box-sizing:border-box;padding:0.5rem;font:inherit">' +
+        '<div class="app-dialog-buttons"><button type="button" data-no></button><button type="button" class="ok" data-yes></button></div>';
+      dialog.querySelector("[data-q]").textContent = button.dataset.askLabel + " (1-" + max + ")";
+      dialog.querySelector("[data-no]").textContent = labels.cancel || "Cancel";
+      dialog.querySelector("[data-yes]").textContent = labels.ok || "OK";
+      var input = dialog.querySelector("input");
+      input.max = max;
+      input.value = 1;
+      document.body.appendChild(dialog);
+      function done(value) { dialog.close(); dialog.remove(); resolve(value); }
+      dialog.addEventListener("click", function (event) {
+        if (event.target.closest("[data-no]")) done(null);
+        else if (event.target.closest("[data-yes]")) {
+          var n = Math.floor(Number(input.value));
+          if (n >= 1 && n <= max) done(n);
+        }
+      });
+      dialog.addEventListener("cancel", function (event) { event.preventDefault(); done(null); });
+      dialog.showModal();
+      input.select();
+    });
+  }
+
   root.addEventListener("click", function (event) {
     var button = event.target.closest("button[data-act]");
     if (button && !button.disabled && button.dataset.picksUrl) {
@@ -380,7 +415,13 @@
       }
       (ask ? window.appConfirm(ask) : Promise.resolve(true)).then(function (ok) {
         if (!ok) return;
-        send(paramsOf(button)).then(function (accepted) {
+        // A pool (Lay on Hands, Sorcery Points...) asks how many points to spend.
+        return (button.dataset.askAmount ? askAmount(button) : Promise.resolve(null)).then(function (amount) {
+          if (button.dataset.askAmount && !amount) return;
+          var params = paramsOf(button);
+          if (amount) params.amount = amount;
+          return send(params);
+        }).then(function (accepted) {
           if (accepted && button.dataset.from) document.getElementById(button.dataset.from).value = "";
           if (accepted && button.dataset.done) {
             var before = button.textContent;

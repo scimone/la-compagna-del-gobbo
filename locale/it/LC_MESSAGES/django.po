@@ -4015,3 +4015,24 @@ msgstr "Lancia senza slot incantesimo (una volta per riposo breve)"
 
 msgid "Cast without a spell slot (no limit)"
 msgstr "Lancia senza slot incantesimo (senza limite)"
+
+#: counters and rest offers
+msgid "Used"
+msgstr "Usato"
+
+msgid "You can't cast spells."
+msgstr "Non puoi lanciare incantesimi."
+
+#, python-format
+msgid "Use %(name)s? This spends one use."
+msgstr "Usare %(name)s? Questo consuma un uso."
+
+#, python-format
+msgid "How many points of %(name)s?"
+msgstr "Quanti punti di %(name)s?"
+
+msgid "If you cancel, you can't do it until your next long rest."
+msgstr "Se annulli, non potrai farlo fino al prossimo riposo lungo."
+
+msgid "You can change your prepared spells now. Do you want to do it? If you cancel, you can't change them until your next long rest."
+msgstr "Puoi cambiare gli incantesimi preparati adesso. Vuoi farlo? Se annulli, non potrai cambiarli fino al prossimo riposo lungo."
