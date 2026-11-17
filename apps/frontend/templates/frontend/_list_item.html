@@ -17,8 +17,14 @@
     <button type="button" class="item-cast" data-cast="{{ item.cast.id }}"
             data-cast-level="{{ item.cast.level }}" data-cast-ability="{{ item.cast.ability }}" data-cast-mod="{{ item.cast.modifier }}"
             data-cast-dc="{{ item.cast.dc }}" data-cast-atk="{{ item.cast.attack }}"{% if not item.cast.available %} hidden{% endif %}
-            data-cast-ritual="{{ item.cast.ritual|yesno:'1,0' }}" data-cast-slot="{{ item.cast.slot|yesno:'1,0' }}" data-cast-free="{{ item.cast.free|yesno:'1,0' }}"
+            data-cast-ritual="{{ item.cast.ritual|yesno:'1,0' }}" data-cast-slot="{{ item.cast.slot|yesno:'1,0' }}" data-cast-free="{{ item.cast.free|yesno:'1,0' }}" data-cast-free-kind="{{ item.cast.free_kind }}"
             data-cast-concentration="{{ item.cast.concentration|yesno:'1,0' }}">{% translate "Cast" %}</button>
+  {% endif %}
+  {% if item.use %}
+    {# A row's own main action (the sheet's Wild Shape forms: "Use"), run by `character_sheet.js`'s #}
+    {# generic `[data-act]` handler.                                                               #}
+    <button type="button" class="item-use" data-act="{{ item.use.act }}" data-{{ item.use.param }}="{{ item.use.id }}"
+            data-confirm="{{ item.use.confirm }}">{{ item.use.label }}</button>
   {% endif %}
   {% if item.remove %}
     {# A row's own small "take this off the character" action (e.g. a spell the player added by #}

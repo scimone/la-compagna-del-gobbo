@@ -2025,3 +2025,89 @@ def test_the_spell_picker_lists_spells_with_search_filters_and_a_free_cast_choic
     signed_in.force_login(alice)
     page = signed_in.get(f"/characters/{cleric.pk}/items/").content.decode()
     assert "data-spells-open" in page and 'data-picker-url="/spells/picker/"' in page
+
+
+def test_using_wild_shape_swaps_in_the_beasts_statistics_until_it_ends(signed_in, alice):
+    from apps.builder.services import derived_stats, wild_shape
+    from apps.characters.models import CharacterResource
+    from apps.rules.models import Creature
+
+    druid = finished(alice, "druid", name="Moss")
+    druid.classes.update(level=4)
+    wild_shape.add_forms(druid, ["wolf", "rat", "spider", "riding-horse", "boar", "cat"])
+    CharacterResource.objects.create(
+        character=druid, name="Wild Shape", max_uses=2, current_uses=2, reset_on="other"
+    )
+    own = derived_stats.compute(druid)
+    page = panel(signed_in.get(f"/characters/{druid.pk}/").content.decode(), "features")
+    assert 'data-act="wild_shape_use"' in page and 'data-form="wolf"' in page
+
+    assert act(signed_in, druid, action="wild_shape_use", form="wolf").status_code == 200
+    druid.refresh_from_db()
+    wolf = Creature.objects.get(pk="wolf")
+    stats = derived_stats.compute(druid)
+    assert druid.wild_shape_form == "wolf" and druid.temporary_hit_points == 4
+    assert druid.resources.get(name="Wild Shape").current_uses == 1
+    assert stats.armor_class["value"] == wolf.ac and stats.speed == 40
+    assert stats.abilities["str"]["score"] == 14 and stats.abilities["dex"]["score"] == 15
+    assert stats.abilities["wis"] == own.abilities["wis"]  # the mind stays
+    assert stats.skills["stealth"]["modifier"] >= 4  # the stat block's bonus, if higher
+    html = signed_in.get(f"/characters/{druid.pk}/").content.decode()
+    assert (
+        '<details class="cs-shaped"' in html
+        and 'data-act="wild_shape_end"' in html
+        and "Pack Tactics" in html
+    )
+
+    # No spells while shaped; using it again changes form and spends another use.
+    spell = druid.spells.filter(spell__level=0).first() or druid.spells.first()
+    if spell:
+        reply = act(signed_in, druid, action="cast", spell=spell.spell_id, slot="")
+        assert reply.status_code == 400
+    assert act(signed_in, druid, action="wild_shape_use", form="boar").status_code == 200
+    assert act(signed_in, druid, action="wild_shape_use", form="cat").status_code == 400  # no uses
+    druid.refresh_from_db()
+    assert druid.wild_shape_form == "boar"
+
+    assert act(signed_in, druid, action="wild_shape_end").status_code == 200
+    druid.refresh_from_db()
+    assert (
+        druid.wild_shape_form == ""
+        and '<details class="cs-shaped"'
+        not in signed_in.get(f"/characters/{druid.pk}/").content.decode()
+    )
+    assert derived_stats.compute(druid).armor_class == own.armor_class
+
+
+def test_wild_shape_ends_at_zero_hit_points_and_on_a_long_rest(signed_in, alice):
+    from apps.builder.services import wild_shape
+    from apps.characters.models import CharacterResource
+
+    druid = finished(alice, "druid", name="Moss")
+    druid.classes.update(level=2)
+    wild_shape.add_forms(druid, ["wolf", "rat", "spider", "riding-horse"])
+    CharacterResource.objects.create(
+        character=druid, name="Wild Shape", max_uses=2, current_uses=2, reset_on="other"
+    )
+    act(signed_in, druid, action="wild_shape_use", form="wolf")
+    act(signed_in, druid, action="hp_set", value="0")
+    druid.refresh_from_db()
+    assert druid.wild_shape_form == ""  # Unconscious means Incapacitated
+
+    act(signed_in, druid, action="hp_set", value="3")
+    act(signed_in, druid, action="wild_shape_use", form="rat")
+    act(signed_in, druid, action="long_rest")
+    druid.refresh_from_db()
+    assert druid.wild_shape_form == ""
+    assert druid.resources.get(name="Wild Shape").current_uses == 2
+
+
+def test_a_free_cast_says_which_rest_gives_it_back(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    (spell,) = _unknown_spells(cleric, 1)
+    entries = json.dumps([{"id": spell.pk, "free": "short"}])
+    act(signed_in, cleric, action="custom_feature_add", name="Boon", spells=entries)
+    html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
+    assert 'data-cast-free-kind="short"' in html
+    page = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
+    assert "once per short rest" in page and "data-cast-free-label" in page

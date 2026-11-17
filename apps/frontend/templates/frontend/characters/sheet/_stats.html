@@ -46,7 +46,7 @@
 
   {# Armor Class, Initiative, Speed: the numbers of a fight. #}
   <div class="st-tiles st-wide">
-    <div class="st-tile st-ac">
+    <div class="st-tile st-ac{% if shaped %} beast{% endif %}">
       <span class="ac-emblem">
         <svg viewBox="0 0 24 26" aria-hidden="true"><path d="M12 1.5 21.5 5v7.5c0 5.6-3.9 10-9.5 12-5.6-2-9.5-6.4-9.5-12V5z"/></svg>
         <b class="v" data-bind="ac">{{ strip.armor_class }}</b>
@@ -61,7 +61,7 @@
         </button>
       {% endif %}
     </div>
-    <div class="st-tile">
+    <div class="st-tile{% if shaped %} beast{% endif %}">
       <b class="v">{{ strip.initiative|stringformat:"+d" }}</b>
       <span class="k">{% translate "Initiative" %}</span>
     </div>
@@ -74,7 +74,7 @@
 
   {# Speed beside Passive Perception; Death Saves get one slim line below. #}
   <div class="st-pair st-wide">
-    <div class="st-tile">
+    <div class="st-tile{% if shaped %} beast{% endif %}">
       <b class="v">{{ header.speed }}</b>
       <span class="k">{% translate "Speed" %}</span>
     </div>

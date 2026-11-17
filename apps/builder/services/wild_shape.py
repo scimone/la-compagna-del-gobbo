@@ -10,8 +10,16 @@ picked when the level is gained (`progression`'s "Wild Shape forms" section, `ad
 for a Druid who got the level before forms were tracked - from the Features tab
 (`needed()` says how many are still to choose). A Long Rest opens `rest_choices["wild_shape"]`
 (`play.grant_rest_choices()`); `swap_form()` makes the one replacement and closes it.
-What is not tracked: the shape-shifted state itself (duration, the temporary hit points, the
-Beast's own statistics).
+
+Using Wild Shape (`use()`, a Bonus Action) spends one use of the "Wild Shape" resource, gives
+temporary hit points equal to the Druid level and puts the Beast's statistics on the sheet
+(`Character.wild_shape_form`, applied by `derived_stats.compute()`): its Armor Class, Speed,
+Strength, Dexterity and Constitution, and any skill bonus higher than the Druid's own, while
+Hit Points, Hit Dice, Intelligence, Wisdom, Charisma, proficiencies and class features stay. No
+spells can be cast.
+The form ends by `end()` (a Bonus Action), by using Wild Shape again (another form), at 0 hit
+points or with the Incapacitated condition (`play`), and at a Long Rest. The duration (half the
+Druid level in hours) is game time and is only shown, not counted.
 """
 
 from django.db import transaction
@@ -119,3 +127,51 @@ def close_rest_choice(character: Character) -> None:
     rest_choices.pop(REST_KEY, None)
     character.rest_choices = rest_choices
     character.save(update_fields=["rest_choices"])
+
+
+RESOURCE = "Wild Shape"
+
+
+def active_form(character: Character) -> Creature | None:
+    """The Beast the character is shape-shifted into right now, if any."""
+    if not character.wild_shape_form:
+        return None
+    return Creature.objects.filter(pk=character.wild_shape_form).first()
+
+
+def uses_left(character: Character) -> int:
+    row = character.resources.filter(name=RESOURCE).first()
+    return row.current_uses if row else 0
+
+
+def duration_hours(character: Character) -> float:
+    """How long the form lasts: half the Druid level, in hours."""
+    return druid_level(character) / 2
+
+
+@transaction.atomic
+def use(character: Character, creature_id: str) -> None:
+    """Shape-shift into a known form: spends a use of Wild Shape (also when already in a form -
+    using it again is how the Beast changes), grants the temporary hit points."""
+    if creature_id not in known_ids(character):
+        raise ValueError("that is not one of your Wild Shape forms")
+    # Imported here: `play` calls back into this module's world.
+    from apps.characters import conditions
+
+    if conditions.effects(character).incapacitated or character.current_hit_points < 1:
+        raise ValueError(_("You cannot use Wild Shape while Incapacitated."))
+    row = character.resources.select_for_update().filter(name=RESOURCE).first()
+    if row is None or row.current_uses < 1:
+        raise ValueError(_("No Wild Shape uses left."))
+    row.current_uses -= 1
+    row.save(update_fields=["current_uses"])
+    character.wild_shape_form = creature_id
+    character.temporary_hit_points = max(character.temporary_hit_points, druid_level(character))
+    character.save(update_fields=["wild_shape_form", "temporary_hit_points", "updated_at"])
+
+
+def end(character: Character) -> None:
+    """Leave the form (a Bonus Action). The temporary hit points stay until lost."""
+    if character.wild_shape_form:
+        character.wild_shape_form = ""
+        character.save(update_fields=["wild_shape_form", "updated_at"])

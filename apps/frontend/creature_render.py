@@ -78,3 +78,12 @@ def facts_and_sections(creature) -> tuple[list[tuple[str, str]], list]:
                 render_entries([{"type": "entries", "name": heading, "entries": entries}])
             )
     return facts, sections
+
+
+def actions_text(creature) -> list[tuple[str, str]]:
+    """`(name, text)` for the stat block's traits, actions, bonus actions and reactions, plain."""
+    return [
+        (e["name"], metricize_text(" ".join(e.get("entries", []))))
+        for group in (creature.traits, creature.actions, creature.bonus_actions, creature.reactions)
+        for e in group
+    ]

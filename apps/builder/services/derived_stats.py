@@ -14,6 +14,7 @@ from apps.characters.models import Character, CharacterChoice
 from apps.rules.models import ClassLevel, Skill
 
 from .. import tables
+from . import wild_shape
 from ..class_spec import CLASS_SPEC
 from ..progression_spec import SUBCLASS_CASTING
 from ..resolvers.proficiency import WeaponProficiency
@@ -46,6 +47,9 @@ class Derived:
     warnings: list[str] = field(default_factory=list)
     #: The same warnings, by the equipment id of the worn piece they belong to.
     item_warnings: dict[str, list[str]] = field(default_factory=dict)
+    #: The Beast (`rules.Creature`) a Druid is shape-shifted into, whose statistics replaced the
+    #: Armor Class, Speed, Strength, Dexterity and Constitution here (`wild_shape.py`); else None.
+    form: object | None = None
 
 
 #: What a custom armor kind counts as (the `rules.EquipmentType` ids the AC formula knows).
@@ -184,6 +188,12 @@ def compute(character: Character) -> Derived:
     for ability, lost in (character.ability_reductions or {}).items():
         if ability in scores:
             scores[ability] = max(0, scores[ability] - int(lost))
+    # Wild Shape: the Beast's Strength, Dexterity and Constitution replace the Druid's
+    # (Intelligence, Wisdom and Charisma stay).
+    form = wild_shape.active_form(character)
+    if form:
+        for ability in ("str", "dex", "con"):
+            scores[ability] = form.abilities[ability]["score"]
     mods = {a: tables.ability_modifier(s) for a, s in scores.items()}
     prof_rows = list(character.proficiencies.all())
     held = {(p.category, p.name): p.level for p in prof_rows}
@@ -228,6 +238,14 @@ def compute(character: Character) -> Derived:
             "bonus": extra,
         }
 
+    if form:
+        # Own proficiencies stay with the Druid's Proficiency Bonus; a higher bonus in the stat
+        # block wins.
+        by_name = {s.name_en: s.id for s in Skill.objects.all()}
+        for name, beast_bonus in (form.skills or {}).items():
+            entry = skills.get(by_name.get(name))
+            if entry and beast_bonus > entry["modifier"]:
+                entry["modifier"] = beast_bonus
     items = list(
         character.inventory_items.select_related("equipment__type").prefetch_related(
             "equipment__properties"
@@ -247,6 +265,15 @@ def compute(character: Character) -> Derived:
 
     ac = _armor_class(mods, worn_armor, worn_shield, has_feature, feat_names, feature_names)
     ac["value"] += bonus("ac")
+    if form:
+        ac = {
+            **ac,
+            "value": form.ac,
+            "formula": "beast form",
+            "shield": False,
+            "armor_id": None,
+            "armor_name": "",
+        }
 
     item_warnings: dict[str, list[str]] = {}
 
@@ -363,6 +390,9 @@ def compute(character: Character) -> Derived:
     # Conditions: Exhaustion lowers every D20 Test (not a spell's save DC) and the Speed; some
     # conditions hold the Speed at 0. Ability checks are rolled from the plain modifiers, so the
     # Exhaustion penalty only shows where a total is displayed (saves, skills, attacks, initiative).
+    if form:
+        speed = form.speed.get("walk", 0)
+        attacks = []  # the Beast's own actions are on its stat block
     fx = conditions.effects(character)
     if fx.d20_penalty:
         for entry in (*saves.values(), *skills.values()):
@@ -394,6 +424,7 @@ def compute(character: Character) -> Derived:
         spellcasting=spellcasting,
         warnings=warnings,
         item_warnings=item_warnings,
+        form=form,
     )
 
 

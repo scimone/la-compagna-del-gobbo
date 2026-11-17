@@ -1,7 +1,24 @@
 {% load i18n %}
 {# The part of the sheet that never scrolls away: the tab strip and the 3-dot menu. Who the character is       #}
 {# (portrait, name, level, class, species, background, size) lives in the Biography tab now.     #}
-<div class="cs-top">
+<div class="cs-top{% if shaped %} shaped{% endif %}">
+  {% if shaped %}
+    {# Wild Shape is on: the numbers below (AC, Speed, Strength, Dexterity, Constitution, ...) are the Beast's. #}
+    <details class="cs-shaped">
+      <summary>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3 2 5 5 5 8 0 4-2 7-5 10-3-3-5-6-5-10 0-3 2-6 5-8z"/></svg>
+        <span class="cs-shaped-text"><b>{% blocktranslate with name=shaped.name %}Wild Shape: {{ name }}{% endblocktranslate %}</b>
+        <small>{% blocktranslate with hours=shaped.hours %}Temporary statistics · up to {{ hours }} h{% endblocktranslate %}</small></span>
+        {% if shaped.can_edit %}<button type="button" class="cs-shaped-end" data-act="wild_shape_end" data-confirm="{% translate 'Leave the Beast form and return to your own statistics?' %}">{% translate "End" %}</button>{% endif %}
+      </summary>
+      <div class="cs-shaped-body">
+        <p>{% translate "Armor Class, Speed, Strength, Dexterity and Constitution are the Beast's; your hit points, Intelligence, Wisdom, Charisma, proficiencies and class features stay. You can't cast spells." %}</p>
+        <p><b>{% translate "Speed" %}</b> {{ shaped.speed }}<br><b>{% translate "Senses" %}</b> {{ shaped.senses }}</p>
+        {% for name, text in shaped.actions %}<p><b>{{ name }}.</b> {{ text }}</p>{% endfor %}
+        <p><a href="{{ shaped.url }}">{% translate "Full stat block" %}</a></p>
+      </div>
+    </details>
+  {% endif %}
   <div class="cs-tabbar">
     <nav class="cs-tabs" role="tablist" aria-label="{% translate 'Character sections' %}">
       {% for key, label in sheet_tabs %}

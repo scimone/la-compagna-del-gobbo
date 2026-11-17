@@ -410,7 +410,10 @@ def _feature_items(character: Character, can_edit: bool = False) -> list[dict]:
         option = co.optional_feature
         items.append({**_option_row(option), **_removal(can_edit, co.source, "option", option.pk)})
     for creature in wild_shape.known_forms(character):
-        items.append(_wild_shape_row(creature))
+        row = _wild_shape_row(creature)
+        if not can_edit:
+            row.pop("use")
+        items.append(row)
     for custom in character.custom_features.all():
         items.append(_custom_feature_row(custom, can_edit))
     items.sort(key=lambda item: item["name"].casefold())
@@ -434,6 +437,14 @@ def _wild_shape_row(creature) -> dict:
         "type": "class",
         "group": "druid",
         "search": f"wild shape {creature.name}".lower(),
+        "use": {
+            "act": "wild_shape_use",
+            "param": "form",
+            "id": creature.pk,
+            "label": _("Use"),
+            "confirm": _("Use Wild Shape and become %(name)s? This spends one use.")
+            % {"name": creature.name},
+        },
     }
 
 
@@ -469,6 +480,24 @@ def _wild_shape_dialog(character: Character, can_edit: bool) -> dict | None:
             "candidates": [card(c) for c in options["candidates"]],
         }
     return None
+
+
+def _shaped(character: Character, can_edit: bool) -> dict | None:
+    """The Wild Shape form the character is in, for the banner shown on every tab: the Beast, how
+    long it lasts and what its statistics say."""
+    creature = wild_shape.active_form(character)
+    if creature is None:
+        return None
+    facts, _sections = creature_render.facts_and_sections(creature)
+    return {
+        "name": creature.name,
+        "hours": f"{wild_shape.duration_hours(character):g}",
+        "url": reverse("world-creature-detail", args=[creature.pk]),
+        "speed": units.metricize_text(creature.speed_text),
+        "senses": units.metricize_text(creature.senses),
+        "actions": creature_render.actions_text(creature),
+        "can_edit": can_edit,
+    }
 
 
 def _custom_feature_row(custom, can_edit: bool) -> dict:
@@ -532,6 +561,7 @@ def _features_tab(request, character: Character, can_edit: bool = False) -> dict
         "filters": [type_filter] if type_filter else [],
         "land_change": land.land_options(character) if can_edit else None,
         "wild_shape": _wild_shape_dialog(character, can_edit),
+        "shaped": _shaped(character, can_edit),
     }
 
 
@@ -716,7 +746,9 @@ def _spellbook_rows(character: Character, can_edit: bool, limits: dict | None = 
         # in the spellbook can still be cast as a ritual.
         prepared = cs.prepared or cs.always_prepared
         cast = None
-        if cs.spell.level == 0 or prepared or (cs.spell.ritual and cs.in_spellbook):
+        if character.wild_shape_form:
+            pass  # a Beast form cannot cast spells
+        elif cs.spell.level == 0 or prepared or (cs.spell.ritual and cs.in_spellbook):
             cast = {
                 "source": f"class:{cs.klass_id}" if cs.klass_id else "",
                 "ritual": cs.spell.ritual,
@@ -727,6 +759,13 @@ def _spellbook_rows(character: Character, can_edit: bool, limits: dict | None = 
                     or (natural_free and play.is_circle_spell(cs))
                 ),
                 "concentration": cs.spell.concentration,
+                "free_kind": (
+                    "unlimited"
+                    if cs.free_cast_unlimited
+                    else cs.free_cast_recharge
+                    if cs.free_cast
+                    else "long"
+                ),
             }
         row = _spellbook_row(cs.spell, status, removable, cast)
         # Level 1+ spells are prepared (SRD "Preparing Spells"); always-prepared ones and cantrips
@@ -1384,6 +1423,7 @@ def character_detail(request, pk):
             "strip": _strip(character, stats, items),
             "abilities": _abilities(stats),
             "features": _features_tab(request, character, can_edit),
+            "shaped": _shaped(character, can_edit),
             "spellbook": _spellbook(request, character, stats, classes, can_edit),
             "inventory": _inventory(character, stats),
             "proficiencies": _proficiencies(character),
@@ -1470,6 +1510,20 @@ def _act_long_rest(character, post):
         result["prompt"] = _("You can replace one of your Wild Shape forms now. Do it?")
         result["prompt_tab"] = "features"
     return result
+
+
+def _act_wild_shape_use(character, post):
+    wild_shape.use(character, post.get("form", ""))
+    creature = wild_shape.active_form(character)
+    return {
+        "refresh": True,
+        "message": _("You are now a %(name)s") % {"name": creature.name},
+    }
+
+
+def _act_wild_shape_end(character, post):
+    wild_shape.end(character)
+    return {"refresh": True, "message": _("You are back in your own form")}
 
 
 def _act_wild_shape_choose(character, post):
@@ -1878,6 +1932,8 @@ _ACTIONS["short_rest"] = _act_short_rest
 _ACTIONS["long_rest"] = _act_long_rest
 _ACTIONS["weapon_mastery_swap"] = _act_mastery_swap
 _ACTIONS["land_change"] = _act_land_change
+_ACTIONS["wild_shape_use"] = _act_wild_shape_use
+_ACTIONS["wild_shape_end"] = _act_wild_shape_end
 _ACTIONS["wild_shape_choose"] = _act_wild_shape_choose
 _ACTIONS["wild_shape_swap"] = _act_wild_shape_swap
 _ACTIONS["resource"] = _act_resource

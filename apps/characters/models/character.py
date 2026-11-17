@@ -105,6 +105,9 @@ class Character(models.Model):
     # Choices a Long Rest opens until they are made, `{"land": True}` (Circle of the Land's new
     # land - see `apps/builder/services/land.py`).
     rest_choices = models.JSONField(default=dict, blank=True)
+    # The Beast a Druid is shape-shifted into with Wild Shape (a `rules.Creature` id), "" while in
+    # their own form - see `apps/builder/services/wild_shape.py`.
+    wild_shape_form = models.CharField(max_length=100, blank=True, default="")
     # The once-per-Long-Rest spell slot recoveries used (`["Arcane Recovery"]`, Natural Recovery).
     spell_recoveries_used = models.JSONField(default=list, blank=True)
     # Reductions that last until a Long Rest (a monster's drain): taken off the maximum hit points

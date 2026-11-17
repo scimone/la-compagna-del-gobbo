@@ -761,6 +761,8 @@
     var free = dialog.querySelector("[data-cast-free]");
     free.checked = canFree && !ritual.checked;
     dialog.querySelector("[data-cast-free-field]").hidden = !canFree;
+    dialog.querySelector("[data-cast-free-label]").textContent =
+      dialog.dataset["free" + ({ short: "Short", unlimited: "Unlimited" }[button.dataset.castFreeKind] || "Long")];
     dialog.querySelector("[data-cast-concentration]").hidden = button.dataset.castConcentration !== "1";
     castRefresh(dialog);
     dialog.showModal();

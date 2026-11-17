@@ -1011,6 +1011,8 @@ def _review_context(character: Character) -> dict:
     ac = stats.armor_class
     if ac["armor_id"]:
         ac_label = ac["armor_name"] or equipment_names.get(ac["armor_id"], "")
+    elif ac["formula"] == "beast form":
+        ac_label = _("Wild Shape")
     elif ac["formula"].startswith("unarmored defense"):
         ac_label = _("Unarmored Defense")
     else:

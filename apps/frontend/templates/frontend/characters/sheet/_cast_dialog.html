@@ -1,7 +1,7 @@
 {% load i18n %}
 {# Outside the tab panels: a `hidden` ancestor would hide even a modal dialog. #}
 {% if can_edit and spellbook.sources %}
-<dialog class="cs-cast" id="cs-cast-dialog">
+<dialog class="cs-cast" id="cs-cast-dialog" data-free-long="{% translate 'Cast without a spell slot (once per long rest)' %}" data-free-short="{% translate 'Cast without a spell slot (once per short rest)' %}" data-free-unlimited="{% translate 'Cast without a spell slot (no limit)' %}">
   <h3 data-cast-title></h3>
   <p class="cs-cast-ask">{% translate "Do you really want to cast this spell?" %}</p>
   <div class="cs-casting" data-casting>
@@ -14,7 +14,7 @@
     <select data-cast-slot></select>
   </label>
   <label class="cs-cast-field cs-cast-ritual" data-cast-free-field hidden>
-    <input type="checkbox" data-cast-free> {% translate "Cast without a spell slot (once per long rest)" %}
+    <input type="checkbox" data-cast-free> <span data-cast-free-label>{% translate "Cast without a spell slot (once per long rest)" %}</span>
   </label>
   <label class="cs-cast-field cs-cast-ritual" data-cast-ritual-field hidden>
     <input type="checkbox" data-cast-ritual> {% translate "Cast as a ritual (takes 10 minutes longer, no slot used)" %}

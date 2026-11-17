@@ -3972,3 +3972,46 @@ msgstr "gratis una volta per riposo breve"
 
 msgid "free, unlimited"
 msgstr "gratis, illimitato"
+
+#: Wild Shape "Use"
+msgid "Use"
+msgstr "Usa"
+
+#, python-format
+msgid "Use Wild Shape and become %(name)s? This spends one use."
+msgstr "Usare Forma Selvatica e trasformarti in %(name)s? Questo consuma un uso."
+
+msgid "You cannot use Wild Shape while Incapacitated."
+msgstr "Non puoi usare Forma Selvatica mentre sei Incapacitato."
+
+msgid "No Wild Shape uses left."
+msgstr "Nessun uso di Forma Selvatica rimasto."
+
+#, python-format
+msgid "You are now a %(name)s"
+msgstr "Ora sei: %(name)s"
+
+msgid "You are back in your own form"
+msgstr "Sei tornato alla tua forma"
+
+#, python-format
+msgid "Temporary statistics · up to %(hours)s h"
+msgstr "Statistiche temporanee · fino a %(hours)s h"
+
+msgid "Leave the Beast form and return to your own statistics?"
+msgstr "Lasciare la forma di Bestia e tornare alle tue statistiche?"
+
+msgid "End"
+msgstr "Termina"
+
+msgid "Armor Class, Speed, Strength, Dexterity and Constitution are the Beast's; your hit points, Intelligence, Wisdom, Charisma, proficiencies and class features stay. You can't cast spells."
+msgstr "Classe Armatura, Velocità, Forza, Destrezza e Costituzione sono quelle della Bestia; punti ferita, Intelligenza, Saggezza, Carisma, competenze e privilegi di classe restano. Non puoi lanciare incantesimi."
+
+msgid "Full stat block"
+msgstr "Scheda completa"
+
+msgid "Cast without a spell slot (once per short rest)"
+msgstr "Lancia senza slot incantesimo (una volta per riposo breve)"
+
+msgid "Cast without a spell slot (no limit)"
+msgstr "Lancia senza slot incantesimo (senza limite)"

@@ -189,7 +189,8 @@ def set_condition(character: Character, condition_id: str, on: bool) -> None:
     if condition_id not in conditions.BY_ID:
         raise ValueError("unknown condition")
     _store_condition(character, condition_id, on)
-    character.save(update_fields=["conditions"])
+    _end_wild_shape_if_down(character)
+    character.save(update_fields=["conditions", "wild_shape_form"])
 
 
 def _sync_unconscious(character: Character, was_down: bool) -> None:
@@ -200,6 +201,15 @@ def _sync_unconscious(character: Character, was_down: bool) -> None:
             _store_condition(character, conditions.UNCONSCIOUS, True)
     elif was_down and conditions.UNCONSCIOUS in character.conditions:
         _store_condition(character, conditions.UNCONSCIOUS, False)
+    _end_wild_shape_if_down(character)
+
+
+def _end_wild_shape_if_down(character: Character) -> None:
+    """Wild Shape ends when the Druid drops to 0 hit points or is Incapacitated (not saved here)."""
+    if character.wild_shape_form and (
+        character.current_hit_points < 1 or conditions.effects(character).incapacitated
+    ):
+        character.wild_shape_form = ""
 
 
 def set_exhaustion(character: Character, level: int) -> None:
@@ -853,6 +863,8 @@ def cast_spell(
       level or higher - `slot_key` is the pool (`"1"`..`"9"` or `"pact"`), `slot_level` the level
       it casts at and `slot_max` how many slots the pool has (both derived by the caller).
     """
+    if character.wild_shape_form:
+        raise ValueError("a Wild Shape form cannot cast spells")
     row = character.spells.select_related("spell").get(spell_id=spell_id)
     spell = row.spell
     is_prepared = row.prepared or row.always_prepared
@@ -1320,6 +1332,7 @@ def long_rest(character: Character) -> None:
     _require_standing(character)
     character.max_hit_points_reduction = 0
     character.ability_reductions = {}
+    character.wild_shape_form = ""
     character.spell_recoveries_used = []
     character.exhaustion = max(0, character.exhaustion - 1)
     character.current_hit_points = character.hit_point_maximum

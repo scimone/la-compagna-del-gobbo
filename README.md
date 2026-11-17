@@ -1361,7 +1361,17 @@ opens `rest_choices["wild_shape"]` and the Features tab offers "Replace a form" 
 `wild_shape_swap`: one known form out, one eligible Beast in - once per Long Rest; the long-rest
 prompt mentions it). Each known form is a "Wild Shape: <beast>" row of the Features list with the
 Druid's icon, opening the stat block. Uses per rest (Wild Shape column) were already handled as a
-resource. Not tracked: being shape-shifted (duration, temporary hit points, the form's own statistics).
+resource. **Use** (a button on each "Wild Shape: <beast>" row, action `wild_shape_use`; `wild_shape.use()`)
+spends one use of that resource (also when already shape-shifted: using it again changes form), gives
+temporary hit points equal to the Druid level and sets `Character.wild_shape_form`. While it is set
+`derived_stats.compute()` replaces Armor Class, Speed, Strength, Dexterity and Constitution with the
+Beast's (a stat-block skill bonus higher than the Druid's own wins; hit points, Hit Dice, Int/Wis/Cha,
+proficiencies and class features stay; the weapon attacks are dropped - the Beast's actions are on its
+stat block) and the sheet shows a green band over every tab (Beast, "temporary statistics", up to half the
+Druid level in hours, its speed, senses and actions, an **End** button - action `wild_shape_end`) with
+the replaced numbers outlined in green. No spell can be cast meanwhile (`play.cast_spell`, no Cast
+buttons). The form also ends at 0 hit points, with an Incapacitated condition and at a Long Rest. The
+duration is only shown (game time); equipment merging into the form is not modelled.
 
 #### Logbook and automatic translation
 
