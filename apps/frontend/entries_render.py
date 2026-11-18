@@ -495,6 +495,14 @@ def _render_dict(node: dict, linker: _ReferenceLinker) -> str:
         css_class = ' class="inset"' if node_type == "inset" else ""
         return f"<div{css_class}>{heading_html}{body}</div>"
 
+    if node_type == "partlinks":
+        # The options of a feature the sheet lists as cards of their own: one link row each.
+        rows = "".join(
+            f'<li><a href="{escape(i["url"])}">{escape(i["name"])}</a></li>'
+            for i in node.get("items", [])
+        )
+        return f'<ul class="feature-link-list">{rows}</ul>'
+
     if node_type == "list":
         return _render_list(node, linker)
 

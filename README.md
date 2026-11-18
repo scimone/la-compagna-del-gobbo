@@ -1394,6 +1394,19 @@ much is spent and left is in its confirmation, and it is not shown while the use
   Long Rest), Sorcerous Restoration, Uncanny Metabolism (asks for the Martial Arts die), Perfect Focus,
   Persistent Rage, Superior Inspiration, Font of Inspiration, Magical Cunning, Wild Resurgence, Archdruid.
 
+A use can have several **ways** (`Way`, `Use.variants`): Step of the Wind is a Dash for free or Disengage
+and Dash for a Focus Point, Patient Defense likewise, a maneuver may skip its die with Relentless, Hand of
+Healing and the Flurry have their free forms. The confirmation then lists the ways, each with what it
+costs. Features with a price to restore their use ("restore your use of it by expending a level 5 spell
+slot / a Pact Magic slot / a Psionic die / Sorcery Points / a use of Rage ...", `RESTORES`) show those ways
+once the counter is empty: using it again pays the price instead of the counter.
+
+A feature split into cards or upgraded is written in `apps/frontend/feature_text.py`: the split-out
+options are taken out of its text and replaced by links to their pages. An **upgrade** (`UPGRADES`:
+Heightened Focus upgrades the monk's three Focus features) renames the options it upgrades to
+"<upgrade>: <option>" and their page (`?with=<upgrade id>`) shows the original text with the upgrade's
+under it; the upgrade's own page links to the upgraded options.
+
 The player never sets a counter by hand (the Stats card is read-only) and uses come back only by resting
 or by those effects. `test_feature_use.py` fails if a counter cannot be spent from some card or a table row
 names a feature or option the data does not have. Wild Shape's counter is spent from the forms' Use

@@ -18,7 +18,7 @@ button is offered only while the use is possible (`available()`).
 
 import math
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from django.db import transaction
 from django.utils.translation import gettext as _
@@ -29,6 +29,21 @@ from apps.characters.services import play
 SORCERY, FOCUS, WILD_SHAPE = "Sorcery Points", "Focus Points", "Wild Shape"
 BARDIC, CHANNEL, RAGE = "Bardic Inspiration", "Channel Divinity", "Rage"
 PSIONIC, SUPERIORITY = "Psionic Power", "Superiority Dice"
+
+
+@dataclass(frozen=True)
+class Way:
+    """One way of using something: its name (English, translated when shown), what it costs
+    besides - or instead of - the use's own counter, and the feature the character needs for it."""
+
+    key: str
+    label: str
+    #: Payments: `("resource", name, amount)`, `("slot", minimum level, exactly that level?)` or
+    #: `("pact",)` (a Pact Magic slot).
+    pays: tuple = ()
+    #: Whether it spends the use's own counter (`Use.resource` x `Use.cost`).
+    counter: bool = False
+    requires: str = ""
 
 
 @dataclass(frozen=True)
@@ -43,6 +58,11 @@ class Use:
     ask_max: int = 0
     #: `(flag, "short" | "long")`: the first use after that rest costs nothing (see `use_flags`).
     free: tuple = ()
+    #: Several ways of using it (Step of the Wind: with or without a Focus Point); the player picks.
+    variants: tuple = ()
+    #: Ways to use it again once the counter is spent, by paying a price ("You can also restore your
+    #: use of it by expending a level 5 spell slot"): shown only while the counter is empty.
+    restore: tuple = ()
 
 
 #: Features that never have a button of their own although they carry a counter: their effects have
@@ -86,7 +106,13 @@ SPENDS: dict[str, Use] = {
     "Disciplined Survivor": Use(FOCUS),
     "Superior Defense": Use(FOCUS, 3),
     "Hand of Harm": Use(FOCUS),
-    "Hand of Healing": Use(FOCUS),
+    "Hand of Healing": Use(
+        FOCUS,
+        variants=(
+            Way("fp", "Magic action: touch a creature and restore Hit Points", counter=True),
+            Way("flurry", "Replace one Unarmed Strike of a Flurry of Blows with it (free)"),
+        ),
+    ),
     "Improved Shadow Step": Use(FOCUS),
     "Cloak of Shadows": Use(FOCUS, 3),
     "Shadow Arts": Use(FOCUS),
@@ -108,11 +134,89 @@ EFFECTS: dict[str, Use] = {
     "Magical Cunning": Use("Magical Cunning", effect="magical_cunning"),
 }
 
-#: Features split into one card per option: `(feature, owner) -> [(option name, Use)]`. The owner
-#: is the class id, the subclass name or the species id the feature comes from (`""` = any).
-PARTS: dict[tuple[str, str], list[tuple[str, Use]]] = {
+SLOT5 = ("slot", 5, True)  # a level 5 spell slot
+SLOT3, SLOT2 = ("slot", 3, False), ("slot", 2, False)  # a level 3+ / level 2+ spell slot
+PACT = ("pact",)  # a Pact Magic spell slot
+
+
+def _die(n: int = 1) -> tuple:
+    return ("resource", PSIONIC, n)
+
+
+def _points(n: int) -> tuple:
+    return ("resource", SORCERY, n)
+
+
+#: "Once you use this feature, you can't use it again until you finish a Long Rest unless you
+#: expend ... to restore your use of it": what restores it, by feature.
+RESTORES: dict[str, tuple] = {
+    "Avenging Angel": (SLOT5,),
+    "Elder Champion": (SLOT5,),
+    "Holy Nimbus": (SLOT5,),
+    "Living Legend": (SLOT5,),
+    "Illusory Self": (SLOT2,),
+    "Mantle of Majesty": (SLOT3,),
+    "Moonlight Step": (SLOT2,),
+    "Beguiling Defenses": (PACT,),
+    "Clairvoyant Combatant": (PACT,),
+    "Hurl Through Hell": (PACT,),
+    "Beguiling Magic": (("resource", BARDIC, 1),),
+    "Intimidating Presence": (("resource", RAGE, 1),),
+    "Zealous Presence": (("resource", RAGE, 1),),
+    "Know Your Enemy": (("resource", SUPERIORITY, 1),),
+    "Bulwark of Force": (_die(),),
+    "Telekinetic Master": (_die(),),
+    "Psychic Veil": (_die(),),
+    "Rend Mind": (_die(3),),
+    "Clockwork Cavalcade": (_points(7),),
+    "Dragon Wings": (_points(3),),
+    "Trance of Order": (_points(5),),
+    "Warping Implosion": (_points(5),),
+}
+
+#: Features split into one card per option: `(feature, owner) -> [(option name, Use or None)]`.
+#: The owner is the class id, the subclass name or the species id the feature comes from (`""` =
+#: any); an option with no `Use` has a card but no button.
+PARTS: dict[tuple[str, str], list[tuple[str, Use | None]]] = {
     ("Monk's Focus", ""): [
-        (name, Use(FOCUS)) for name in ("Flurry of Blows", "Patient Defense", "Step of the Wind")
+        (
+            "Flurry of Blows",
+            Use(
+                FOCUS,
+                variants=(
+                    Way("fp", "Make two Unarmed Strikes as a Bonus Action", counter=True),
+                    Way(
+                        "shadow",
+                        "Shadow Flurry: make the Flurry without a Focus Point while shrouded",
+                        requires="Cloak of Shadows",
+                    ),
+                ),
+            ),
+        ),
+        (
+            "Patient Defense",
+            Use(
+                FOCUS,
+                variants=(
+                    Way("free", "Take the Disengage action as a Bonus Action"),
+                    Way("fp", "Take Disengage and Dodge as a Bonus Action", counter=True),
+                ),
+            ),
+        ),
+        (
+            "Step of the Wind",
+            Use(
+                FOCUS,
+                variants=(
+                    Way("free", "Take the Dash action as a Bonus Action"),
+                    Way(
+                        "fp",
+                        "Take Disengage and Dash as a Bonus Action; your jump distance is doubled",
+                        counter=True,
+                    ),
+                ),
+            ),
+        ),
     ],
     ("Channel Divinity", "cleric"): [
         (name, Use(CHANNEL)) for name in ("Divine Spark", "Turn Undead")
@@ -134,6 +238,16 @@ PARTS: dict[tuple[str, str], list[tuple[str, Use]]] = {
         ("Psi-Bolstered Knack", Use(PSIONIC)),
         ("Psychic Whispers", Use(PSIONIC, free=("psychic_whispers", "long"))),
     ],
+    ("Telekinetic Adept", ""): [
+        (
+            "Psi-Powered Leap",
+            Use(
+                "Psi-Powered Leap",
+                restore=(Way("restore0", "Use it again by restoring the use", (_die(),)),),
+            ),
+        ),
+        ("Telekinetic Thrust", None),
+    ],
     ("Soul Blades", ""): [
         ("Homing Strikes", Use(PSIONIC)),
         ("Psychic Teleportation", Use(PSIONIC)),
@@ -150,6 +264,16 @@ PARTS: dict[tuple[str, str], list[tuple[str, Use]]] = {
         ("Evergreen Wild Shape", Use(effect="evergreen")),
         ("Nature Magician", Use("Archdruid", effect="nature_magician", ask="uses")),
     ],
+}
+
+#: A feature that upgrades the options of another (Heightened Focus: the monk's three Focus
+#: features): `upgrade -> (feature it upgrades, the options it upgrades)`. With the upgrade, the
+#: option's card is called "<upgrade>: <option>" and its page adds the upgrade's text below.
+UPGRADES: dict[str, tuple[str, tuple[str, ...]]] = {
+    "Heightened Focus": (
+        "Monk's Focus",
+        ("Flurry of Blows", "Patient Defense", "Step of the Wind"),
+    ),
 }
 
 #: Creating Spell Slots (Font of Magic): slot level -> (Sorcery Point cost, minimum Sorcerer level).
@@ -174,7 +298,7 @@ def owner_keys(feature) -> set[str]:
     return keys
 
 
-def parts_for(feature) -> list[tuple[str, Use]]:
+def parts_for(feature) -> list[tuple[str, Use | None]]:
     """The options a feature is split into (`[]` when it is not)."""
     name = feature.name_en.split(" (")[0]
     keys = owner_keys(feature)
@@ -184,27 +308,53 @@ def parts_for(feature) -> list[tuple[str, Use]]:
     return []
 
 
+def upgrade_for(parent_name: str, names: set[str]) -> tuple[str, tuple[str, ...]] | None:
+    """The upgrade the character has of this feature (`names`: the features they have), as
+    `(upgrade name, options it upgrades)`."""
+    for upgrade, (parent, parts) in UPGRADES.items():
+        if parent == parent_name and upgrade in names:
+            return upgrade, parts
+    return None
+
+
 def use_for(feature, resources: set[str]) -> Use | None:
     """What the feature's own Use button does, or None when it has none (it has no counter, or it
     is split into parts)."""
     name = feature.name_en.split(" (")[0]
     if name in NO_BUTTON or parts_for(feature):
         return None
+    use = None
     if name in EFFECTS:
-        return EFFECTS[name]
-    if name in SPENDS:
-        return SPENDS[name]
-    if name in resources:
-        if name in POOLS:
-            return Use(name, ask="points")
-        return Use(name)
-    return None
+        use = EFFECTS[name]
+    elif name in SPENDS:
+        use = SPENDS[name]
+    elif name in resources:
+        use = Use(name, ask="points") if name in POOLS else Use(name)
+    if use is not None and name in RESTORES:
+        use = replace(
+            use,
+            restore=tuple(
+                Way(f"restore{i}", "Use it again by restoring the use", (pay,))
+                for i, pay in enumerate(RESTORES[name])
+            ),
+        )
+    return use
 
 
 def option_use(feature_type: str, text: str) -> Use | None:
     """Maneuvers spend a Superiority Die, Metamagic options Sorcery Points (cost in the text)."""
     if feature_type.startswith("Maneuver"):
-        return Use(SUPERIORITY)
+        return Use(
+            SUPERIORITY,
+            variants=(
+                Way("die", "Expend a Superiority Die", counter=True),
+                Way(
+                    "relentless",
+                    "Relentless: roll 1d8 and use it instead of expending a Superiority Die",
+                    requires="Relentless",
+                ),
+            ),
+        )
     if feature_type == "Metamagic":
         found = re.search(r"(\d+) Sorcery Point", text)
         return Use(SORCERY, int(found.group(1)) if found else 1)
@@ -289,15 +439,112 @@ def free_available(character: Character, use: Use) -> bool:
     return bool(use.free) and use.free[0] not in character.use_flags
 
 
+def _feature_names(character: Character) -> set[str]:
+    return {n.split(" (")[0] for n in character.features.values_list("feature__name_en", flat=True)}
+
+
+# --- ways of using it --------------------------------------------------------------------------
+
+
+def _pay_text(character: Character, pay: tuple, level: int = 0) -> str:
+    kind = pay[0]
+    if kind == "resource":
+        return _("%(name)s ×%(n)d (%(have)d of %(max)d left)") % {
+            "n": pay[2],
+            "name": pay[1],
+            "have": left(character, pay[1]),
+            "max": maximum(character, pay[1]),
+        }
+    if kind == "slot":
+        return _("a level %(level)d spell slot") % {"level": level}
+    return _("a Pact Magic spell slot")
+
+
+def _payments(character: Character, way: Way, pools: list[dict]) -> list[tuple]:
+    """Every way of paying `way`'s price now, as `[(key suffix, [payments])]` - a slot payment
+    offers one entry per level that can be spent. Empty when it cannot be paid."""
+    options = [("", [])]
+    for pay in way.pays:
+        kind = pay[0]
+        if kind == "resource":
+            if left(character, pay[1]) < pay[2]:
+                return []
+            options = [(k, ps + [pay]) for k, ps in options]
+        elif kind == "slot":
+            levels = [
+                p
+                for p in _slot_levels(pools)
+                if p["level"] == pay[1] or (not pay[2] and p["level"] >= pay[1])
+            ]
+            options = [
+                (f"{k}:{p['key']}", ps + [("slot", p["key"], p["level"])])
+                for k, ps in options
+                for p in levels
+            ]
+        else:
+            pact = _pool(pools, "pact")
+            if not pact or pact["left"] < 1:
+                return []
+            options = [(f"{k}:pact", ps + [("pact_slot",)]) for k, ps in options]
+    return options
+
+
+def _cost_text(character: Character, use: Use, counter: bool, payments: list[tuple]) -> str:
+    texts = []
+    if counter and use.resource:
+        texts.append(_pay_text(character, ("resource", use.resource, use.cost)))
+    for pay in payments:
+        if pay[0] == "resource":
+            texts.append(_pay_text(character, pay))
+        elif pay[0] == "slot":
+            texts.append(_pay_text(character, pay, pay[2]))
+        else:
+            texts.append(_pay_text(character, ("pact",)))
+    return ", ".join(texts) if texts else _("no cost")
+
+
+def ways(character: Character, use: Use, pools: list[dict]) -> list[dict]:
+    """What the player may do now: `[{"key", "label", "cost", "pays", "counter", "flag"}]`. The
+    first use of a free ability costs nothing; otherwise the use's own ways (or the one plain
+    way) that can be paid and - once the counter is spent - the ways that restore it."""
+    if use.free and free_available(character, use):
+        free = {"key": "free", "label": "", "cost": _("free until your next rest")}
+        return [{**free, "pays": [], "counter": False, "flag": True}]
+    names = _feature_names(character)
+    base = [
+        w
+        for w in (use.variants or (Way("use", "", counter=True),))
+        if not w.requires or w.requires in names
+    ]
+    if not use.resource or left(character, use.resource) >= max(1, use.cost):
+        candidates = [(w, w.counter) for w in base]
+    else:  # no use left: only what costs nothing from the counter, or restores it
+        candidates = [(w, False) for w in (*[w for w in base if not w.counter], *use.restore)]
+    out = []
+    for way, counter in candidates:
+        for suffix, payments in _payments(character, way, pools):
+            out.append(
+                {
+                    "key": f"{way.key}{suffix}",
+                    "label": _(way.label) if way.label else "",
+                    "cost": _cost_text(character, use, counter, payments),
+                    "pays": payments,
+                    "counter": counter,
+                    "flag": False,
+                }
+            )
+    return out
+
+
 # --- is it possible, what to ask ---------------------------------------------------------------
 
 
 def available(character: Character, use: Use, pools: list[dict]) -> bool:
     """Whether the Use button is worth showing now."""
+    if not ways(character, use, pools):
+        return False
     if use.free and free_available(character, use):
         return True
-    if use.resource and left(character, use.resource) < max(1, use.cost):
-        return False
     e = use.effect
     if e == "restoration":
         return left(character, SORCERY) < maximum(character, SORCERY)
@@ -336,11 +583,23 @@ def _creatable(character: Character) -> dict[int, int]:
     return {n: cost for n, (cost, at) in CREATING.items() if level >= at and points >= cost}
 
 
-def ask(character: Character, use: Use, pools: list[dict]) -> dict | None:
+def ask(character: Character, name: str, use: Use, pools: list[dict]) -> dict | None:
     """What the player is asked before the use: `{"param", "label", "min", "max"}` for a number or
-    `{"param", "label", "choices": [[value, label]]}` for a pick, else None."""
+    `{"param", "label", "choices": [[value, label]]}` for a pick, else None. Several ways of using
+    it (`ways()`) are offered as radio buttons with what each costs."""
     kind = use.ask
     if not kind:
+        options = ways(character, use, pools)
+        if len(options) > 1:
+            return {
+                "param": "way",
+                "style": "radio",
+                "label": _("How do you use %(name)s?") % {"name": name},
+                "choices": [
+                    [o["key"], f"{o['label']} - {o['cost']}" if o["label"] else o["cost"]]
+                    for o in options
+                ],
+            }
         return None
     if kind == "points":
         top = min(use.ask_max or 10**6, left(character, use.resource))
@@ -393,22 +652,13 @@ def ask(character: Character, use: Use, pools: list[dict]) -> dict | None:
     return None
 
 
-def confirm_text(character: Character, name: str, use: Use) -> str:
-    """What the confirmation modal says: what is spent and how much is left."""
-    if use.free and free_available(character, use):
-        return _("Use %(name)s? This one is free (once until your next rest).") % {"name": name}
-    if use.resource:
-        have = left(character, use.resource)
-        return _(
-            "Use %(name)s? This spends %(cost)d of %(resource)s (%(have)d of %(max)d left)."
-        ) % {
-            "name": name,
-            "cost": use.cost,
-            "resource": use.resource,
-            "have": have,
-            "max": maximum(character, use.resource),
-        }
-    return _("Use %(name)s?") % {"name": name}
+def confirm_text(character: Character, name: str, use: Use, pools: list[dict]) -> str:
+    """What the confirmation says when there is one way to use it: what it costs, what is left."""
+    options = ways(character, use, pools)
+    cost = options[0]["cost"] if options else ""
+    if not options or cost == _("no cost"):
+        return _("Use %(name)s?") % {"name": name}
+    return _("Use %(name)s? This costs: %(cost)s.") % {"name": name, "cost": cost}
 
 
 # --- doing it ----------------------------------------------------------------------------------
@@ -421,29 +671,45 @@ def _int(params, key: str, default: int = 0) -> int:
         raise ValueError(f"{key} is not a number") from None
 
 
+def _pay(character: Character, pay: tuple, pools: list[dict]) -> None:
+    if pay[0] == "resource":
+        _spend(character, pay[1], pay[2])
+    elif pay[0] == "slot":
+        _spend_slot(character, pools, pay[1])
+    else:
+        pact = _pool(pools, "pact")
+        play.set_slots_spent(character, "pact", pact["spent"] + 1, pact["max"])
+
+
 @transaction.atomic
 def perform(character: Character, name: str, use: Use, params, pools: list[dict]) -> str:
-    """Do the use: spend what it costs and apply its effect. `params` is what the player was asked
-    (`ask()`). Returns a line for the toast; `ValueError` when it cannot be done."""
-    if not available(character, use, pools):
+    """Do the use: pay what the chosen way costs and apply its effect. `params` is what the player
+    was asked (`ask()`). Returns a line for the toast; `ValueError` when it cannot be done."""
+    options = ways(character, use, pools)
+    if not options or not available(character, use, pools):
         raise ValueError(_("You can't use %(name)s now.") % {"name": name})
-    e = use.effect
-    note = ""
-    # Spending: the first use of a free ability costs nothing.
-    if use.free and free_available(character, use):
+    wanted = params.get("way")
+    chosen = next((o for o in options if o["key"] == wanted), None)
+    if chosen is None and (len(options) > 1 or wanted):
+        raise ValueError("choose how to use it")
+    chosen = chosen or options[0]
+    if chosen["flag"]:  # the first use of a free ability
         flags = dict(character.use_flags)
         flags[use.free[0]] = use.free[1]
         character.use_flags = flags
         character.save(update_fields=["use_flags"])
-    elif use.resource:
+    if chosen["counter"] and use.resource:
         amount = use.cost
         if use.ask == "points":
             amount = _int(params, "amount", 1)
             if not 1 <= amount <= (use.ask_max or amount):
                 raise ValueError("invalid amount")
         _spend(character, use.resource, amount)
-    if e:
-        note = _EFFECTS[e](character, params, pools)
+    for pay in chosen["pays"]:
+        _pay(character, pay, pools)
+    note = ""
+    if use.effect:
+        note = _EFFECTS[use.effect](character, params, pools)
     return note or _("Used %(name)s") % {"name": name}
 
 

@@ -17,7 +17,7 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
 from apps.characters.services import access, feature_use
-from apps.frontend import accounts, cloudflare_access, creature_render, units
+from apps.frontend import accounts, cloudflare_access, creature_render, feature_text, units
 from apps.frontend.bookmarks import BOOKMARK_MODELS, bookmarked_ids, is_bookmarked
 from apps.frontend.entries_render import (
     homebrew_badge,
@@ -2053,7 +2053,7 @@ def world_feature_detail(request, pk):
         )
 
     description_heading = _badged_heading(_("Description"), _self_translated(feature, "entries"))
-    plain_sections = [(description_heading, render_entries(feature.entries))]
+    plain_sections = [(description_heading, render_entries(feature_text.entries_for(feature)))]
 
     return _detail_page(
         request,
@@ -2064,31 +2064,19 @@ def world_feature_detail(request, pk):
     )
 
 
-def _find_part(entries, wanted: str):
-    """The named sub-entry of a feature's text whose name slugs to `wanted`, or None."""
-    if isinstance(entries, list):
-        for e in entries:
-            if (found := _find_part(e, wanted)) is not None:
-                return found
-    elif isinstance(entries, dict):
-        if entries.get("name") and feature_use.slug(entries["name"]) == wanted:
-            return entries
-        return _find_part(entries.get("entries") or entries.get("items") or [], wanted)
-    return None
-
-
 def world_feature_part_detail(request, pk, part):
     """One option of a feature that the character sheet lists as a card of its own ("Monk's Focus:
     Flurry of Blows"): the option's own text where the feature's text has one, else the whole
-    feature's."""
+    feature's. With `?with=<upgrade feature id>` (Heightened Focus) the page is the upgraded
+    option: the original text, then the upgrade's."""
     feature = feature_service.get_feature(pk)
-    options = dict(
-        (feature_use.slug(name), name) for (name, _spec) in feature_use.parts_for(feature)
-    )
+    options = dict((feature_use.slug(n), n) for n, _spec in feature_use.parts_for(feature))
     if part not in options:
         raise Http404
-    base = feature.name.split(" (")[0]
-    sub = _find_part(feature.entries, part)
+    base = feature_text.base_name(feature)
+    title = f"{base}: {options[part]}"
+    sub = feature_text.find_part(feature.entries, part)
+    sections = [(_("Description"), render_entries(sub if sub is not None else feature.entries))]
     facts = [
         (
             _("Part of"),
@@ -2099,15 +2087,25 @@ def world_feature_part_detail(request, pk, part):
             ),
         )
     ]
-    return _detail_page(
-        request,
-        f"{base}: {options[part]}",
-        "world-feats",
-        facts,
-        plain_sections=[
-            (_("Description"), render_entries(sub if sub is not None else feature.entries))
-        ],
-    )
+    upgrade_id = request.GET.get("with", "")
+    if upgrade_id.isdigit():
+        upgrade = feature_service.get_feature(int(upgrade_id))
+        wanted = feature_use.UPGRADES.get(feature_text.base_name(upgrade))
+        if wanted and wanted[0] == base and options[part] in wanted[1]:
+            extra = feature_text.find_part(upgrade.entries, part)
+            title = f"{feature_text.base_name(upgrade)}: {options[part]}"
+            sections.append((upgrade.name, render_entries(extra if extra is not None else [])))
+            facts.append(
+                (
+                    _("Upgraded by"),
+                    format_html(
+                        '<a href="{}">{}</a>',
+                        reverse("world-feature-detail", args=[upgrade.pk]),
+                        upgrade.name,
+                    ),
+                )
+            )
+    return _detail_page(request, title, "world-feats", facts, plain_sections=sections)
 
 
 def world_creature_detail(request, pk):

@@ -38,6 +38,12 @@ class FeatureResource:
     #: Character level the trait starts at, where it is not level 1 ("When you reach character
     #: level 5"): species traits are all granted at creation, so their resource waits for this.
     min_level: int = 1
+    #: The counter's own name where it is not the feature's (Telekinetic Adept's Psi-Powered Leap).
+    name: str = ""
+
+    @property
+    def resource_name(self) -> str:
+        return self.name or self.feature
 
 
 FEATURE_RESOURCES: tuple[FeatureResource, ...] = (
@@ -91,6 +97,11 @@ FEATURE_RESOURCES: tuple[FeatureResource, ...] = (
         "subclass", "Soulknife", "Psionic Power", ("by_class_level", "rogue", _PSIONIC_DICE), _OTHER
     ),
     FeatureResource("subclass", "Soulknife", "Psychic Veil", _ONE),
+    FeatureResource("subclass", "Psi Warrior", "Bulwark of Force", _ONE),
+    FeatureResource("subclass", "Psi Warrior", "Telekinetic Master", _ONE),
+    FeatureResource(
+        "subclass", "Psi Warrior", "Telekinetic Adept", _ONE, _SHORT, name="Psi-Powered Leap"
+    ),
     FeatureResource("subclass", "Soulknife", "Rend Mind", _ONE),
     FeatureResource("subclass", "Arcane Trickster", "Spell Thief", _ONE),
     FeatureResource("subclass", "Illusionist", "Illusory Self", _ONE, _SHORT),
@@ -178,11 +189,11 @@ def refresh(character: Character) -> None:
         maximum = _maximum(character, row, levels, total)
         if maximum <= 0:
             continue
-        current = existing.get(row.feature)
+        current = existing.get(row.resource_name)
         if current is None:
-            existing[row.feature] = CharacterResource.objects.create(
+            existing[row.resource_name] = CharacterResource.objects.create(
                 character=character,
-                name=row.feature,
+                name=row.resource_name,
                 max_uses=maximum,
                 current_uses=maximum,
                 reset_on=row.reset,

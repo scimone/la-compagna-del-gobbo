@@ -34,7 +34,7 @@ from apps.builder.services import creation, derived_stats, land, progression, wi
 from apps.characters import conditions, custom_effects
 from apps.characters.models import Character, CharacterChoice, CustomCatalogItem
 from apps.characters.services import access, feature_use, play, portrait
-from apps.frontend import accounts, creature_render, translations, units
+from apps.frontend import accounts, creature_render, feature_text, translations, units
 from apps.frontend.character_views import (
     _DESCRIBERS,
     _card_line,
@@ -402,25 +402,34 @@ def _feature_items(
     items = []
     pools = pools or []
     resources = set(character.resources.values_list("name", flat=True))
-    for cf in character.features.select_related(
-        "feature__class_level__klass",
-        "feature__subclass_level__subclass__klass",
-        "feature__species",
-    ):
+    owned = list(
+        character.features.select_related(
+            "feature__class_level__klass",
+            "feature__subclass_level__subclass__klass",
+            "feature__species",
+        )
+    )
+    by_name = {cf.feature.name_en.split(" (")[0]: cf.feature for cf in owned}
+    for cf in owned:
         f = cf.feature
         if not (f.species_id or f.class_level_id or f.subclass_level_id):
             continue
         row = {**_feature_row(f), **_removal(can_edit, cf.source, "feature", f.pk)}
         items.append(row)
+        # An upgrade the character has (Heightened Focus) renames the options it upgrades.
+        upgrade = feature_use.upgrade_for(f.name_en.split(" (")[0], set(by_name))
+        upgrade_feature = by_name[upgrade[0]] if upgrade else None
         for part_name, spec in feature_use.parts_for(f):
+            upgraded = upgrade_feature is not None and part_name in upgrade[1]
+            title = _base_name(upgrade_feature if upgraded else f)
             part = {
                 **row,
-                "name": f"{_base_name(f)}: {part_name}",
-                "url": reverse("world-feature-part", args=[f.pk, feature_use.slug(part_name)]),
-                "search": f"{row['search']} {part_name.lower()}",
+                "name": f"{title}: {part_name}",
+                "url": feature_text.part_url(f, part_name, upgrade_feature if upgraded else None),
+                "search": f"{row['search']} {part_name.lower()} {title.lower()}",
             }
             part.pop("remove", None)
-            if can_edit:
+            if can_edit and spec is not None:
                 button = _use_button(character, f"feature:{f.pk}", part["name"], spec, pools)
                 if button:
                     part["use"] = {**button, "part": feature_use.slug(part_name)}
@@ -464,8 +473,7 @@ def _feature_items(
     return items
 
 
-def _base_name(feature) -> str:
-    return feature.name.split(" (")[0]
+_base_name = feature_text.base_name
 
 
 def _flat_text(entries) -> str:
@@ -485,7 +493,7 @@ def _use_button(character, use_id: str, name: str, spec, pools: list[dict]) -> d
     something first, what to ask."""
     if not feature_use.available(character, spec, pools):
         return None
-    question = feature_use.ask(character, spec, pools)
+    question = feature_use.ask(character, name, spec, pools)
     if question is not None and not (question.get("choices") or question.get("max", 0) >= 1):
         return None
     return {
@@ -493,7 +501,7 @@ def _use_button(character, use_id: str, name: str, spec, pools: list[dict]) -> d
         "param": "use",
         "id": use_id,
         "label": _("Use"),
-        "confirm": "" if question else feature_use.confirm_text(character, name, spec),
+        "confirm": "" if question else feature_use.confirm_text(character, name, spec, pools),
         "ask": json.dumps(question) if question else "",
     }
 
@@ -1655,7 +1663,7 @@ def _act_feature_use(character, post):
                 ((n, s) for n, s in feature_use.parts_for(feature) if feature_use.slug(n) == part),
                 None,
             )
-            if found is None:
+            if found is None or found[1] is None:
                 raise ValueError("unknown option")
             name, spec = f"{_base_name(feature)}: {found[0]}", found[1]
         else:

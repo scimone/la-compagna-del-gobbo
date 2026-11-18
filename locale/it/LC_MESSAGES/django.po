@@ -4155,3 +4155,65 @@ msgstr "Ha terminato Forma Selvatica"
 
 msgid "Turned down a rest's offer"
 msgstr "Ha rifiutato un'offerta del riposo"
+
+#: ways of using a feature (feature_use.py)
+msgid "Make two Unarmed Strikes as a Bonus Action"
+msgstr "Effettua due Colpi Senz'armi come Azione Bonus"
+
+msgid "Shadow Flurry: make the Flurry without a Focus Point while shrouded"
+msgstr "Raffica d'Ombra: effettua la Raffica senza Punti Focus mentre sei avvolto dalle ombre"
+
+msgid "Take the Disengage action as a Bonus Action"
+msgstr "Compi l'azione Disimpegno come Azione Bonus"
+
+msgid "Take Disengage and Dodge as a Bonus Action"
+msgstr "Compi Disimpegno e Schivata come Azione Bonus"
+
+msgid "Take the Dash action as a Bonus Action"
+msgstr "Compi l'azione Scatto come Azione Bonus"
+
+msgid "Take Disengage and Dash as a Bonus Action; your jump distance is doubled"
+msgstr "Compi Disimpegno e Scatto come Azione Bonus; la distanza di salto è raddoppiata"
+
+msgid "Expend a Superiority Die"
+msgstr "Consuma un Dado di Superiorità"
+
+msgid "Relentless: roll 1d8 and use it instead of expending a Superiority Die"
+msgstr "Implacabile: tira 1d8 e usalo al posto di consumare un Dado di Superiorità"
+
+msgid "Magic action: touch a creature and restore Hit Points"
+msgstr "Azione di Magia: tocca una creatura e ripristina punti ferita"
+
+msgid "Replace one Unarmed Strike of a Flurry of Blows with it (free)"
+msgstr "Sostituisci un Colpo Senz'armi di una Raffica di Colpi (gratis)"
+
+msgid "Use it again by restoring the use"
+msgstr "Usalo di nuovo ripristinando l'uso"
+
+#, python-format
+msgid "%(name)s ×%(n)d (%(have)d of %(max)d left)"
+msgstr "%(name)s ×%(n)d (ne restano %(have)d su %(max)d)"
+
+#, python-format
+msgid "a level %(level)d spell slot"
+msgstr "uno slot incantesimo di livello %(level)d"
+
+msgid "a Pact Magic spell slot"
+msgstr "uno slot di Magia del Patto"
+
+msgid "no cost"
+msgstr "nessun costo"
+
+msgid "free until your next rest"
+msgstr "gratis fino al prossimo riposo"
+
+#, python-format
+msgid "How do you use %(name)s?"
+msgstr "Come usi %(name)s?"
+
+#, python-format
+msgid "Use %(name)s? This costs: %(cost)s."
+msgstr "Usare %(name)s? Costo: %(cost)s."
+
+msgid "Upgraded by"
+msgstr "Potenziato da"

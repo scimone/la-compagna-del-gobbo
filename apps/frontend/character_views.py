@@ -38,6 +38,7 @@ from apps.frontend import (
     campaign_context,
     campaign_views,
     creature_render,
+    feature_text,
     translations,
     units,
 )
@@ -720,7 +721,7 @@ def _describe_creature(pk):
 
 
 def _describe_feature(pk):
-    return [], [render_entries(get_object_or_404(Feature, pk=pk).entries)]
+    return [], [render_entries(feature_text.entries_for(get_object_or_404(Feature, pk=pk)))]
 
 
 def _describe_subclass(pk):

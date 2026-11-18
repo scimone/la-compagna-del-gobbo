@@ -367,34 +367,60 @@
     return new Promise(function (resolve) {
       var dialog = document.createElement("dialog");
       dialog.className = "app-dialog";
-      var field = ask.choices
-        ? "<select></select>"
-        : '<input type="number" inputmode="numeric">';
       dialog.innerHTML =
-        "<p data-q></p>" + field +
+        '<p data-q></p><div data-field></div>' +
         '<div class="app-dialog-buttons"><button type="button" data-no></button><button type="button" class="ok" data-yes></button></div>';
       dialog.querySelector("[data-q]").textContent = ask.label;
       dialog.querySelector("[data-no]").textContent = labels.cancel || "Cancel";
       dialog.querySelector("[data-yes]").textContent = labels.ok || "OK";
-      var input = dialog.querySelector("select, input");
-      input.style.cssText = "width:100%;box-sizing:border-box;padding:0.5rem;font:inherit";
-      if (ask.choices) {
+      var holder = dialog.querySelector("[data-field]");
+      var input;
+      if (ask.choices && ask.style === "radio") {
+        // The ways of using it, each with what it costs: radio buttons, the first one picked.
+        ask.choices.forEach(function (choice, index) {
+          var label = document.createElement("label");
+          label.style.cssText = "display:flex;gap:0.5rem;align-items:flex-start;margin:0.4rem 0;cursor:pointer";
+          var radio = document.createElement("input");
+          radio.type = "radio";
+          radio.name = "ask-choice";
+          radio.value = choice[0];
+          radio.checked = index === 0;
+          radio.style.marginTop = "0.25rem";
+          label.appendChild(radio);
+          label.appendChild(document.createTextNode(choice[1]));
+          holder.appendChild(label);
+        });
+      } else if (ask.choices) {
+        input = document.createElement("select");
         ask.choices.forEach(function (choice) { input.appendChild(new Option(choice[1], choice[0])); });
+        holder.appendChild(input);
       } else {
+        input = document.createElement("input");
+        input.type = "number";
+        input.inputMode = "numeric";
         input.min = ask.min;
         input.max = ask.max;
         input.value = ask.min;
+        holder.appendChild(input);
       }
+      if (input) input.style.cssText = "width:100%;box-sizing:border-box;padding:0.5rem;font:inherit";
       document.body.appendChild(dialog);
       function done(value) { dialog.close(); dialog.remove(); resolve(value); }
       dialog.addEventListener("click", function (event) {
         if (event.target.closest("[data-no]")) return done(null);
         if (!event.target.closest("[data-yes]")) return;
-        var value = input.value;
-        if (!ask.choices) {
-          var n = Math.floor(Number(value));
-          if (!(n >= ask.min && n <= ask.max)) return;
-          value = n;
+        var value;
+        if (ask.style === "radio") {
+          var picked = dialog.querySelector('input[name="ask-choice"]:checked');
+          if (!picked) return;
+          value = picked.value;
+        } else {
+          value = input.value;
+          if (!ask.choices) {
+            var n = Math.floor(Number(value));
+            if (!(n >= ask.min && n <= ask.max)) return;
+            value = n;
+          }
         }
         var answer = {};
         answer[ask.param] = value;
@@ -402,7 +428,7 @@
       });
       dialog.addEventListener("cancel", function (event) { event.preventDefault(); done(null); });
       dialog.showModal();
-      if (!ask.choices) input.select();
+      if (input && !ask.choices) input.select();
     });
   }
 
