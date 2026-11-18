@@ -16,7 +16,7 @@ from django.utils.translation import get_language
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
-from apps.characters.services import access
+from apps.characters.services import access, feature_use
 from apps.frontend import accounts, cloudflare_access, creature_render, units
 from apps.frontend.bookmarks import BOOKMARK_MODELS, bookmarked_ids, is_bookmarked
 from apps.frontend.entries_render import (
@@ -2061,6 +2061,52 @@ def world_feature_detail(request, pk):
         "world-feats",
         facts,
         plain_sections=plain_sections,
+    )
+
+
+def _find_part(entries, wanted: str):
+    """The named sub-entry of a feature's text whose name slugs to `wanted`, or None."""
+    if isinstance(entries, list):
+        for e in entries:
+            if (found := _find_part(e, wanted)) is not None:
+                return found
+    elif isinstance(entries, dict):
+        if entries.get("name") and feature_use.slug(entries["name"]) == wanted:
+            return entries
+        return _find_part(entries.get("entries") or entries.get("items") or [], wanted)
+    return None
+
+
+def world_feature_part_detail(request, pk, part):
+    """One option of a feature that the character sheet lists as a card of its own ("Monk's Focus:
+    Flurry of Blows"): the option's own text where the feature's text has one, else the whole
+    feature's."""
+    feature = feature_service.get_feature(pk)
+    options = dict(
+        (feature_use.slug(name), name) for (name, _spec) in feature_use.parts_for(feature)
+    )
+    if part not in options:
+        raise Http404
+    base = feature.name.split(" (")[0]
+    sub = _find_part(feature.entries, part)
+    facts = [
+        (
+            _("Part of"),
+            format_html(
+                '<a href="{}">{}</a>',
+                reverse("world-feature-detail", args=[feature.pk]),
+                feature.name,
+            ),
+        )
+    ]
+    return _detail_page(
+        request,
+        f"{base}: {options[part]}",
+        "world-feats",
+        facts,
+        plain_sections=[
+            (_("Description"), render_entries(sub if sub is not None else feature.entries))
+        ],
     )
 
 

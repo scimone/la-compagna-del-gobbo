@@ -1187,22 +1187,6 @@ def remove_custom_feature(character: Character, feature_id: int) -> None:
 # --- resources ---------------------------------------------------------------------------------
 
 
-@transaction.atomic
-def use_resource(character: Character, resource_id: int, amount: int = 1) -> None:
-    """Spend `amount` of a limited-use resource (a use of Rage or Bardic Inspiration, points of
-    Lay on Hands or Sorcery Points). Uses only come back by resting (or, for Wild Shape, are
-    spent by `wild_shape.use()`): the player never sets the counter."""
-    row = character.resources.select_for_update().get(pk=resource_id)
-    if row.name == "Wild Shape":
-        raise ValueError("Wild Shape is used with one of its forms")
-    if amount < 1:
-        raise ValueError("spend at least 1")
-    if amount > row.current_uses:
-        raise ValueError(f"only {row.current_uses} left")
-    row.current_uses -= amount
-    row.save(update_fields=["current_uses"])
-
-
 # --- rests -------------------------------------------------------------------------------------
 #
 # SRD "Riposo breve" / "Riposo lungo" (Rules Glossary). What is *not* tracked, so not handled here:
@@ -1330,6 +1314,7 @@ def short_rest(
         if total:
             character.spell_recoveries_used = [*character.spell_recoveries_used, feature["name"]]
     character.spell_slots_spent = slots
+    character.use_flags = {k: v for k, v in character.use_flags.items() if v != "short"}
     # Tireless (Ranger 10): each Short Rest lowers the Exhaustion level by 1.
     if character.exhaustion and character.features.filter(feature__name_en="Tireless").exists():
         character.exhaustion -= 1
@@ -1357,6 +1342,8 @@ def long_rest(character: Character) -> None:
     _require_standing(character)
     character.max_hit_points_reduction = 0
     character.ability_reductions = {}
+    character.created_slots = {}  # slots a feature made vanish
+    character.use_flags = {}
     character.wild_shape_form = ""
     character.spell_recoveries_used = []
     character.exhaustion = max(0, character.exhaustion - 1)

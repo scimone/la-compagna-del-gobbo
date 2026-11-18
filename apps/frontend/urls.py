@@ -196,6 +196,11 @@ urlpatterns = [
         name="world-feature-detail",
     ),
     path(
+        "world/feats/feature/<int:pk>/<slug:part>/",
+        views.world_feature_part_detail,
+        name="world-feature-part",
+    ),
+    path(
         "world/creatures/<slug:pk>/",
         views.world_creature_detail,
         name="world-creature-detail",

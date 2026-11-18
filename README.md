@@ -1375,14 +1375,31 @@ duration is only shown (game time); equipment merging into the form is not model
 
 #### Counters, Use and rest offers
 
-A feature with a counter in the Stats tab's Resources card (`CharacterResource`: Rage, Second Wind, Breath
-Weapon, Lay on Hands ...) has a **Use** button on its Features-list card (`character_sheet._resource_name`
-maps a card to its counter - its own name, or `_RESOURCE_ALIASES` for Monk's Focus / Font of Magic /
-Combat Superiority; `test_feature_use.py` fails if a counter has no card). It shows `Use n/max`, is
-disabled at 0 and spends one use (`resource_use`, `play.use_resource`); a pool (`_POOLS`: Lay on Hands,
-Sorcery Points, Focus Points) asks how many points. The player never sets a counter by hand - the Stats
-card is read-only and uses come back only by resting. Wild Shape's counter is spent from the forms'
-Use buttons, and the card of the form the Druid is in has none.
+`apps/characters/services/feature_use.py` is the table and the logic behind the **Use** buttons of the
+Features list (`character_sheet._feature_items`, action `feature_use`; the button says just "Use" - how
+much is spent and left is in its confirmation, and it is not shown while the use is not possible):
+
+- a feature named like its counter spends one use (Rage, Second Wind, Breath Weapon ...); a pool
+  (Lay on Hands) asks how many points;
+- features that spend *another* feature's counter do so at their cost (`SPENDS`: Channel Divinity effects,
+  Focus Point features, Bardic Inspiration reactions, Bastion of Law), and so do Maneuvers (a Superiority
+  Die) and Metamagic (the points named in the option's text, `option_use`);
+- a feature whose text lists options that each spend the counter is split into one card per option,
+  "Monk's Focus: Flurry of Blows", opening that option's text (`/world/feats/feature/<id>/<option>/`),
+  and has no button itself (`PARTS`: Monk's Focus, the Cleric's Channel Divinity, Celestial Revelation, The
+  Third Eye, Psionic Power, Soul Blades, Font of Magic, Wild Resurgence, Archdruid). The first Psychic
+  Whispers (until a Long Rest) and Telekinetic Movement (until a Short Rest) are free (`Character.use_flags`);
+- features that give counters or slots back do it as `EFFECTS`/parts: Font of Magic converts a slot into
+  Sorcery Points and creates a slot (`Character.created_slots`, added to the slot pools until the next
+  Long Rest), Sorcerous Restoration, Uncanny Metabolism (asks for the Martial Arts die), Perfect Focus,
+  Persistent Rage, Superior Inspiration, Font of Inspiration, Magical Cunning, Wild Resurgence, Archdruid.
+
+The player never sets a counter by hand (the Stats card is read-only) and uses come back only by resting
+or by those effects. `test_feature_use.py` fails if a counter cannot be spent from some card or a table row
+names a feature or option the data does not have. Wild Shape's counter is spent from the forms' Use
+buttons, and the card of the form the Druid is in has none. Divine Sense is a Channel Divinity effect (the
+2024 rules), not a counter of its own. Not modelled: a created slot beyond one per creation request is just
+another slot; the "replace the die roll" / "restore this feature's use by expending a die" riders.
 
 A long rest lists what it offers to change (`prompts`: prepared spells, Weapon Mastery, the Circle of the
 Land's land, a Wild Shape form), each asked in turn with a warning; cancelling one posts `rest_decline`

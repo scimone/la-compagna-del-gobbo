@@ -1,15 +1,19 @@
-"""The Use button of every feature that has a counter."""
+"""The Use button of every feature that has (or spends) a counter, and the features split into
+one card per option."""
+
+import re
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 
 from apps.builder.progression_spec import LEVEL_RESOURCES
 from apps.builder.services import creation, wild_shape
 from apps.builder.services.feature_resources import FEATURE_RESOURCES
 from apps.builder.tests.conftest import build_character
-from apps.characters.models import CharacterResource
-from apps.frontend.character_sheet import _resource_name
-from apps.rules.models import Feature
+from apps.characters.models import CharacterFeature, CharacterResource
+from apps.characters.services import feature_use
+from apps.rules.models import Feature, OptionalFeature
 
 pytestmark = pytest.mark.usefixtures("imported_rules")
 
@@ -41,65 +45,293 @@ def features_panel(client, character):
     return html.split('data-panel="features"')[1].split('data-panel="spellbook"')[0]
 
 
-def test_every_counter_has_a_feature_card_to_use_it_from(db):
-    names = {r.name for rows in LEVEL_RESOURCES.values() for r in rows}
-    names |= {r.feature for r in FEATURE_RESOURCES}
-    cards = {_resource_name(n) for n in Feature.objects.values_list("name_en", flat=True)}
-    # Wild Shape is used from one of its forms (the "Wild Shape: <beast>" cards).
-    assert sorted(n for n in names - {"Wild Shape"} if n not in cards) == []
+def give(character, name, owner=None, **resource):
+    """The feature (of `owner`: a class id or subclass name) and the counters on the sheet."""
+    features = Feature.objects.filter(name_en=name)
+    if owner:
+        features = features.filter(
+            Q(class_level__klass_id=owner) | Q(subclass_level__subclass__name_en=owner)
+        )
+    feature = features.first()
+    CharacterFeature.objects.get_or_create(character=character, feature=feature)
+    for res, (current, maximum) in resource.items():
+        CharacterResource.objects.update_or_create(
+            character=character,
+            name=res.replace("_", " "),
+            defaults={"max_uses": maximum, "current_uses": current, "reset_on": "long_rest"},
+        )
 
 
-def test_a_feature_card_spends_its_counter_with_use(signed_in, alice):
+def plain(entries) -> str:
+    if isinstance(entries, str):
+        return entries
+    if isinstance(entries, list):
+        return " ".join(plain(e) for e in entries)
+    if isinstance(entries, dict):
+        return (
+            (entries.get("name") or "")
+            + " "
+            + plain(entries.get("entries") or entries.get("items") or "")
+        )
+    return ""
+
+
+def test_every_counter_can_be_spent_from_some_card(db):
+    own = {r.name for rows in LEVEL_RESOURCES.values() for r in rows}
+    own |= {r.feature for r in FEATURE_RESOURCES}
+    spent = {u.resource for u in feature_use.SPENDS.values() if u.resource}
+    spent |= {u.resource for u in feature_use.EFFECTS.values() if u.resource}
+    spent |= {u.resource for parts in feature_use.PARTS.values() for _n, u in parts if u.resource}
+    cards = {n.split(" (")[0] for n in Feature.objects.values_list("name_en", flat=True)}
+    aliases = {
+        "Focus Points",
+        "Sorcery Points",
+        "Superiority Dice",
+        "Channel Divinity",
+        "Wild Shape",
+    }
+    unreachable = [
+        n
+        for n in sorted(own)
+        if n not in spent and n not in feature_use.NO_BUTTON and n not in aliases and n not in cards
+    ]
+    assert unreachable == []
+    # The pools of points are spent by the cards of the features that use them.
+    assert {"Focus Points", "Sorcery Points", "Superiority Dice", "Channel Divinity"} <= spent | {
+        u.resource for u in (feature_use.option_use("Maneuver, Battle Master", ""),)
+    }
+
+
+def test_the_use_tables_name_real_features_and_real_options(db):
+    names = {n.split(" (")[0] for n in Feature.objects.values_list("name_en", flat=True)}
+    missing = [n for n in (*feature_use.SPENDS, *feature_use.EFFECTS) if n not in names]
+    assert missing == []
+    for (parent, _owner), parts in feature_use.PARTS.items():
+        assert parent in names, parent
+        text = " ".join(
+            plain(f.entries) for f in Feature.objects.filter(name_en__startswith=parent)
+        )
+        for part, _spec in parts:
+            if parent not in ("Wild Resurgence",):  # its options are not named in its text
+                assert part.lower() in text.lower(), (parent, part)
+
+
+def test_a_feature_with_a_counter_has_a_use_button_without_numbers(signed_in, alice):
     fighter = finished(alice, "fighter", "soldier")
     wind = fighter.resources.get(name="Second Wind")
-    html = features_panel(signed_in, fighter)
-    assert f'data-resource="{wind.pk}"' in html and "Use 2/2" in html
+    wind.current_uses = wind.max_uses
+    wind.save()
+    panel = features_panel(signed_in, fighter)
+    row = next(c for c in panel.split("<li") if "Second Wind" in c)
+    assert 'data-act="feature_use"' in row and ">Use</button>" in row and "Use 2" not in row
+    assert "This spends 1 of Second Wind (2 of 2 left)" in row
 
-    assert act(signed_in, fighter, action="resource_use", resource=wind.pk).status_code == 200
-    assert "Use 1/2" in features_panel(signed_in, fighter)
-    act(signed_in, fighter, action="resource_use", resource=wind.pk)
-    assert act(signed_in, fighter, action="resource_use", resource=wind.pk).status_code == 400
-    assert "disabled>Use 0/2" in features_panel(signed_in, fighter).replace("\n", "")
-
+    use = {"use": f"feature:{Feature.objects.get(name_en='Second Wind').pk}"}
+    assert act(signed_in, fighter, action="feature_use", **use).status_code == 200
+    assert act(signed_in, fighter, action="feature_use", **use).status_code == 200
+    assert act(signed_in, fighter, action="feature_use", **use).status_code == 400
+    row = next(c for c in features_panel(signed_in, fighter).split("<li") if "Second Wind" in c)
+    assert "feature_use" not in row  # none left: no button
     act(signed_in, fighter, action="long_rest")
-    assert "Use 2/2" in features_panel(signed_in, fighter)
+    assert "feature_use" in features_panel(signed_in, fighter)
 
 
-def test_a_species_trait_with_a_counter_can_be_used_too(signed_in, alice):
-    dragonborn = finished(alice, "fighter", "soldier", "dragonborn")
-    breath = dragonborn.resources.get(name="Breath Weapon")
-    assert f'data-resource="{breath.pk}"' in features_panel(signed_in, dragonborn)
+def test_monks_focus_is_split_into_one_card_per_option(signed_in, alice):
+    monk = finished(alice, "monk")
+    give(monk, "Monk's Focus", Focus_Points=(2, 2))
+    panel = features_panel(signed_in, monk)
+    cards = {m.group(1) for m in re.finditer(r"Monk&#x27;s Focus: ([A-Za-z ]+)", panel)}
+    assert cards == {"Flurry of Blows", "Patient Defense", "Step of the Wind"}
+    focus = next(c for c in panel.split("<li") if re.search(r"item-name\">Monk&#x27;s Focus<", c))
+    assert "feature_use" not in focus  # the feature itself has no button
+    flurry = next(c for c in panel.split("<li") if "Monk&#x27;s Focus: Flurry" in c)
+    assert 'data-part="flurry-of-blows"' in flurry and "feature_use" in flurry
+
+    feature = Feature.objects.get(name_en="Monk's Focus")
+    reply = act(
+        signed_in, monk, action="feature_use", use=f"feature:{feature.pk}", part="flurry-of-blows"
+    )
+    assert reply.status_code == 200
+    assert monk.resources.get(name="Focus Points").current_uses == 1
+    # The option's own page shows its text.
+    page = signed_in.get(f"/world/feats/feature/{feature.pk}/flurry-of-blows/").content.decode()
+    assert "two Unarmed Strikes" in page and "Flurry of Blows" in page
+    assert signed_in.get(f"/world/feats/feature/{feature.pk}/nonsense/").status_code == 404
+    # Without a point left, no option can be used.
+    act(signed_in, monk, action="feature_use", use=f"feature:{feature.pk}", part="patient-defense")
+    assert (
+        "feature_use"
+        not in features_panel(signed_in, monk).split("Monk&#x27;s Focus: Flurry")[1][:900]
+    )
+
+
+def test_a_cleric_channel_divinity_has_its_two_effects_as_cards(signed_in, alice):
+    cleric = finished(alice, "cleric")
+    give(cleric, "Channel Divinity", "cleric", Channel_Divinity=(2, 2))
+    panel = features_panel(signed_in, cleric)
+    assert "Channel Divinity: Divine Spark" in panel and "Channel Divinity: Turn Undead" in panel
+    feature = Feature.objects.get(name_en="Channel Divinity", class_level__klass_id="cleric")
+    assert (
+        act(signed_in, cleric, action="feature_use", use=f"feature:{feature.pk}").status_code == 400
+    )
+    ok = act(
+        signed_in, cleric, action="feature_use", use=f"feature:{feature.pk}", part="turn-undead"
+    )
+    assert ok.status_code == 200 and cleric.resources.get(name="Channel Divinity").current_uses == 1
+
+
+def test_features_that_spend_another_counter_have_a_use_button(signed_in, alice):
+    monk = finished(alice, "monk")
+    give(monk, "Stunning Strike", Focus_Points=(3, 3))
+    feature = Feature.objects.get(name_en="Stunning Strike")
+    assert (
+        act(signed_in, monk, action="feature_use", use=f"feature:{feature.pk}").status_code == 200
+    )
+    assert monk.resources.get(name="Focus Points").current_uses == 2
+
+    battle_master = OptionalFeature.objects.get(pk="parry")
+    fighter = finished(alice, "fighter", "soldier")
+    CharacterResource.objects.create(
+        character=fighter,
+        name="Superiority Dice",
+        max_uses=4,
+        current_uses=4,
+        reset_on="short_rest",
+    )
+    fighter.optional_features.create(optional_feature=battle_master)
+    reply = act(signed_in, fighter, action="feature_use", use="option:parry")
+    assert reply.status_code == 200
+    assert fighter.resources.get(name="Superiority Dice").current_uses == 3
 
 
 def test_a_pool_asks_how_many_points_to_spend(signed_in, alice):
     paladin = finished(alice, "paladin", "soldier")
     pool = paladin.resources.get(name="Lay on Hands")
+    feature = Feature.objects.get(name_en="Lay on Hands")
     html = features_panel(signed_in, paladin)
-    assert f'data-resource="{pool.pk}"' in html and f'data-ask-amount="{pool.max_uses}"' in html
+    assert 'data-ask="' in html and "&quot;param&quot;: &quot;amount&quot;" in html
+    use = f"feature:{feature.pk}"
+    assert act(signed_in, paladin, action="feature_use", use=use, amount="3").status_code == 200
+    assert paladin.resources.get(name="Lay on Hands").current_uses == pool.max_uses - 3
+    assert act(signed_in, paladin, action="feature_use", use=use, amount="99").status_code == 400
+
+
+def test_font_of_magic_converts_slots_and_creates_them_until_the_next_long_rest(signed_in, alice):
+    sorcerer = finished(alice, "sorcerer")
+    sorcerer.classes.update(level=5)
+    give(sorcerer, "Font of Magic", Sorcery_Points=(1, 5))
+    feature = Feature.objects.get(name_en="Font of Magic")
+    base = {"action": "feature_use", "use": f"feature:{feature.pk}"}
+
+    page = features_panel(signed_in, sorcerer)
+    assert "Font of Magic: Converting Spell Slots to Sorcery Points" in page
+    assert "Font of Magic: Creating Spell Slots" in page
+
+    reply = act(
+        signed_in, sorcerer, **base, part="converting-spell-slots-to-sorcery-points", slot="1"
+    )
+    assert reply.status_code == 200
+    assert sorcerer.resources.get(name="Sorcery Points").current_uses == 2  # +1 for a level 1 slot
+    sorcerer.refresh_from_db()
+    assert sorcerer.spell_slots_spent == {"1": 1}
+
+    sorcerer.resources.filter(name="Sorcery Points").update(current_uses=5)
+    reply = act(signed_in, sorcerer, **base, part="creating-spell-slots", slot="3")
+    assert reply.status_code == 200
+    sorcerer.refresh_from_db()
+    assert sorcerer.created_slots == {"3": 1}
     assert (
-        act(signed_in, paladin, action="resource_use", resource=pool.pk, amount="3").status_code
+        sorcerer.resources.get(name="Sorcery Points").current_uses == 0
+    )  # a 3rd-level slot costs 5
+    assert (
+        act(signed_in, sorcerer, **base, part="creating-spell-slots", slot="3").status_code == 400
+    )
+    assert "Level 3" in signed_in.get(f"/characters/{sorcerer.pk}/").content.decode()
+    act(signed_in, sorcerer, action="long_rest")
+    sorcerer.refresh_from_db()
+    assert sorcerer.created_slots == {}
+
+
+def test_sorcerous_restoration_and_the_other_restorers(signed_in, alice):
+    sorcerer = finished(alice, "sorcerer")
+    sorcerer.classes.update(level=6)
+    give(sorcerer, "Sorcerous Restoration", Sorcerous_Restoration=(1, 1), Sorcery_Points=(0, 6))
+    feature = Feature.objects.get(name_en="Sorcerous Restoration")
+    assert (
+        act(signed_in, sorcerer, action="feature_use", use=f"feature:{feature.pk}").status_code
         == 200
     )
-    assert paladin.resources.get(name="Lay on Hands").current_uses == pool.max_uses - 3
-    too_many = act(signed_in, paladin, action="resource_use", resource=pool.pk, amount="99")
-    assert too_many.status_code == 400
+    assert sorcerer.resources.get(name="Sorcery Points").current_uses == 3  # half of level 6
+    assert sorcerer.resources.get(name="Sorcerous Restoration").current_uses == 0
+
+    barbarian = finished(alice, "barbarian")
+    give(barbarian, "Persistent Rage", Persistent_Rage=(1, 1), Rage=(0, 4))
+    feature = Feature.objects.get(name_en="Persistent Rage")
+    act(signed_in, barbarian, action="feature_use", use=f"feature:{feature.pk}")
+    assert barbarian.resources.get(name="Rage").current_uses == 4
+
+    monk = finished(alice, "monk")
+    monk.classes.update(level=15)
+    give(monk, "Perfect Focus", Focus_Points=(1, 15))
+    feature = Feature.objects.get(name_en="Perfect Focus")
+    act(signed_in, monk, action="feature_use", use=f"feature:{feature.pk}")
+    assert monk.resources.get(name="Focus Points").current_uses == 4
+    assert "feature_use" not in features_panel(signed_in, monk).split("Perfect Focus")[1][:700]
 
 
-def test_only_the_owner_sees_use_and_wild_shape_is_not_a_plain_counter(signed_in, alice):
+def test_psionic_options_free_first_use_and_wild_resurgence(signed_in, alice):
+    rogue = finished(alice, "rogue")
+    rogue.classes.update(level=3)
+    from apps.rules.models import Subclass
+
+    rogue.classes.update(subclass=Subclass.objects.get(name_en="Soulknife"))
+    give(rogue, "Psionic Power", "Soulknife", Psionic_Power=(4, 4))
+    feature = Feature.objects.get(
+        name_en="Psionic Power", subclass_level__subclass__name_en="Soulknife"
+    )
+    base = {"action": "feature_use", "use": f"feature:{feature.pk}", "part": "psychic-whispers"}
+    act(signed_in, rogue, **base)
+    assert rogue.resources.get(name="Psionic Power").current_uses == 4  # the first one is free
+    act(signed_in, rogue, **base)
+    assert rogue.resources.get(name="Psionic Power").current_uses == 3
+    act(signed_in, rogue, action="long_rest")
+    rogue.refresh_from_db()
+    assert rogue.use_flags == {}
+
+    druid = finished(alice, "druid")
+    druid.classes.update(level=5)
+    give(druid, "Wild Resurgence", Wild_Resurgence=(1, 1), Wild_Shape=(0, 2))
+    feature = Feature.objects.get(name_en="Wild Resurgence")
+    base = {"action": "feature_use", "use": f"feature:{feature.pk}"}
+    reply = act(signed_in, druid, **base, part="wild-shape-from-a-spell-slot", slot="1")
+    assert reply.status_code == 200 and druid.resources.get(name="Wild Shape").current_uses == 1
+    reply = act(signed_in, druid, **base, part="spell-slot-from-wild-shape")
+    assert reply.status_code == 200
+    druid.refresh_from_db()
+    assert (
+        druid.created_slots == {"1": 1} and druid.resources.get(name="Wild Shape").current_uses == 0
+    )
+
+
+def test_wild_shape_forms_and_the_counter_cards(signed_in, alice):
     druid = finished(alice, "druid")
     druid.classes.update(level=2)
     wild_shape.add_forms(druid, ["wolf", "rat", "spider", "riding-horse"])
     row = CharacterResource.objects.create(
         character=druid, name="Wild Shape", max_uses=2, current_uses=2, reset_on="other"
     )
-    assert act(signed_in, druid, action="resource_use", resource=row.pk).status_code == 400
     html = features_panel(signed_in, druid)
-    assert 'data-form="wolf"' in html and f'data-resource="{row.pk}"' not in html
+    assert 'data-form="wolf"' in html and ">Use</button>" in html
+    assert "(2 of 2 left)" in html
+    assert act(signed_in, druid, action="feature_use", use="feature:1").status_code in (400, 404)
 
-    # In a form already, that form's own card has no Use button (the others still do).
     act(signed_in, druid, action="wild_shape_use", form="wolf")
     html = features_panel(signed_in, druid)
     assert 'data-form="wolf"' not in html and 'data-form="rat"' in html
+    act(signed_in, druid, action="wild_shape_use", form="rat")
+    assert 'data-form="spider"' not in features_panel(signed_in, druid)  # none left
+    row.refresh_from_db()
+    assert row.current_uses == 0
 
     other = get_user_model().objects.create_user("bob")
     signed_in.force_login(other)

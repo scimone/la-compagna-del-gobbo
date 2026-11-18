@@ -220,7 +220,6 @@ LEVEL_RESOURCES: dict[str, tuple[LevelResource, ...]] = {
     "paladin": (
         LevelResource("Lay on Hands", ("per_level", 5), _LONG),
         LevelResource("Channel Divinity", ("column", "Channel Divinity"), _OTHER, from_level=3),
-        LevelResource("Divine Sense", ("mod", "cha"), _LONG, from_level=3),
     ),
     "ranger": (
         LevelResource("Favored Enemy", ("column", "Favored Enemy"), _LONG),

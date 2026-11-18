@@ -33,7 +33,7 @@ from apps.builder.resolvers.proficiency import WeaponProficiency
 from apps.builder.services import creation, derived_stats, land, progression, wild_shape
 from apps.characters import conditions, custom_effects
 from apps.characters.models import Character, CharacterChoice, CustomCatalogItem
-from apps.characters.services import access, play, portrait
+from apps.characters.services import access, feature_use, play, portrait
 from apps.frontend import accounts, creature_render, translations, units
 from apps.frontend.character_views import (
     _DESCRIBERS,
@@ -387,41 +387,76 @@ def _option_row(option) -> dict:
     }
 
 
-def _feature_items(character: Character, can_edit: bool = False) -> list[dict]:
+def _feature_items(
+    character: Character, can_edit: bool = False, pools: list[dict] | None = None
+) -> list[dict]:
     """Flat, alphabetical rows for the Features tab's own searchable/filterable list - the exact
     same row shape `world_feats()` builds (same `properties`, bookmarkable the same way - see
     `_features_tab()`), just limited to this character's own species traits, class features,
     subclass features, feats and options (invocations, maneuvers, ...), and each linking straight
     to its own World detail page. One the player added by hand also carries its own `remove`
-    action (see `_removal()`).
+    action (see `_removal()`). A feature with a counter (or that spends one) also carries a `use`
+    button, and one whose text lists several options that each spend it is split into one row per
+    option (see `characters/services/feature_use.py`).
     """
     items = []
-    resources = {r.name: r for r in character.resources.all()}
+    pools = pools or []
+    resources = set(character.resources.values_list("name", flat=True))
     for cf in character.features.select_related(
         "feature__class_level__klass",
         "feature__subclass_level__subclass__klass",
         "feature__species",
     ):
         f = cf.feature
-        if f.species_id or f.class_level_id or f.subclass_level_id:
-            row = {**_feature_row(f), **_removal(can_edit, cf.source, "feature", f.pk)}
-            resource = resources.get(_resource_name(f.name_en))
-            if can_edit and resource and resource.name != "Wild Shape":
-                row["use"] = _resource_use(resource)
-            items.append(row)
+        if not (f.species_id or f.class_level_id or f.subclass_level_id):
+            continue
+        row = {**_feature_row(f), **_removal(can_edit, cf.source, "feature", f.pk)}
+        items.append(row)
+        for part_name, spec in feature_use.parts_for(f):
+            part = {
+                **row,
+                "name": f"{_base_name(f)}: {part_name}",
+                "url": reverse("world-feature-part", args=[f.pk, feature_use.slug(part_name)]),
+                "search": f"{row['search']} {part_name.lower()}",
+            }
+            part.pop("remove", None)
+            if can_edit:
+                button = _use_button(character, f"feature:{f.pk}", part["name"], spec, pools)
+                if button:
+                    part["use"] = {**button, "part": feature_use.slug(part_name)}
+            items.append(part)
+        if can_edit and (spec := feature_use.use_for(f, resources)):
+            if button := _use_button(character, f"feature:{f.pk}", row["name"], spec, pools):
+                row["use"] = button
     for cf in character.feats.select_related("feat"):
         items.append({**_feat_row(cf.feat), **_removal(can_edit, cf.source, "feat", cf.feat.pk)})
     for co in character.optional_features.select_related("optional_feature"):
         option = co.optional_feature
-        items.append({**_option_row(option), **_removal(can_edit, co.source, "option", option.pk)})
+        row = {**_option_row(option), **_removal(can_edit, co.source, "option", option.pk)}
+        spec = feature_use.option_use(option.feature_type, _flat_text(option.entries))
+        if (
+            can_edit
+            and spec
+            and (button := _use_button(character, f"option:{option.pk}", row["name"], spec, pools))
+        ):
+            row["use"] = button
+        items.append(row)
     active = character.wild_shape_form
     for creature in wild_shape.known_forms(character):
         row = _wild_shape_row(creature)
-        if not can_edit or creature.pk == active:
-            row.pop("use")  # already in this form: using it again would only waste a use
+        left = wild_shape.uses_left(character)
+        if not can_edit or creature.pk == active or left < 1:
+            row.pop(
+                "use"
+            )  # in this form already (a second use would only waste a use), or none left
         else:
-            row["use"]["label"] = f"{_('Use')} {wild_shape.uses_left(character)}"
-            row["use"]["disabled"] = wild_shape.uses_left(character) < 1
+            row["use"]["confirm"] = _(
+                "Use Wild Shape and become %(name)s? This spends one use (%(n)d of %(max)d left)."
+            ) % {
+                "name": creature.name,
+                "n": left,
+                "max": feature_use.maximum(character, "Wild Shape"),
+            }
         items.append(row)
     for custom in character.custom_features.all():
         items.append(_custom_feature_row(custom, can_edit))
@@ -429,38 +464,37 @@ def _feature_items(character: Character, can_edit: bool = False) -> list[dict]:
     return items
 
 
-#: The feature whose card spends a counter, where the counter has another name than the feature.
-_RESOURCE_ALIASES = {
-    "Monk's Focus": "Focus Points",
-    "Font of Magic": "Sorcery Points",
-    "Combat Superiority": "Superiority Dice",
-}
-#: Counters that are a pool of points rather than uses: Use asks how many to spend.
-_POOLS = {"Lay on Hands", "Sorcery Points", "Focus Points"}
+def _base_name(feature) -> str:
+    return feature.name.split(" (")[0]
 
 
-def _resource_name(feature_name: str) -> str:
-    """The counter a feature's card spends: its own name ("Giant Ancestry (Fire)" counts as
-    "Giant Ancestry"), or the alias above."""
-    name = feature_name.split(" (")[0]
-    return _RESOURCE_ALIASES.get(name, name)
+def _flat_text(entries) -> str:
+    """The plain text of an `entries` value (for finding a cost in it)."""
+    if isinstance(entries, str):
+        return entries
+    if isinstance(entries, list):
+        return " ".join(_flat_text(e) for e in entries)
+    if isinstance(entries, dict):
+        return _flat_text(entries.get("entries") or entries.get("items") or "")
+    return ""
 
 
-def _resource_use(resource) -> dict:
-    """The "Use" button of a feature card that has a counter: spends one use (or asks how many
-    points, for a pool); disabled while none are left. Uses come back by resting only."""
-    pool = resource.name in _POOLS
+def _use_button(character, use_id: str, name: str, spec, pools: list[dict]) -> dict | None:
+    """The "Use" button of a feature card (or None while the use is not possible): what it posts,
+    what the confirmation says (what is spent and how much is left) and, when the player must say
+    something first, what to ask."""
+    if not feature_use.available(character, spec, pools):
+        return None
+    question = feature_use.ask(character, spec, pools)
+    if question is not None and not (question.get("choices") or question.get("max", 0) >= 1):
+        return None
     return {
-        "act": "resource_use",
-        "param": "resource",
-        "id": resource.pk,
-        "label": f"{_('Use')} {resource.current_uses}/{resource.max_uses}",
-        "confirm": ""
-        if pool
-        else _("Use %(name)s? This spends one use.") % {"name": resource.name},
-        "disabled": resource.current_uses < 1,
-        "ask": resource.current_uses if pool else 0,
-        "ask_label": _("How many points of %(name)s?") % {"name": resource.name},
+        "act": "feature_use",
+        "param": "use",
+        "id": use_id,
+        "label": _("Use"),
+        "confirm": "" if question else feature_use.confirm_text(character, name, spec),
+        "ask": json.dumps(question) if question else "",
     }
 
 
@@ -595,9 +629,10 @@ def _feature_type_filter(items: list[dict], always: bool = False) -> dict | None
     }
 
 
-def _features_tab(request, character: Character, can_edit: bool = False) -> dict:
+def _features_tab(request, character: Character, can_edit: bool, stats, classes) -> dict:
     """The character's features list. Bookmarking lives on the World lists only."""
-    items = _feature_items(character, can_edit)
+    pools = _slots(character, stats, classes) if can_edit else []
+    items = _feature_items(character, can_edit, pools)
     type_filter = _feature_type_filter(items)
     return {
         "count": len(items),
@@ -640,6 +675,10 @@ def _slots(character: Character, stats, classes) -> list[dict]:
     for one) - what groups it under the matching heading."""
     maximums, pact = _slot_maximums(stats, classes)
     spent = character.spell_slots_spent
+    # Slots a feature made (Font of Magic, Wild Resurgence ...) count until the next Long Rest.
+    counts = {level: count for level, count in enumerate(maximums, start=1)}
+    for level, extra in character.created_slots.items():
+        counts[int(level)] = counts.get(int(level), 0) + int(extra)
     pools = [
         {
             "key": str(level),
@@ -648,7 +687,7 @@ def _slots(character: Character, stats, classes) -> list[dict]:
             "level": level,
             "max": count,
         }
-        for level, count in enumerate(maximums, start=1)
+        for level, count in sorted(counts.items())
         if count
     ]
     if pact:
@@ -1466,7 +1505,7 @@ def character_detail(request, pk):
             "header": _header(character, stats),
             "strip": _strip(character, stats, items),
             "abilities": _abilities(stats),
-            "features": _features_tab(request, character, can_edit),
+            "features": _features_tab(request, character, can_edit, stats, classes),
             "shaped": _shaped(character, can_edit),
             "spellbook": _spellbook(request, character, stats, classes, can_edit),
             "inventory": _inventory(character, stats),
@@ -1595,9 +1634,49 @@ def _act_rest_decline(character, post):
     return {"refresh": True}
 
 
-def _act_resource_use(character, post):
-    play.use_resource(character, _int(post, "resource"), int(post.get("amount") or 1))
-    return {"refresh": True, "message": _("Used")}
+def _act_feature_use(character, post):
+    """Press the Use button of a feature card: `use` is `feature:<Feature pk>` or `option:<id>`,
+    `part` the option of a split feature, and the rest what the player was asked."""
+    kind, _sep, ref = post.get("use", "").partition(":")
+    resources = set(character.resources.values_list("name", flat=True))
+    if kind == "feature":
+        feature = (
+            character.features.select_related(
+                "feature__class_level__klass",
+                "feature__subclass_level__subclass",
+                "feature__species",
+            )
+            .get(feature_id=int(ref))
+            .feature
+        )
+        part = post.get("part", "")
+        if part:
+            found = next(
+                ((n, s) for n, s in feature_use.parts_for(feature) if feature_use.slug(n) == part),
+                None,
+            )
+            if found is None:
+                raise ValueError("unknown option")
+            name, spec = f"{_base_name(feature)}: {found[0]}", found[1]
+        else:
+            name, spec = feature.name, feature_use.use_for(feature, resources)
+    elif kind == "option":
+        option = (
+            character.optional_features.select_related("optional_feature")
+            .get(optional_feature_id=ref)
+            .optional_feature
+        )
+        name = option.name
+        spec = feature_use.option_use(option.feature_type, _flat_text(option.entries))
+    else:
+        raise ValueError("unknown feature")
+    if spec is None:
+        raise ValueError("this feature cannot be used")
+    stats = derived_stats.compute(character)
+    classes = list(character.classes.select_related("klass"))
+    pools = _slots(character, stats, classes)
+    message = feature_use.perform(character, name, spec, post, pools)
+    return {"refresh": True, "message": message}
 
 
 def _act_wild_shape_use(character, post):
@@ -2020,7 +2099,7 @@ _ACTIONS["wild_shape_use"] = _act_wild_shape_use
 _ACTIONS["wild_shape_end"] = _act_wild_shape_end
 _ACTIONS["wild_shape_choose"] = _act_wild_shape_choose
 _ACTIONS["wild_shape_swap"] = _act_wild_shape_swap
-_ACTIONS["resource_use"] = _act_resource_use
+_ACTIONS["feature_use"] = _act_feature_use
 _ACTIONS["rest_decline"] = _act_rest_decline
 _ACTIONS["spell_add"] = _act_spell_add
 _ACTIONS["spell_prepare"] = _act_spell_prepare

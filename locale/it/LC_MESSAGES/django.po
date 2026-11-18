@@ -4036,3 +4036,122 @@ msgstr "Se annulli, non potrai farlo fino al prossimo riposo lungo."
 
 msgid "You can change your prepared spells now. Do you want to do it? If you cancel, you can't change them until your next long rest."
 msgstr "Puoi cambiare gli incantesimi preparati adesso. Vuoi farlo? Se annulli, non potrai cambiarli fino al prossimo riposo lungo."
+
+#: apps/characters/services/feature_use.py
+#, python-format
+msgid "Not enough %(name)s left."
+msgstr "%(name)s insufficiente."
+
+msgid "No spell slot of that level left."
+msgstr "Nessuno slot incantesimo di quel livello rimasto."
+
+#, python-format
+msgid "How many points of %(name)s? (%(n)d left)"
+msgstr "Quanti punti di %(name)s? (ne restano %(n)d)"
+
+#, python-format
+msgid "Roll your Martial Arts die (d%(n)d). What did you get?"
+msgstr "Tira il tuo dado delle Arti Marziali (d%(n)d). Quanto hai ottenuto?"
+
+#, python-format
+msgid "How many Wild Shape uses to convert? Each gives 2 spell levels (%(n)d left)"
+msgstr "Quanti usi di Forma Selvatica convertire? Ognuno dà 2 livelli di incantesimo (ne restano %(n)d)"
+
+msgid "Which spell slot do you expend?"
+msgstr "Quale slot incantesimo consumi?"
+
+#, python-format
+msgid "Level %(level)d (%(n)d left)"
+msgstr "Livello %(level)d (ne restano %(n)d)"
+
+#, python-format
+msgid "Which spell slot do you create? (%(n)d Sorcery Points left)"
+msgstr "Quale slot incantesimo crei? (restano %(n)d Punti Stregoneria)"
+
+#, python-format
+msgid "Level %(level)d (%(cost)d points)"
+msgstr "Livello %(level)d (%(cost)d punti)"
+
+#, python-format
+msgid "Use %(name)s? This one is free (once until your next rest)."
+msgstr "Usare %(name)s? Questo uso è gratuito (una volta fino al prossimo riposo)."
+
+#, python-format
+msgid "Use %(name)s? This spends %(cost)d of %(resource)s (%(have)d of %(max)d left)."
+msgstr "Usare %(name)s? Questo consuma %(cost)d di %(resource)s (ne restano %(have)d su %(max)d)."
+
+#, python-format
+msgid "Use %(name)s?"
+msgstr "Usare %(name)s?"
+
+#, python-format
+msgid "You can't use %(name)s now."
+msgstr "Ora non puoi usare %(name)s."
+
+#, python-format
+msgid "Used %(name)s"
+msgstr "%(name)s usato"
+
+#, python-format
+msgid "You regain %(n)d Sorcery Points"
+msgstr "Recuperi %(n)d Punti Stregoneria"
+
+#, python-format
+msgid "You regain %(fp)d Focus Points and %(hp)d hit points"
+msgstr "Recuperi %(fp)d Punti Focus e %(hp)d punti ferita"
+
+#, python-format
+msgid "You regain %(n)d Focus Points"
+msgstr "Recuperi %(n)d Punti Focus"
+
+#, python-format
+msgid "You regain %(n)d uses of Rage"
+msgstr "Recuperi %(n)d usi di Ira"
+
+#, python-format
+msgid "You regain %(n)d uses of Bardic Inspiration"
+msgstr "Recuperi %(n)d usi di Ispirazione Bardica"
+
+msgid "You regain one use of Bardic Inspiration"
+msgstr "Recuperi un uso di Ispirazione Bardica"
+
+#, python-format
+msgid "You regain %(n)d Pact Magic slots"
+msgstr "Recuperi %(n)d slot di Magia del Patto"
+
+#, python-format
+msgid "You gain %(n)d Sorcery Points"
+msgstr "Ottieni %(n)d Punti Stregoneria"
+
+msgid "You can't create that spell slot."
+msgstr "Non puoi creare quello slot incantesimo."
+
+#, python-format
+msgid "You create a level %(level)d spell slot until your next long rest"
+msgstr "Crei uno slot incantesimo di livello %(level)d fino al prossimo riposo lungo"
+
+msgid "You regain one use of Wild Shape"
+msgstr "Recuperi un uso di Forma Selvatica"
+
+msgid "You create a level 1 spell slot until your next long rest"
+msgstr "Crei uno slot incantesimo di livello 1 fino al prossimo riposo lungo"
+
+#: apps/frontend/character_sheet.py
+#, python-format
+msgid "Use Wild Shape and become %(name)s? This spends one use (%(n)d of %(max)d left)."
+msgstr "Usare Forma Selvatica e trasformarti in %(name)s? Questo consuma un uso (ne restano %(n)d su %(max)d)."
+
+msgid "Part of"
+msgstr "Parte di"
+
+msgid "Used a feature"
+msgstr "Ha usato un privilegio"
+
+msgid "Used Wild Shape"
+msgstr "Ha usato Forma Selvatica"
+
+msgid "Ended Wild Shape"
+msgstr "Ha terminato Forma Selvatica"
+
+msgid "Turned down a rest's offer"
+msgstr "Ha rifiutato un'offerta del riposo"

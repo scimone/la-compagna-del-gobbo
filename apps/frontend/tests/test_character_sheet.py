@@ -1647,7 +1647,9 @@ def test_the_rest_buttons_and_the_resources_show_and_the_actions_work(signed_in,
     assert act(signed_in, fighter, action="resource", id=wind.pk, delta="-1").status_code == 400
     html = signed_in.get(f"/characters/{fighter.pk}/").content.decode()
     assert 'data-act="resource"' not in html
-    assert act(signed_in, fighter, action="resource_use", resource=wind.pk).status_code == 200
+    assert act(signed_in, fighter, action="resource_use", resource=wind.pk).status_code == 400
+    use = f"feature:{Feature.objects.get(name_en='Second Wind').pk}"
+    assert act(signed_in, fighter, action="feature_use", use=use).status_code == 200
     assert fighter.resources.get(name="Second Wind").current_uses == wind.max_uses - 1
 
 

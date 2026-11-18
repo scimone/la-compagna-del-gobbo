@@ -108,6 +108,12 @@ class Character(models.Model):
     # The Beast a Druid is shape-shifted into with Wild Shape (a `rules.Creature` id), "" while in
     # their own form - see `apps/builder/services/wild_shape.py`.
     wild_shape_form = models.CharField(max_length=100, blank=True, default="")
+    # Spell slots made by a feature (Font of Magic's Creating Spell Slots, Wild Resurgence ...),
+    # `{"<slot level>": n}`: added to the maximum until the next Long Rest, when they vanish.
+    created_slots = models.JSONField(default=dict, blank=True)
+    # Free uses of an ability already taken, `{"<key>": "short" | "long"}` - the rest that gives
+    # the use back (see `characters/services/feature_use.py`).
+    use_flags = models.JSONField(default=dict, blank=True)
     # The once-per-Long-Rest spell slot recoveries used (`["Arcane Recovery"]`, Natural Recovery).
     spell_recoveries_used = models.JSONField(default=list, blank=True)
     # Reductions that last until a Long Rest (a monster's drain): taken off the maximum hit points

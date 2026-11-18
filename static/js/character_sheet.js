@@ -91,7 +91,7 @@
 
   function paramsOf(el) {
     var params = { action: el.dataset.act };
-    var skip = ["act", "bind", "describe", "label", "toggle", "tab", "confirm", "done", "again", "buy", "cost", "picksUrl", "from"];
+    var skip = ["act", "bind", "describe", "label", "toggle", "tab", "confirm", "done", "again", "buy", "cost", "picksUrl", "from", "ask"];
     Object.keys(el.dataset).forEach(function (key) {
       if (skip.indexOf(key) === -1) params[key] = el.dataset[key];
     });
@@ -359,34 +359,50 @@
     event.preventDefault();
   });
 
-  // A small dialog asking for a number between 1 and the button's `data-ask-amount`.
-  function askAmount(button) {
+  // A small dialog asking what a Use needs first (`data-ask`, JSON): a number between `min` and `max`
+  // or one of `choices`; resolves with `{param: value}` or null when cancelled.
+  function askInput(button) {
     var labels = window.APP_CONFIRM_LABELS || {};
-    var max = Number(button.dataset.askAmount);
+    var ask = JSON.parse(button.dataset.ask);
     return new Promise(function (resolve) {
       var dialog = document.createElement("dialog");
       dialog.className = "app-dialog";
+      var field = ask.choices
+        ? "<select></select>"
+        : '<input type="number" inputmode="numeric">';
       dialog.innerHTML =
-        '<p data-q></p><input type="number" min="1" inputmode="numeric" style="width:100%;box-sizing:border-box;padding:0.5rem;font:inherit">' +
+        "<p data-q></p>" + field +
         '<div class="app-dialog-buttons"><button type="button" data-no></button><button type="button" class="ok" data-yes></button></div>';
-      dialog.querySelector("[data-q]").textContent = button.dataset.askLabel + " (1-" + max + ")";
+      dialog.querySelector("[data-q]").textContent = ask.label;
       dialog.querySelector("[data-no]").textContent = labels.cancel || "Cancel";
       dialog.querySelector("[data-yes]").textContent = labels.ok || "OK";
-      var input = dialog.querySelector("input");
-      input.max = max;
-      input.value = 1;
+      var input = dialog.querySelector("select, input");
+      input.style.cssText = "width:100%;box-sizing:border-box;padding:0.5rem;font:inherit";
+      if (ask.choices) {
+        ask.choices.forEach(function (choice) { input.appendChild(new Option(choice[1], choice[0])); });
+      } else {
+        input.min = ask.min;
+        input.max = ask.max;
+        input.value = ask.min;
+      }
       document.body.appendChild(dialog);
       function done(value) { dialog.close(); dialog.remove(); resolve(value); }
       dialog.addEventListener("click", function (event) {
-        if (event.target.closest("[data-no]")) done(null);
-        else if (event.target.closest("[data-yes]")) {
-          var n = Math.floor(Number(input.value));
-          if (n >= 1 && n <= max) done(n);
+        if (event.target.closest("[data-no]")) return done(null);
+        if (!event.target.closest("[data-yes]")) return;
+        var value = input.value;
+        if (!ask.choices) {
+          var n = Math.floor(Number(value));
+          if (!(n >= ask.min && n <= ask.max)) return;
+          value = n;
         }
+        var answer = {};
+        answer[ask.param] = value;
+        done(answer);
       });
       dialog.addEventListener("cancel", function (event) { event.preventDefault(); done(null); });
       dialog.showModal();
-      input.select();
+      if (!ask.choices) input.select();
     });
   }
 
@@ -415,12 +431,10 @@
       }
       (ask ? window.appConfirm(ask) : Promise.resolve(true)).then(function (ok) {
         if (!ok) return;
-        // A pool (Lay on Hands, Sorcery Points...) asks how many points to spend.
-        return (button.dataset.askAmount ? askAmount(button) : Promise.resolve(null)).then(function (amount) {
-          if (button.dataset.askAmount && !amount) return;
-          var params = paramsOf(button);
-          if (amount) params.amount = amount;
-          return send(params);
+        // A use may need an answer first (how many points, which slot ...).
+        return (button.dataset.ask ? askInput(button) : Promise.resolve({})).then(function (answer) {
+          if (answer === null) return;
+          return send(Object.assign(paramsOf(button), answer));
         }).then(function (accepted) {
           if (accepted && button.dataset.from) document.getElementById(button.dataset.from).value = "";
           if (accepted && button.dataset.done) {
