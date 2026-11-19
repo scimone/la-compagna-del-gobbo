@@ -4217,3 +4217,6 @@ msgstr "Usare %(name)s? Costo: %(cost)s."
 
 msgid "Upgraded by"
 msgstr "Potenziato da"
+
+msgid "Keep my land"
+msgstr "Tieni la mia terra"

@@ -169,8 +169,12 @@
             return prompts.reduce(function (chain, prompt) {
               return chain.then(function () {
                 return window.appConfirm(prompt.text).then(function (yes) {
-                  if (yes) showTab(prompt.tab, true);
-                  else return send({ action: "rest_decline", kind: prompt.kind });
+                  if (!yes) return send({ action: "rest_decline", kind: prompt.kind });
+                  showTab(prompt.tab, true);
+                  // Say yes and the change opens at once; leaving it without making it forfeits it.
+                  var opener = { mastery: "[data-mastery-swap]", wild_shape: "[data-wild-open]" }[prompt.kind];
+                  var button = opener && root.querySelector(opener);
+                  if (button) button.click();
                 });
               });
             }, Promise.resolve()).then(function () { return true; });
@@ -1049,6 +1053,7 @@
     if (!dialog || !event.target.closest("#cs-mastery-dialog")) return;
     if (event.target.closest("[data-mastery-cancel]")) {
       dialog.close();
+      send({ action: "rest_decline", kind: "mastery" });
     } else if (event.target.closest("[data-mastery-confirm]")) {
       var params = {
         action: "weapon_mastery_swap",
@@ -1103,6 +1108,10 @@
 
   // Circle of the Land after a Long Rest: take a land (the server checks the choice).
   root.addEventListener("click", function (event) {
+    if (event.target.closest("[data-land-decline]")) {
+      send({ action: "rest_decline", kind: "land" });
+      return;
+    }
     var button = event.target.closest("[data-land-confirm]");
     if (!button) return;
     var select = root.querySelector("[data-land-select]");
@@ -1121,6 +1130,7 @@
       dialog.showModal();
     } else if (event.target.closest("[data-wild-cancel]")) {
       dialog.close();
+      if (dialog.dataset.mode === "swap") send({ action: "rest_decline", kind: "wild_shape" });
     } else if (event.target.closest("[data-wild-confirm]")) {
       var chosen = function (group) {
         return Array.prototype.map.call(

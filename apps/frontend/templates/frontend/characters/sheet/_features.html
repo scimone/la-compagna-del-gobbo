@@ -13,6 +13,7 @@
         <select data-land-select>{% for name in features.land_change.lands %}<option value="{{ name }}"{% if name == features.land_change.current %} selected{% endif %}>{{ name }}</option>{% endfor %}</select>
       </label>
       <button type="button" class="cs-add-btn" data-land-confirm>{% translate "Choose land" %}</button>
+      <button type="button" class="cs-add-btn" data-land-decline>{% translate "Keep my land" %}</button>
     </div>
   {% endif %}
   {% if can_edit and features.wild_shape %}
