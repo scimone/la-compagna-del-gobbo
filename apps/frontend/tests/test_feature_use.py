@@ -126,9 +126,9 @@ def test_a_feature_with_a_counter_has_a_use_button_without_numbers(signed_in, al
     panel = features_panel(signed_in, fighter)
     row = next(c for c in panel.split("<li") if "Second Wind" in c)
     assert 'data-act="feature_use"' in row and ">Use</button>" in row and "Use 2" not in row
-    assert "This costs: Second Wind ×1 (2 of 2 left)" in row
+    assert "Roll 1d10" in row  # Second Wind asks for the roll it heals with
 
-    use = {"use": f"feature:{Feature.objects.get(name_en='Second Wind').pk}"}
+    use = {"use": f"feature:{Feature.objects.get(name_en='Second Wind').pk}", "roll": "3"}
     assert act(signed_in, fighter, action="feature_use", **use).status_code == 200
     assert act(signed_in, fighter, action="feature_use", **use).status_code == 200
     assert act(signed_in, fighter, action="feature_use", **use).status_code == 400
@@ -483,3 +483,32 @@ def test_relentless_lets_a_maneuver_skip_the_die(signed_in, alice):
     assert fighter.resources.get(name="Superiority Dice").current_uses == 4  # no die spent
     act(signed_in, fighter, action="feature_use", use="option:parry", way="die")
     assert fighter.resources.get(name="Superiority Dice").current_uses == 3
+
+
+def test_hit_point_features_heal(signed_in, alice):
+    orc = finished(alice, "barbarian", species="orc")
+    give(orc, "Relentless Endurance", Relentless_Endurance=(1, 1))
+    feature = Feature.objects.get(name_en="Relentless Endurance")
+    use = {"action": "feature_use", "use": f"feature:{feature.pk}"}
+    orc.current_hit_points = 5
+    orc.save()
+    act(signed_in, orc, **use)  # not at 0 Hit Points: nothing happens
+    orc.refresh_from_db()
+    assert orc.current_hit_points == 5
+    assert orc.resources.get(name="Relentless Endurance").current_uses == 1
+    orc.current_hit_points = 0
+    orc.save()
+    act(signed_in, orc, **use)
+    orc.refresh_from_db()
+    assert orc.current_hit_points == 1
+    assert orc.resources.get(name="Relentless Endurance").current_uses == 0
+
+    fighter = finished(alice, "fighter")
+    give(fighter, "Second Wind", Second_Wind=(2, 2))
+    feature = Feature.objects.get(name_en="Second Wind", class_level__klass_id="fighter")
+    fighter.current_hit_points = 1
+    fighter.save()
+    act(signed_in, fighter, action="feature_use", use=f"feature:{feature.pk}", roll="4")
+    fighter.refresh_from_db()
+    assert fighter.current_hit_points == 1 + 4 + 1
+    assert fighter.resources.get(name="Second Wind").current_uses == 1

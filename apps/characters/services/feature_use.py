@@ -17,6 +17,7 @@ button is offered only while the use is possible (`available()`).
 """
 
 import math
+import random
 import re
 from dataclasses import dataclass, replace
 
@@ -132,6 +133,12 @@ EFFECTS: dict[str, Use] = {
     "Superior Inspiration": Use(effect="superior_inspiration"),
     "Font of Inspiration": Use(effect="slot_to_bardic", ask="slot"),
     "Magical Cunning": Use("Magical Cunning", effect="magical_cunning"),
+    # Hit point features: the button does what the text says (it used to only spend the counter)
+    "Relentless Endurance": Use("Relentless Endurance", effect="drop_to_1"),
+    "Undying Sentinel": Use("Undying Sentinel", effect="undying"),
+    "Second Wind": Use("Second Wind", effect="second_wind", ask="roll", ask_max=10),
+    "Wholeness of Body": Use("Wholeness of Body", effect="wholeness", ask="roll"),
+    "Warrior of the Gods": Use("Warrior of the Gods", effect="warrior_gods", ask="points"),
 }
 
 SLOT5 = ("slot", 5, True)  # a level 5 spell slot
@@ -426,6 +433,11 @@ def _add_created_slot(character: Character, level: int) -> None:
     character.save(update_fields=["created_slots"])
 
 
+def _roll_faces(character: Character, use: Use) -> int:
+    """The faces of the die the player rolls for a use that asks for a roll."""
+    return use.ask_max or martial_arts_die(character)
+
+
 def martial_arts_die(character: Character) -> int:
     from apps.rules.models import ClassLevel
 
@@ -546,6 +558,8 @@ def available(character: Character, use: Use, pools: list[dict]) -> bool:
     if use.free and free_available(character, use):
         return True
     e = use.effect
+    if e in ("drop_to_1", "undying"):  # only when reduced to 0 Hit Points
+        return character.current_hit_points == 0
     if e == "restoration":
         return left(character, SORCERY) < maximum(character, SORCERY)
     if e == "perfect_focus":
@@ -609,10 +623,15 @@ def ask(character: Character, name: str, use: Use, pools: list[dict]) -> dict | 
         }
         return {"param": "amount", "label": label, "min": 1, "max": top}
     if kind == "roll":
-        die = martial_arts_die(character)
+        die = _roll_faces(character, use)
+        label = (
+            _("Roll 1d%(n)d. What did you get?") % {"n": die}
+            if use.ask_max
+            else _("Roll your Martial Arts die (d%(n)d). What did you get?") % {"n": die}
+        )
         return {
             "param": "roll",
-            "label": _("Roll your Martial Arts die (d%(n)d). What did you get?") % {"n": die},
+            "label": label,
             "min": 1,
             "max": die,
         }
@@ -719,10 +738,61 @@ def _restoration(character, params, pools) -> str:
     return _("You regain %(n)d Sorcery Points") % {"n": gained}
 
 
-def _uncanny(character, params, pools) -> str:
+def _rolled(character, params, use_name: str) -> int:
+    use = EFFECTS[use_name]
     roll = _int(params, "roll", 0)
-    if not 1 <= roll <= martial_arts_die(character):
+    if not 1 <= roll <= _roll_faces(character, use):
         raise ValueError("invalid roll")
+    return roll
+
+
+def _heal(character, amount: int) -> int:
+    """Regain Hit Points (capped at the maximum); how many came back."""
+    before = character.current_hit_points
+    play.adjust_hit_points(character, amount)
+    return character.current_hit_points - before
+
+
+def _drop_to_1(character, params, pools) -> str:
+    _heal(character, 1)
+    return _("You drop to 1 hit point instead")
+
+
+def _undying(character, params, pools) -> str:
+    _heal(character, 1 + 3 * _class_level(character, "paladin"))
+    return _("You drop to 1 hit point instead and regain hit points: now %(hp)d") % {
+        "hp": character.current_hit_points
+    }
+
+
+def _second_wind(character, params, pools) -> str:
+    roll = _rolled(character, params, "Second Wind")
+    healed = _heal(character, roll + _class_level(character, "fighter"))
+    return _("You regain %(hp)d hit points") % {"hp": healed}
+
+
+def _wholeness(character, params, pools) -> str:
+    from apps.builder import tables
+
+    roll = _rolled(character, params, "Wholeness of Body")
+    wis = character.wisdom - (character.ability_reductions or {}).get("wis", 0)
+    healed = _heal(character, max(1, roll + tables.ability_modifier(wis)))
+    return _("You regain %(hp)d hit points") % {"hp": healed}
+
+
+def _warrior_of_the_gods(character, params, pools) -> str:
+    dice = _int(params, "amount", 1)
+    total = sum(random.randint(1, 12) for _n in range(dice))
+    healed = _heal(character, total)
+    return _("You roll %(dice)dd12 (%(total)d) and regain %(hp)d hit points") % {
+        "dice": dice,
+        "total": total,
+        "hp": healed,
+    }
+
+
+def _uncanny(character, params, pools) -> str:
+    roll = _rolled(character, params, "Uncanny Metabolism")
     row = _row(character, FOCUS)
     regained = 0
     if row:
@@ -810,6 +880,11 @@ def _nature_magician(character, params, pools) -> str:
 
 
 _EFFECTS = {
+    "drop_to_1": _drop_to_1,
+    "undying": _undying,
+    "second_wind": _second_wind,
+    "wholeness": _wholeness,
+    "warrior_gods": _warrior_of_the_gods,
     "restoration": _restoration,
     "uncanny": _uncanny,
     "perfect_focus": _perfect_focus,
