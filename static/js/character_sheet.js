@@ -365,9 +365,27 @@
 
   // A small dialog asking what a Use needs first (`data-ask`, JSON): a number between `min` and `max`
   // or one of `choices`; resolves with `{param: value}` or null when cancelled.
+  // `data-ask` may also be a list of such questions, asked one after the other (the answers merge).
   function askInput(button) {
+    var asks = JSON.parse(button.dataset.ask);
+    if (!Array.isArray(asks)) asks = [asks];
+    var answers = {};
+    return asks.reduce(function (chain, ask) {
+      return chain.then(function (so_far) {
+        if (so_far === null) return null;
+        return askOne(ask, so_far.dice).then(function (answer) {
+          return answer === null ? null : Object.assign(so_far, answer);
+        });
+      });
+    }, Promise.resolve(answers));
+  }
+
+  function askOne(ask, dice) {
     var labels = window.APP_CONFIRM_LABELS || {};
-    var ask = JSON.parse(button.dataset.ask);
+    if (ask.per_die && dice) {  // the range of a total depends on how many dice were asked first
+      ask = Object.assign({}, ask, { min: dice * ask.min, max: dice * ask.per_die });
+      ask.label = ask.label.replace("%(dice)d", dice);
+    }
     return new Promise(function (resolve) {
       var dialog = document.createElement("dialog");
       dialog.className = "app-dialog";
@@ -428,6 +446,7 @@
         }
         var answer = {};
         answer[ask.param] = value;
+        if (ask.param === "amount") answer.dice = value;
         done(answer);
       });
       dialog.addEventListener("cancel", function (event) { event.preventDefault(); done(null); });

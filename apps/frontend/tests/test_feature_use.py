@@ -512,3 +512,17 @@ def test_hit_point_features_heal(signed_in, alice):
     fighter.refresh_from_db()
     assert fighter.current_hit_points == 1 + 4 + 1
     assert fighter.resources.get(name="Second Wind").current_uses == 1
+
+
+def test_warrior_of_the_gods_heals_the_rolled_total(signed_in, alice):
+    barbarian = finished(alice, "barbarian")
+    give(barbarian, "Warrior of the Gods", "Path of the Zealot", Warrior_of_the_Gods=(4, 4))
+    feature = Feature.objects.get(name_en="Warrior of the Gods")
+    barbarian.current_hit_points = 1
+    barbarian.save()
+    use = {"action": "feature_use", "use": f"feature:{feature.pk}"}
+    assert act(signed_in, barbarian, **use, amount="2", total="30").status_code == 400  # > 2 x 12
+    assert act(signed_in, barbarian, **use, amount="2", total="15").status_code == 200
+    barbarian.refresh_from_db()
+    assert barbarian.current_hit_points == min(16, barbarian.hit_point_maximum)
+    assert barbarian.resources.get(name="Warrior of the Gods").current_uses == 2

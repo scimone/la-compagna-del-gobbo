@@ -17,7 +17,6 @@ button is offered only while the use is possible (`available()`).
 """
 
 import math
-import random
 import re
 from dataclasses import dataclass, replace
 
@@ -138,7 +137,7 @@ EFFECTS: dict[str, Use] = {
     "Undying Sentinel": Use("Undying Sentinel", effect="undying"),
     "Second Wind": Use("Second Wind", effect="second_wind", ask="roll", ask_max=10),
     "Wholeness of Body": Use("Wholeness of Body", effect="wholeness", ask="roll"),
-    "Warrior of the Gods": Use("Warrior of the Gods", effect="warrior_gods", ask="points"),
+    "Warrior of the Gods": Use("Warrior of the Gods", effect="warrior_gods", ask="dice_total"),
 }
 
 SLOT5 = ("slot", 5, True)  # a level 5 spell slot
@@ -622,6 +621,23 @@ def ask(character: Character, name: str, use: Use, pools: list[dict]) -> dict | 
             "n": left(character, use.resource),
         }
         return {"param": "amount", "label": label, "min": 1, "max": top}
+    if kind == "dice_total":  # Warrior of the Gods: how many d12s, then what they added up to
+        top = min(left(character, use.resource), 10**6)
+        return [
+            {
+                "param": "amount",
+                "label": _("How many d12s do you expend? (%(n)d left)") % {"n": top},
+                "min": 1,
+                "max": top,
+            },
+            {
+                "param": "total",
+                "label": _("Roll %(dice)dd12. What is the total?"),
+                "min": 1,
+                "max": 12,
+                "per_die": 12,
+            },
+        ]
     if kind == "roll":
         die = _roll_faces(character, use)
         label = (
@@ -719,7 +735,7 @@ def perform(character: Character, name: str, use: Use, params, pools: list[dict]
         character.save(update_fields=["use_flags"])
     if chosen["counter"] and use.resource:
         amount = use.cost
-        if use.ask == "points":
+        if use.ask in ("points", "dice_total"):
             amount = _int(params, "amount", 1)
             if not 1 <= amount <= (use.ask_max or amount):
                 raise ValueError("invalid amount")
@@ -781,14 +797,11 @@ def _wholeness(character, params, pools) -> str:
 
 
 def _warrior_of_the_gods(character, params, pools) -> str:
-    dice = _int(params, "amount", 1)
-    total = sum(random.randint(1, 12) for _n in range(dice))
+    dice, total = _int(params, "amount", 1), _int(params, "total", 0)
+    if not dice <= total <= 12 * dice:
+        raise ValueError("invalid roll")
     healed = _heal(character, total)
-    return _("You roll %(dice)dd12 (%(total)d) and regain %(hp)d hit points") % {
-        "dice": dice,
-        "total": total,
-        "hp": healed,
-    }
+    return _("You regain %(hp)d hit points") % {"hp": healed}
 
 
 def _uncanny(character, params, pools) -> str:

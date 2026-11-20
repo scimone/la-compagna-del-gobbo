@@ -4233,8 +4233,12 @@ msgid "You regain %(hp)d hit points"
 msgstr "Recuperi %(hp)d punti ferita"
 
 #, python-format
-msgid "You roll %(dice)dd12 (%(total)d) and regain %(hp)d hit points"
-msgstr "Tiri %(dice)dd12 (%(total)d) e recuperi %(hp)d punti ferita"
+msgid "How many d12s do you expend? (%(n)d left)"
+msgstr "Quanti d12 spendi? (ne restano %(n)d)"
+
+#, python-format
+msgid "Roll %(dice)dd12. What is the total?"
+msgstr "Tira %(dice)dd12. Qual è il totale?"
 
 #, python-format
 msgid "Roll 1d%(n)d. What did you get?"
