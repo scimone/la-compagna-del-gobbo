@@ -405,15 +405,7 @@
   .cs-sticky .world-search-icon { pointer-events: none; }
 
   /* Inventory. */
-  .cs-purse { display: grid; grid-template-columns: repeat(auto-fit, minmax(4.4rem, 1fr)); gap: 0.4rem; padding: 0.4rem 0.5rem; background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 14%, var(--surface)), var(--surface)); border: 1px solid var(--border); border-radius: 0.9rem; }
-  .coin { display: flex; align-items: center; gap: 0.35rem; min-width: 0; }
-  .coin .disc { flex-shrink: 0; display: grid; place-items: center; width: 1.8rem; height: 1.8rem; border-radius: 50%; font-size: 0.6rem; font-weight: 800; color: #2b1d0b; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.45), inset 0 -3px 5px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.3); }
-  .coin-copper .disc { background: #c27b48; }
-  .coin-silver .disc { background: #cfd3d8; }
-  .coin-electrum .disc { background: #b9c7a7; }
-  .coin-gold .disc { background: #e6bd45; }
-  .coin-platinum .disc { background: #dfe6ec; }
-  .coin .disc { cursor: pointer; }
+  {% include "frontend/characters/_coins_style.html" %}
   .coin button.disc { appearance: none; border: 0; padding: 0; font: inherit; font-size: 1.2rem; font-weight: 700; line-height: 1; touch-action: manipulation; }
   .coin button.disc:active { filter: brightness(0.9); transform: scale(0.94); }
   /* Wild Shape: a green band over everything, and the numbers that are the Beast's are tinted. */
@@ -448,13 +440,16 @@
   .coin-tip.slot-tip { max-width: min(18rem, calc(100vw - 16px)); font-weight: 400; line-height: 1.35; }
   .coin-tip.slot-tip b { display: block; margin-bottom: 0.15rem; }
   .coin-tip { position: fixed; z-index: 1000; padding: 0.3rem 0.6rem; border-radius: 0.4rem; background: var(--text); color: var(--bg); font-size: 0.8rem; font-weight: 600; pointer-events: none; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); }
-  .coin input, .coin b { flex: 1; min-width: 0; padding: 0.1rem 0.2rem; font-size: 0.95rem; font-weight: 700; text-align: center; }
-  .coin b { border: 1px solid transparent; }
   .cs-add-extras { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.3rem 0; }
   .cs-add-qty { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--muted); }
   .cs-add-qty input { width: 4.2rem; padding: 0.3rem; text-align: center; background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; color: var(--text); }
   .custom-stats { display: flex; flex-direction: column; gap: 0.5rem; }
   .cs-invbar { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
+  .cs-fold { flex-shrink: 0; display: grid; place-items: center; width: 1.9rem; height: 1.9rem; padding: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 50%; color: var(--text); cursor: pointer; }
+  .cs-fold svg { transition: transform 0.15s; }
+  .cs-sticky.folded .cs-fold svg { transform: rotate(180deg); }
+  .cs-sticky.folded .cs-fold-hide, .cs-sticky.folded .cs-fold-body { display: none; }
+  .cs-fold-body { display: contents; }
   .cs-add-btn { flex-shrink: 0; white-space: nowrap; padding: 0.3rem 0.9rem; background: var(--accent); border: 0; border-radius: 1rem; color: var(--accent-text); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
   .cs-weight { margin: 0; font-size: 0.85rem; color: var(--muted); }
   .cs-weight b { color: var(--text); }

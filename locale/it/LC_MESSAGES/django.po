@@ -4247,3 +4247,16 @@ msgstr "Tira 1d%(n)d. Che risultato hai ottenuto?"
 #: apps/frontend/templates/frontend/admin/activity.html
 msgid "Only changes (gold rows)"
 msgstr "Solo modifiche (righe dorate)"
+
+msgid "Total money of the characters"
+msgstr "Denaro totale dei personaggi"
+
+msgid "Show or hide the search and filters"
+msgstr "Mostra o nascondi ricerca e filtri"
+
+msgid "Wild Companion: expend a use of Wild Shape instead of a spell slot"
+msgstr "Compagno Selvatico: spendi un uso di Forma Selvatica invece di uno slot incantesimo"
+
+#, python-format
+msgid "Cast %(name)s with Wild Shape: the familiar is Fey and stays until a Long Rest"
+msgstr "Lanciato %(name)s con Forma Selvatica: il famiglio è un Fey e resta fino a un Riposo Lungo"

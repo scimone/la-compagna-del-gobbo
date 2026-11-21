@@ -1,13 +1,15 @@
 {% load i18n %}
 {# The casting numbers, the toolbar, the search box and the filter buttons stay put while the rest scrolls. #}
 {% if spellbook.spells or can_edit %}
-<div class="cs-sticky">
+<div class="cs-sticky" id="cs-spell-top">
   {# SRD "Preparing Spells": how many the class has prepared of what its table allows (always- #}
   {# prepared spells and cantrips don't count), and below it when it may change that list. #}
   <div class="cs-invbar">
       <span class="cs-weight">{% translate "Spells" %} <b>{{ spellbook.known_count }}</b>{% for p in spellbook.preparation %} · {% if spellbook.preparation|length > 1 %}{{ p.class }} {% endif %}{% translate "Prepared" %} <b>{{ p.count }}/{{ p.limit }}</b>{% endfor %}</span>
-      {% if can_edit %}<button type="button" class="cs-add-btn" data-add-open="cs-add-spell">+ {% translate "Add spell" %}</button>{% endif %}
+      {% if can_edit %}<button type="button" class="cs-add-btn cs-fold-hide" data-add-open="cs-add-spell">+ {% translate "Add spell" %}</button>{% endif %}
+      <button type="button" class="cs-fold" data-fold="cs-spell-top" aria-expanded="true" aria-label="{% translate 'Show or hide the search and filters' %}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg></button>
   </div>
+  <div class="cs-fold-body">
   {% if not spellbook.unprepared_groups %}
   {% for p in spellbook.preparation %}
     {% if p.text %}<p class="cs-prepared{% if p.can_change %} open{% endif %}">{% if spellbook.preparation|length > 1 %}{{ p.class }}: {% endif %}{{ p.text }}.{% if p.hint %} {{ p.hint }}.{% endif %}</p>{% endif %}
@@ -21,6 +23,7 @@
       {% include "frontend/_search_form.html" with filters=spellbook.spell_filters search_query="" search_placeholder=search_placeholder %}
     </div>
   {% endif %}
+  </div>
 </div>
 {% endif %}
 

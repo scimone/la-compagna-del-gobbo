@@ -278,6 +278,7 @@
         if (!fresh || !current) return;
         current.innerHTML = fresh.innerHTML;
         setup();
+        applyFolds();
         area = scroller();
         if (area) area.scrollTop = scroll;
       })
@@ -591,6 +592,29 @@
     if (tab) showTab(tab.dataset.tab, true);
   });
 
+  // ---- a fixed top section (the Spellbook's search and filters) that folds away ---------------------
+
+  function foldKey(id) { return "cs-fold:" + id; }
+  function applyFolds() {
+    root.querySelectorAll("[data-fold]").forEach(function (button) {
+      var top = document.getElementById(button.dataset.fold);
+      var folded = false;
+      try { folded = localStorage.getItem(foldKey(button.dataset.fold)) === "1"; } catch (e) { /* no storage */ }
+      if (top) top.classList.toggle("folded", folded);
+      button.setAttribute("aria-expanded", folded ? "false" : "true");
+    });
+  }
+  applyFolds();
+  root.addEventListener("click", function (event) {
+    var button = event.target.closest("[data-fold]");
+    if (!button) return;
+    var top = document.getElementById(button.dataset.fold);
+    if (!top) return;
+    var folded = top.classList.toggle("folded");
+    button.setAttribute("aria-expanded", folded ? "false" : "true");
+    try { localStorage.setItem(foldKey(button.dataset.fold), folded ? "1" : "0"); } catch (e) { /* no storage */ }
+  });
+
   // ---- the 3-dot menu: closes on a tap anywhere else, and once an item is picked --------------
 
   document.addEventListener("click", function (event) {
@@ -816,7 +840,8 @@
     var slotField = dialog.querySelector("[data-cast-slot-field]");
     var slotSelect = dialog.querySelector("[data-cast-slot]");
     var free = dialog.querySelector("[data-cast-free]").checked;
-    var needsSlot = dialog._level > 0 && !ritual && !free;
+    var wild = dialog.querySelector("[data-cast-wild]").checked;
+    var needsSlot = dialog._level > 0 && !ritual && !free && !wild;
     slotField.hidden = !needsSlot;
     dialog.querySelector("[data-cast-noslot]").hidden = !(needsSlot && !slotSelect.options.length);
     dialog.querySelector("[data-cast-confirm]").disabled = needsSlot && !slotSelect.options.length;
@@ -827,7 +852,7 @@
   function updateCastButtons() {
     root.querySelectorAll(".item-cast").forEach(function (button) {
       var level = Number(button.dataset.castLevel);
-      button.hidden = !(level === 0 || button.dataset.castRitual === "1" || button.dataset.castFree === "1" || castPools(level).length);
+      button.hidden = !(level === 0 || button.dataset.castRitual === "1" || button.dataset.castFree === "1" || Number(button.dataset.castWild) > 0 || castPools(level).length);
     });
   }
 
@@ -867,6 +892,12 @@
     dialog.querySelector("[data-cast-free-field]").hidden = !canFree;
     dialog.querySelector("[data-cast-free-label]").textContent =
       dialog.dataset["free" + ({ short: "Short", unlimited: "Unlimited" }[button.dataset.castFreeKind] || "Long")];
+    // Wild Companion's Find Familiar: a use of Wild Shape instead of a slot.
+    var wildUses = Number(button.dataset.castWild) || 0;
+    var wild = dialog.querySelector("[data-cast-wild]");
+    wild.checked = wildUses > 0 && !canSlot && !ritual.checked && !free.checked;
+    dialog.querySelector("[data-cast-wild-field]").hidden = !wildUses;
+    dialog.querySelector("[data-cast-wild-left]").textContent = wildUses;
     dialog.querySelector("[data-cast-concentration]").hidden = button.dataset.castConcentration !== "1";
     castRefresh(dialog);
     dialog.showModal();
@@ -887,7 +918,9 @@
       var ritual = dialog.querySelector("[data-cast-ritual]").checked;
       var free = dialog.querySelector("[data-cast-free]").checked;
       var params = { action: "cast", spell: dialog._spell };
+      var wild = dialog.querySelector("[data-cast-wild]").checked;
       if (ritual) params.ritual = "1";
+      else if (wild) params.wild = "1";
       else if (free) params.free = "1";
       else if (dialog._level > 0) params.slot = dialog.querySelector("[data-cast-slot]").value;
       dialog.close();
@@ -903,12 +936,12 @@
   root.addEventListener("change", function (event) {
     var dialog = event.target.closest("#cs-cast-dialog");
     if (!dialog) return;
-    // A ritual and a free cast both skip the slot; picking one drops the other.
-    var other = event.target.matches("[data-cast-ritual]") ? "[data-cast-free]" : "[data-cast-ritual]";
-    if (event.target.checked && event.target.matches("[data-cast-ritual], [data-cast-free]")) {
-      dialog.querySelector(other).checked = false;
+    // A ritual, a free cast and a Wild Shape use all skip the slot; picking one drops the others.
+    var skips = "[data-cast-ritual], [data-cast-free], [data-cast-wild]";
+    if (event.target.checked && event.target.matches(skips)) {
+      dialog.querySelectorAll(skips).forEach(function (box) { if (box !== event.target) box.checked = false; });
     }
-    if (event.target.matches("[data-cast-ritual], [data-cast-free]")) castRefresh(dialog);
+    if (event.target.matches(skips)) castRefresh(dialog);
   });
 
   // ---- rests: the Short/Long Rest tiles open their dialogs; confirming posts the action and the ----

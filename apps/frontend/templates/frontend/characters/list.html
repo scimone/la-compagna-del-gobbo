@@ -47,6 +47,7 @@
     background: var(--accent); color: var(--accent-text); display: flex; align-items: center; justify-content: center;
     font-size: 2rem; line-height: 1; text-decoration: none; box-shadow: 0 0.2rem 0.7rem rgba(0,0,0,.3); }
   .fab:active { background: var(--accent-strong); }
+  {% include "frontend/characters/_coins_style.html" %}
   {% include "frontend/campaigns/_bar_style.html" %}
 {% endblock %}
 {% block content %}
@@ -63,6 +64,13 @@
           </li>
         {% endfor %}
       </ul>
+    {% endif %}
+    {% if purse %}
+      <div class="cs-purse" role="group" aria-label="{% translate 'Total money of the characters' %}">
+        {% for c in purse %}
+          <div class="coin coin-{{ c.key }}" title="{{ c.label }}"><span class="disc" aria-hidden="true">{{ c.abbr }}</span><b>{{ c.amount }}</b><span class="sr">{{ c.label }}</span></div>
+        {% endfor %}
+      </div>
     {% endif %}
     {% if characters %}
       <nav class="view-toggle" aria-label="{% translate 'View' %}">

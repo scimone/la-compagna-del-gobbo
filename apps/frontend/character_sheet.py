@@ -32,7 +32,12 @@ from apps.builder.class_spec import CLASS_SPEC
 from apps.builder.resolvers.proficiency import WeaponProficiency
 from apps.builder.services import creation, derived_stats, land, progression, wild_shape
 from apps.characters import conditions, custom_effects
-from apps.characters.models import Character, CharacterChoice, CustomCatalogItem
+from apps.characters.models import (
+    Character,
+    CharacterChoice,
+    CharacterCurrency,
+    CustomCatalogItem,
+)
 from apps.characters.services import access, feature_use, play, portrait
 from apps.frontend import accounts, creature_render, feature_text, translations, units
 from apps.frontend.character_views import (
@@ -837,12 +842,17 @@ def _spellbook_rows(character: Character, can_edit: bool, limits: dict | None = 
         # in the spellbook can still be cast as a ritual.
         prepared = cs.prepared or cs.always_prepared
         cast = None
+        # Wild Companion: Find Familiar can also be paid with a use of Wild Shape. When it is the
+        # only way to the spell there is no ritual (`play.cast_spell`).
+        wild = cs.spell_id == play.WILD_COMPANION_SPELL and play.has_wild_companion(character)
         if character.wild_shape_form:
             pass  # a Beast form cannot cast spells
-        elif cs.spell.level == 0 or prepared or (cs.spell.ritual and cs.in_spellbook):
+        elif cs.spell.level == 0 or prepared or wild or (cs.spell.ritual and cs.in_spellbook):
             cast = {
                 "source": f"class:{cs.klass_id}" if cs.klass_id else "",
-                "ritual": cs.spell.ritual,
+                "ritual": cs.spell.ritual and cs.source != play.WILD_COMPANION_SOURCE,
+                "wild": wild,
+                "wild_uses": play.wild_shape_uses_left(character) if wild else 0,
                 "slot": cs.spell.level > 0 and prepared,
                 "free": (
                     (cs.free_cast and not cs.free_cast_used and cs.spell.level > 0)
@@ -1278,21 +1288,37 @@ def _transfer_targets(character: Character) -> list[dict]:
 def _coins(character: Character) -> list[dict]:
     """The coin purse: the Inventory tab's pouch, and the "add an item" sheet's sticky one."""
     purse = getattr(character, "currency", None)
+    return _coin_rows(
+        {key: getattr(purse, key, 0) if purse else 0 for key, _l, _a in (*_COINS, _ELECTRUM)}
+    )
+
+
+def _coin_rows(amounts: dict) -> list[dict]:
+    """Coin discs for `{coin: amount}`; electrum shows only when there is some."""
     coins = [
-        {"key": key, "label": label, "abbr": abbr, "amount": getattr(purse, key, 0) if purse else 0}
+        {"key": key, "label": label, "abbr": abbr, "amount": amounts.get(key, 0)}
         for key, label, abbr in _COINS
     ]
-    if purse and purse.electrum:
+    if amounts.get("electrum"):
         coins.insert(
             2,
             {
                 "key": "electrum",
                 "label": _ELECTRUM[1],
                 "abbr": _ELECTRUM[2],
-                "amount": purse.electrum,
+                "amount": amounts["electrum"],
             },
         )
     return coins
+
+
+def campaign_purse(characters) -> list[dict]:
+    """The coins of all these characters added up (the Characters page's overview)."""
+    totals = dict.fromkeys((key for key, _l, _a in (*_COINS, _ELECTRUM)), 0)
+    for purse in CharacterCurrency.objects.filter(character__in=[c.pk for c in characters]):
+        for key in totals:
+            totals[key] += getattr(purse, key)
+    return _coin_rows(totals)
 
 
 # --- proficiencies -----------------------------------------------------------------------------
@@ -1736,7 +1762,8 @@ def _act_cast(character, post):
     classes = list(character.classes.select_related("klass"))
     pool = next((p for p in _slots(character, stats, classes) if p["key"] == key), None)
     free = post.get("free") == "1"
-    if pool is None and spell.level > 0 and post.get("ritual") != "1" and not free:
+    wild = post.get("wild") == "1"
+    if pool is None and spell.level > 0 and post.get("ritual") != "1" and not free and not wild:
         raise ValueError("no such spell slot")
     play.cast_spell(
         character,
@@ -1746,9 +1773,19 @@ def _act_cast(character, post):
         slot_level=pool["level"] if pool else 0,
         ritual=post.get("ritual") == "1",
         free=free,
+        wild_shape=wild,
     )
     # Natural Recovery's free cast is one for all the Circle spells: the others lose theirs too.
     redraw = free and character.spells.filter(spell=spell, source__startswith="subclass:").exists()
+    if wild:
+        # The Wild Shape counter is on the Stats tab, so the sheet is redrawn.
+        return {
+            "message": _(
+                "Cast %(name)s with Wild Shape: the familiar is Fey and stays until a Long Rest"
+            )
+            % {"name": spell.name},
+            "refresh": True,
+        }
     return {"message": _("Cast %(name)s") % {"name": spell.name}, "refresh": redraw}
 
 

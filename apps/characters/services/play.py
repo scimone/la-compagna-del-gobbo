@@ -58,6 +58,12 @@ _RANGE = re.compile(r"^\d{1,4}(/\d{1,4})?$")
 #: `CharacterSpell.source` of a spell the player added from the sheet. The builder's grants carry
 #: their own source, and only these can be taken away again from the sheet.
 SPELL_SOURCE = "sheet"
+#: The Druid's Wild Companion (level 2): Find Familiar cast with a slot or a use of Wild Shape.
+#: A character that has the feature but no other way to Find Familiar gets the spell from it, with
+#: this `CharacterSpell.source` - which is also how the sheet knows it has no ritual option.
+WILD_COMPANION = "Wild Companion"
+WILD_COMPANION_SPELL = "find-familiar"
+WILD_COMPANION_SOURCE = "feature:wild-companion"
 #: The source of a class-list spell that only got a row once prepared (`learn_class_spell`).
 CLASS_SPELL_SOURCE = "class"
 #: The same for a feature, feat or option the player added from the sheet (`add_feature`).
@@ -822,6 +828,8 @@ def add_spell(character: Character, spell_id: str, limits: dict | None = None) -
             prepared = spell.level == 0 or used < limit
             always = False
             break
+    # Find Familiar that only Wild Companion gave: now it is the player's own, ritual included.
+    character.spells.filter(spell=spell, source=WILD_COMPANION_SOURCE).delete()
     row, created = CharacterSpell.objects.get_or_create(
         character=character,
         spell=spell,
@@ -839,6 +847,32 @@ def add_spell(character: Character, spell_id: str, limits: dict | None = None) -
 
 
 @transaction.atomic
+def has_wild_companion(character: Character) -> bool:
+    return character.features.filter(feature__name_en=WILD_COMPANION).exists()
+
+
+def wild_shape_uses_left(character: Character) -> int:
+    row = character.resources.filter(name="Wild Shape").first()
+    return row.current_uses if row else 0
+
+
+def sync_wild_companion(character: Character) -> None:
+    """Give a Druid that has Wild Companion the Find Familiar spell it casts, unless the character
+    already has the spell from somewhere else (then that row stays as it is, ritual included)."""
+    if not has_wild_companion(character):
+        return
+    CharacterSpell.objects.get_or_create(
+        character=character,
+        spell_id=WILD_COMPANION_SPELL,
+        defaults={
+            "prepared": True,
+            "always_prepared": True,
+            "source": WILD_COMPANION_SOURCE,
+            "klass_id": "druid",
+        },
+    )
+
+
 def cast_spell(
     character: Character,
     spell_id: str,
@@ -848,6 +882,7 @@ def cast_spell(
     slot_level: int = 0,
     ritual: bool = False,
     free: bool = False,
+    wild_shape: bool = False,
 ) -> str:
     """Cast one of the character's spells, applying the SRD's spellcasting rules. Returns what was
     spent (`""`, `"cantrip"`, `"ritual"` or the slot key).
@@ -862,6 +897,9 @@ def cast_spell(
     - Any other spell must be prepared (or always prepared) and expends one slot of the spell's
       level or higher - `slot_key` is the pool (`"1"`..`"9"` or `"pact"`), `slot_level` the level
       it casts at and `slot_max` how many slots the pool has (both derived by the caller).
+    - Find Familiar with Wild Companion (`wild_shape`) expends a use of Wild Shape instead of a
+      slot, prepared or not. When Wild Companion is the only way the character has the spell
+      there is no ritual option.
     """
     if character.wild_shape_form:
         raise ValueError("a Wild Shape form cannot cast spells")
@@ -870,7 +908,18 @@ def cast_spell(
     is_prepared = row.prepared or row.always_prepared
     if spell.level == 0:
         return "cantrip"
+    if wild_shape:
+        if spell.pk != WILD_COMPANION_SPELL or not has_wild_companion(character):
+            raise ValueError(f"{spell.name} cannot be cast with Wild Shape")
+        uses = character.resources.select_for_update().filter(name="Wild Shape").first()
+        if uses is None or uses.current_uses < 1:
+            raise ValueError("no Wild Shape uses left")
+        uses.current_uses -= 1
+        uses.save(update_fields=["current_uses"])
+        return "wild_shape"
     if ritual:
+        if row.source == WILD_COMPANION_SOURCE:
+            raise ValueError("Wild Companion gives no ritual casting")
         if not spell.ritual:
             raise ValueError(f"{spell.name} is not a ritual")
         if not (is_prepared or row.in_spellbook):

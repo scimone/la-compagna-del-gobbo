@@ -1611,6 +1611,9 @@ def _add_feat(character: Character, feat: Feat, level: int, source: str) -> None
 
 def _add_spell(character, spell_id_, klass_id, source, **flags) -> None:
     existing = CharacterSpell.objects.filter(character=character, spell_id=spell_id_).first()
+    if existing and existing.source == play.WILD_COMPANION_SOURCE:
+        existing.delete()  # a second source takes the spell over, ritual included
+        existing = None
     if existing:
         if existing.always_prepared and not flags.get("always_prepared"):
             # Already given outright (a feat's ritual, an invocation's spell): a second source
@@ -2121,5 +2124,6 @@ def commit(
     ctx.rows[klass.id] = row
     _update_resources(ctx, new, subclass, mods)
     feature_resources.refresh(character)
+    play.sync_wild_companion(character)
     rebuild.record(character, klass.id, values)
     return plan_

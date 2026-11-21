@@ -251,7 +251,7 @@ def test_what_must_stay_in_view_is_outside_the_scrolling_part_of_its_panel(signe
         ("inventory", "cs-purse"),
     ):
         before_scroll = panel(html, tab).split('<div class="cs-scroll">')[0]
-        assert '<div class="cs-sticky">' in before_scroll and fixed in before_scroll
+        assert 'class="cs-sticky"' in before_scroll and fixed in before_scroll
     fixed = panel(html, "abilities").split('<div class="cs-scroll">')[0]
     assert (
         '<div class="cs-subhead">' in fixed and "<h3>Skills</h3>" in fixed
@@ -351,7 +351,9 @@ def test_spellbook_shows_the_casting_numbers_the_slots_and_the_spells(signed_in,
 
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "spellbook")
 
-    sticky = html.split('<div class="cs-sticky">')[1].split('<div class="cs-scroll">')[0]
+    sticky = html.split('<div class="cs-sticky" id="cs-spell-top">')[1].split(
+        '<div class="cs-scroll">'
+    )[0]
     assert "data-casting-dc" not in sticky  # the casting numbers live on the stats tab now
     stats = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "stats")
     assert "data-casting-dc" not in stats  # the stats tab has no spellcasting card
@@ -540,7 +542,9 @@ def test_the_spellbooks_fixed_part_has_an_add_spell_button_even_without_spells(
 
     html = panel(signed_in.get(f"/characters/{fighter.pk}/").content.decode(), "spellbook")
 
-    sticky = html.split('<div class="cs-sticky">')[1].split('<div class="cs-scroll">')[0]
+    sticky = html.split('<div class="cs-sticky" id="cs-spell-top">')[1].split(
+        '<div class="cs-scroll">'
+    )[0]
     assert 'data-add-open="cs-add-spell"' in sticky and "Add spell" in sticky
     assert "Spells <b>0</b>" in sticky
     client.force_login(bob)
@@ -561,7 +565,9 @@ def test_inventory_has_a_fixed_pouch_and_one_list_style_with_details_on_one_line
 
     html = panel(signed_in.get(f"/characters/{cleric.pk}/").content.decode(), "inventory")
 
-    sticky = html.split('<div class="cs-sticky">')[1].split('<div class="cs-scroll">')[0]
+    sticky = html.split('<div class="cs-sticky" id="cs-spell-top">')[1].split(
+        '<div class="cs-scroll">'
+    )[0]
     for coin in ("copper", "silver", "gold", "platinum"):
         assert f'data-coin="{coin}"' in sticky
     assert "data-add-open" in sticky and "Carrying" in sticky  # the toolbar is fixed too
@@ -2136,3 +2142,41 @@ def test_a_free_cast_says_which_rest_gives_it_back(signed_in, alice):
     assert 'data-cast-free-kind="short"' in html
     page = signed_in.get(f"/characters/{cleric.pk}/").content.decode()
     assert "once per short rest" in page and "data-cast-free-label" in page
+
+
+def test_the_characters_page_totals_the_money_of_the_campaign(signed_in, alice, bob):
+    one = finished(alice, "fighter", name="One")
+    two = finished(bob, "wizard", name="Two")
+    for character, gold in ((one, 10), (two, 5)):
+        play.set_coin(character, "gold", gold)
+        play.set_coin(character, "silver", 3)
+
+    html = signed_in.get("/characters/").content.decode()
+
+    purse = html[html.index('class="cs-purse"') :]
+    assert "<b>15</b>" in purse and "<b>6</b>" in purse
+
+
+def test_the_spellbook_top_can_be_folded(signed_in, alice):
+    wizard = finished(alice, "wizard")
+
+    html = panel(signed_in.get(f"/characters/{wizard.pk}/").content.decode(), "spellbook")
+
+    assert 'id="cs-spell-top"' in html and 'data-fold="cs-spell-top"' in html
+
+
+def test_wild_companion_offers_wild_shape_beside_the_slot(signed_in, alice):
+    from apps.builder.tests.test_progression import level_up
+
+    druid = finished(alice, "druid")
+    level_up(druid, "druid")
+
+    html = panel(signed_in.get(f"/characters/{druid.pk}/").content.decode(), "spellbook")
+
+    assert 'data-cast="find-familiar"' in html and 'data-cast-wild="2"' in html
+    assert 'data-cast-ritual="0"' in html.split('data-cast="find-familiar"')[1].split(">")[0]
+    response = signed_in.post(
+        f"/characters/{druid.pk}/act/", {"action": "cast", "spell": "find-familiar", "wild": "1"}
+    )
+    assert response.status_code == 200
+    assert druid.resources.get(name="Wild Shape").current_uses == 1

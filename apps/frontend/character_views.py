@@ -129,10 +129,14 @@ def characters_list(request):
         for c in finished
         if access.can_view(request.user, c)
     ]
+    # Imported here: the sheet module imports this one.
+    from apps.frontend.character_sheet import campaign_purse
+
     response = render(
         request,
         "frontend/characters/list.html",
         {
+            "purse": campaign_purse([i["character"] for i in items]) if items else [],
             "page_title": _("Characters"),
             "can_create": membership.is_member(request.user, campaign),
             "drafts": [

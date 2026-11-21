@@ -17,7 +17,7 @@
     <button type="button" class="item-cast" data-cast="{{ item.cast.id }}"
             data-cast-level="{{ item.cast.level }}" data-cast-ability="{{ item.cast.ability }}" data-cast-mod="{{ item.cast.modifier }}"
             data-cast-dc="{{ item.cast.dc }}" data-cast-atk="{{ item.cast.attack }}"{% if not item.cast.available %} hidden{% endif %}
-            data-cast-ritual="{{ item.cast.ritual|yesno:'1,0' }}" data-cast-slot="{{ item.cast.slot|yesno:'1,0' }}" data-cast-free="{{ item.cast.free|yesno:'1,0' }}" data-cast-free-kind="{{ item.cast.free_kind }}"
+            data-cast-ritual="{{ item.cast.ritual|yesno:'1,0' }}" data-cast-slot="{{ item.cast.slot|yesno:'1,0' }}" data-cast-free="{{ item.cast.free|yesno:'1,0' }}" data-cast-free-kind="{{ item.cast.free_kind }}" data-cast-wild="{% if item.cast.wild and item.cast.wild_uses %}{{ item.cast.wild_uses }}{% else %}0{% endif %}"
             data-cast-concentration="{{ item.cast.concentration|yesno:'1,0' }}">{% translate "Cast" %}</button>
   {% endif %}
   {% if item.use %}
