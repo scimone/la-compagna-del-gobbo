@@ -911,11 +911,12 @@ def cast_spell(
     if wild_shape:
         if spell.pk != WILD_COMPANION_SPELL or not has_wild_companion(character):
             raise ValueError(f"{spell.name} cannot be cast with Wild Shape")
-        uses = character.resources.select_for_update().filter(name="Wild Shape").first()
-        if uses is None or uses.current_uses < 1:
-            raise ValueError("no Wild Shape uses left")
-        uses.current_uses -= 1
-        uses.save(update_fields=["current_uses"])
+        with transaction.atomic():
+            uses = character.resources.select_for_update().filter(name="Wild Shape").first()
+            if uses is None or uses.current_uses < 1:
+                raise ValueError("no Wild Shape uses left")
+            uses.current_uses -= 1
+            uses.save(update_fields=["current_uses"])
         return "wild_shape"
     if ritual:
         if row.source == WILD_COMPANION_SOURCE:

@@ -67,3 +67,11 @@ def test_a_character_without_the_feature_cannot_use_it(owner):
     CharacterSpell.objects.create(character=character, spell_id="find-familiar", prepared=True)
     with pytest.raises(ValueError):
         play.cast_spell(character, "find-familiar", wild_shape=True)
+
+
+@pytest.mark.django_db(transaction=True)
+def test_casting_with_wild_shape_outside_a_test_transaction(owner):
+    # `select_for_update` needs a transaction of its own when none is open (as in a real request).
+    character = finished(owner, "druid")
+    level_up(character, "druid")
+    assert play.cast_spell(character, "find-familiar", wild_shape=True) == "wild_shape"
