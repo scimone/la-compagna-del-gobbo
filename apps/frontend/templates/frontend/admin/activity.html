@@ -30,6 +30,7 @@
   .feed .pager { display: flex; justify-content: space-between; font-size: 0.9rem; padding: 0.4rem 0 0.8rem; }
   .feed .pager a { color: var(--accent); }
   .feed .empty { color: var(--muted); text-align: center; padding: 1rem; }
+  .activity .only { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.6rem; font-size: 0.9rem; }
   .legend { margin: 0; font-size: 0.78rem; color: var(--muted); }
 {% endblock %}
 
@@ -45,6 +46,7 @@
           </option>
         {% endfor %}
       </select>
+      <label class="only"><input type="checkbox" name="changes" value="1" {% if changes_only %}checked{% endif %} onchange="this.form.submit()"> {% translate "Only changes (gold rows)" %}</label>
       <noscript><button type="submit">{% translate "Filter" %}</button></noscript>
     </form>
     <p class="legend">{% translate "Newest first. A gold bar marks something changed; tap a row to open the page concerned." %}</p>
@@ -76,9 +78,9 @@
 
       {% if page.has_other_pages %}
         <div class="pager">
-          {% if page.has_previous %}<a href="?user={{ selected|urlencode }}&page={{ page.previous_page_number }}">&larr; {% translate "Newer" %}</a>{% else %}<span></span>{% endif %}
+          {% if page.has_previous %}<a href="?user={{ selected|urlencode }}{% if changes_only %}&changes=1{% endif %}&page={{ page.previous_page_number }}">&larr; {% translate "Newer" %}</a>{% else %}<span></span>{% endif %}
           <span class="legend">{{ page.number }} / {{ page.paginator.num_pages }}</span>
-          {% if page.has_next %}<a href="?user={{ selected|urlencode }}&page={{ page.next_page_number }}">{% translate "Older" %} &rarr;</a>{% else %}<span></span>{% endif %}
+          {% if page.has_next %}<a href="?user={{ selected|urlencode }}{% if changes_only %}&changes=1{% endif %}&page={{ page.next_page_number }}">{% translate "Older" %} &rarr;</a>{% else %}<span></span>{% endif %}
         </div>
       {% endif %}
     </div>

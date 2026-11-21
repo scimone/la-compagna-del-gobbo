@@ -171,14 +171,16 @@ def visitors() -> list[dict]:
     ]
 
 
-def interactions(username: str = ""):
+def interactions(username: str = "", changes_only: bool = False):
     """The log, newest first. `username` narrows it to one visitor (`ANONYMOUS` for signed-out
-    ones); empty means everyone."""
+    ones); empty means everyone. `changes_only` keeps only the actions (the gold rows)."""
     qs = Interaction.objects.select_related("user").order_by("-created_at", "-id")
     if username == ANONYMOUS:
         qs = qs.filter(username="")
     elif username:
         qs = qs.filter(username=username)
+    if changes_only:
+        qs = qs.filter(kind="action")
     return qs
 
 

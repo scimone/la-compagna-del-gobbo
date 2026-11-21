@@ -4243,3 +4243,7 @@ msgstr "Tira %(dice)dd12. Qual è il totale?"
 #, python-format
 msgid "Roll 1d%(n)d. What did you get?"
 msgstr "Tira 1d%(n)d. Che risultato hai ottenuto?"
+
+#: apps/frontend/templates/frontend/admin/activity.html
+msgid "Only changes (gold rows)"
+msgstr "Solo modifiche (righe dorate)"

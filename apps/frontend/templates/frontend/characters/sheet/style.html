@@ -306,13 +306,14 @@
   .pip { display: inline-block; width: 0.75rem; height: 0.75rem; flex-shrink: 0; border: 2px solid var(--muted); border-radius: 50%; }
   .pip.proficient { background: var(--accent); border-color: var(--accent); }
   .pip.expertise { background: var(--accent); border-color: var(--accent); margin: 3px; box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
-  .cs-skills { display: grid; grid-template-columns: 1fr; gap: 0 1.5rem; margin: 0; padding: 0; list-style: none; }
-  .cs-skills li { display: flex; align-items: center; gap: 0.6rem; padding: 0.4rem 0.1rem; border-bottom: 1px solid var(--border); font-size: 0.92rem; }
+  .cs-skills { display: grid; grid-template-columns: 1fr 1fr; grid-auto-flow: column; grid-template-rows: repeat(9, auto); gap: 0 0.9rem; margin: 0; padding: 0; list-style: none; }
+  .cs-skills li { display: flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.1rem; border-bottom: 1px solid var(--border); font-size: clamp(0.68rem, 2.9vw, 0.9rem); }
+  .cs-skills .n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cs-skills .dim { font-size: 0.85em; }
   .cs-skills .n { flex: 1; min-width: 0; }
-  .cs-skills b { min-width: 2rem; text-align: right; }
+  .cs-skills b { min-width: 1.6rem; text-align: right; }
   .cs-legend { display: flex; flex-wrap: wrap; gap: 0.3rem 0.8rem; margin: 0; font-size: 0.75rem; color: var(--muted); }
   .cs-legend span { display: inline-flex; align-items: center; gap: 0.35rem; }
-  @media (min-width: 40rem) { .cs-skills { grid-template-columns: 1fr 1fr; } }
 
   /* Expandable rows: features, spells. */
   .cs-list { display: flex; flex-direction: column; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }

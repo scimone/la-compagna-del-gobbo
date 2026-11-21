@@ -38,7 +38,8 @@ def panel_activity(request):
     _require_admin(request)
     with timezone.override(TIME_ZONE):
         selected = request.GET.get("user", "")
-        page = Paginator(admin_panel.interactions(selected), PAGE_SIZE).get_page(
+        changes_only = request.GET.get("changes") == "1"
+        page = Paginator(admin_panel.interactions(selected, changes_only), PAGE_SIZE).get_page(
             request.GET.get("page")
         )
         days = admin_panel.by_day(admin_panel.describe(page))
@@ -51,6 +52,7 @@ def panel_activity(request):
                 "page": page,
                 "days": days,
                 "selected": selected,
+                "changes_only": changes_only,
                 "anonymous": admin_panel.ANONYMOUS,
                 "visitors": admin_panel.visitors(),
             },

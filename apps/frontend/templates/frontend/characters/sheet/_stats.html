@@ -84,24 +84,20 @@
     </div>
   </div>
 
-  <div class="st-wide st-vitals">
-  <div class="st-card st-death">
-    <span class="k">{% translate "Death Saves" %}</span>
-    <div class="st-death-lines">
-      {% for kind, label, symbol, count in strip.death_rows %}
-        <div class="death-line" data-death="{{ kind }}">
-          <span class="lbl" title="{{ label }}"><i aria-hidden="true">{{ symbol }}</i></span>
-          <span class="boxes">
-            {% for i in "123" %}
-              <button type="button" class="box{% if forloop.counter <= count %} on{% endif %} {{ kind }}" data-act="death_toggle" data-kind="{{ kind }}" data-index="{{ forloop.counter }}"
-                      aria-label="{{ label }} {{ forloop.counter }}"{% if not can_edit %} disabled{% endif %}></button>
-            {% endfor %}
-          </span>
-        </div>
-      {% endfor %}
-    </div>
+  {# Limited-use resources (Rage, Bardic Inspiration, ...): spent with the Use button of the feature, restored by rests. #}
+  {% if strip.resources %}
+  <div class="st-card st-res st-wide">
+    <span class="k">{% translate "Resources" %}</span>
+    {% for r in strip.resources %}
+      <div class="cs-res-row">
+        <span class="lbl">{{ r.name }}</span>
+        <span class="ctl">
+          <span class="cnt"><b data-bind="resources.{{ r.pk }}.current">{{ r.current }}</b>/{{ r.max }}</span>
+        </span>
+      </div>
+    {% endfor %}
   </div>
-  </div>
+  {% endif %}
 
   {# Hit Dice, then Exhaustion right on top of Conditions; each a slim full-width line like Death Saves. #}
   <div class="st-wide st-vitals">
@@ -174,20 +170,24 @@
   </div>
   {% endif %}
 
-  {# Limited-use resources (Rage, Bardic Inspiration, ...): spent with the Use button of the feature, restored by rests. #}
-  {% if strip.resources %}
-  <div class="st-card st-res st-wide">
-    <span class="k">{% translate "Resources" %}</span>
-    {% for r in strip.resources %}
-      <div class="cs-res-row">
-        <span class="lbl">{{ r.name }}</span>
-        <span class="ctl">
-          <span class="cnt"><b data-bind="resources.{{ r.pk }}.current">{{ r.current }}</b>/{{ r.max }}</span>
-        </span>
-      </div>
-    {% endfor %}
+  <div class="st-wide st-vitals">
+  <div class="st-card st-death">
+    <span class="k">{% translate "Death Saves" %}</span>
+    <div class="st-death-lines">
+      {% for kind, label, symbol, count in strip.death_rows %}
+        <div class="death-line" data-death="{{ kind }}">
+          <span class="lbl" title="{{ label }}"><i aria-hidden="true">{{ symbol }}</i></span>
+          <span class="boxes">
+            {% for i in "123" %}
+              <button type="button" class="box{% if forloop.counter <= count %} on{% endif %} {{ kind }}" data-act="death_toggle" data-kind="{{ kind }}" data-index="{{ forloop.counter }}"
+                      aria-label="{{ label }} {{ forloop.counter }}"{% if not can_edit %} disabled{% endif %}></button>
+            {% endfor %}
+          </span>
+        </div>
+      {% endfor %}
+    </div>
   </div>
-  {% endif %}
+  </div>
 
   {# What a monster drained, until the next Long Rest. #}
   <details class="st-card st-wide st-drain"{% if strip.hp_reduction or strip.drained %} open{% endif %}>
