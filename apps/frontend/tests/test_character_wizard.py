@@ -522,10 +522,10 @@ def test_the_overview_row_separates_species_class_and_level_with_dots(signed_in,
     character = build_character(alice, "wizard", "sage", "human", "Mira")
     _creation.finalize(character)
 
-    html = signed_in.get("/characters/?view=list").content.decode()
+    html = signed_in.get("/characters/").content.decode()
 
     assert "Human · Wizard · Level 1" in html
-    assert 'class="item-thumb pic-empty"' in html
+    assert 'class="card-pic"' in html
 
 
 # --- admins reopen a finished level-1 character ---------------------------------------------------

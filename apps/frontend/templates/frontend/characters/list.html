@@ -9,10 +9,6 @@
   {% include "frontend/_item_list_style.html" %}
   /* "Level up" pill beside a row (owner only, once the XP allow it). */
   .chars .item-list a.lvl-pill { flex: 0 0 auto; align-self: center; margin: 0 0.3rem; padding: 0.3rem 0.7rem; border: 1px solid var(--accent); border-radius: 1rem; background: var(--accent); color: var(--accent-text); font-weight: 600; font-size: 0.8rem; text-decoration: none; }
-  /* View switch: large square pictures (grid) or the compact rows (list). */
-  .view-toggle { display: flex; align-self: flex-end; border: 1px solid var(--border); border-radius: 1rem; overflow: hidden; }
-  .view-toggle a { padding: 0.25rem 0.8rem; font-size: 0.8rem; font-weight: 600; color: var(--muted); text-decoration: none; background: var(--surface); }
-  .view-toggle a.on { background: var(--accent); color: var(--accent-text); }
   /* The grid: two columns of cards; the picture is a 1:1 square. */
   /* `.chars ul` above makes lists a column, so this needs the same weight to win. */
   .chars ul.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
@@ -73,11 +69,6 @@
       </div>
     {% endif %}
     {% if characters %}
-      <nav class="view-toggle" aria-label="{% translate 'View' %}">
-        <a href="?view=grid" data-nav="replace" class="{% if view_mode == 'grid' %}on{% endif %}">{% translate "Grid" %}</a>
-        <a href="?view=list" data-nav="replace" class="{% if view_mode == 'list' %}on{% endif %}">{% translate "List" %}</a>
-      </nav>
-      {% if view_mode == "grid" %}
         <ul class="cards">
           {% for c in characters %}
             <li class="{% if new_id == c.character.pk|stringformat:"d" %}new{% endif %}">
@@ -97,22 +88,6 @@
             </li>
           {% endfor %}
         </ul>
-      {% else %}
-      <ul class="item-list">
-        {% for c in characters %}
-          <li class="{% if new_id == c.character.pk|stringformat:"d" %}new{% endif %}">
-            <a href="{{ c.url }}" class="menu-thumb">{% if c.avatar %}<img class="item-thumb" src="{{ c.avatar }}" alt="" loading="lazy">{% else %}<span class="item-thumb pic-empty"><svg viewBox="0 0 90 120" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><circle cx="45" cy="44" r="17"/><path d="M11 121c0-27 14-43 34-43s34 16 34 43z"/></svg></span>{% endif %}<div class="item-text"><span class="item-name">{{ c.character.name }}</span>
-              <div class="item-detail">{{ c.detail }}{% if c.owner %} · {{ c.owner }}{% endif %}</div></div></a>
-            {% if c.level_up_url %}<a class="lvl-pill" href="{{ c.level_up_url }}">{% translate "Level up" %}</a>{% endif %}
-            {% if c.can_delete %}
-              <button type="button" class="del item-remove" data-delete-url="{% url 'character-delete' c.character.pk %}" data-name="{{ c.character.name }}" aria-label="{% translate 'Delete character' %}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"></path><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path></svg>
-              </button>
-            {% endif %}
-          </li>
-        {% endfor %}
-      </ul>
-      {% endif %}
     {% elif not drafts %}
       <p class="empty">{% if can_create %}{% translate "No characters yet. Tap + to create the first one." %}{% else %}{% translate "No characters yet." %}{% endif %}</p>
     {% endif %}

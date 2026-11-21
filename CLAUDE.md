@@ -5,11 +5,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 A Django backend for D&D 5.5e (2024 rules) character play: static rules catalog, persisted
-characters, and a (mostly unimplemented) character-builder engine. See [README.md](README.md)
+characters, and a (mostly unimplemented) character-builder engine. See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) (the detailed README; the root [README.md](README.md) is the short public overview)
 for the full picture — tech stack, run modes, conventions, model status, and a detailed
 per-app breakdown — and [architecture.md](architecture.md) for the original design rationale
-(the README notes where the implementation has since diverged from it, e.g. `Tool`/`SpellList`
-were dropped, several `Character*` models were added). Read the README before making
+(docs/DEVELOPMENT.md notes where the implementation has since diverged from it, e.g. `Tool`/`SpellList`
+were dropped, several `Character*` models were added). Read docs/DEVELOPMENT.md before making
 non-trivial changes; this file only adds what isn't there.
 
 ## Commands
@@ -36,7 +36,7 @@ uv run ruff format .
 
 `uv run python manage.py <command>` for anything else (`makemigrations`, `shell`, etc.).
 `.env` (copied from `.env.dist`) supplies DB credentials to both `manage.py` and Docker Compose —
-see the README's "Running it" section for exactly which vars to override for which run mode.
+see docs/DEVELOPMENT.md's "Running it" section for exactly which vars to override for which run mode.
 
 ⚠️ `import_rules_data` wipes and reloads every `rules` table (for just the creature stat blocks use `manage.py import_creatures`, which is safe with characters present); it's a one-off/data-refresh step,
 not part of the normal dev loop, and will raise `ProtectedError` once real `Character` rows
@@ -70,7 +70,7 @@ populated only via `import_rules_data`) → `characters` (persisted character st
 the frontend; partly docstring-only services). A fourth
 app, `frontend`, is the server-rendered PWA UI shell and sits outside this chain; `ai` (the
 assistant chat: admin-managed LLM settings, request log, context builder) sits beside it. Full detail —
-every model, per-app service/resolver breakdown — is in the README's "App
+every model, per-app service/resolver breakdown — is in docs/DEVELOPMENT.md's "App
 boundaries" section; don't re-derive it here, read that.
 
 Two structural conventions apply across `rules`/`characters`/`builder`:
@@ -84,7 +84,7 @@ Two structural conventions apply across `rules`/`characters`/`builder`:
   querysets/instances, including any 404/validity checks), one file per domain.
 
 `db/*.json` (with `*_schema.json` siblings) is the XPHB source data `rules` models are imported
-from — see the README's "Model status" table before assuming a model or field exists; several
+from — see docs/DEVELOPMENT.md's "Model status" table before assuming a model or field exists; several
 were deliberately left unparsed or dropped.
 
 `apps/frontend/entries_render.py` renders the raw 5etools `entries` JSON blobs (used by several
@@ -94,7 +94,7 @@ tags into real links — read it before touching how any catalog page's prose is
 i18n uses Django's `gettext` framework (cookie-based `/i18n/setlang/`, not URL-prefixed) for
 UI strings. `rules` game content is translated separately, with `django-modeltranslation`
 (`_en`/`_it` columns on the existing tables, Italian text loaded from `db/it/*.json` by
-`import_rules_data` / `import_translations`) - handbook, feats, spells and rules so far; see the README's
+`import_rules_data` / `import_translations`) - handbook, feats, spells and rules so far; see docs/DEVELOPMENT.md's
 i18n section for the format and why the two are separate problems.
 
 ## Where spending lives
@@ -102,7 +102,7 @@ i18n section for the format and why the two are separate problems.
 *Spending* a resource during play (HP, death saves, Hit Dice, spell slots, casting a spell, a
 `CharacterResource`) and taking a **short/long rest** (per the SRD's Riposo breve/lungo) live in
 `apps/characters/services/play.py`, called by the character sheet's `POST /characters/<id>/act/`
-(see the README). `rules` stays read-only, `builder` stays creation/leveling. Not tracked, so not
+(see docs/DEVELOPMENT.md). `rules` stays read-only, `builder` stays creation/leveling. Not tracked, so not
 handled: exhaustion, the 16 h between long rests (game time, not real time) and the timing of an
 interrupted rest (the player says whether it was interrupted). Handled in `play.py`: reduced max HP /
 ability scores (restored by a long rest), Arcane / Natural Recovery (slots back at a short rest, once per

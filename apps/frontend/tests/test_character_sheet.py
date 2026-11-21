@@ -1674,9 +1674,9 @@ def test_a_thrown_or_ranged_weapon_lists_its_range_as_a_property(signed_in, alic
 def test_the_overview_shows_a_picture_and_level_wording(signed_in, alice):
     finished(alice, "monk")
 
-    html = signed_in.get("/characters/?view=list").content.decode()
+    html = signed_in.get("/characters/").content.decode()
 
-    assert 'class="item-thumb pic-empty"' in html and "Monk · Level 1" in html
+    assert 'class="card-pic"' in html and "Monk · Level 1" in html
 
 
 def test_the_purse_has_plus_buttons_and_italian_coin_abbreviations_for_others(

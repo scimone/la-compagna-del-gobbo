@@ -151,20 +151,10 @@ def characters_list(request):
             ],
             "characters": items,
             "new_id": request.GET.get("new"),
-            "view_mode": _view_mode(request),
         },
     )
     add_never_cache_headers(response)
     return response
-
-
-def _view_mode(request) -> str:
-    """`grid` (large square pictures, the default) or `list` - chosen with `?view=` and then
-    remembered for the session."""
-    chosen = request.GET.get("view")
-    if chosen in ("grid", "list"):
-        request.session["characters_view"] = chosen
-    return request.session.get("characters_view", "grid")
 
 
 def _summary(character: Character, can_delete: bool = False) -> dict:

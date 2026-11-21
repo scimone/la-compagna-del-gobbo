@@ -93,17 +93,9 @@ def test_the_report_summarises_and_prunes(client, alice, capsys):
     assert not Interaction.objects.exists()
 
 
-def test_the_characters_overview_is_a_picture_grid_and_remembers_the_list_choice(client, db):
+def test_the_characters_overview_is_a_picture_grid_without_a_view_switch(client, db):
     from django.contrib.auth import get_user_model
 
     client.force_login(get_user_model().objects.create_user(username="viewer"))
-    assert (
-        'class="cards"' in client.get("/characters/").content.decode()
-        or "empty" in client.get("/characters/").content.decode()
-    )
-    client.get("/characters/?view=list")
-    assert client.session["characters_view"] == "list"
-    client.get("/characters/?view=grid")
-    assert client.session["characters_view"] == "grid"
-    client.get("/characters/?view=nonsense")
-    assert client.session["characters_view"] == "grid"
+    html = client.get("/characters/").content.decode()
+    assert "view-toggle" not in html
